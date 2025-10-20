@@ -80,13 +80,13 @@ const Hero = () => {
     e.preventDefault();
     
     if (location.pathname !== '/') {
-      window.location.href = '/#mission';
+      window.location.href = '/#programs';
       return;
     }
     
-    const missionSection = document.getElementById('mission');
-    if (missionSection) {
-      missionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const programsSection = document.getElementById('programs');
+    if (programsSection) {
+      programsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -154,30 +154,29 @@ const Hero = () => {
           animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 30 }}
           transition={{ duration: 0.8, delay: 0.3 }}
         >
-          {/* Badge */}
+          {/* Badge - More impactful */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-full px-4 py-2 mb-8"
+            className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-red-200 rounded-full px-6 py-3 mb-8 shadow-sm"
           >
             <div className="w-2 h-2 bg-red-800 rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium text-gray-700">Transforming Lives in Ganze, Kilifi</span>
+            <span className="text-sm font-semibold text-red-800">Serving Ganze Community Since 2020</span>
           </motion.div>
 
-          {/* Main Heading */}
+          {/* Main Heading - Completely reworked */}
           <motion.h1 
-            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight tracking-tight"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 leading-tight"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.7 }}
           >
-            <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
-              Hope and
+            <span className="bg-gradient-to-r from-red-800 via-red-600 to-red-800 bg-clip-text text-transparent block mb-4">
+              Transforming Ganze
             </span>
-            <br />
             <motion.span 
-              className="bg-gradient-to-r from-red-800 via-red-600 to-red-800 bg-clip-text text-transparent"
+              className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent block"
               animate={{
                 backgroundPosition: ["0%", "200%"],
               }}
@@ -190,22 +189,21 @@ const Hero = () => {
                 backgroundSize: "200% 100%",
               }}
             >
-              Healing Together
+              Through Christ's Love
             </motion.span>
           </motion.h1>
 
-          {/* Subtitle */}
+          {/* Subtitle - More compelling and specific */}
           <motion.p 
-            className="text-lg md:text-xl lg:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed font-light"
+            className="text-xl md:text-2xl text-gray-700 mb-12 max-w-4xl mx-auto leading-relaxed font-medium"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 1.2 }}
           >
-            Bringing God's transformative love to Ganze Sub-county, Kilifi through compassionate 
-            healthcare, quality education, and sustainable community empowerment programs.
+            Feeding <span className="text-red-800 font-semibold">650+ children daily</span>, empowering <span className="text-red-800 font-semibold">45+ widows</span>, and bringing sustainable hope to Ganze Sub-county through Christ-centered community programs.
           </motion.p>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons - More action-oriented */}
           <motion.div 
             className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
             initial={{ opacity: 0, y: 20 }}
@@ -223,7 +221,7 @@ const Hero = () => {
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                 <Heart className="mr-3 h-5 w-5" />
-                Support Our Mission
+                Feed a Child Today
               </Link>
             </motion.div>
 
@@ -234,39 +232,44 @@ const Hero = () => {
             >
               <button
                 onClick={handleLearnMore}
-                className="inline-flex items-center justify-center border-2 border-gray-300 text-gray-700 hover:border-red-800 hover:text-red-800 transition-all duration-500 rounded-2xl px-8 py-4 text-lg font-semibold bg-white/80 backdrop-blur-sm hover:bg-red-50/50 group"
+                className="inline-flex items-center justify-center border-2 border-red-800 text-red-800 hover:bg-red-800 hover:text-white transition-all duration-500 rounded-2xl px-8 py-4 text-lg font-semibold bg-white/80 backdrop-blur-sm group"
               >
                 <Play className="mr-3 h-5 w-5 transition-transform group-hover:scale-110" />
-                Watch Our Story
+                See Our Impact
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </button>
             </motion.div>
           </motion.div>
 
-          {/* Stats Preview - Updated with Real Numbers */}
+          {/* Stats Preview - More engaging layout */}
           <motion.div 
-            className="max-w-2xl mx-auto"
+            className="max-w-3xl mx-auto"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.8 }}
           >
-            <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-gray-200/60 shadow-lg p-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                <div>
-                  <div className="text-2xl md:text-3xl font-bold text-red-800 mb-1">650+</div>
-                  <div className="text-xs md:text-sm text-gray-600 font-medium">Children Fed Daily</div>
+            <div className="bg-white/80 backdrop-blur-xl rounded-2xl border border-red-100 shadow-lg p-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">Our Community Impact</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div className="space-y-2">
+                  <div className="text-3xl font-bold text-red-800">650+</div>
+                  <div className="text-sm text-gray-600 font-medium">Children Fed Daily</div>
+                  <div className="text-xs text-red-600">Ahoho Mission</div>
                 </div>
-                <div>
-                  <div className="text-2xl md:text-3xl font-bold text-red-800 mb-1">45+</div>
-                  <div className="text-xs md:text-sm text-gray-600 font-medium">Widows Supported</div>
+                <div className="space-y-2">
+                  <div className="text-3xl font-bold text-red-800">45+</div>
+                  <div className="text-sm text-gray-600 font-medium">Widows Empowered</div>
+                  <div className="text-xs text-red-600">Economic Projects</div>
                 </div>
-                <div>
-                  <div className="text-2xl md:text-3xl font-bold text-red-800 mb-1">12+</div>
-                  <div className="text-xs md:text-sm text-gray-600 font-medium">Active Programs</div>
+                <div className="space-y-2">
+                  <div className="text-3xl font-bold text-red-800">12+</div>
+                  <div className="text-sm text-gray-600 font-medium">Active Programs</div>
+                  <div className="text-xs text-red-600">Community Impact</div>
                 </div>
-                <div>
-                  <div className="text-2xl md:text-3xl font-bold text-red-800 mb-1">1K+</div>
-                  <div className="text-xs md:text-sm text-gray-600 font-medium">Lives Impacted</div>
+                <div className="space-y-2">
+                  <div className="text-3xl font-bold text-red-800">4</div>
+                  <div className="text-sm text-gray-600 font-medium">Trusted Partners</div>
+                  <div className="text-xs text-red-600">Working Together</div>
                 </div>
               </div>
             </div>
@@ -274,39 +277,33 @@ const Hero = () => {
         </motion.div>
       </div>
 
-      {/* Enhanced Scroll Indicator */}
+      {/* Simple Scroll Indicator - Minimal and clean */}
       <motion.div 
         className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"
         animate={{
-          y: [0, 12, 0],
+          y: [0, 8, 0],
         }}
         transition={{
-          duration: 2.5,
+          duration: 2,
           repeat: Infinity,
           ease: "easeInOut"
         }}
       >
-        <div className="flex flex-col items-center">
-          <div className="text-xs text-gray-500 font-medium mb-3 tracking-widest uppercase">
-            Discover Our Mission
-          </div>
+        <div 
+          className="w-6 h-10 border-2 border-red-800 rounded-full flex justify-center cursor-pointer"
+          onClick={handleLearnMore}
+        >
           <motion.div 
-            className="w-6 h-10 border-2 border-gray-300 rounded-full flex justify-center cursor-pointer hover:border-red-800 transition-colors"
-            whileHover={{ scale: 1.1 }}
-            onClick={handleLearnMore}
-          >
-            <motion.div 
-              className="w-1 h-3 bg-gray-400 rounded-full mt-2 hover:bg-red-800 transition-colors"
-              animate={{
-                y: [0, 12, 0],
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-          </motion.div>
+            className="w-1 h-3 bg-red-800 rounded-full mt-2"
+            animate={{
+              y: [0, 12, 0],
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
         </div>
       </motion.div>
     </section>
