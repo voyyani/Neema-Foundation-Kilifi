@@ -19,12 +19,12 @@ const Landing: React.FC = () => {
       <TrustBar />
       <Problem />
       <Mission />
-      {/*<Programs />
+      <Programs />
       <Impact />
-      <Stories />
+     {/* <Stories /> */}
       <Action />
       <Events />
-      <Contact />*/}
+      <Contact />
     </div>
   );
 };

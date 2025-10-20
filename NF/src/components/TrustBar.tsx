@@ -2,6 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Award, Users, Heart, Check } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const TrustBar: React.FC = () => {
   const partners = [
@@ -174,7 +175,7 @@ const TrustBar: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* CTA */}
+        {/* CTA - Fixed Link */}
         <motion.div
           className="text-center mt-12"
           initial={{ opacity: 0 }}
@@ -185,14 +186,18 @@ const TrustBar: React.FC = () => {
           <p className="text-gray-600 mb-4">
             Interested in partnering with us to transform more lives in Ganze?
           </p>
-          <motion.button
-            className="inline-flex items-center gap-2 bg-red-800 text-white hover:bg-red-700 transition-colors rounded-xl px-6 py-3 font-semibold"
-            whileHover={{ scale: 1.05 }}
+          <motion.div 
+            whileHover={{ scale: 1.05 }} 
             whileTap={{ scale: 0.95 }}
           >
-            <Users className="h-4 w-4" />
-            Become a Partner
-          </motion.button>
+            <Link
+              to="/partner"
+              className="inline-flex items-center gap-2 bg-red-800 text-white hover:bg-red-700 transition-colors rounded-xl px-6 py-3 font-semibold"
+            >
+              <Users className="h-4 w-4" />
+              Become a Partner
+            </Link>
+          </motion.div>
         </motion.div>
       </div>
     </section>
