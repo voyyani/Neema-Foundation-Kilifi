@@ -1,3 +1,4 @@
+// components/Hero.tsx
 import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Heart, Play } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
@@ -11,7 +12,6 @@ const Hero = () => {
   useEffect(() => {
     if (!sceneRef.current) return;
     
-    // Simple gradient animation instead of heavy Three.js
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -34,7 +34,6 @@ const Hero = () => {
       time += 0.01;
       
       if (ctx) {
-        // Create gradient background
         const gradient = ctx.createRadialGradient(
           window.innerWidth / 2,
           window.innerHeight / 2,
@@ -52,7 +51,6 @@ const Hero = () => {
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        // Add subtle floating particles
         for (let i = 0; i < 15; i++) {
           const x = (Math.sin(time * 0.5 + i) * 0.5 + 0.5) * canvas.width;
           const y = (Math.cos(time * 0.3 + i) * 0.5 + 0.5) * canvas.height;
@@ -82,13 +80,13 @@ const Hero = () => {
     e.preventDefault();
     
     if (location.pathname !== '/') {
-      window.location.href = '/#about';
+      window.location.href = '/#mission';
       return;
     }
     
-    const aboutSection = document.getElementById('about');
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const missionSection = document.getElementById('mission');
+    if (missionSection) {
+      missionSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -169,7 +167,7 @@ const Hero = () => {
 
           {/* Main Heading */}
           <motion.h1 
-            className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-8 leading-tight tracking-tight"
+            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight tracking-tight"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.7 }}
@@ -203,7 +201,7 @@ const Hero = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 1.2 }}
           >
-            Bringing God's transformative love to Kilifi County through compassionate 
+            Bringing God's transformative love to Ganze Sub-county, Kilifi through compassionate 
             healthcare, quality education, and sustainable community empowerment programs.
           </motion.p>
 
@@ -245,7 +243,7 @@ const Hero = () => {
             </motion.div>
           </motion.div>
 
-          {/* Stats Preview */}
+          {/* Stats Preview - Updated with Real Numbers */}
           <motion.div 
             className="max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 30 }}
@@ -259,7 +257,7 @@ const Hero = () => {
                   <div className="text-xs md:text-sm text-gray-600 font-medium">Children Fed Daily</div>
                 </div>
                 <div>
-                  <div className="text-2xl md:text-3xl font-bold text-red-800 mb-1">100+</div>
+                  <div className="text-2xl md:text-3xl font-bold text-red-800 mb-1">45+</div>
                   <div className="text-xs md:text-sm text-gray-600 font-medium">Widows Supported</div>
                 </div>
                 <div>
@@ -267,7 +265,7 @@ const Hero = () => {
                   <div className="text-xs md:text-sm text-gray-600 font-medium">Active Programs</div>
                 </div>
                 <div>
-                  <div className="text-2xl md:text-3xl font-bold text-red-800 mb-1">1000+</div>
+                  <div className="text-2xl md:text-3xl font-bold text-red-800 mb-1">1K+</div>
                   <div className="text-xs md:text-sm text-gray-600 font-medium">Lives Impacted</div>
                 </div>
               </div>
@@ -295,6 +293,7 @@ const Hero = () => {
           <motion.div 
             className="w-6 h-10 border-2 border-gray-300 rounded-full flex justify-center cursor-pointer hover:border-red-800 transition-colors"
             whileHover={{ scale: 1.1 }}
+            onClick={handleLearnMore}
           >
             <motion.div 
               className="w-1 h-3 bg-gray-400 rounded-full mt-2 hover:bg-red-800 transition-colors"
