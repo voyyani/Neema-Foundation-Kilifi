@@ -10,7 +10,6 @@ import Stories from '../components/Stories';
 import Action from '../components/Action';
 import Events from '../components/Events';
 import Contact from '../components/Contact';
-import ProblemSection from '../components/Problem';
 
 const Landing: React.FC = () => {
   return (

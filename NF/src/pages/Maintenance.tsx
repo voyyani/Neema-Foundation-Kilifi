@@ -1,225 +1,343 @@
 // Maintenance.tsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Wrench, Clock, Mail, Heart, ArrowLeft } from 'lucide-react';
+import { Wrench, Clock, Mail, Heart, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Maintenance: React.FC = () => {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 7,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
+  const [progress, setProgress] = useState(0);
+  const [currentStatus, setCurrentStatus] = useState('Initializing Systems');
+
+  const statusUpdates = [
+    { day: 7, status: 'Initializing Systems', progress: 5 },
+    { day: 6, status: 'Database Migration', progress: 15 },
+    { day: 5, status: 'Security Enhancements', progress: 30 },
+    { day: 4, status: 'Feature Implementation', progress: 50 },
+    { day: 3, status: 'Performance Optimization', progress: 65 },
+    { day: 2, status: 'Quality Assurance', progress: 80 },
+    { day: 1, status: 'Final Testing', progress: 95 },
+    { day: 0, status: 'Launch Preparation', progress: 100 }
+  ];
+
+  useEffect(() => {
+    const maintenanceEnd = new Date();
+    maintenanceEnd.setDate(maintenanceEnd.getDate() + 7);
+
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = maintenanceEnd.getTime() - now;
+
+      if (distance < 0) {
+        clearInterval(timer);
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        setProgress(100);
+        setCurrentStatus('Maintenance Complete');
+      } else {
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        setTimeLeft({ days, hours, minutes, seconds });
+
+        // Update status and progress based on remaining days
+        const statusUpdate = statusUpdates.find(update => update.day === days) || statusUpdates[0];
+        setCurrentStatus(statusUpdate.status);
+        setProgress(statusUpdate.progress);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white to-red-50/30 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-white to-red-50/30 flex flex-col w-full overflow-x-hidden">
       {/* Header - Matching Navbar Style */}
       <motion.header 
-        className="bg-white/90 backdrop-blur-lg border-b border-gray-100 py-5"
+        className="bg-white/95 backdrop-blur-xl border-b border-gray-100 py-4 w-full"
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        <div className="container max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            {/* Logo */}
-            <motion.div 
-              className="flex items-center space-x-3 group"
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 400, damping: 17 }}
-            >
-              <Link to="/">
-                <div className="relative">
-                  <img 
-                    src="/lovable-uploads/6cf22f36-8abb-4663-b252-00da5f81f79a.png" 
-                    alt="Neema Foundation Logo" 
-                    className="h-14 w-14 transition-all duration-500 group-hover:scale-110"
-                  />
+        <div className="w-full flex justify-center">
+          <div className="w-full max-w-8xl px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center">
+              {/* Logo */}
+              <motion.div 
+                className="flex items-center space-x-3 group"
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              >
+                <Link to="/">
+                  <div className="relative">
+                    <img 
+                      src="https://res.cloudinary.com/dzqdxosk2/image/upload/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png" 
+                      alt="Neema Foundation Logo" 
+                      className="h-12 w-12 transition-all duration-500 group-hover:scale-110"
+                    />
+                  </div>
+                </Link>
+                <div className="flex flex-col">
+                  <span className="font-serif font-bold text-xl text-gray-900 leading-tight">
+                    Neema Foundation
+                  </span>
+                  <span className="text-xs text-red-800 font-medium tracking-wide">
+                    Transforming Ganze Community
+                  </span>
                 </div>
-              </Link>
-              <div className="flex flex-col">
-                <span className="font-serif font-bold text-2xl text-gray-900 leading-tight">
-                  Neema Foundation
-                </span>
-                <span className="text-xs text-red-800 font-medium tracking-wide">
-                  Transforming Ganze Community
-                </span>
-              </div>
-            </motion.div>
+              </motion.div>
+
+              {/* Emergency Contact */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+                className="hidden md:flex items-center space-x-2 text-sm text-gray-600"
+              >
+                <AlertCircle className="h-4 w-4 text-red-800" />
+                <span>Emergency Contact: </span>
+                <a href="tel:+254700000000" className="text-red-800 font-semibold hover:underline">
+                  +254 700 000 000
+                </a>
+              </motion.div>
+            </div>
           </div>
         </div>
       </motion.header>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ 
-              type: "spring", 
-              stiffness: 200, 
-              damping: 15,
-              delay: 0.2
-            }}
-            className="mb-8"
-          >
-            <div className="relative inline-flex">
-              {/* Animated background circle */}
-              <motion.div 
-                className="absolute inset-0 bg-red-100 rounded-full"
-                animate={{ 
-                  scale: [1, 1.1, 1],
-                  opacity: [0.3, 0.5, 0.3]
-                }}
+      <div className="flex-1 flex items-center justify-center w-full py-8 md:py-12">
+        <div className="w-full flex justify-center">
+          <div className="w-full max-w-8xl px-4 sm:px-6 lg:px-8">
+            <div className="max-w-6xl mx-auto text-center">
+              {/* Animated Icon */}
+              <motion.div
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
                 transition={{ 
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut"
+                  type: "spring", 
+                  stiffness: 200, 
+                  damping: 15,
+                  delay: 0.2
                 }}
-              />
-              
-              {/* Main icon */}
-              <motion.div
-                className="relative bg-white p-6 rounded-2xl shadow-2xl border border-gray-200"
-                whileHover={{ 
-                  scale: 1.05,
-                  rotate: [0, -5, 5, 0]
-                }}
-                transition={{ 
-                  scale: { type: "spring", stiffness: 300 },
-                  rotate: { duration: 0.5 }
-                }}
+                className="mb-8 md:mb-12"
               >
-                <Wrench className="h-16 w-16 text-red-800" />
+                <div className="relative inline-flex">
+                  {/* Pulsing background */}
+                  <motion.div 
+                    className="absolute inset-0 bg-red-100 rounded-full"
+                    animate={{ 
+                      scale: [1, 1.2, 1],
+                      opacity: [0.3, 0.6, 0.3]
+                    }}
+                    transition={{ 
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  />
+                  
+                  {/* Main icon container */}
+                  <motion.div
+                    className="relative bg-white p-4 md:p-6 rounded-2xl shadow-2xl border border-gray-200"
+                    whileHover={{ 
+                      scale: 1.05,
+                      rotate: [0, -5, 5, 0]
+                    }}
+                    transition={{ 
+                      scale: { type: "spring", stiffness: 300 },
+                      rotate: { duration: 0.5 }
+                    }}
+                  >
+                    <Wrench className="h-12 w-12 md:h-16 md:w-16 text-red-800" />
+                  </motion.div>
+                </div>
+              </motion.div>
+
+              {/* Title */}
+              <motion.h1
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="font-serif font-bold text-3xl sm:text-4xl lg:text-5xl xl:text-6xl text-gray-900 mb-4 md:mb-6"
+              >
+                Scheduled
+                <span className="block bg-gradient-to-r from-red-800 to-red-600 bg-clip-text text-transparent">
+                  Maintenance
+                </span>
+              </motion.h1>
+
+              {/* Description */}
+              <motion.p
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                className="text-base sm:text-lg md:text-xl text-gray-600 mb-6 md:mb-8 max-w-3xl mx-auto leading-relaxed"
+              >
+                We're upgrading our systems to serve you better! Our website will be back online 
+                with enhanced features and improved performance for the Ganze community.
+              </motion.p>
+
+              {/* Countdown Timer */}
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.8 }}
+                className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-6 md:mb-8 max-w-2xl mx-auto"
+              >
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {Object.entries(timeLeft).map(([unit, value]) => (
+                    <div key={unit} className="text-center">
+                      <div className="bg-red-50 rounded-xl p-3 md:p-4">
+                        <div className="text-2xl md:text-3xl font-bold text-red-800 mb-1">
+                          {value.toString().padStart(2, '0')}
+                        </div>
+                        <div className="text-xs md:text-sm font-medium text-gray-600 uppercase tracking-wide">
+                          {unit}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Status Card */}
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, delay: 1 }}
+                className="bg-white rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6 mb-6 md:mb-8 max-w-2xl mx-auto"
+              >
+                <div className="flex items-center justify-center space-x-3 text-gray-700">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                  >
+                    <Clock className="h-5 w-5 text-red-800" />
+                  </motion.div>
+                  <span className="font-semibold text-sm md:text-base">Current Status:</span>
+                  <span className="text-red-800 font-medium text-sm md:text-base">{currentStatus}</span>
+                </div>
+              </motion.div>
+
+              {/* Progress Section */}
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, delay: 1.2 }}
+                className="max-w-2xl mx-auto mb-8 md:mb-12"
+              >
+                {/* Progress Bar */}
+                <div className="bg-gray-200 rounded-full h-3 overflow-hidden mb-3">
+                  <motion.div
+                    className="bg-gradient-to-r from-red-800 to-red-600 h-full rounded-full relative"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 1.5, ease: "easeOut" }}
+                  >
+                    <motion.div
+                      className="absolute top-0 right-0 w-4 h-4 bg-white rounded-full shadow-lg"
+                      animate={{
+                        x: ['0%', '100%', '0%'],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
+                  </motion.div>
+                </div>
+                
+                {/* Progress Labels */}
+                <div className="flex justify-between items-center text-sm text-gray-600">
+                  <span>Update Progress</span>
+                  <span className="font-semibold text-red-800">{progress}% Complete</span>
+                </div>
+              </motion.div>
+
+              {/* Volunteer Access Notice */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 1.4 }}
+                className="bg-blue-50 border border-blue-200 rounded-2xl p-4 md:p-6 mb-8 max-w-2xl mx-auto"
+              >
+                <div className="flex items-center justify-center space-x-3 text-blue-800">
+                  <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-sm md:text-base">
+                      Volunteer Applications Still Open!
+                    </p>
+                    <p className="text-xs md:text-sm text-blue-700 mt-1">
+                      While we work on improvements, you can still apply to volunteer and join our mission.
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Action Buttons */}
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.6, delay: 1.6 }}
+                className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8"
+              >
+                <motion.a
+                  href="/volunteer"
+                  whileHover={{ 
+                    scale: 1.05,
+                    boxShadow: "0 10px 25px -5px rgba(220, 38, 38, 0.4)"
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  className="inline-flex items-center justify-center bg-gradient-to-r from-red-800 to-red-700 text-white hover:from-red-700 hover:to-red-800 rounded-xl md:rounded-2xl px-6 md:px-8 py-3 md:py-4 gap-3 font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto"
+                >
+                  <Heart className="h-4 w-4 md:h-5 md:w-5" />
+                  Apply to Volunteer
+                </motion.a>
+
+                <motion.a
+                  href="mailto:info@neemafoundationkilifi.org"
+                  whileHover={{ 
+                    scale: 1.05,
+                    backgroundColor: "rgba(254, 226, 226, 1)"
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  className="inline-flex items-center justify-center bg-red-50 text-red-800 hover:bg-red-100 rounded-xl md:rounded-2xl px-6 md:px-8 py-3 md:py-4 gap-3 font-semibold text-base md:text-lg border border-red-200 transition-all duration-300 w-full sm:w-auto"
+                >
+                  <Mail className="h-4 w-4 md:h-5 md:w-5" />
+                  Contact Support
+                </motion.a>
+              </motion.div>
+
+              {/* Back to Home */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, delay: 1.8 }}
+                className="mt-6 md:mt-8"
+              >
+                <Link
+                  to="/"
+                  className="inline-flex items-center gap-2 text-gray-600 hover:text-red-800 font-medium transition-colors duration-300 group text-sm md:text-base"
+                >
+                  <motion.div
+                    whileHover={{ x: -5 }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                  </motion.div>
+                  Return to Homepage
+                </Link>
               </motion.div>
             </div>
-          </motion.div>
-
-          {/* Title */}
-          <motion.h1
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="font-serif font-bold text-4xl sm:text-5xl lg:text-6xl text-gray-900 mb-6"
-          >
-            We're Under
-            <span className="block bg-gradient-to-r from-red-800 to-red-600 bg-clip-text text-transparent">
-              Maintenance
-            </span>
-          </motion.h1>
-
-          {/* Description */}
-          <motion.p
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="text-lg sm:text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed"
-          >
-            We're currently working hard to improve your experience. 
-            Our website will be back online shortly with exciting new features 
-            to better serve the Ganze community.
-          </motion.p>
-
-          {/* Status Card */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-8 max-w-md mx-auto"
-          >
-            <div className="flex items-center justify-center space-x-3 text-gray-700">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-              >
-                <Clock className="h-5 w-5 text-red-800" />
-              </motion.div>
-              <span className="font-semibold">Estimated Completion:</span>
-              <span className="text-red-800 font-medium">2-3 Hours</span>
-            </div>
-          </motion.div>
-
-          {/* Progress Bar */}
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: "100%" }}
-            transition={{ duration: 2, delay: 1, ease: "easeOut" }}
-            className="max-w-md mx-auto mb-12"
-          >
-            <div className="bg-gray-200 rounded-full h-2 overflow-hidden">
-              <motion.div
-                className="bg-gradient-to-r from-red-800 to-red-600 h-full rounded-full"
-                animate={{
-                  backgroundPosition: ["0%", "100%"]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "linear"
-                }}
-                style={{
-                  backgroundSize: "200% 100%"
-                }}
-              />
-            </div>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 1.5 }}
-              className="flex justify-between text-sm text-gray-500 mt-2"
-            >
-              <span>Updating Systems</span>
-              <span>65% Complete</span>
-            </motion.div>
-          </motion.div>
-
-          {/* Action Buttons */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 1 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-          >
-            <motion.button
-              whileHover={{ 
-                scale: 1.05,
-                boxShadow: "0 10px 25px -5px rgba(220, 38, 38, 0.4)"
-              }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center justify-center bg-gradient-to-r from-red-800 to-red-700 text-white hover:from-red-700 hover:to-red-800 rounded-2xl px-8 py-4 gap-3 font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              <Heart className="h-5 w-5" />
-              Support Our Mission
-            </motion.button>
-
-            <motion.button
-              whileHover={{ 
-                scale: 1.05,
-                backgroundColor: "rgba(254, 226, 226, 1)"
-              }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center justify-center bg-red-50 text-red-800 hover:bg-red-100 rounded-2xl px-8 py-4 gap-3 font-semibold text-lg border border-red-200 transition-all duration-300"
-            >
-              <Mail className="h-5 w-5" />
-              Contact Us
-            </motion.button>
-          </motion.div>
-
-          {/* Back to Home */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 1.2 }}
-            className="mt-12"
-          >
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 text-gray-600 hover:text-red-800 font-medium transition-colors duration-300 group"
-            >
-              <motion.div
-                whileHover={{ x: -5 }}
-                transition={{ type: "spring", stiffness: 400 }}
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </motion.div>
-              Return to Homepage
-            </Link>
-          </motion.div>
+          </div>
         </div>
       </div>
 
@@ -227,73 +345,50 @@ const Maintenance: React.FC = () => {
       <motion.footer
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 1.4 }}
-        className="bg-white/80 backdrop-blur-sm border-t border-gray-100 py-8"
+        transition={{ duration: 0.6, delay: 2 }}
+        className="bg-white/80 backdrop-blur-sm border-t border-gray-100 py-6 md:py-8 w-full"
       >
-        <div className="container max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <p className="text-gray-600 mb-4">
-              Thank you for your patience and continued support
-            </p>
-            <div className="flex items-center justify-center space-x-6 text-sm text-gray-500">
-              <span>Email: info@neemafoundation.org</span>
-              <span>Phone: +254 700 000 000</span>
+        <div className="w-full flex justify-center">
+          <div className="w-full max-w-8xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <p className="text-gray-600 mb-3 md:mb-4 text-sm md:text-base">
+                Thank you for your patience and continued support of the Ganze community
+              </p>
+              <div className="flex flex-col md:flex-row items-center justify-center space-y-2 md:space-y-0 md:space-x-6 text-xs md:text-sm text-gray-500">
+                <span>Email: info@neemafoundationkilifi.org</span>
+                <span>Phone: +254 700 000 000</span>
+                <span>Location: Ganze Sub-county, Kilifi County</span>
+              </div>
             </div>
           </div>
         </div>
       </motion.footer>
 
       {/* Floating Elements */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {/* Floating Tool 1 */}
-        <motion.div
-          className="absolute top-1/4 left-10 text-red-200"
-          animate={{
-            y: [0, -20, 0],
-            rotate: [0, 10, 0]
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        >
-          <Wrench className="h-8 w-8" />
-        </motion.div>
-
-        {/* Floating Tool 2 */}
-        <motion.div
-          className="absolute bottom-1/3 right-16 text-red-200"
-          animate={{
-            y: [0, 15, 0],
-            rotate: [0, -15, 0]
-          }}
-          transition={{
-            duration: 5,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1
-          }}
-        >
-          <Wrench className="h-6 w-6" />
-        </motion.div>
-
-        {/* Floating Tool 3 */}
-        <motion.div
-          className="absolute top-1/3 right-1/4 text-red-200"
-          animate={{
-            y: [0, -15, 0],
-            rotate: [0, 20, 0]
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 2
-          }}
-        >
-          <Wrench className="h-5 w-5" />
-        </motion.div>
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute text-red-200"
+            style={{
+              top: `${20 + Math.random() * 60}%`,
+              left: `${10 + Math.random() * 80}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              rotate: [0, 180, 360],
+              scale: [1, 1.2, 1]
+            }}
+            transition={{
+              duration: 8 + Math.random() * 4,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: Math.random() * 2
+            }}
+          >
+            <Wrench className="h-4 w-4 md:h-6 md:w-6" />
+          </motion.div>
+        ))}
       </div>
     </div>
   );

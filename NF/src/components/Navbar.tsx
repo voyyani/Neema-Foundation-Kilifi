@@ -79,7 +79,7 @@ const Navbar: React.FC = () => {
     { name: 'Home', href: '/', type: 'route' },
     { name: 'About', href: '/#about', type: 'hash' },
     { name: 'Programs', href: '/#programs', type: 'hash' },
-    { name: 'Roadmap', href: '/#roadmap', type: 'hash' },
+    { name: 'Media', href: '/#media', type: 'hash' },
     { name: 'Impact', href: '/#impact', type: 'hash' },
     { name: 'Board', href: '/board', type: 'route' },
     { name: 'Contact', href: '/#contact', type: 'hash' },
