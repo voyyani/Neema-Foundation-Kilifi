@@ -15,6 +15,13 @@ const Maintenance: React.FC = () => {
   const [currentStatus, setCurrentStatus] = useState('Initializing Systems');
   const [imageError, setImageError] = useState(false);
 
+  // Fixed maintenance end date - same for all users
+  // This creates a universal countdown that ends 7 days from a specific start time
+const MAINTENANCE_START_TIME = new Date('2025-10-27T00:00:00Z').getTime();
+
+  const MAINTENANCE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+  const MAINTENANCE_END_TIME = MAINTENANCE_START_TIME + MAINTENANCE_DURATION;
+
   const statusUpdates = [
     { day: 7, status: 'Initializing Systems', progress: 5 },
     { day: 6, status: 'Database Migration', progress: 15 },
@@ -27,30 +34,71 @@ const Maintenance: React.FC = () => {
   ];
 
   useEffect(() => {
-    const maintenanceEnd = new Date();
-    maintenanceEnd.setDate(maintenanceEnd.getDate() + 7);
-
-    const timer = setInterval(() => {
+    const calculateTimeLeft = () => {
       const now = new Date().getTime();
-      const distance = maintenanceEnd.getTime() - now;
+      const distance = MAINTENANCE_END_TIME - now;
 
       if (distance < 0) {
-        clearInterval(timer);
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        setProgress(100);
-        setCurrentStatus('Maintenance Complete');
+        // Maintenance completed
+        return {
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          progress: 100,
+          status: 'Maintenance Complete'
+        };
       } else {
         const days = Math.floor(distance / (1000 * 60 * 60 * 24));
         const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        setTimeLeft({ days, hours, minutes, seconds });
+        // Calculate progress based on elapsed time
+        const elapsed = now - MAINTENANCE_START_TIME;
+        const progress = Math.min(99, Math.max(1, (elapsed / MAINTENANCE_DURATION) * 100));
 
-        // Update status and progress based on remaining days
+        // Update status based on remaining days
         const statusUpdate = statusUpdates.find(update => update.day === days) || statusUpdates[0];
-        setCurrentStatus(statusUpdate.status);
-        setProgress(statusUpdate.progress);
+
+        return {
+          days,
+          hours,
+          minutes,
+          seconds,
+          progress,
+          status: statusUpdate.status
+        };
+      }
+    };
+
+    // Calculate immediately
+    const initialTimeLeft = calculateTimeLeft();
+    setTimeLeft({
+      days: initialTimeLeft.days,
+      hours: initialTimeLeft.hours,
+      minutes: initialTimeLeft.minutes,
+      seconds: initialTimeLeft.seconds
+    });
+    setProgress(initialTimeLeft.progress);
+    setCurrentStatus(initialTimeLeft.status);
+
+    // Update every second
+    const timer = setInterval(() => {
+      const updatedTimeLeft = calculateTimeLeft();
+      setTimeLeft({
+        days: updatedTimeLeft.days,
+        hours: updatedTimeLeft.hours,
+        minutes: updatedTimeLeft.minutes,
+        seconds: updatedTimeLeft.seconds
+      });
+      setProgress(updatedTimeLeft.progress);
+      setCurrentStatus(updatedTimeLeft.status);
+
+      // Clear interval if maintenance is complete
+      if (updatedTimeLeft.days === 0 && updatedTimeLeft.hours === 0 && 
+          updatedTimeLeft.minutes === 0 && updatedTimeLeft.seconds === 0) {
+        clearInterval(timer);
       }
     }, 1000);
 
@@ -218,6 +266,9 @@ const Maintenance: React.FC = () => {
                     </div>
                   ))}
                 </div>
+                <p className="text-xs text-gray-500 mt-4">
+                  Universal countdown - same for all visitors
+                </p>
               </motion.div>
 
               {/* Status Card */}
@@ -248,7 +299,7 @@ const Maintenance: React.FC = () => {
               >
                 <div className="flex justify-between items-center mb-3">
                   <span className="text-sm font-medium text-gray-700">Update Progress</span>
-                  <span className="text-sm font-semibold text-red-800">{progress}% Complete</span>
+                  <span className="text-sm font-semibold text-red-800">{Math.round(progress)}% Complete</span>
                 </div>
                 
                 {/* Progress Bar */}
