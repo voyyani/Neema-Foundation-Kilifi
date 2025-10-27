@@ -1,7 +1,7 @@
 // Maintenance.tsx
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Wrench, Clock, Mail, Heart, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Wrench, Clock, Mail, Heart, ArrowLeft, CheckCircle2, AlertCircle, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Maintenance: React.FC = () => {
@@ -13,6 +13,7 @@ const Maintenance: React.FC = () => {
   });
   const [progress, setProgress] = useState(0);
   const [currentStatus, setCurrentStatus] = useState('Initializing Systems');
+  const [imageError, setImageError] = useState(false);
 
   const statusUpdates = [
     { day: 7, status: 'Initializing Systems', progress: 5 },
@@ -56,6 +57,10 @@ const Maintenance: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-red-50/30 flex flex-col w-full overflow-x-hidden">
       {/* Header - Matching Navbar Style */}
@@ -76,11 +81,18 @@ const Maintenance: React.FC = () => {
               >
                 <Link to="/">
                   <div className="relative">
-                    <img 
-                      src="https://res.cloudinary.com/dzqdxosk2/image/upload/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png" 
-                      alt="Neema Foundation Logo" 
-                      className="h-12 w-12 transition-all duration-500 group-hover:scale-110"
-                    />
+                    {imageError ? (
+                      <div className="h-12 w-12 bg-red-800 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                        NF
+                      </div>
+                    ) : (
+                      <img 
+                        src="https://res.cloudinary.com/dzqdxosk2/image/upload/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png" 
+                        alt="Neema Foundation Logo" 
+                        className="h-12 w-12 transition-all duration-500 group-hover:scale-110"
+                        onError={handleImageError}
+                      />
+                    )}
                   </div>
                 </Link>
                 <div className="flex flex-col">
@@ -101,7 +113,7 @@ const Maintenance: React.FC = () => {
                 className="hidden md:flex items-center space-x-2 text-sm text-gray-600"
               >
                 <AlertCircle className="h-4 w-4 text-red-800" />
-                <span>Emergency Contact: </span>
+                <span>Emergency: </span>
                 <a href="tel:+254700000000" className="text-red-800 font-semibold hover:underline">
                   +254 700 000 000
                 </a>
@@ -191,10 +203,11 @@ const Maintenance: React.FC = () => {
                 transition={{ duration: 0.6, delay: 0.8 }}
                 className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-6 md:mb-8 max-w-2xl mx-auto"
               >
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Maintenance Countdown</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {Object.entries(timeLeft).map(([unit, value]) => (
                     <div key={unit} className="text-center">
-                      <div className="bg-red-50 rounded-xl p-3 md:p-4">
+                      <div className="bg-red-50 rounded-xl p-3 md:p-4 border border-red-100">
                         <div className="text-2xl md:text-3xl font-bold text-red-800 mb-1">
                           {value.toString().padStart(2, '0')}
                         </div>
@@ -233,8 +246,13 @@ const Maintenance: React.FC = () => {
                 transition={{ duration: 0.6, delay: 1.2 }}
                 className="max-w-2xl mx-auto mb-8 md:mb-12"
               >
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-sm font-medium text-gray-700">Update Progress</span>
+                  <span className="text-sm font-semibold text-red-800">{progress}% Complete</span>
+                </div>
+                
                 {/* Progress Bar */}
-                <div className="bg-gray-200 rounded-full h-3 overflow-hidden mb-3">
+                <div className="bg-gray-200 rounded-full h-3 overflow-hidden">
                   <motion.div
                     className="bg-gradient-to-r from-red-800 to-red-600 h-full rounded-full relative"
                     initial={{ width: 0 }}
@@ -242,7 +260,7 @@ const Maintenance: React.FC = () => {
                     transition={{ duration: 1.5, ease: "easeOut" }}
                   >
                     <motion.div
-                      className="absolute top-0 right-0 w-4 h-4 bg-white rounded-full shadow-lg"
+                      className="absolute top-0 right-0 w-4 h-4 bg-white rounded-full shadow-lg border border-red-200"
                       animate={{
                         x: ['0%', '100%', '0%'],
                       }}
@@ -253,12 +271,6 @@ const Maintenance: React.FC = () => {
                       }}
                     />
                   </motion.div>
-                </div>
-                
-                {/* Progress Labels */}
-                <div className="flex justify-between items-center text-sm text-gray-600">
-                  <span>Update Progress</span>
-                  <span className="font-semibold text-red-800">{progress}% Complete</span>
                 </div>
               </motion.div>
 
@@ -298,7 +310,7 @@ const Maintenance: React.FC = () => {
                   whileTap={{ scale: 0.95 }}
                   className="inline-flex items-center justify-center bg-gradient-to-r from-red-800 to-red-700 text-white hover:from-red-700 hover:to-red-800 rounded-xl md:rounded-2xl px-6 md:px-8 py-3 md:py-4 gap-3 font-semibold text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto"
                 >
-                  <Heart className="h-4 w-4 md:h-5 md:w-5" />
+                  <Users className="h-4 w-4 md:h-5 md:w-5" />
                   Apply to Volunteer
                 </motion.a>
 
