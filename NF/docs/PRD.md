@@ -413,4 +413,3 @@ const BankDetails = lazy(() => import('../pages/BankDetails'))
 
 ---
 
-This PRD guides the MVP build to a high standard of performance, accessibility, and brand alignment while leaving room for Phase 2 enhancements. Please annotate questions and decisions inline and update status per milestone.
