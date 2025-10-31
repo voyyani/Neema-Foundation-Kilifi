@@ -266,9 +266,6 @@ const MAINTENANCE_START_TIME = new Date('2025-10-27T00:00:00Z').getTime();
                     </div>
                   ))}
                 </div>
-                <p className="text-xs text-gray-500 mt-4">
-                  Universal countdown - same for all visitors
-                </p>
               </motion.div>
 
               {/* Status Card */}
@@ -403,29 +400,6 @@ const MAINTENANCE_START_TIME = new Date('2025-10-27T00:00:00Z').getTime();
           </div>
         </div>
       </div>
-
-      {/* Footer */}
-      <motion.footer
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 2 }}
-        className="bg-white/80 backdrop-blur-sm border-t border-gray-100 py-6 md:py-8 w-full"
-      >
-        <div className="w-full flex justify-center">
-          <div className="w-full max-w-8xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <p className="text-gray-600 mb-3 md:mb-4 text-sm md:text-base">
-                Thank you for your patience and continued support of the Ganze community
-              </p>
-              <div className="flex flex-col md:flex-row items-center justify-center space-y-2 md:space-y-0 md:space-x-6 text-xs md:text-sm text-gray-500">
-                <span>Email: info@neemafoundationkilifi.org</span>
-                <span>Phone: +254 700 000 000</span>
-                <span>Location: Ganze Sub-county, Kilifi County</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.footer>
 
       {/* Floating Elements */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">

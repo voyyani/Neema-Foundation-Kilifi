@@ -120,19 +120,19 @@ const Footer: React.FC = () => {
                 <div className="flex items-center justify-center md:justify-start space-x-2 text-sm text-gray-600">
                   <Phone className="h-4 w-4 text-red-800 flex-shrink-0" />
                   <a 
-                    href="tel:+254700000000" 
+                    href="tel:+254797484101" 
                     className="hover:text-red-800 transition-colors text-xs"
                   >
-                    +254 700 000 000
+                    +254 797 484 101
                   </a>
                 </div>
                 <div className="flex items-center justify-center md:justify-start space-x-2 text-sm text-gray-600">
                   <Mail className="h-4 w-4 text-red-800 flex-shrink-0" />
                   <a 
-                    href="mailto:info@neemafoundationkilifi.org" 
+                    href="mailto:neemafoundationkilifi@gmail.com" 
                     className="hover:text-red-800 transition-colors text-xs"
                   >
-                    info@neemafoundationkilifi.org
+                    neemafoundationkilifi@gmail.com
                   </a>
                 </div>
               </div>
