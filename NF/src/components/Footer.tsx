@@ -8,7 +8,9 @@ import {
   Mail, 
   Phone, 
   MapPin,
-  Award
+  Award,
+  Youtube,
+  Linkedin
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -47,13 +49,28 @@ const Footer: React.FC = () => {
   const socialLinks = [
     { 
       icon: Facebook, 
-      href: '#', 
+      href: 'https://www.facebook.com/NeemafoundationKilifi/', 
       ariaLabel: 'Visit Neema Foundation Facebook'
     },
     { 
       icon: Instagram, 
-      href: '#', 
+      href: 'https://www.instagram.com/neemafoundationkilifi/', 
       ariaLabel: 'Visit Neema Foundation Instagram'
+    },
+    {
+      icon: Youtube,
+      href: 'https://www.youtube.com/@NeemaFoundation',
+      ariaLabel: 'Visit Neema Foundation YouTube'
+    },
+    {
+      icon: Linkedin,
+      href: 'https://ke.linkedin.com/company/neema-foundation-kilifi',
+      ariaLabel: 'Visit Neema Foundation LinkedIn'
+    },
+    {
+      icon: Mail,
+      href: 'mailto:info@neemafoundationkilifi.org',
+      ariaLabel: 'Email Neema Foundation'
     }
   ];
 
