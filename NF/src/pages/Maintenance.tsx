@@ -17,7 +17,7 @@ const Maintenance: React.FC = () => {
 
   // Fixed maintenance end date - same for all users
   // This creates a universal countdown that ends 7 days from a specific start time
-const MAINTENANCE_START_TIME = new Date('2025-10-27T00:00:00Z').getTime();
+const MAINTENANCE_START_TIME = new Date('2025-11-07T08:00:00+03:00').getTime();
 
   const MAINTENANCE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
   const MAINTENANCE_END_TIME = MAINTENANCE_START_TIME + MAINTENANCE_DURATION;
