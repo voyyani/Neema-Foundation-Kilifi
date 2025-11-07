@@ -13,7 +13,7 @@ import Sponsorship from './pages/Sponsorship';
 import Board from './pages/Board';
 import NotFound from './pages/NotFound';
 import Maintenance from './pages/Maintenance';
-import ProgramsPage from './pages/ProgramsPage';
+import Programs from './components/programs/Programs';
 // Global Error Boundary
 class GlobalErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -73,6 +73,8 @@ const App: React.FC = () => {
                     <Route path="/volunteer" element={<Volunteer />} />
                     <Route path="*" element={<Maintenance />} />
                     <Route path="/" element={<Landing />} />
+                    <Route path="/programs" element={<Programs />} />
+
                   </>
                 ) : (
                   // Normal mode - all routes accessible
@@ -86,7 +88,7 @@ const App: React.FC = () => {
                     <Route path="/sponsorship" element={<Sponsorship />} />
                     <Route path="/board" element={<Board />} />
                     <Route path="*" element={<NotFound />} />
-                    <Route path="/programs" element={<ProgramsPage />} />
+                    <Route path="/programs" element={<Programs />} />
                   </>
                 )}
               </Routes>
