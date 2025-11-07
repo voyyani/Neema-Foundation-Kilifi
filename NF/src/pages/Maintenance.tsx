@@ -11,7 +11,7 @@ const Maintenance: React.FC = () => {
     minutes: 0,
     seconds: 0
   }); 
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(0);  
   const [currentStatus, setCurrentStatus] = useState('Initializing Systems');
   const [imageError, setImageError] = useState(false);
 
