@@ -2,7 +2,6 @@
 import React from 'react';
 import Hero from '../components/Hero';
 import TrustBar from '../components/TrustBar';
-import Problem from '../components/Problem';
 import Mission from '../components/Mission';
 import Programs from '../components/Programs';
 import Impact from '../components/Impact';
@@ -16,14 +15,13 @@ const Landing: React.FC = () => {
     <div className="min-h-screen">
       <Hero />
       <TrustBar />
-      <Problem />
       <Mission />
-      <Programs />
+     {/* <Programs />
       <Impact />
-     {/* <Stories /> */}
+      <Stories /> 
       <Action />
       <Events />
-      <Contact />
+      <Contact />*/}
     </div>
   );
 };
