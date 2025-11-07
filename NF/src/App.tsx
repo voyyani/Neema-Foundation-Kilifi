@@ -13,7 +13,8 @@ import Sponsorship from './pages/Sponsorship';
 import Board from './pages/Board';
 import NotFound from './pages/NotFound';
 import Maintenance from './pages/Maintenance';
-import Programs from './components/programs/Programs';
+// Use the barrel export to improve resolver compatibility on case-sensitive filesystems
+import { Programs } from './components/programs';
 // Global Error Boundary
 class GlobalErrorBoundary extends React.Component<
   { children: React.ReactNode },
