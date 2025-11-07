@@ -68,7 +68,7 @@ const App: React.FC = () => {
             <main className="flex-1">
               <Routes>
                 {isUnderMaintenance ? (
-                  // Maintenance mode routes - Volunteer page is still accessible
+                  // Maintenance mode routes
                   <>
                     <Route path="/volunteer" element={<Volunteer />} />
                     <Route path="*" element={<Maintenance />} />
