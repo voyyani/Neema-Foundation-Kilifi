@@ -1,4 +1,4 @@
-// Navbar.tsx - FIXED SCROLL ISSUE
+// Navbar.tsx - SIMPLIFIED & FIXED
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Menu, X, ChevronDown, Heart, ArrowRight } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -20,12 +20,9 @@ interface GetInvolvedLink {
 // Constants
 const NAV_LINKS: NavLink[] = [
   { name: 'Home', href: '/', type: 'route' },
-  { name: 'About', href: '/#about', type: 'hash' },
-  { name: 'Programs', href: '/#programs', type: 'hash' },
+  { name: 'Programs', href: '/programs', type: 'route' }, 
   { name: 'Media', href: '/#media', type: 'hash' },
-  { name: 'Impact', href: '/#impact', type: 'hash' },
   { name: 'Board', href: '/board', type: 'route' },
-  { name: 'Contact', href: '/#contact', type: 'hash' },
 ];
 
 const GET_INVOLVED_LINKS: GetInvolvedLink[] = [
@@ -36,77 +33,6 @@ const GET_INVOLVED_LINKS: GetInvolvedLink[] = [
   { name: 'Partner With Us', href: '/partner', icon: ArrowRight },
   { name: 'Sponsorship', href: '/sponsorship', icon: ArrowRight },
 ];
-
-// Custom Hook for Dropdown Logic - FIXED VERSION
-const useDropdown = () => {
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const isTouchingRef = useRef(false);
-
-  const closeDropdown = useCallback(() => {
-    if (!isTouchingRef.current) {
-      setActiveDropdown(null);
-    }
-  }, []);
-
-  const toggleDropdown = useCallback((name: string) => {
-    setActiveDropdown(prev => prev === name ? null : name);
-  }, []);
-
-  // Handle scroll events - FIX: Don't close dropdown on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      // Don't close dropdown on scroll for mobile
-      if (window.innerWidth < 1280) { // xl breakpoint
-        return;
-      }
-      closeDropdown();
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [closeDropdown]);
-
-  // Handle touch events to prevent scroll interference
-  useEffect(() => {
-    const handleTouchStart = () => {
-      isTouchingRef.current = true;
-    };
-
-    const handleTouchEnd = () => {
-      setTimeout(() => {
-        isTouchingRef.current = false;
-      }, 100);
-    };
-
-    document.addEventListener('touchstart', handleTouchStart, { passive: true });
-    document.addEventListener('touchend', handleTouchEnd, { passive: true });
-    
-    return () => {
-      document.removeEventListener('touchstart', handleTouchStart);
-      document.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, []);
-
-  // Close dropdown when clicking outside - FIXED: Better mobile handling
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        closeDropdown();
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('touchstart', handleClickOutside, { passive: true });
-    
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
-    };
-  }, [closeDropdown]);
-
-  return { activeDropdown, dropdownRef, closeDropdown, toggleDropdown };
-};
 
 // Sub-components
 const Logo: React.FC<{ onClick: () => void }> = ({ onClick }) => (
@@ -218,7 +144,6 @@ const DesktopDropdown: React.FC<{
   </AnimatePresence>
 );
 
-// FIXED: Mobile dropdown that doesn't collapse on scroll
 const MobileDropdownContent: React.FC<{
   isOpen: boolean;
   onLinkClick: (href: string, type: 'hash' | 'route') => void;
@@ -259,36 +184,29 @@ const MobileMenu: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   onLinkClick: (href: string, type: 'hash' | 'route') => void;
-  dropdownState: {
-    activeDropdown: string | null;
-    toggleDropdown: (name: string) => void;
-  };
-}> = ({ isOpen, onClose, onLinkClick, dropdownState }) => {
-  const { activeDropdown, toggleDropdown } = dropdownState;
+  mobileDropdownOpen: boolean;
+  toggleMobileDropdown: () => void;
+}> = ({ isOpen, onClose, onLinkClick, mobileDropdownOpen, toggleMobileDropdown }) => {
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
-  // FIX: Prevent body scroll when mobile menu is open
+  // Close mobile menu when clicking outside
   useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
     if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
       document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
     }
 
     return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
       document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
     };
-  }, [isOpen]);
-
-  // FIX: Close dropdown when mobile menu closes
-  useEffect(() => {
-    if (!isOpen) {
-      dropdownState.toggleDropdown('mobileGetInvolved');
-    }
-  }, [isOpen, dropdownState]);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -334,21 +252,21 @@ const MobileMenu: React.FC<{
             </motion.div>
           ))}
           
-          {/* FIXED: Mobile Get Involved Dropdown - No scroll collapse */}
+          {/* Mobile Get Involved Dropdown */}
           <div className="mb-1">
             <motion.button
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.2, delay: 0.3 }}
               className="flex items-center justify-between w-full text-left text-gray-700 hover:text-red-800 font-medium py-4 px-4 rounded-xl hover:bg-red-50 transition-all duration-200"
-              onClick={() => toggleDropdown('mobileGetInvolved')}
-              aria-expanded={activeDropdown === 'mobileGetInvolved'}
+              onClick={toggleMobileDropdown}
+              aria-expanded={mobileDropdownOpen}
               aria-haspopup="true"
               role="menuitem"
             >
               <span>Get Involved</span>
               <motion.div
-                animate={{ rotate: activeDropdown === 'mobileGetInvolved' ? 180 : 0 }}
+                animate={{ rotate: mobileDropdownOpen ? 180 : 0 }}
                 transition={{ duration: 0.2 }}
                 aria-hidden="true"
               >
@@ -358,7 +276,7 @@ const MobileMenu: React.FC<{
             
             <AnimatePresence>
               <MobileDropdownContent 
-                isOpen={activeDropdown === 'mobileGetInvolved'} 
+                isOpen={mobileDropdownOpen} 
                 onLinkClick={onLinkClick}
               />
             </AnimatePresence>
@@ -391,10 +309,12 @@ const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
+  const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
   
-  const { activeDropdown, dropdownRef, closeDropdown, toggleDropdown } = useDropdown();
+  const desktopDropdownRef = useRef<HTMLDivElement>(null);
 
-  // Scroll handler - FIXED: Only for desktop
+  // Simple scroll handler for navbar background
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -404,42 +324,56 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Single click outside handler for desktop dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (desktopDropdownRef.current && !desktopDropdownRef.current.contains(event.target as Node)) {
+        setDesktopDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Clean navigation handler
   const handleNavigation = useCallback((href: string, type: 'hash' | 'route') => {
-    closeDropdown();
-    
-    if (mobileMenuOpen) {
-      setMobileMenuOpen(false);
-    }
+    setDesktopDropdownOpen(false);
+    setMobileMenuOpen(false);
+    setMobileDropdownOpen(false);
 
     if (type === 'hash') {
       const hash = href.substring(href.indexOf('#'));
+      
+      // If not on home page, navigate to home with hash
       if (location.pathname !== '/') {
         navigate(`/${hash}`);
         return;
       }
       
-      setTimeout(() => {
-        const element = document.getElementById(hash.substring(1));
-        if (element) {
-          const offset = 80;
-          const elementPosition = element.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset - offset;
+      // Simple scroll to element
+      const element = document.getElementById(hash.substring(1));
+      if (element) {
+        const offset = 80;
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - offset;
 
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-          });
-        }
-      }, 100);
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }
     } else {
       navigate(href);
     }
-  }, [mobileMenuOpen, closeDropdown, location.pathname, navigate]);
+  }, [location.pathname, navigate]);
 
+  // Mobile-specific navigation handler
   const handleMobileLinkClick = useCallback((href: string, type: 'hash' | 'route') => {
     setMobileMenuOpen(false);
-    closeDropdown();
+    setMobileDropdownOpen(false);
     
+    // Small timeout to ensure menu closes before navigation
     setTimeout(() => {
       if (type === 'hash') {
         const hash = href.substring(href.indexOf('#'));
@@ -458,17 +392,26 @@ const Navbar: React.FC = () => {
         navigate(href);
       }
     }, 50);
-  }, [closeDropdown, location.pathname, navigate]);
+  }, [location.pathname, navigate]);
 
   const closeAllMenus = useCallback(() => {
     setMobileMenuOpen(false);
-    closeDropdown();
-  }, [closeDropdown]);
+    setDesktopDropdownOpen(false);
+    setMobileDropdownOpen(false);
+  }, []);
 
   const toggleMobileMenu = useCallback(() => {
     setMobileMenuOpen(prev => !prev);
-    closeDropdown();
-  }, [closeDropdown]);
+    setDesktopDropdownOpen(false);
+  }, []);
+
+  const toggleDesktopDropdown = useCallback(() => {
+    setDesktopDropdownOpen(prev => !prev);
+  }, []);
+
+  const toggleMobileDropdown = useCallback(() => {
+    setMobileDropdownOpen(prev => !prev);
+  }, []);
 
   return (
     <>
@@ -490,7 +433,7 @@ const Navbar: React.FC = () => {
 
             {/* Desktop Navigation */}
             <nav className="hidden xl:flex items-center space-x-2" aria-label="Main navigation">
-              <div className="flex items-center gap-1" ref={dropdownRef}>
+              <div className="flex items-center gap-1" ref={desktopDropdownRef}>
                 {NAV_LINKS.map((link, index) => (
                   <DesktopNavLink 
                     key={link.name}
@@ -508,16 +451,16 @@ const Navbar: React.FC = () => {
                   transition={{ duration: 0.4, delay: 0.7 }}
                 >
                   <motion.button
-                    onClick={() => toggleDropdown('desktopGetInvolved')}
+                    onClick={toggleDesktopDropdown}
                     className="text-gray-700 hover:text-red-800 font-medium py-3 px-4 rounded-2xl hover:bg-red-50 transition-all duration-300 inline-flex items-center gap-2"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    aria-expanded={activeDropdown === 'desktopGetInvolved'}
+                    aria-expanded={desktopDropdownOpen}
                     aria-haspopup="true"
                   >
                     Get Involved
                     <motion.div
-                      animate={{ rotate: activeDropdown === 'desktopGetInvolved' ? 180 : 0 }}
+                      animate={{ rotate: desktopDropdownOpen ? 180 : 0 }}
                       transition={{ duration: 0.2 }}
                       aria-hidden="true"
                     >
@@ -526,8 +469,8 @@ const Navbar: React.FC = () => {
                   </motion.button>
                   
                   <DesktopDropdown 
-                    isOpen={activeDropdown === 'desktopGetInvolved'} 
-                    onClose={closeDropdown}
+                    isOpen={desktopDropdownOpen} 
+                    onClose={() => setDesktopDropdownOpen(false)}
                   />
                 </motion.div>
               </div>
@@ -593,7 +536,8 @@ const Navbar: React.FC = () => {
           isOpen={mobileMenuOpen}
           onClose={closeAllMenus}
           onLinkClick={handleMobileLinkClick}
-          dropdownState={{ activeDropdown, toggleDropdown }}
+          mobileDropdownOpen={mobileDropdownOpen}
+          toggleMobileDropdown={toggleMobileDropdown}
         />
       </motion.header>
       
