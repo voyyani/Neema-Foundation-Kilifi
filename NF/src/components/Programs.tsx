@@ -4,8 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Users, Cross, Activity, Stethoscope, Sprout, ArrowRight, X, Play, Image } from 'lucide-react';
 
 // Import individual program components
-import AhohoMission from './programs/AhohoMission';
-import WidowsEmpowerment from './programs/WidowsEmpowerment';
+import AhohoMission from './programs/ProgramDetails/AhohoMission';
+import WidowsEmpowerment from './programs/ProgramDetails/WidowsEmpowerment';
 
 
 const Programs: React.FC = () => {
@@ -71,12 +71,13 @@ const Programs: React.FC = () => {
   };
 
   const renderProgramModal = () => {
+    const program = programs.find(p => p.id === selectedProgram) || null;
     switch (selectedProgram) {
       case 'ahoho-mission':
-        return <AhohoMission onClose={closeProgramModal} />;
+        return program ? <AhohoMission program={program as any} onClose={closeProgramModal} /> : null;
       case 'widows-empowerment':
-        return <WidowsEmpowerment onClose={closeProgramModal} />;
-      
+        return program ? <WidowsEmpowerment program={program as any} onClose={closeProgramModal} /> : null;
+
       default:
         return null;
     }

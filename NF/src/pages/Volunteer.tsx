@@ -120,10 +120,10 @@ const Volunteer: React.FC = () => {
       stats: '2+ years volunteering'
     },
     {
-      name: 'David Mwangi',
-      role: 'Education Specialist',
+      name: 'Ngowa Karisa',
+      role: 'IT Specialist',
       quote: 'Seeing children light up when they finally understand a concept - that\'s why I volunteer. The foundation\'s support makes it possible.',
-      stats: '3 years volunteering'
+      stats: '1 year volunteering'
     },
     {
       name: 'Grace Kamuche',

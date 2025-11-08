@@ -142,38 +142,7 @@ const TrustBar: React.FC = () => {
           ))}
         </motion.div>
 
-        {/* Trust Indicators */}
-        <motion.div
-          className="bg-gradient-to-r from-red-800 to-red-600 rounded-2xl p-8 text-white"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-        >
-          <div className="max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold text-center mb-8">
-              Why Communities Trust Neema Foundation
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {trustIndicators.map((indicator, index) => (
-                <motion.div
-                  key={indicator.title}
-                  className="text-center"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                >
-                  <div className="bg-white/10 rounded-2xl p-6 backdrop-blur-sm border border-white/20">
-                    <indicator.icon className="h-8 w-8 text-white mx-auto mb-3" />
-                    <h4 className="font-bold text-lg mb-2">{indicator.title}</h4>
-                    <p className="text-white/80 text-sm">{indicator.description}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
+        
 
         {/* CTA - Fixed Link */}
         <motion.div
