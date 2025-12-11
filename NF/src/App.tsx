@@ -11,6 +11,7 @@ import Volunteer from './pages/Volunteer';
 import Partnership from './pages/Partnership';
 import Sponsorship from './pages/Sponsorship';
 import Board from './pages/Board';
+import { Analytics } from '@vercel/analytics/react';
 import NotFound from './pages/NotFound';
 import Maintenance from './pages/Maintenance';
 // Use the barrel export to improve resolver compatibility on case-sensitive filesystems
