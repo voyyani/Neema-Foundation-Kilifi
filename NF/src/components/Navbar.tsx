@@ -31,7 +31,6 @@ const GET_INVOLVED_LINKS: GetInvolvedLink[] = [
   { name: 'Legacy Giving', href: '/legacy-giving', icon: ArrowRight },
   { name: 'Volunteer', href: '/volunteer', icon: ArrowRight },
   { name: 'Partner With Us', href: '/partner', icon: ArrowRight },
-  { name: 'Sponsorship', href: '/sponsorship', icon: ArrowRight },
 ];
 
 // Sub-components

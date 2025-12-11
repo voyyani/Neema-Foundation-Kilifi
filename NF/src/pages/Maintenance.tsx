@@ -17,7 +17,7 @@ const Maintenance: React.FC = () => {
 
   // Fixed maintenance end date - same for all users
   // This creates a universal countdown that ends 7 days from a specific start time
-const MAINTENANCE_START_TIME = new Date('2025-11-07T08:00:00+03:00').getTime();
+const MAINTENANCE_START_TIME = new Date('2025-12-11T08:00:00+03:00').getTime();
 
   const MAINTENANCE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
   const MAINTENANCE_END_TIME = MAINTENANCE_START_TIME + MAINTENANCE_DURATION;
@@ -111,66 +111,6 @@ const MAINTENANCE_START_TIME = new Date('2025-11-07T08:00:00+03:00').getTime();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-red-50/30 flex flex-col w-full overflow-x-hidden">
-      {/* Header - Matching Navbar Style */}
-      <motion.header 
-        className="bg-white/95 backdrop-blur-xl border-b border-gray-100 py-4 w-full"
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <div className="w-full flex justify-center">
-          <div className="w-full max-w-8xl px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center">
-              {/* Logo */}
-              <motion.div 
-                className="flex items-center space-x-3 group"
-                whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
-              >
-                <Link to="/">
-                  <div className="relative">
-                    {imageError ? (
-                      <div className="h-12 w-12 bg-red-800 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                        NF
-                      </div>
-                    ) : (
-                      <img 
-                        src="https://res.cloudinary.com/dzqdxosk2/image/upload/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png" 
-                        alt="Neema Foundation Logo" 
-                        className="h-12 w-12 transition-all duration-500 group-hover:scale-110"
-                        onError={handleImageError}
-                      />
-                    )}
-                  </div>
-                </Link>
-                <div className="flex flex-col">
-                  <span className="font-serif font-bold text-xl text-gray-900 leading-tight">
-                    Neema Foundation
-                  </span>
-                  <span className="text-xs text-red-800 font-medium tracking-wide">
-                    Transforming Ganze Community
-                  </span>
-                </div>
-              </motion.div>
-
-              {/* Emergency Contact */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-                className="hidden md:flex items-center space-x-2 text-sm text-gray-600"
-              >
-                <AlertCircle className="h-4 w-4 text-red-800" />
-                <span>Emergency: </span>
-                <a href="tel:+254700000000" className="text-red-800 font-semibold hover:underline">
-                  +254 700 000 000
-                </a>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </motion.header>
-
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center w-full py-8 md:py-12">
         <div className="w-full flex justify-center">
