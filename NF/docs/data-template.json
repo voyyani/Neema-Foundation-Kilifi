@@ -1,0 +1,181 @@
+{
+  "site": {
+    "brandName": "Neema Foundation",
+    "tagline": "",
+    "mission": "",
+    "vision": "",
+    "values": [""],
+    "primaryLanguage": "en",
+    "colors": {
+      "primary": "#",
+      "secondary": "#",
+      "accent": "#"
+    },
+    "social": {
+      "facebook": "",
+      "instagram": "",
+      "twitter": "",
+      "linkedin": "",
+      "youtube": ""
+    }
+  },
+
+  "hero": {
+    "title": "",
+    "subtitle": "",
+    "cta": {
+      "label": "Donate",
+      "href": "/donate"
+    },
+    "media": [
+      {
+        "type": "image",
+        "url": "",
+        "alt": ""
+      }
+    ]
+  },
+
+  "trustBar": {
+    "items": [
+      { "label": "Years Active", "value": "" },
+      { "label": "Beneficiaries", "value": "" },
+      { "label": "Programs", "value": "" },
+      { "label": "Counties Served", "value": "" }
+    ]
+  },
+
+  "impact": {
+    "headline": "Our Impact",
+    "metrics": [
+      { "label": "Meals served", "value": 0 },
+      { "label": "Women empowered", "value": 0 }
+    ],
+    "storiesHighlightIds": ["story-1"]
+  },
+
+  "programs": [
+    {
+      "id": "program-ahoho-mission",
+      "name": "Ahoho Mission",
+      "category": "Education",
+      "summary": "",
+      "description": "",
+      "objectives": [""],
+      "beneficiaries": {
+        "who": "",
+        "where": "",
+        "count": 0
+      },
+      "activities": [""],
+      "impact": {
+        "metrics": [
+          { "label": "Children enrolled", "value": 0 }
+        ]
+      },
+      "media": [
+        { "type": "image", "url": "", "alt": "" }
+      ],
+      "partners": [""],
+      "cta": { "label": "Donate", "href": "/donate" }
+    }
+  ],
+
+  "events": [
+    {
+      "id": "event-nf-cup-2025",
+      "name": "NF Cup",
+      "dates": {
+        "start": "2025-12-20",
+        "end": "2025-12-22"
+      },
+      "venue": {
+        "name": "",
+        "mapUrl": ""
+      },
+      "schedule": [
+        { "time": "", "title": "" }
+      ],
+      "organizers": ["Neema Foundation"],
+      "purpose": "",
+      "participants": [""],
+      "programTieIns": [
+        { "programId": "program-ahoho-mission", "description": "" }
+      ],
+      "sponsorships": [
+        { "tier": "Gold", "price": "", "benefits": [""] }
+      ],
+      "registration": {
+        "link": "",
+        "notes": ""
+      },
+      "mediaKit": [
+        { "type": "image", "url": "", "alt": "Poster" }
+      ],
+      "contacts": [
+        { "name": "", "role": "", "email": "", "phone": "" }
+      ]
+    }
+  ],
+
+  "stories": [
+    {
+      "id": "story-1",
+      "title": "",
+      "summary": "",
+      "content": "",
+      "media": [
+        { "type": "image", "url": "", "alt": "" }
+      ]
+    }
+  ],
+
+  "volunteer": {
+    "roles": [
+      {
+        "id": "role-mentor",
+        "title": "Mentor",
+        "summary": "",
+        "requirements": [""],
+        "timeCommitment": "",
+        "applyLink": ""
+      }
+    ],
+    "benefits": [""],
+    "testimonials": [
+      { "name": "", "quote": "", "photoUrl": "" }
+    ]
+  },
+
+  "donate": {
+    "methods": [
+      { "type": "mpesa", "paybill": "", "account": "" },
+      { "type": "bank", "bankName": "", "accountName": "", "accountNumber": "", "swift": "" },
+      { "type": "stripe", "link": "" }
+    ],
+    "currencies": ["KES", "USD"],
+    "recurring": true
+  },
+
+  "bankDetails": {
+    "bankName": "",
+    "accountName": "",
+    "accountNumber": "",
+    "swift": "",
+    "iban": "",
+    "mpesa": { "paybill": "", "till": "" }
+  },
+
+  "governance": {
+    "board": [
+      { "name": "", "role": "", "bio": "", "photoUrl": "" }
+    ],
+    "staff": [
+      { "name": "", "role": "", "bio": "", "photoUrl": "" }
+    ],
+    "policies": [
+      { "name": "Safeguarding", "url": "" },
+      { "name": "Privacy", "url": "" }
+    ]
+  }
+}
