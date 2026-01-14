@@ -17,13 +17,13 @@ const AhohoMission: React.FC<AhohoMissionProps> = ({ program, onClose }) => {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex justify-between items-center z-10">
+      <div className="sticky top-0 bg-white border-b border-gray-200 p-4 sm:p-6 flex justify-between items-center z-10">
         <div className="flex items-center gap-4">
-          <div className="bg-red-100 p-3 rounded-xl">
-            <program.icon className="h-8 w-8 text-red-800" />
+          <div className="bg-red-100 p-2 sm:p-3 rounded-xl">
+            <program.icon className="h-7 w-7 sm:h-8 sm:w-8 text-red-800" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">{program.title}</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{program.title}</h2>
             <p className="text-gray-600">{program.subtitle}</p>
           </div>
         </div>
@@ -38,14 +38,14 @@ const AhohoMission: React.FC<AhohoMissionProps> = ({ program, onClose }) => {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {/* Hero Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             <div>
               <img 
                 src={program.images[0]} 
                 alt={program.title}
-                className="w-full h-64 lg:h-80 object-cover rounded-2xl"
+                className="w-full h-56 sm:h-64 lg:h-80 object-cover rounded-2xl"
               />
             </div>
             <div className="space-y-6">

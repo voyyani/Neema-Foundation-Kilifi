@@ -55,10 +55,10 @@ const Action: React.FC = () => {
   };
 
   return (
-    <section id="action" className="py-20 bg-white">
+    <section id="action" className="py-14 sm:py-16 md:py-20 bg-white">
       <div className="container max-w-7xl mx-auto px-4 sm:px-6">
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-10 md:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -73,7 +73,7 @@ const Action: React.FC = () => {
         </motion.div>
 
         {/* Involvement Options */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8 mb-12 md:mb-16">
           {involvementOptions.map((option, index) => (
             <motion.div
               key={option.title}
@@ -84,7 +84,7 @@ const Action: React.FC = () => {
               viewport={{ once: true }}
               whileHover={{ y: -5 }}
             >
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 h-full flex flex-col hover:shadow-xl transition-all duration-300">
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 sm:p-8 h-full flex flex-col hover:shadow-xl transition-all duration-300">
                 {/* Icon */}
                 <div className={`w-16 h-16 rounded-2xl ${getColorClasses(option.color)} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
                   <option.icon className="h-8 w-8" />
@@ -119,7 +119,7 @@ const Action: React.FC = () => {
 
         {/* Urgent Call to Action */}
         <motion.div
-          className="bg-gradient-to-r from-red-800 to-red-600 rounded-2xl p-8 text-white text-center"
+          className="bg-gradient-to-r from-red-800 to-red-600 rounded-2xl p-6 sm:p-8 text-white text-center"
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}

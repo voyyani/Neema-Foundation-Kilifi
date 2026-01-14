@@ -16,12 +16,12 @@ const Landing: React.FC = () => {
       <Hero />
       <TrustBar />
       <Mission />
-     {/* <Programs />
+      <Programs />
       <Impact />
-      <Stories /> 
+      <Stories />
       <Action />
       <Events />
-      <Contact />*/}
+      <Contact />
     </div>
   );
 };

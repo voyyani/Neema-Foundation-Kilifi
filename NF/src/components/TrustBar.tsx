@@ -57,11 +57,11 @@ const TrustBar: React.FC = () => {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-br from-white to-gray-50 border-y border-gray-200">
+    <section className="py-14 sm:py-16 md:py-16 bg-gradient-to-br from-white to-gray-50 border-y border-gray-200">
       <div className="container max-w-7xl mx-auto px-4 sm:px-6">
         {/* Header */}
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-10 md:mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -81,7 +81,7 @@ const TrustBar: React.FC = () => {
 
         {/* Partners Grid */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8 mb-12 md:mb-16"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.8 }}

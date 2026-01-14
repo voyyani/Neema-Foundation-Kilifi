@@ -6,7 +6,7 @@ import { Users, School, Building2, Star, CreditCard, Calendar } from 'lucide-rea
 const Sponsorship: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col pt-20">
-      <section className="py-20 bg-red-50">
+      <section className="py-14 sm:py-16 md:py-20 bg-red-50">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">Sponsorship Opportunities</h1>
           <p className="text-lg max-w-2xl mx-auto mb-10">
@@ -22,12 +22,12 @@ const Sponsorship: React.FC = () => {
         </div>
       </section>
 
-      <section className="py-16">
+      <section className="py-14 sm:py-16">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">
           <h2 className="text-3xl font-bold mb-12 text-center">Sponsorship Programs</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-8">
+            <div className="border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-5 sm:p-6">
               <School className="h-8 w-8 text-red-800 mb-4" />
               <h3 className="text-xl font-bold mb-3">Child Education Sponsorship</h3>
               <p className="text-gray-700 mb-4">Support a child's education by covering school fees, supplies, uniforms, and meals.</p>
@@ -43,7 +43,7 @@ const Sponsorship: React.FC = () => {
               </Link>
             </div>
             
-            <div className="border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-6">
+            <div className="border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-5 sm:p-6">
               <Users className="h-8 w-8 text-red-800 mb-4" />
               <h3 className="text-xl font-bold mb-3">Widow Empowerment Sponsorship</h3>
               <p className="text-gray-700 mb-4">Help a widow gain financial independence through skills training and small business support.</p>
@@ -59,7 +59,7 @@ const Sponsorship: React.FC = () => {
               </Link>
             </div>
             
-            <div className="border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-6">
+            <div className="border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-5 sm:p-6">
               <Building2 className="h-8 w-8 text-red-800 mb-4" />
               <h3 className="text-xl font-bold mb-3">Community Project Sponsorship</h3>
               <p className="text-gray-700 mb-4">Fund a specific community development project like a water well, classroom, or health clinic.</p>
