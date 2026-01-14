@@ -15,21 +15,21 @@ const Maintenance: React.FC = () => {
   const [currentStatus, setCurrentStatus] = useState('Initializing Systems');
   const [imageError, setImageError] = useState(false);
 
-  // Fixed maintenance end date - same for all users
-  // This creates a universal countdown that ends 7 days from a specific start time
-const MAINTENANCE_START_TIME = new Date('2025-12-11T08:00:00+03:00').getTime();
+  // Define maintenance start time and duration
+  // This creates a universal countdown that ends 14 days from a specific start time
+const MAINTENANCE_START_TIME = new Date('2026-01-18T08:00:00+03:00').getTime();
 
-  const MAINTENANCE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+  const MAINTENANCE_DURATION = 14 * 24 * 60 * 60 * 1000; // 14 days in milliseconds
   const MAINTENANCE_END_TIME = MAINTENANCE_START_TIME + MAINTENANCE_DURATION;
 
   const statusUpdates = [
-    { day: 7, status: 'Initializing Systems', progress: 5 },
-    { day: 6, status: 'Database Migration', progress: 15 },
-    { day: 5, status: 'Security Enhancements', progress: 30 },
-    { day: 4, status: 'Feature Implementation', progress: 50 },
-    { day: 3, status: 'Performance Optimization', progress: 65 },
-    { day: 2, status: 'Quality Assurance', progress: 80 },
-    { day: 1, status: 'Final Testing', progress: 95 },
+    { day: 14, status: 'Initializing Systems', progress: 5 },
+    { day: 12, status: 'Database Migration', progress: 15 },
+    { day: 10, status: 'Security Enhancements', progress: 30 },
+    { day: 8, status: 'Feature Implementation', progress: 50 },
+    { day: 6, status: 'Performance Optimization', progress: 65 },
+    { day: 4, status: 'Quality Assurance', progress: 80 },
+    { day: 2, status: 'Final Testing', progress: 95 },
     { day: 0, status: 'Launch Preparation', progress: 100 }
   ];
 
