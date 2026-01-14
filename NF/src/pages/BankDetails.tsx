@@ -1,12 +1,26 @@
 // src/pages/BankDetails.tsx
 import React from 'react';
 import { Copy, Check } from 'lucide-react';
+import { useNFContent } from '../content/useNFContent';
 
 const BankDetails: React.FC = () => {
+  const { content } = useNFContent();
+
   const copyToClipboard = (text: string, detail: string) => {
     navigator.clipboard.writeText(text);
     alert(`${detail} copied to clipboard!`);
   };
+
+  const bank = content?.bankDetails;
+  const rows = [
+    { label: 'Bank Name', value: bank?.bankName || 'TBD' },
+    { label: 'Account Name', value: bank?.accountName || 'TBD' },
+    { label: 'Account Number', value: bank?.accountNumber || 'TBD' },
+    { label: 'Swift Code', value: bank?.swift || 'TBD' },
+    { label: 'IBAN', value: bank?.iban || 'TBD' },
+    { label: 'M-Pesa Paybill', value: bank?.mpesa?.paybill || 'TBD' },
+    { label: 'M-Pesa Till', value: bank?.mpesa?.till || 'TBD' }
+  ].filter((r) => r.value && r.value !== '');
 
   return (
     <div className="min-h-screen flex flex-col pt-20 pb-16">
@@ -23,26 +37,20 @@ const BankDetails: React.FC = () => {
             <div className="bg-red-800 text-white p-6">
               <h2 className="text-2xl font-bold">Donation Bank Account</h2>
               <p className="text-white/90">
-                Neema Foundation Banking Information
+                {content?.site?.brandName ? `${content.site.brandName} Banking Information` : 'Neema Foundation Banking Information'}
               </p>
             </div>
             
             <div className="p-6 bg-white">
               <div className="space-y-6">
-                {[
-                  { label: 'Bank Name', value: 'Equity Bank' },
-                  { label: 'Account Name', value: 'Neema Foundation' },
-                  { label: 'Account Number', value: '0123456789012' },
-                  { label: 'Swift Code', value: 'EQBLKENA' },
-                  { label: 'Branch', value: 'Kilifi Branch' }
-                ].map((item, index) => (
+                {rows.map((item, index) => (
                   <div key={index} className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 rounded-lg bg-gray-50">
                     <div>
                       <h3 className="font-medium text-gray-900">{item.label}</h3>
                       <p className="text-gray-700">{item.value}</p>
                     </div>
                     <button 
-                      onClick={() => copyToClipboard(item.value, item.label)}
+                      onClick={() => item.value !== 'TBD' && copyToClipboard(item.value, item.label)}
                       className="inline-flex items-center justify-center border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors rounded-md py-2 px-4 mt-2 sm:mt-0"
                     >
                       <Copy className="h-4 w-4 mr-2" /> Copy

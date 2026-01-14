@@ -54,10 +54,10 @@ const Stories: React.FC = () => {
   };
 
   return (
-    <section id="stories" className="py-20 bg-gradient-to-br from-red-50 to-white">
+    <section id="stories" className="py-14 sm:py-16 md:py-20 bg-gradient-to-br from-red-50 to-white">
       <div className="container max-w-7xl mx-auto px-4 sm:px-6">
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-10 md:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -81,7 +81,7 @@ const Stories: React.FC = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -50 }}
                 transition={{ duration: 0.5 }}
-                className="p-8 md:p-12"
+                className="p-6 sm:p-8 md:p-12"
               >
                 <div className="flex flex-col lg:flex-row items-center gap-8">
                   {/* Story Image/Icon */}
@@ -122,10 +122,11 @@ const Stories: React.FC = () => {
           <div className="flex items-center justify-between mb-12">
             <button
               onClick={prevStory}
-              className="flex items-center space-x-2 bg-white border border-gray-300 rounded-xl px-4 py-3 hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-center space-x-2 bg-white border border-gray-300 rounded-xl px-4 py-3 hover:bg-gray-50 transition-colors min-h-[44px]"
+              aria-label="Previous story"
             >
               <ChevronLeft className="h-5 w-5" />
-              <span>Previous</span>
+              <span className="hidden sm:inline">Previous</span>
             </button>
 
             <div className="flex space-x-2">
@@ -142,16 +143,17 @@ const Stories: React.FC = () => {
 
             <button
               onClick={nextStory}
-              className="flex items-center space-x-2 bg-white border border-gray-300 rounded-xl px-4 py-3 hover:bg-gray-50 transition-colors"
+              className="flex items-center justify-center space-x-2 bg-white border border-gray-300 rounded-xl px-4 py-3 hover:bg-gray-50 transition-colors min-h-[44px]"
+              aria-label="Next story"
             >
-              <span>Next</span>
+              <span className="hidden sm:inline">Next</span>
               <ChevronRight className="h-5 w-5" />
             </button>
           </div>
 
           {/* Video Testimonials Preview */}
           <motion.div
-            className="bg-gradient-to-r from-red-800 to-red-600 rounded-2xl p-8 text-white text-center"
+            className="bg-gradient-to-r from-red-800 to-red-600 rounded-2xl p-6 sm:p-8 text-white text-center"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}

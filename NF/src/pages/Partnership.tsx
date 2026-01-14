@@ -178,10 +178,22 @@ const Partnership: React.FC = () => {
 
   const activePartnership = partnershipTypes.find(p => p.id === activeTab);
 
+  const getAccentClasses = (color: string) => {
+    const colors = {
+      red: { bg: 'bg-red-100', text: 'text-red-800' },
+      green: { bg: 'bg-green-100', text: 'text-green-800' },
+      blue: { bg: 'bg-blue-100', text: 'text-blue-800' },
+      purple: { bg: 'bg-purple-100', text: 'text-purple-800' },
+      orange: { bg: 'bg-orange-100', text: 'text-orange-800' },
+      yellow: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
+    } as const;
+    return (colors as any)[color] || colors.red;
+  };
+
   return (
     <div className="min-h-screen flex flex-col pt-20">
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-red-800 to-red-600 text-white">
+      <section className="py-14 sm:py-16 md:py-20 bg-gradient-to-br from-red-800 to-red-600 text-white">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div
             className="text-center max-w-4xl mx-auto"
@@ -290,10 +302,10 @@ const Partnership: React.FC = () => {
       </section>
 
       {/* Partnership Options */}
-      <section id="partnership-options" className="py-20 bg-gray-50">
+      <section id="partnership-options" className="py-14 sm:py-16 md:py-20 bg-gray-50">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div
-            className="text-center mb-16"
+            className="text-center mb-10 md:mb-16"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -342,9 +354,14 @@ const Partnership: React.FC = () => {
                   {/* Left Content */}
                   <div className="p-8 lg:p-12">
                     <div className="flex items-center gap-4 mb-6">
-                      <div className={`w-12 h-12 bg-${activePartnership.color}-100 rounded-xl flex items-center justify-center`}>
-                        <activePartnership.icon className={`h-6 w-6 text-${activePartnership.color}-800`} />
+                      {(() => {
+                        const c = getAccentClasses(activePartnership.color);
+                        return (
+                      <div className={`w-12 h-12 ${c.bg} rounded-xl flex items-center justify-center`}>
+                        <activePartnership.icon className={`h-6 w-6 ${c.text}`} />
                       </div>
+                        );
+                      })()}
                       <div>
                         <h3 className="text-2xl font-bold text-gray-900">{activePartnership.name}</h3>
                         <p className="text-gray-600">{activePartnership.description}</p>
@@ -400,10 +417,10 @@ const Partnership: React.FC = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 bg-white">
+      <section className="py-14 sm:py-16 md:py-20 bg-white">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div
-            className="text-center mb-16"
+            className="text-center mb-10 md:mb-16"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -414,7 +431,7 @@ const Partnership: React.FC = () => {
             </h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8">
             {partnershipBenefits.map((benefit, index) => (
               <motion.div
                 key={benefit.title}
@@ -424,7 +441,7 @@ const Partnership: React.FC = () => {
                 transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <div className="bg-red-50 rounded-2xl p-8 border border-red-200 h-full">
+                <div className="bg-red-50 rounded-2xl p-6 sm:p-8 border border-red-200 h-full">
                   <benefit.icon className="h-12 w-12 text-red-800 mx-auto mb-4" />
                   <h3 className="font-bold text-gray-900 text-lg mb-3">{benefit.title}</h3>
                   <p className="text-gray-600 text-sm">{benefit.description}</p>
@@ -436,10 +453,10 @@ const Partnership: React.FC = () => {
       </section>
 
       {/* Contact Form */}
-      <section id="contact-form" className="py-20 bg-gray-50">
+      <section id="contact-form" className="py-14 sm:py-16 md:py-20 bg-gray-50">
         <div className="container max-w-4xl mx-auto px-4 sm:px-6">
           <motion.div
-            className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 md:p-12"
+            className="bg-white rounded-2xl shadow-xl border border-gray-200 p-6 sm:p-8 md:p-12"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}

@@ -36,7 +36,7 @@ const GET_INVOLVED_LINKS: GetInvolvedLink[] = [
 // Sub-components
 const Logo: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   <motion.div 
-    className="flex items-center space-x-3 group"
+    className="flex items-center space-x-2 sm:space-x-3 group"
     whileHover={{ scale: 1.02 }}
     transition={{ type: "spring", stiffness: 400, damping: 17 }}
   >
@@ -45,7 +45,7 @@ const Logo: React.FC<{ onClick: () => void }> = ({ onClick }) => (
         <img 
           src="https://res.cloudinary.com/dzqdxosk2/image/upload/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png" 
           alt="Neema Foundation Logo" 
-          className="h-14 w-14 transition-all duration-300 group-hover:scale-110"
+          className="h-12 w-12 sm:h-14 sm:w-14 transition-all duration-300 group-hover:scale-110"
           loading="eager"
           width={56}
           height={56}
@@ -53,10 +53,10 @@ const Logo: React.FC<{ onClick: () => void }> = ({ onClick }) => (
       </div>
     </Link>
     <div className="flex flex-col">
-      <span className="font-serif font-bold text-2xl text-gray-900 leading-tight">
+      <span className="font-serif font-bold text-lg sm:text-2xl text-gray-900 leading-tight">
         Neema Foundation
       </span>
-      <span className="text-xs text-red-800 font-medium tracking-wide">
+      <span className="hidden sm:block text-xs text-red-800 font-medium tracking-wide">
         Transforming Ganze Community
       </span>
     </div>
@@ -417,8 +417,8 @@ const Navbar: React.FC = () => {
       <motion.header 
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled 
-            ? 'bg-white/95 backdrop-blur-xl shadow-sm py-3 border-b border-gray-100' 
-            : 'bg-white/90 backdrop-blur-lg py-5'
+            ? 'bg-white/95 backdrop-blur-xl shadow-sm py-2 md:py-3 border-b border-gray-100' 
+            : 'bg-white/90 backdrop-blur-lg py-3 md:py-5'
         }`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}

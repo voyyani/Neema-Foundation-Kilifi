@@ -133,7 +133,7 @@ const ProgramsLandingPage: React.FC = () => {
     <ErrorBoundary>
       <div className="min-h-screen bg-gray-50 pt-20">
         {/* Enhanced Hero Section */}
-        <section className="bg-gradient-to-br from-red-600 to-red-800 text-white py-20">
+        <section className="bg-gradient-to-br from-red-600 to-red-800 text-white py-14 sm:py-16 md:py-20">
           <div className="container max-w-7xl mx-auto px-4 sm:px-6">
             <motion.div
               className="text-center"
@@ -146,7 +146,7 @@ const ProgramsLandingPage: React.FC = () => {
                 <span className="font-medium">Transforming Ganze Community Since 2018</span>
               </div>
               
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
                 Our <span className="text-yellow-300">Programs</span>
               </h1>
               
@@ -156,7 +156,7 @@ const ProgramsLandingPage: React.FC = () => {
 
               {/* Quick Stats */}
               <motion.div 
-                className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
+                className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 max-w-4xl mx-auto"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.6 }}

@@ -170,11 +170,11 @@ const Problem: React.FC = () => {
   };
 
   return (
-    <section id="problem" className="py-20 bg-gradient-to-br from-gray-50 to-white">
+    <section id="problem" className="py-14 sm:py-16 md:py-20 bg-gradient-to-br from-gray-50 to-white">
       <div className="container max-w-7xl mx-auto px-4 sm:px-6">
         {/* Header */}
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-10 md:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -193,7 +193,7 @@ const Problem: React.FC = () => {
         </motion.div>
 
         {/* Problems Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 mb-10 md:mb-12">
           {problems.map((problem, index) => (
             <motion.div
               key={problem.id}
@@ -212,7 +212,7 @@ const Problem: React.FC = () => {
                 onClick={() => toggleProblem(problem.id)}
               >
                 {/* Card Header */}
-                <div className={`p-6 border-b border-gray-100 ${getColorClasses(problem.color)}`}>
+                <div className={`p-5 sm:p-6 border-b border-gray-100 ${getColorClasses(problem.color)}`}>
                   <div className="flex items-center justify-between mb-3">
                     <problem.icon className="h-8 w-8" />
                     <motion.div
@@ -227,7 +227,7 @@ const Problem: React.FC = () => {
                 </div>
 
                 {/* Card Content */}
-                <div className="p-6">
+                <div className="p-5 sm:p-6">
                   <p className="text-gray-700 mb-4">{problem.overview}</p>
                   <div className="flex items-center justify-between text-sm text-gray-600">
                     <span>Click to explore details</span>
@@ -249,10 +249,10 @@ const Problem: React.FC = () => {
                     transition={{ duration: 0.4 }}
                     className="mt-4 bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden"
                   >
-                    <div className="p-6">
+                    <div className="p-5 sm:p-6">
                       {/* Close Button */}
                       <div className="flex justify-between items-center mb-6">
-                        <h4 className="text-2xl font-bold text-gray-900">Deep Dive: {problem.title}</h4>
+                        <h4 className="text-xl sm:text-2xl font-bold text-gray-900">Deep Dive: {problem.title}</h4>
                         <button
                           onClick={() => setExpandedProblem(null)}
                           className="p-2 hover:bg-gray-100 rounded-full transition-colors"

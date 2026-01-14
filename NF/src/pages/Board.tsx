@@ -2,37 +2,42 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Home, ChevronRight, Mail } from 'lucide-react';
+import { useNFContent } from '../content/useNFContent';
 
 const Board: React.FC = () => {
-  const boardMembers = [
-    {
-      id: 1,
-      name: "John Mwambire",
-      title: "Board Chairman",
-      bio: "John brings over 20 years of experience in healthcare management and has been a driving force behind Neema Foundation since its inception.",
-      image: "https://randomuser.me/api/portraits/men/32.jpg"
-    },
-    {
-      id: 2,
-      name: "Grace Kamau",
-      title: "Vice Chairperson",
-      bio: "With extensive experience in community development, Grace oversees our educational initiatives and community outreach programs.",
-      image: "https://randomuser.me/api/portraits/women/44.jpg"
-    },
-    {
-      id: 3,
-      name: "David Katana",
-      title: "Secretary",
-      bio: "David is a healthcare professional with special interest in rural healthcare systems and policies that benefit underserved communities.",
-      image: "https://randomuser.me/api/portraits/men/59.jpg"
-    },
-    {
-      id: 4,
-      name: "Mary Kadzo",
-      title: "Treasurer",
-      bio: "Mary brings financial expertise to the board, ensuring transparent stewardship of resources to maximize community impact.",
-      image: "https://randomuser.me/api/portraits/women/68.jpg"
-    }
+  const { content } = useNFContent();
+  const brand = content?.site?.brandName || 'Neema Foundation';
+
+  const boardMembers = (content?.governance?.board ?? [])
+    .map((m, idx) => ({
+      id: idx + 1,
+      name: m.name || 'TBD',
+      title: m.role || 'Board Member',
+      bio: m.bio || 'Bio coming soon.',
+      image: m.photoUrl || ''
+    }))
+    .filter((m) => m.name !== '');
+
+  const staff = (content?.governance?.staff ?? [])
+    .map((m, idx) => ({
+      id: idx + 1,
+      name: m.name || 'TBD',
+      title: m.role || 'Staff',
+      bio: m.bio || 'Bio coming soon.',
+      image: m.photoUrl || ''
+    }))
+    .filter((m) => m.name !== '');
+
+  const orgStructure = [
+    'Founders / Co-founders',
+    'Executive Director (ED)',
+    'Service Delivery Lead — Health',
+    'Service Delivery Lead — Education',
+    'Admin / Finance / Operations Lead',
+    'Ministry / Community Engagement Lead',
+    'Advisory Board',
+    'Mission Team',
+    'Partners'
   ];
 
   return (
@@ -41,31 +46,87 @@ const Board: React.FC = () => {
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold mb-6 text-red-800">Board of Directors</h1>
           <p className="text-gray-700 max-w-3xl mx-auto text-lg">
-            Meet the dedicated individuals who provide leadership, guidance, and oversight 
-            to Neema Foundation. Our board brings diverse expertise to fulfill our mission 
-            of transforming the Ganze community.
+            Governance and leadership at {brand}. Board and staff profiles are maintained in our content source of truth.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {boardMembers.map((member) => (
-            <div key={member.id} className="border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all overflow-hidden group">
-              <div className="h-2 bg-red-800 w-full"></div>
-              <div className="aspect-square overflow-hidden">
-                <img 
-                  src={member.image} 
-                  alt={member.name} 
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+        {/* Organization Structure (from PPTX) */}
+        <div className="max-w-4xl mx-auto mb-16 bg-white border border-gray-200 rounded-2xl shadow-lg p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Organization Structure</h2>
+          <p className="text-gray-600 mb-6">
+            Based on the organizational structure described in the Neema Ministries deck.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {orgStructure.map((item) => (
+              <div key={item} className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 font-medium">
+                {item}
               </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-red-800 mb-1">{member.name}</h3>
-                <h4 className="text-gray-600 font-medium mb-3">{member.title}</h4>
-                <p className="text-gray-700 text-sm">{member.bio}</p>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
+
+        {boardMembers.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {boardMembers.map((member) => (
+              <div key={member.id} className="border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all overflow-hidden group">
+                <div className="h-2 bg-red-800 w-full"></div>
+                {member.image ? (
+                  <div className="aspect-square overflow-hidden">
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                ) : (
+                  <div className="aspect-square bg-gray-100 flex items-center justify-center text-gray-500">
+                    Photo
+                  </div>
+                )}
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-red-800 mb-1">{member.name}</h3>
+                  <h4 className="text-gray-600 font-medium mb-3">{member.title}</h4>
+                  <p className="text-gray-700 text-sm">{member.bio}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="max-w-3xl mx-auto mb-16 bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-yellow-900">
+            Board profiles are not yet filled in `nf-content.json` → `governance.board`. Add names, roles, bios, and photos to publish them here.
+          </div>
+        )}
+
+        {staff.length > 0 && (
+          <div className="mb-16">
+            <h2 className="text-3xl font-bold mb-8 text-center text-gray-900">Staff</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {staff.map((member) => (
+                <div key={member.id} className="border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all overflow-hidden group">
+                  <div className="h-2 bg-gray-900 w-full"></div>
+                  {member.image ? (
+                    <div className="aspect-square overflow-hidden">
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </div>
+                  ) : (
+                    <div className="aspect-square bg-gray-100 flex items-center justify-center text-gray-500">
+                      Photo
+                    </div>
+                  )}
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-1">{member.name}</h3>
+                    <h4 className="text-gray-600 font-medium mb-3">{member.title}</h4>
+                    <p className="text-gray-700 text-sm">{member.bio}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="text-center">
           <h3 className="text-2xl font-bold mb-4">Want to Support Our Work?</h3>

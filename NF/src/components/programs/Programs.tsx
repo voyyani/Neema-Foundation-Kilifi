@@ -54,7 +54,7 @@ const Programs: React.FC = () => {
 
   if (error) {
     return (
-      <section id="programs" className="py-20 bg-white">
+      <section id="programs" className="py-14 sm:py-16 md:py-20 bg-white">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center py-16">
             <div className="bg-red-50 border border-red-200 rounded-xl p-8 max-w-md mx-auto">
@@ -75,7 +75,7 @@ const Programs: React.FC = () => {
 
   if (isLoading) {
     return (
-      <section id="programs" className="py-20 bg-white">
+      <section id="programs" className="py-14 sm:py-16 md:py-20 bg-white">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">
           <LoadingSpinner />
         </div>
@@ -85,7 +85,7 @@ const Programs: React.FC = () => {
 
   return (
     <ErrorBoundary>
-      <section id="programs" className="py-20 bg-white">
+      <section id="programs" className="py-14 sm:py-16 md:py-20 bg-white">
         <div className="container max-w-7xl mx-auto px-4 sm:px-6">
           {/* Header */}
           <ProgramsHero

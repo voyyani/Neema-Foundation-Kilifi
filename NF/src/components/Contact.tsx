@@ -25,10 +25,10 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <section id="contact" className="py-20 bg-white">
+    <section id="contact" className="py-14 sm:py-16 md:py-20 bg-white">
       <div className="container max-w-7xl mx-auto px-4 sm:px-6">
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-10 md:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -42,7 +42,7 @@ const Contact: React.FC = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
           {/* Contact Information */}
           <motion.div
             className="space-y-8"
@@ -127,7 +127,7 @@ const Contact: React.FC = () => {
 
           {/* Contact Form */}
           <motion.div
-            className="bg-gray-50 rounded-2xl p-8"
+            className="bg-gray-50 rounded-2xl p-6 sm:p-8"
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}

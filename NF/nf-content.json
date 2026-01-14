@@ -1,0 +1,819 @@
+{
+  "site": {
+    "brandName": "Neema Foundation",
+    "tagline": "Need meets God’s Grace",
+    "mission": "Share God’s transformative grace to the community through the provision of compassionate, quality and affordable healthcare services , education and technology programs",
+    "vision": "A transformed, healthy and self empowered Christ loving community",
+    "values": [
+      "Christian faith",
+      "Compassion",
+      "Integrity",
+      "Value Humanity",
+      "Committed to Excellence"
+    ],
+    "primaryLanguage": "en",
+    "colors": {
+      "primary": "#B01C2E",
+      "secondary": "#111827",
+      "accent": "#DC2626"
+    },
+    "social": {
+      "facebook": "",
+      "instagram": "",
+      "twitter": "",
+      "linkedin": "",
+      "youtube": ""
+    }
+  },
+  "hero": {
+    "title": "Need meets God’s Grace",
+    "subtitle": "Neema Foundation is a Christian based organization that spreads the message of God's grace by serving the community with affordable health services, education and youth empowerment programs.",
+    "cta": {
+      "label": "Donate",
+      "href": "/donate"
+    },
+    "media": [
+      {
+        "type": "image",
+        "url": "",
+        "alt": "Neema Foundation community in Ganze"
+      }
+    ]
+  },
+  "trustBar": {
+    "items": [
+      {
+        "label": "Years Active",
+        "value": "2020–Present"
+      },
+      {
+        "label": "Beneficiaries",
+        "value": "650+ pupils (porridge program)"
+      },
+      {
+        "label": "Programs",
+        "value": "TBD (consolidating program list)"
+      },
+      {
+        "label": "Counties Served",
+        "value": "Kilifi (Ganze Sub-county)"
+      }
+    ]
+  },
+  "impact": {
+    "headline": "Our Impact",
+    "metrics": [
+      {
+        "label": "Pupils supported (porridge)",
+        "value": 650
+      },
+      {
+        "label": "Sanitary kits provided (Kombeni Girls)",
+        "value": 500
+      }
+    ],
+    "storiesHighlightIds": []
+  },
+  "programs": [
+    {
+      "id": "program-neema-health-center",
+      "name": "Neema Health Center",
+      "category": "Health",
+      "summary": "Providing quality and affordable level 3 health services in Ganze.",
+      "description": "Services include maternity in-patient, curative care, laboratory, dental, counselling, pharmacy, TB clinics, diabetes & hypertension clinics, comprehensive HIV care, baby well clinics, antenatal and postnatal services, and referrals.",
+      "objectives": [
+        "Provide quality and affordable Healthcare service in Ganze"
+      ],
+      "beneficiaries": {
+        "who": "Ganze community",
+        "where": "Ganze Sub-county, Kilifi",
+        "count": 60000
+      },
+      "activities": [
+        "Medical camps and outreach",
+        "Pharmacy and ambulatory services",
+        "Progressive roadmap from Level 1 → Level 3 services"
+      ],
+      "impact": {
+        "metrics": []
+      },
+      "media": [
+        {
+          "type": "image",
+          "url": "",
+          "alt": "Neema Health Center"
+        }
+      ],
+      "partners": [
+        "TBD"
+      ],
+      "cta": {
+        "label": "Donate",
+        "href": "/donate"
+      }
+    },
+    {
+      "id": "program-neema-resource-center",
+      "name": "Neema Resource Center",
+      "category": "Education",
+      "summary": "“Shomani Kwa Furaha” — reading culture, technology and innovation for youth.",
+      "description": "Provides community library service, study and resource center, innovation hub (i-hub), and conference facilities.",
+      "objectives": [
+        "To nurture a reading culture among the youth in Ganze",
+        "To encourage technology innovation and opportunities in the Ganze"
+      ],
+      "beneficiaries": {
+        "who": "Youth and learners",
+        "where": "Ganze Sub-county, Kilifi",
+        "count": 0
+      },
+      "activities": [
+        "Community library service",
+        "Study and resource center",
+        "Innovation hub (i-hub)",
+        "Conference facilities"
+      ],
+      "impact": {
+        "metrics": []
+      },
+      "media": [
+        {
+          "type": "image",
+          "url": "",
+          "alt": "Neema Resource Center"
+        }
+      ],
+      "partners": [
+        "TBD"
+      ],
+      "cta": {
+        "label": "Volunteer",
+        "href": "/volunteer"
+      }
+    },
+    {
+      "id": "program-ahoho-marye-mashome",
+      "name": "Ahoho naMarye Mashome",
+      "category": "Education",
+      "summary": "Feeding and education support initiatives for school children.",
+      "description": "Includes porridge program support and school-based engagement with partners. 2024 deck notes porridge program sponsoring 340 students at Misufini and expanding to KAG and Boga with a total of 650 pupils.",
+      "objectives": [
+        "Support education and child welfare through practical interventions"
+      ],
+      "beneficiaries": {
+        "who": "Primary school pupils",
+        "where": "Ganze schools (Misufini, KAG, Boga)",
+        "count": 650
+      },
+      "activities": [
+        "Porridge program support",
+        "School engagement and mentorship",
+        "Back-to-school support drives"
+      ],
+      "impact": {
+        "metrics": [
+          {
+            "label": "Pupils supported",
+            "value": 650
+          }
+        ]
+      },
+      "media": [
+        {
+          "type": "image",
+          "url": "",
+          "alt": "School feeding program"
+        }
+      ],
+      "partners": [
+        "Nourish and Flourish (ICC Mombasa)",
+        "Jitambue Kijana Trust",
+        "TBD"
+      ],
+      "cta": {
+        "label": "Donate",
+        "href": "/donate"
+      }
+    },
+    {
+      "id": "program-widows-fellowship",
+      "name": "Widow Fellowship & Empowerment",
+      "category": "Community",
+      "summary": "Fellowship, trauma healing, literacy, and practical support for widows and their families.",
+      "description": "2024 deck includes widows AGM and trauma healing, bible literacy support, and fellowship growth to 43 widows.",
+      "objectives": [
+        "Strengthen community support systems and resilience"
+      ],
+      "beneficiaries": {
+        "who": "Widows and their children",
+        "where": "Ganze community",
+        "count": 43
+      },
+      "activities": [
+        "Trauma healing sessions",
+        "Bible literacy and resource support",
+        "Fellowship gatherings and support"
+      ],
+      "impact": {
+        "metrics": [
+          {
+            "label": "Widows fellowship participants",
+            "value": 43
+          }
+        ]
+      },
+      "media": [
+        {
+          "type": "image",
+          "url": "",
+          "alt": "Widow fellowship gathering"
+        }
+      ],
+      "partners": [
+        "CITAM Mission Ministry",
+        "Renewal Project Africa",
+        "TBD"
+      ],
+      "cta": {
+        "label": "Partner with us",
+        "href": "/partner"
+      }
+    },
+    {
+      "id": "program-shomani-book-club",
+      "name": "Shomani Book Club",
+      "category": "Education",
+      "summary": "Reading culture initiatives and school book clubs in the community.",
+      "description": "2024 deck notes BAI community reading award and book clubs targeting 5 schools (grade 5), 20 students each.",
+      "objectives": [
+        "To nurture a reading culture among the youth in Ganze"
+      ],
+      "beneficiaries": {
+        "who": "Learners (Grade 5 focus)",
+        "where": "Target schools in the community",
+        "count": 100
+      },
+      "activities": [
+        "Book club sensitization and training",
+        "Book club launch",
+        "Reading camps"
+      ],
+      "impact": {
+        "metrics": [
+          {
+            "label": "Target learners (initial)",
+            "value": 100
+          }
+        ]
+      },
+      "media": [
+        {
+          "type": "image",
+          "url": "",
+          "alt": "Reading club session"
+        }
+      ],
+      "partners": [
+        "Kilifi County Library Services",
+        "BAI Community Reading Awards"
+      ],
+      "cta": {
+        "label": "Volunteer",
+        "href": "/volunteer"
+      }
+    },
+    {
+      "id": "program-nf-cup",
+      "name": "NF Cup",
+      "category": "Youth",
+      "summary": "Sports-based youth engagement and back-to-school events.",
+      "description": "A community sports initiative referenced across the decks, including “NF Cup Back to School” editions and partner-supported tournaments.",
+      "objectives": [
+        "Youth engagement and holistic development"
+      ],
+      "beneficiaries": {
+        "who": "Youth teams",
+        "where": "Ganze community",
+        "count": 0
+      },
+      "activities": [
+        "Tournament events",
+        "Back-to-school editions",
+        "Mentorship through sports"
+      ],
+      "impact": {
+        "metrics": []
+      },
+      "media": [
+        {
+          "type": "image",
+          "url": "",
+          "alt": "NF Cup tournament"
+        }
+      ],
+      "partners": [
+        "Kingdom Springs",
+        "Kilifi County",
+        "CITAM",
+        "TBD"
+      ],
+      "cta": {
+        "label": "Sponsor an event",
+        "href": "/partner"
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "event-widow-children-schoolfee-drive",
+      "name": "Widow Children Schoolfee Drive",
+      "dates": {
+        "start": "2024-01-25",
+        "end": "2024-01-25"
+      },
+      "venue": {
+        "name": "TBD",
+        "mapUrl": ""
+      },
+      "schedule": [],
+      "organizers": [
+        "Neema Foundation"
+      ],
+      "purpose": "School fee support drive for widows’ primary school children (target 38; 28 supported; funds 28,000 Kshs).",
+      "participants": [],
+      "programTieIns": [],
+      "sponsorships": [],
+      "registration": {
+        "link": "",
+        "notes": ""
+      },
+      "mediaKit": [],
+      "contacts": [],
+      "partners": [
+        "NF online family"
+      ]
+    },
+    {
+      "id": "event-widow-agm-and-trauma-healing",
+      "name": "Widow AGM and Trauma Healing",
+      "dates": {
+        "start": "2024-01-01",
+        "end": "2024-01-31"
+      },
+      "venue": {
+        "name": "TBD",
+        "mapUrl": ""
+      },
+      "schedule": [],
+      "organizers": [
+        "Neema Foundation"
+      ],
+      "purpose": "Widow fellowship AGM with trauma care sessions (target 16 widows).",
+      "participants": [],
+      "programTieIns": [],
+      "sponsorships": [],
+      "registration": {
+        "link": "",
+        "notes": ""
+      },
+      "mediaKit": [],
+      "contacts": [],
+      "partners": [
+        "Rev. Jane Jilani",
+        "Trauma healing team"
+      ]
+    },
+    {
+      "id": "event-enendeni-bible-literacy",
+      "name": "Enendeni Bible Literacy",
+      "dates": {
+        "start": "2024-03-01",
+        "end": "2024-03-31"
+      },
+      "venue": {
+        "name": "TBD",
+        "mapUrl": ""
+      },
+      "schedule": [],
+      "organizers": [
+        "Neema Foundation"
+      ],
+      "purpose": "Bible literacy support and resource provision (target 15 widows).",
+      "participants": [],
+      "programTieIns": [],
+      "sponsorships": [],
+      "registration": {
+        "link": "",
+        "notes": ""
+      },
+      "mediaKit": [],
+      "contacts": [],
+      "partners": [
+        "NF friends",
+        "CITAM Mission Ministry"
+      ]
+    },
+    {
+      "id": "event-ahoho-kiruku-secondary-mentorship",
+      "name": "Ahoho Kiruku Secondary Mentorship",
+      "dates": {
+        "start": "2024-03-01",
+        "end": "2024-03-31"
+      },
+      "venue": {
+        "name": "Kiruku Secondary School, Kwale",
+        "mapUrl": ""
+      },
+      "schedule": [],
+      "organizers": [
+        "Neema Foundation"
+      ],
+      "purpose": "Mentorship visit to Kiruku Secondary School.",
+      "participants": [],
+      "programTieIns": [],
+      "sponsorships": [],
+      "registration": {
+        "link": "",
+        "notes": ""
+      },
+      "mediaKit": [],
+      "contacts": [],
+      "partners": [
+        "Jitambue Kijana Trust",
+        "ICC Mombasa"
+      ]
+    },
+    {
+      "id": "event-misufini-primary-porridge-program-launch",
+      "name": "Misufini Primary Porridge Program Launch",
+      "dates": {
+        "start": "2024-03-27",
+        "end": "2024-03-27"
+      },
+      "venue": {
+        "name": "Misufini Primary School (plus NF grounds / KAG Kaembeni)",
+        "mapUrl": ""
+      },
+      "schedule": [],
+      "organizers": [
+        "Neema Foundation"
+      ],
+      "purpose": "Partner visit with tree planting and porridge program launch (340 students).",
+      "participants": [],
+      "programTieIns": [],
+      "sponsorships": [],
+      "registration": {
+        "link": "",
+        "notes": ""
+      },
+      "mediaKit": [],
+      "contacts": [],
+      "partners": [
+        "Nourish and Flourish ICC Mombasa",
+        "Jitambue Kijana Trust",
+        "PPD team"
+      ]
+    },
+    {
+      "id": "event-nf-cup-back-to-school-edition",
+      "name": "NF Cup Back to School Edition",
+      "dates": {
+        "start": "2024-04-01",
+        "end": "2024-04-30"
+      },
+      "venue": {
+        "name": "KAG Kaembeni",
+        "mapUrl": ""
+      },
+      "schedule": [],
+      "organizers": [
+        "Neema Foundation"
+      ],
+      "purpose": "Back-to-school tournament edition (under 14 boys and girls).",
+      "participants": [],
+      "programTieIns": [],
+      "sponsorships": [],
+      "registration": {
+        "link": "",
+        "notes": ""
+      },
+      "mediaKit": [],
+      "contacts": [],
+      "partners": [
+        "Kingdom Springs",
+        "Jitambue Kijana Trust",
+        "Kilifi County"
+      ]
+    },
+    {
+      "id": "event-enendeni-pastors-training",
+      "name": "Enendeni Pastors Training",
+      "dates": {
+        "start": "2024-05-01",
+        "end": "2024-05-31"
+      },
+      "venue": {
+        "name": "PEFA Ushindi Ziwani",
+        "mapUrl": ""
+      },
+      "schedule": [],
+      "organizers": [
+        "Neema Foundation"
+      ],
+      "purpose": "Pastors training for 41 community pastors aimed at Bible literacy (total used 26,050).",
+      "participants": [],
+      "programTieIns": [],
+      "sponsorships": [],
+      "registration": {
+        "link": "",
+        "notes": ""
+      },
+      "mediaKit": [],
+      "contacts": [],
+      "partners": [
+        "Renewal Project Africa",
+        "Ananijali Caterers"
+      ]
+    },
+    {
+      "id": "event-widows-fellowship-june-2024",
+      "name": "Widows Fellowship (June 2024)",
+      "dates": {
+        "start": "2024-06-01",
+        "end": "2024-06-30"
+      },
+      "venue": {
+        "name": "PEFA Ushindi Ziwani",
+        "mapUrl": ""
+      },
+      "schedule": [],
+      "organizers": [
+        "Neema Foundation"
+      ],
+      "purpose": "Widows fellowship gathering (43 widows; proceeds from CBF stand; funds 89,295).",
+      "participants": [],
+      "programTieIns": [],
+      "sponsorships": [],
+      "registration": {
+        "link": "",
+        "notes": ""
+      },
+      "mediaKit": [],
+      "contacts": [],
+      "partners": [
+        "RPA",
+        "Mrs. Jilani",
+        "Mrs Katembo",
+        "Grow Yearly"
+      ]
+    },
+    {
+      "id": "event-shomani-book-club-launch",
+      "name": "Shomani Book Club Launch",
+      "dates": {
+        "start": "2024-06-01",
+        "end": "2024-06-30"
+      },
+      "venue": {
+        "name": "TBD",
+        "mapUrl": ""
+      },
+      "schedule": [],
+      "organizers": [
+        "Neema Foundation"
+      ],
+      "purpose": "Book club sensitization, training and launch; target 5 schools (Grade 5) with 20 students each; award $3,000.",
+      "participants": [],
+      "programTieIns": [],
+      "sponsorships": [],
+      "registration": {
+        "link": "",
+        "notes": ""
+      },
+      "mediaKit": [],
+      "contacts": [],
+      "partners": [
+        "Kilifi County Library Services",
+        "BAI community Reading awards"
+      ]
+    },
+    {
+      "id": "event-injili-mashinani-citam-mombasa",
+      "name": "Injili Mashinani (CITAM Mombasa)",
+      "dates": {
+        "start": "2024-09-19",
+        "end": "2024-09-22"
+      },
+      "venue": {
+        "name": "Ganze community",
+        "mapUrl": ""
+      },
+      "schedule": [],
+      "organizers": [
+        "Neema Foundation"
+      ],
+      "purpose": "Pastors training, widow fellowship, door-to-door, crusade, children evangelism (budget 250,000).",
+      "participants": [],
+      "programTieIns": [],
+      "sponsorships": [],
+      "registration": {
+        "link": "",
+        "notes": ""
+      },
+      "mediaKit": [],
+      "contacts": [],
+      "partners": [
+        "CITAM Mombasa",
+        "KAG Kaembeni",
+        "RPA",
+        "Jitambue Kijana Trust"
+      ]
+    },
+    {
+      "id": "event-world-orphans-day-celebration",
+      "name": "World Orphans Day Celebration",
+      "dates": {
+        "start": "2024-11-01",
+        "end": "2024-11-30"
+      },
+      "venue": {
+        "name": "TBD",
+        "mapUrl": ""
+      },
+      "schedule": [],
+      "organizers": [
+        "Neema Foundation"
+      ],
+      "purpose": "World Orphans Day celebration for orphans and widows’ children (funds 69,660).",
+      "participants": [],
+      "programTieIns": [],
+      "sponsorships": [],
+      "registration": {
+        "link": "",
+        "notes": ""
+      },
+      "mediaKit": [],
+      "contacts": [],
+      "partners": [
+        "TBD"
+      ]
+    },
+    {
+      "id": "event-ahoho-namang-ale-medical-mission",
+      "name": "Ahoho naMang’ale Medical Mission",
+      "dates": {
+        "start": "2024-11-01",
+        "end": "2024-11-30"
+      },
+      "venue": {
+        "name": "Madamani Dispensary and Kaembeni Dispensary",
+        "mapUrl": ""
+      },
+      "schedule": [],
+      "organizers": [
+        "Neema Foundation"
+      ],
+      "purpose": "Medical camp resolved to donating drugs to two dispensaries (budget 36,500).",
+      "participants": [],
+      "programTieIns": [],
+      "sponsorships": [],
+      "registration": {
+        "link": "",
+        "notes": ""
+      },
+      "mediaKit": [],
+      "contacts": [],
+      "partners": [
+        "Dzarino CBO Mtwapa"
+      ]
+    },
+    {
+      "id": "event-shomani-book-reading-camp",
+      "name": "Shomani Book Reading Camp",
+      "dates": {
+        "start": "2024-12-01",
+        "end": "2024-12-31"
+      },
+      "venue": {
+        "name": "TBD",
+        "mapUrl": ""
+      },
+      "schedule": [],
+      "organizers": [
+        "Neema Foundation"
+      ],
+      "purpose": "3-day reading camp (250 pupils attended); bursaries given to 28 children.",
+      "participants": [],
+      "programTieIns": [],
+      "sponsorships": [],
+      "registration": {
+        "link": "",
+        "notes": ""
+      },
+      "mediaKit": [],
+      "contacts": [],
+      "partners": [
+        "Kilifi County Library",
+        "Women in Research Kenya",
+        "Kesho Kenya"
+      ]
+    }
+  ],
+  "stories": [
+    {
+      "id": "story-about-neema-foundation",
+      "title": "About Neema Foundation",
+      "summary": "Who we are and what we exist to do.",
+      "content": "Neema Foundation is a Christian based organization that spreads the message of God's grace by serving the community with affordable health services, education and youth empowerment programs.\n\nVision: A transformed, healthy and self empowered Christ loving community\nMission: Share God’s transformative grace to the community through the provision of compassionate, quality and affordable healthcare services , education and technology programs\n\nObjectives:\n- To provide quality and affordable Healthcare service in Ganze\n- To nurture a reading culture among the youth in Ganze\n- To encourage technology innovation and opportunities in the Ganze\n- To connect and network the youth of Ganze to the world\n\nCore Values:\n- Christian faith\n- Compassion\n- Integrity\n- Value Humanity\n- Committed to Excellence",
+      "media": []
+    }
+  ],
+  "volunteer": {
+    "roles": [
+      {
+        "id": "role-mentor",
+        "title": "Mentor",
+        "summary": "",
+        "requirements": [
+          ""
+        ],
+        "timeCommitment": "",
+        "applyLink": ""
+      }
+    ],
+    "benefits": [
+      ""
+    ],
+    "testimonials": [
+      {
+        "name": "",
+        "quote": "",
+        "photoUrl": ""
+      }
+    ]
+  },
+  "donate": {
+    "methods": [
+      {
+        "type": "mpesa",
+        "paybill": "",
+        "account": ""
+      },
+      {
+        "type": "bank",
+        "bankName": "",
+        "accountName": "",
+        "accountNumber": "",
+        "swift": ""
+      },
+      {
+        "type": "stripe",
+        "link": ""
+      }
+    ],
+    "currencies": [
+      "KES",
+      "USD"
+    ],
+    "recurring": true
+  },
+  "bankDetails": {
+    "bankName": "",
+    "accountName": "",
+    "accountNumber": "",
+    "swift": "",
+    "iban": "",
+    "mpesa": {
+      "paybill": "",
+      "till": ""
+    }
+  },
+  "governance": {
+    "board": [
+      {
+        "name": "",
+        "role": "",
+        "bio": "",
+        "photoUrl": ""
+      }
+    ],
+    "staff": [
+      {
+        "name": "",
+        "role": "",
+        "bio": "",
+        "photoUrl": ""
+      }
+    ],
+    "policies": [
+      {
+        "name": "Safeguarding",
+        "url": ""
+      },
+      {
+        "name": "Privacy",
+        "url": ""
+      }
+    ]
+  }
+}

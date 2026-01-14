@@ -1,6 +1,7 @@
 // components/Hero.tsx
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { ArrowRight, Play, Users, Heart, X, Volume2, VolumeX, Download, Pause, Maximize2, Minimize2, SkipBack, SkipForward } from 'lucide-react';
+import { useNFContent } from '../content/useNFContent';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -807,6 +808,22 @@ const Hero = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const location = useLocation();
   
+  const { content } = useNFContent();
+
+  const heroTitle = content?.hero?.title || 'Building Hope';
+  const heroSubtitle =
+    content?.hero?.subtitle ||
+    "Where every child's potential is nurtured, every widow's dignity restored, and every family's future transformed through sustainable, Christ-centered programs.";
+
+  const heroBadge = content?.site?.brandName ? `${content.site.brandName}` : 'Christ-Centered Community Transformation';
+
+  const trustItems = content?.trustBar?.items?.filter(Boolean) ?? [];
+  const heroStats = [
+    { icon: Users, label: trustItems[0]?.label || 'Years Active', value: trustItems[0]?.value || '2020–Present' },
+    { icon: Heart, label: trustItems[1]?.label || 'Beneficiaries', value: trustItems[1]?.value || '650+' },
+    { icon: Play, label: trustItems[2]?.label || 'Programs', value: trustItems[2]?.value || 'TBD' }
+  ];
+
   const [isLoaded, setIsLoaded] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [showThumbnail, setShowThumbnail] = useState(true);
@@ -1019,7 +1036,7 @@ const Hero = () => {
               aria-hidden="true"
             />
             <span className="text-xs md:text-sm font-semibold text-red-800">
-              Christ-Centered Community Transformation
+              {heroBadge}
             </span>
           </motion.div>
 
@@ -1031,7 +1048,7 @@ const Hero = () => {
             transition={{ duration: 1, delay: 0.7 }}
           >
             <span className="bg-gradient-to-r from-red-800 via-red-600 to-red-800 bg-clip-text text-transparent block mb-3 md:mb-4">
-              Building Hope
+              {heroTitle}
             </span>
             <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent block text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
               In Ganze Community
@@ -1045,7 +1062,7 @@ const Hero = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 1.2 }}
           >
-            Where every child's potential is nurtured, every widow's dignity restored, and every family's future transformed through sustainable, Christ-centered programs.
+            {heroSubtitle}
           </motion.p>
 
           {/* CTA Button */}
@@ -1080,9 +1097,7 @@ const Hero = () => {
             transition={{ duration: 0.8, delay: 1.8 }}
           >
             {[
-              { icon: Users, label: 'Children Helped', value: '500+' },
-              { icon: Heart, label: 'Lives Changed', value: '2K+' },
-              { icon: Play, label: 'Success Stories', value: '50+' }
+              ...heroStats
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}

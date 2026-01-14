@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Users, Cross, Activity, Stethoscope, Sprout, ArrowRight, X, Play, Image } from 'lucide-react';
+import { useNFContent } from '../content/useNFContent';
 
 // Import individual program components
 import AhohoMission from './programs/ProgramDetails/AhohoMission';
@@ -10,6 +11,11 @@ import WidowsEmpowerment from './programs/ProgramDetails/WidowsEmpowerment';
 
 const Programs: React.FC = () => {
   const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
+  const { content } = useNFContent();
+
+  const contentPrograms = content?.programs ?? [];
+  const findContentProgram = (title: string) =>
+    contentPrograms.find((p) => (p.name || '').toLowerCase() === title.toLowerCase());
 
   const programs = [
     {
@@ -17,8 +23,17 @@ const Programs: React.FC = () => {
       icon: Heart,
       title: 'Ahoho Mission',
       subtitle: 'Children\'s Welfare',
-      description: 'Daily feeding and education support for 650+ children in Ganze',
-      stats: '650+ Children | Daily Meals | Education Support',
+      description:
+        findContentProgram('Ahoho Mission')?.summary ||
+        findContentProgram('Ahoho Mission')?.description ||
+        'Daily feeding and education support for 650+ children in Ganze',
+      stats: (() => {
+        const c = findContentProgram('Ahoho Mission');
+        const count = c?.beneficiaries?.count;
+        return typeof count === 'number' && count > 0
+          ? `${count}+ Beneficiaries | Education Support`
+          : '650+ Children | Daily Meals | Education Support';
+      })(),
       features: ['Daily Porridge Program', 'Educational Support', 'Sports Development', 'Book Clubs'],
       color: 'red',
       images: [
@@ -31,8 +46,17 @@ const Programs: React.FC = () => {
       icon: Users,
       title: 'Widows Empowerment',
       subtitle: 'Economic Support',
-      description: 'Sustainable livelihood programs for 45+ widows in the community',
-      stats: '45+ Widows | Economic Projects | Farming Support',
+      description:
+        findContentProgram('Widows Empowerment')?.summary ||
+        findContentProgram('Widows Empowerment')?.description ||
+        'Sustainable livelihood programs for 45+ widows in the community',
+      stats: (() => {
+        const c = findContentProgram('Widows Empowerment');
+        const count = c?.beneficiaries?.count;
+        return typeof count === 'number' && count > 0
+          ? `${count}+ Beneficiaries | Empowerment Support`
+          : '45+ Widows | Economic Projects | Farming Support';
+      })(),
       features: ['Economic Projects', 'Farming Training', 'Water Pumps', 'Fellowship Support'],
       color: 'green',
       images: [
@@ -84,11 +108,11 @@ const Programs: React.FC = () => {
   };
 
   return (
-    <section id="programs" className="py-20 bg-white">
+    <section id="programs" className="py-14 sm:py-16 md:py-20 bg-white">
       <div className="container max-w-7xl mx-auto px-4 sm:px-6">
         {/* Header */}
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-10 md:mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -99,15 +123,17 @@ const Programs: React.FC = () => {
             <span className="text-sm font-medium text-red-800">Our Programs</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
-            Transforming Lives in Ganze
+            {content?.site?.brandName ? `Programs at ${content.site.brandName}` : 'Transforming Lives in Ganze'}
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Comprehensive, Christ-centered programs designed to address the unique needs of the Ganze community
+            {content?.site?.mission
+              ? content.site.mission
+              : 'Comprehensive, Christ-centered programs designed to address the unique needs of the Ganze community'}
           </p>
         </motion.div>
 
         {/* Main Programs Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 md:gap-8 mb-10 md:mb-12">
           {programs.map((program, index) => (
             <motion.div
               key={program.id}
@@ -121,7 +147,7 @@ const Programs: React.FC = () => {
               <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer">
                 {/* Header */}
                 <div 
-                  className={`bg-gradient-to-r ${getColorClasses(program.color)} p-6 text-white cursor-pointer`}
+                  className={`bg-gradient-to-r ${getColorClasses(program.color)} p-5 sm:p-6 text-white cursor-pointer`}
                   onClick={() => openProgramModal(program.id)}
                 >
                   <div className="flex items-center space-x-4">
@@ -137,7 +163,7 @@ const Programs: React.FC = () => {
                 </div>
 
                 {/* Content */}
-                <div className="p-6">
+                <div className="p-5 sm:p-6">
                   <p className="text-gray-700 mb-4">{program.description}</p>
                   
                   <div className="bg-gray-50 rounded-lg p-4 mb-4">
@@ -146,7 +172,7 @@ const Programs: React.FC = () => {
 
                   <div className="mb-6">
                     <h4 className="font-semibold text-gray-900 mb-3">Program Features:</h4>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {program.features.map((feature, featureIndex) => (
                         <div key={feature} className="flex items-center space-x-2">
                           <div className="w-1.5 h-1.5 bg-red-600 rounded-full"></div>
