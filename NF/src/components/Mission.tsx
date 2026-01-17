@@ -89,7 +89,7 @@ const Mission: React.FC = () => {
         >
           <div className="max-w-4xl mx-auto">
             <h3 className="text-2xl font-bold mb-4 text-red-800">Mission Statement</h3>
-            <p className="text-gray-700 text-lg leading-relaxed mb-6">{mission}</p>
+            
             <div className="bg-red-50 rounded-xl p-4 border border-red-200">
               <p className="text-red-800 font-medium">
                 "{mission}"
