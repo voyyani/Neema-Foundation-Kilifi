@@ -3,35 +3,10 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Award, Users, Heart, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { usePublicFeaturedPartners } from '../hooks/public';
 
 const TrustBar: React.FC = () => {
-  const partners = [
-    { 
-      name: 'Dzarino CBO', 
-      logo: 'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760969357/Dzarnio-logo_y9trca.png',
-      type: 'Community Partner',
-      description: 'Women-led community organization partnering on health initiatives'
-    },
-    { 
-      name: 'KickStart International', 
-      logo: 'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760969470/KickStart-Logo_Color_RGB_sg1t6p.svg',
-      type: 'Agriculture Partner',
-      description: 'Providing water pumps and farming training for widows'
-    },
-    { 
-      name: 'ICC Mombasa', 
-      logo: 'ICC',
-      type: 'Feeding Program Partner',
-      description: 'Supporting daily porridge program for 650+ children',
-      fallback: true
-    },
-    { 
-      name: 'CITAM Mombasa', 
-      logo: 'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760969566/citam-logo-1_lg4qqi.png',
-      type: 'Faith Partner',
-      description: 'Spiritual support and community outreach collaboration'
-    }
-  ];
+  const { data: partners = [], isLoading } = usePublicFeaturedPartners();
 
   const trustIndicators = [
     {
@@ -81,7 +56,13 @@ const TrustBar: React.FC = () => {
 
         {/* Partners Grid */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8 mb-12 md:mb-16"
+          className={`grid gap-5 md:gap-8 mb-12 md:mb-16 ${
+            partners.length === 1
+              ? 'grid-cols-1 max-w-md mx-auto'
+              : partners.length === 2
+              ? 'grid-cols-1 md:grid-cols-2 max-w-2xl mx-auto'
+              : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
+          }`}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
@@ -100,9 +81,9 @@ const TrustBar: React.FC = () => {
               <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 text-center hover:shadow-xl transition-all duration-300 h-full flex flex-col items-center">
                 {/* Logo Container */}
                 <div className="w-20 h-20 mb-4 flex items-center justify-center bg-white rounded-xl border border-gray-200 p-3 group-hover:border-red-300 transition-colors">
-                  {partner.logo.startsWith('http') ? (
+                  {partner.logo_url ? (
                     <img 
-                      src={partner.logo} 
+                      src={partner.logo_url} 
                       alt={`${partner.name} logo`}
                       className="max-w-full max-h-full object-contain"
                       onError={(e) => {
@@ -115,22 +96,22 @@ const TrustBar: React.FC = () => {
                     />
                   ) : null}
                   
-                  {/* Fallback for ICC Mombasa or broken images */}
-                  {(partner.fallback || !partner.logo.startsWith('http')) && (
-                    <div 
-                      className="logo-fallback w-16 h-16 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center text-white font-bold text-lg"
-                      style={{ display: partner.fallback ? 'flex' : 'none' }}
-                    >
-                      {partner.name.split(' ').map(word => word[0]).join('')}
-                    </div>
-                  )}
+                  {/* Fallback for partners without logos or broken images */}
+                  <div 
+                    className="logo-fallback w-16 h-16 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center text-white font-bold text-lg"
+                    style={{ display: !partner.logo_url ? 'flex' : 'none' }}
+                  >
+                    {partner.name.split(' ').map(word => word[0]).join('')}
+                  </div>
                 </div>
 
                 {/* Partner Info */}
                 <h3 className="font-bold text-gray-900 text-lg mb-2">{partner.name}</h3>
-                <div className="bg-red-50 text-red-800 text-xs font-semibold px-3 py-1 rounded-full mb-3">
-                  {partner.type}
-                </div>
+                {partner.type && (
+                  <div className="bg-red-50 text-red-800 text-xs font-semibold px-3 py-1 rounded-full mb-3">
+                    {partner.type}
+                  </div>
+                )}
                 <p className="text-gray-600 text-sm flex-grow leading-relaxed">
                   {partner.description}
                 </p>

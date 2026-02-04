@@ -16,7 +16,7 @@ const Landing: React.FC = () => {
       <Hero />
       <TrustBar />
       <Mission />
-      <Programs />
+      <Programs featuredOnly={true} />
       <Impact />
       <Stories />
       <Action />

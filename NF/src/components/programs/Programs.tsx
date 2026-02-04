@@ -1,49 +1,42 @@
 // Programs.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Components
 import ProgramsHero from './ProgramsHero';
 import ProgramGrid from './ProgramGrid';
-import AdditionalPrograms from './AdditionalPrograms';
 import ProgramModal from './ProgramModal';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import ErrorBoundary from '../ui/ErrorBoundary';
 
-// Data
-import { mainPrograms, additionalPrograms, programsStats } from '../../data/programs';
+// Hooks
+import { usePublicPrograms, usePublicFeaturedPrograms } from '../../hooks/public';
+import { mapProgramToLegacyFormat } from '../../lib/dataMappers';
 
 // Types
 // (types are available in individual program components where needed)
 
 const Programs: React.FC = () => {
-  const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [selectedProgram, setSelectedProgram] = useState<any | null>(null);
 
-  // Simulate API loading
-  useEffect(() => {
-    const loadPrograms = async () => {
-      try {
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // In a real app, this would be an API call
-        // const response = await fetch('/api/programs');
-        // const data = await response.json();
-        
-        setIsLoading(false);
-      } catch (err) {
-        setError('Failed to load programs. Please try again later.');
-        setIsLoading(false);
-      }
-    };
+  // Fetch programs from database
+  const { data: allPrograms = [], isLoading, error } = usePublicPrograms();
+  const { data: featuredPrograms = [] } = usePublicFeaturedPrograms();
 
-    loadPrograms();
-  }, []);
+  // Map all programs to show in unified grid
+  const allMappedPrograms = useMemo(() => 
+    allPrograms.map(p => mapProgramToLegacyFormat(p) as any),
+    [allPrograms]
+  );
 
-  const openProgramModal = (programId: string) => {
-    setSelectedProgram(programId);
+  const programsStats = useMemo(() => ({
+    totalPrograms: allPrograms.length,
+    activePrograms: allPrograms.filter(p => p.is_active).length,
+    totalBeneficiaries: allPrograms.reduce((sum, p) => sum + (p.beneficiary_count || 0), 0),
+  }), [allPrograms]);
+
+  const openProgramModal = (program: any) => {
+    setSelectedProgram(program);
     document.body.style.overflow = 'hidden';
   };
 
@@ -96,23 +89,20 @@ const Programs: React.FC = () => {
             showStats={true}
           />
 
-          {/* Main Programs Grid */}
-          <ProgramGrid
-            programs={mainPrograms}
-            onProgramSelect={openProgramModal}
-            showFilters={true}
-          />
-
-          {/* Additional Programs */}
-          <AdditionalPrograms
-            programs={additionalPrograms}
-          />
+          {/* All Programs Grid - Unified Display */}
+          <div className="mb-12">
+            <ProgramGrid
+              programs={allMappedPrograms}
+              onProgramSelect={openProgramModal}
+              showFilters={false}
+            />
+          </div>
 
           {/* Program Modal */}
           <AnimatePresence>
             {selectedProgram && (
               <ProgramModal
-                programId={selectedProgram}
+                program={selectedProgram}
                 onClose={closeProgramModal}
               />
             )}

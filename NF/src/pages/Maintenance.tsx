@@ -17,7 +17,7 @@ const Maintenance: React.FC = () => {
 
   // Define maintenance start time and duration
   // This creates a universal countdown that ends 14 days from a specific start time
-const MAINTENANCE_START_TIME = new Date('2026-01-18T08:00:00+03:00').getTime();
+const MAINTENANCE_START_TIME = new Date('2026-02-02T08:00:00+03:00').getTime();
 
   const MAINTENANCE_DURATION = 14 * 24 * 60 * 60 * 1000; // 14 days in milliseconds
   const MAINTENANCE_END_TIME = MAINTENANCE_START_TIME + MAINTENANCE_DURATION;

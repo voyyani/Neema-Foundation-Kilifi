@@ -1,8 +1,10 @@
 // Navbar.tsx - SIMPLIFIED & FIXED
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Menu, X, ChevronDown, Heart, ArrowRight } from 'lucide-react';
+import { Menu, X, ChevronDown, Heart, ArrowRight, Shield } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import AdminLoginModal from './AdminLoginModal';
+import { useAuth } from '../admin/hooks/useAuth';
 
 // Types
 interface NavLink {
@@ -15,6 +17,7 @@ interface GetInvolvedLink {
   name: string;
   href: string;
   icon: React.ComponentType<any>;
+  type?: 'route' | 'modal';
 }
 
 // Constants
@@ -22,15 +25,16 @@ const NAV_LINKS: NavLink[] = [
   { name: 'Home', href: '/', type: 'route' },
   { name: 'Programs', href: '/programs', type: 'route' }, 
   { name: 'Media', href: '/#media', type: 'hash' },
-  { name: 'Board', href: '/board', type: 'route' },
+  { name: 'About Us', href: '/board', type: 'route' },
 ];
 
 const GET_INVOLVED_LINKS: GetInvolvedLink[] = [
-  { name: 'Donate', href: '/donate', icon: Heart },
-  { name: 'Bank Details', href: '/bank-details', icon: ArrowRight },
-  { name: 'Legacy Giving', href: '/legacy-giving', icon: ArrowRight },
-  { name: 'Volunteer', href: '/volunteer', icon: ArrowRight },
-  { name: 'Partner With Us', href: '/partner', icon: ArrowRight },
+  { name: 'Donate', href: '/donate', icon: Heart, type: 'route' },
+  { name: 'Bank Details', href: '/bank-details', icon: ArrowRight, type: 'route' },
+  { name: 'Legacy Giving', href: '/legacy-giving', icon: ArrowRight, type: 'route' },
+  { name: 'Volunteer', href: '/volunteer', icon: ArrowRight, type: 'route' },
+  { name: 'Partner With Us', href: '/partner', icon: ArrowRight, type: 'route' },
+  { name: 'Admin', href: '#admin', icon: Shield, type: 'modal' },
 ];
 
 // Sub-components
@@ -105,7 +109,8 @@ const DesktopNavLink: React.FC<{
 const DesktopDropdown: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-}> = ({ isOpen, onClose }) => (
+  onAdminClick: () => void;
+}> = ({ isOpen, onClose, onAdminClick }) => (
   <AnimatePresence>
     {isOpen && (
       <motion.div
@@ -127,15 +132,29 @@ const DesktopDropdown: React.FC<{
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.15, delay: index * 0.03 }}
           >
-            <Link
-              to={link.href}
-              className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-800 transition-all duration-200 rounded-lg mx-2 group"
-              onClick={onClose}
-              role="menuitem"
-            >
-              <link.icon className="h-4 w-4 text-red-800 opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
-              <span className="font-medium">{link.name}</span>
-            </Link>
+            {link.type === 'modal' ? (
+              <button
+                onClick={() => {
+                  onAdminClick();
+                  onClose();
+                }}
+                className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-800 transition-all duration-200 rounded-lg mx-2 group w-full text-left"
+                role="menuitem"
+              >
+                <link.icon className="h-4 w-4 text-blue-800 opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+                <span className="font-medium">{link.name}</span>
+              </button>
+            ) : (
+              <Link
+                to={link.href}
+                className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-800 transition-all duration-200 rounded-lg mx-2 group"
+                onClick={onClose}
+                role="menuitem"
+              >
+                <link.icon className="h-4 w-4 text-red-800 opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+                <span className="font-medium">{link.name}</span>
+              </Link>
+            )}
           </motion.div>
         ))}
       </motion.div>
@@ -146,7 +165,8 @@ const DesktopDropdown: React.FC<{
 const MobileDropdownContent: React.FC<{
   isOpen: boolean;
   onLinkClick: (href: string, type: 'hash' | 'route') => void;
-}> = ({ isOpen, onLinkClick }) => {
+  onAdminClick: () => void;
+}> = ({ isOpen, onLinkClick, onAdminClick }) => {
   if (!isOpen) return null;
 
   return (
@@ -165,14 +185,25 @@ const MobileDropdownContent: React.FC<{
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.15, delay: index * 0.02 }}
         >
-          <button
-            onClick={() => onLinkClick(link.href, 'route')}
-            className="flex items-center gap-3 w-full text-left py-3 px-3 text-gray-600 hover:text-red-800 transition-colors rounded-lg group"
-            role="menuitem"
-          >
-            <link.icon className="h-4 w-4 text-red-800 opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
-            <span className="font-medium">{link.name}</span>
-          </button>
+          {link.type === 'modal' ? (
+            <button
+              onClick={onAdminClick}
+              className="flex items-center gap-3 w-full text-left py-3 px-3 text-gray-600 hover:text-blue-800 transition-colors rounded-lg group"
+              role="menuitem"
+            >
+              <link.icon className="h-4 w-4 text-blue-800 opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+              <span className="font-medium">{link.name}</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => onLinkClick(link.href, 'route')}
+              className="flex items-center gap-3 w-full text-left py-3 px-3 text-gray-600 hover:text-red-800 transition-colors rounded-lg group"
+              role="menuitem"
+            >
+              <link.icon className="h-4 w-4 text-red-800 opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+              <span className="font-medium">{link.name}</span>
+            </button>
+          )}
         </motion.div>
       ))}
     </motion.div>
@@ -185,7 +216,8 @@ const MobileMenu: React.FC<{
   onLinkClick: (href: string, type: 'hash' | 'route') => void;
   mobileDropdownOpen: boolean;
   toggleMobileDropdown: () => void;
-}> = ({ isOpen, onClose, onLinkClick, mobileDropdownOpen, toggleMobileDropdown }) => {
+  onAdminClick: () => void;
+}> = ({ isOpen, onClose, onLinkClick, mobileDropdownOpen, toggleMobileDropdown, onAdminClick }) => {
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   // Close mobile menu when clicking outside
@@ -277,6 +309,10 @@ const MobileMenu: React.FC<{
               <MobileDropdownContent 
                 isOpen={mobileDropdownOpen} 
                 onLinkClick={onLinkClick}
+                onAdminClick={() => {
+                  onAdminClick();
+                  onClose();
+                }}
               />
             </AnimatePresence>
           </div>
@@ -306,12 +342,26 @@ const MobileMenu: React.FC<{
 const Navbar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const auth = useAuth();
+  
+  const { isAuthenticated, loading: authLoading } = auth;
+  
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
+  const [adminModalOpen, setAdminModalOpen] = useState(false);
   
   const desktopDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Handle admin button click
+  const handleAdminClick = useCallback(() => {
+    if (!authLoading && isAuthenticated) {
+      navigate('/admin/dashboard');
+    } else {
+      setAdminModalOpen(true);
+    }
+  }, [isAuthenticated, authLoading, navigate]);
 
   // Simple scroll handler for navbar background
   useEffect(() => {
@@ -470,6 +520,7 @@ const Navbar: React.FC = () => {
                   <DesktopDropdown 
                     isOpen={desktopDropdownOpen} 
                     onClose={() => setDesktopDropdownOpen(false)}
+                    onAdminClick={handleAdminClick}
                   />
                 </motion.div>
               </div>
@@ -537,11 +588,15 @@ const Navbar: React.FC = () => {
           onLinkClick={handleMobileLinkClick}
           mobileDropdownOpen={mobileDropdownOpen}
           toggleMobileDropdown={toggleMobileDropdown}
+          onAdminClick={handleAdminClick}
         />
       </motion.header>
       
       {/* Add spacing for fixed navbar */}
       <div className={`h-${isScrolled ? '20' : '24'}`} aria-hidden="true" />
+      
+      {/* Admin Login Modal */}
+      <AdminLoginModal isOpen={adminModalOpen} onClose={() => setAdminModalOpen(false)} />
     </>
   );
 };

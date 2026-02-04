@@ -1,7 +1,8 @@
 // components/Hero.tsx
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { ArrowRight, Play, Users, Heart, X, Volume2, VolumeX, Download, Pause, Maximize2, Minimize2, SkipBack, SkipForward } from 'lucide-react';
-import { useNFContent } from '../content/useNFContent';
+import { usePublicHeroSlides, usePublicSiteSettings } from '../hooks/public';
+import { mapHeroSlideToUI, fallbackHeroSlide, fallbackSiteSettings } from '../lib/dataMappers';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -808,20 +809,23 @@ const Hero = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const location = useLocation();
   
-  const { content } = useNFContent();
+  // Fetch data from database
+  const { data: heroSlides = [fallbackHeroSlide], isLoading: slidesLoading } = usePublicHeroSlides();
+  const { data: siteSettings = fallbackSiteSettings, isLoading: settingsLoading } = usePublicSiteSettings();
 
-  const heroTitle = content?.hero?.title || 'Building Hope';
-  const heroSubtitle =
-    content?.hero?.subtitle ||
-    "Where every child's potential is nurtured, every widow's dignity restored, and every family's future transformed through sustainable, Christ-centered programs.";
+  // Use first slide for hero content (or could implement carousel)
+  const mainSlide = heroSlides[0] || fallbackHeroSlide;
+  const mappedSlide = mapHeroSlideToUI(mainSlide);
 
-  const heroBadge = content?.site?.brandName ? `${content.site.brandName}` : 'Christ-Centered Community Transformation';
+  const heroTitle = mappedSlide.title;
+  const heroSubtitle = mappedSlide.subtitle;
+  const heroBadge = siteSettings?.brand_name || 'Christ-Centered Community Transformation';
 
-  const trustItems = content?.trustBar?.items?.filter(Boolean) ?? [];
+  // Hero stats (could be enhanced with actual data later)
   const heroStats = [
-    { icon: Users, label: trustItems[0]?.label || 'Years Active', value: trustItems[0]?.value || '2020–Present' },
-    { icon: Heart, label: trustItems[1]?.label || 'Beneficiaries', value: trustItems[1]?.value || '650+' },
-    { icon: Play, label: trustItems[2]?.label || 'Programs', value: trustItems[2]?.value || 'TBD' }
+    { icon: Users, label: 'Years Active', value: '2020–Present' },
+    { icon: Heart, label: 'Beneficiaries', value: '650+' },
+    { icon: Play, label: 'Programs', value: '6 Active' }
   ];
 
   const [isLoaded, setIsLoaded] = useState(false);

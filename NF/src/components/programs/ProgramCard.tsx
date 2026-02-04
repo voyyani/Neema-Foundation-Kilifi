@@ -6,7 +6,7 @@ import type { Program } from './types';
 
 interface ProgramCardProps {
   program: Program;
-  onProgramSelect: (programId: string) => void;
+  onProgramSelect: (program: Program) => void;
   index: number;
   variant?: 'default' | 'compact';
 }
@@ -49,7 +49,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
         transition={{ delay: index * 0.1 }}
         viewport={{ once: true }}
         whileHover={{ y: -4 }}
-        onClick={() => onProgramSelect(program.id)}
+        onClick={() => onProgramSelect(program)}
       >
         <div className={`bg-gradient-to-r ${getColorClasses(program.color)} p-4 text-white`}>
           <div className="flex items-center space-x-3">
@@ -93,7 +93,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
         {/* Header */}
         <div 
           className={`bg-gradient-to-r ${getColorClasses(program.color)} p-6 text-white cursor-pointer`}
-          onClick={() => onProgramSelect(program.id)}
+          onClick={() => onProgramSelect(program)}
         >
           <div className="flex items-center space-x-4">
             <div className="bg-white/20 p-3 rounded-xl">
@@ -196,7 +196,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
 
           {/* Action Button */}
           <button
-            onClick={() => onProgramSelect(program.id)}
+            onClick={() => onProgramSelect(program)}
             className="inline-flex items-center justify-center w-full bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors rounded-xl py-3 font-semibold group-hover:bg-red-50 group-hover:text-red-800 mt-auto"
           >
             <Play className="mr-2 h-4 w-4" />

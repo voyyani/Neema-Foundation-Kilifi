@@ -1,5 +1,5 @@
 // ProgramsLandingPage.tsx
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, Calendar, Users, Target, MapPin, 
@@ -9,13 +9,16 @@ import {
 // Components
 import ProgramsHero from './ProgramsHero';
 import ProgramGrid from './ProgramGrid';
-import AdditionalPrograms from './AdditionalPrograms';
 import ProgramModal from './ProgramModal';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import ErrorBoundary from '../ui/ErrorBoundary';
 
-// Data
-import { mainPrograms, additionalPrograms, programsStats } from '../../data/programs';
+// Hooks
+import { usePublicPrograms, usePublicFeaturedPrograms } from '../../hooks/public';
+import { usePublicUpcomingEvents } from '../../hooks/public/usePublicEvents';
+
+// Utils
+import { mapProgramToLegacyFormat } from '../../lib/dataMappers';
 
 // Types
 import type { ProgramEvent } from './types';
@@ -32,54 +35,83 @@ const getEventColor = (programColor: string) => {
 };
 
 const ProgramsLandingPage: React.FC = () => {
-  const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [selectedProgram, setSelectedProgram] = useState<any | null>(null);
   const [activeView, setActiveView] = useState<'programs' | 'events' | 'impact'>('programs');
   const [selectedEvent, setSelectedEvent] = useState<ProgramEvent | null>(null);
 
-  // Get all upcoming events from all programs
+  // Fetch programs from database
+  const { data: allPrograms = [], isLoading, error } = usePublicPrograms();
+  const { data: featuredPrograms = [] } = usePublicFeaturedPrograms();
+  const { data: upcomingEvents = [] } = usePublicUpcomingEvents();
+
+  // Debug logging
+  console.log('🔍 Programs Debug:', {
+    isLoading,
+    error: error?.message,
+    allPrograms: allPrograms.length,
+    featuredPrograms: featuredPrograms.length,
+    allProgramsData: allPrograms,
+    featuredProgramsData: featuredPrograms
+  });
+
+  // Map all programs to legacy format - show all in main grid
+  const allMappedPrograms = useMemo(() => 
+    allPrograms.map(p => mapProgramToLegacyFormat(p) as any),
+    [allPrograms]
+  );
+
+  // Featured programs for hero section
+  const mainPrograms = useMemo(() => 
+    featuredPrograms.map(p => mapProgramToLegacyFormat(p) as any),
+    [featuredPrograms]
+  );
+
+  // Calculate stats from database programs
+  const programsStats = useMemo(() => ({
+    totalPrograms: allPrograms.length,
+    activePrograms: allPrograms.filter(p => p.is_active).length,
+    totalBeneficiaries: allPrograms.reduce((sum, p) => sum + (p.beneficiary_count || 0), 0),
+    totalEvents: upcomingEvents.length,
+  }), [allPrograms, upcomingEvents]);
+
+  // Get all upcoming events from database
   const allUpcomingEvents = useMemo(() => {
-    return mainPrograms.flatMap(program => 
-      (program.upcomingEvents || []).map(event => ({
-        ...event,
-        program: program.title,
-        programId: program.id,
-        programColor: program.color
-      }))
-    ).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, []);
+    // TODO: Link events to programs in Phase 2
+    // For now, return all events
+    return upcomingEvents.map((event: any) => ({
+      id: event.id,
+      title: event.title,
+      description: event.description || '',
+      date: event.event_date,
+      time: event.event_time || 'TBA',
+      location: event.location || 'Ganze',
+      image: event.cover_image || '',
+      status: event.status,
+      program: 'General', // TODO: Link to program in Phase 2
+      programId: 'general',
+      programColor: 'red',
+      maxAttendees: event.max_attendees,
+      currentAttendees: event.current_attendees || 0,
+      registrationLink: event.registration_link || '',
+    }));
+  }, [upcomingEvents]);
 
   // Featured program (could be based on logic like most beneficiaries, etc.)
   const featuredProgram = useMemo(() => {
-    return mainPrograms.find(program => program.id === 'ahoho-mission') || mainPrograms[0];
-  }, []);
+    return mainPrograms.find(program => program.id === 'ahoho-marye-mashome') || mainPrograms[0];
+  }, [mainPrograms]);
 
-  // Impact statistics
+  // Impact statistics from database
   const impactStats = useMemo(() => ({
-    totalBeneficiaries: mainPrograms.reduce((sum, program) => sum + program.impactMetrics.beneficiaries, 0),
-    activeVolunteers: 120,
-    communitiesReached: 8,
-    mealsServed: 45000
-  }), []);
+    totalBeneficiaries: programsStats.totalBeneficiaries,
+    activeVolunteers: 25, // TODO: Add to database schema
+    communitiesReached: 12, // TODO: Add to database schema
+    totalPrograms: programsStats.totalPrograms,
+    mealsServed: 45000, // TODO: Add to database schema or calculate from Ahoho program
+  }), [programsStats]);
 
-  // Simulate API loading
-  useEffect(() => {
-    const loadPrograms = async () => {
-      try {
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setIsLoading(false);
-      } catch (err) {
-        setError('Failed to load programs data. Please try again later.');
-        setIsLoading(false);
-      }
-    };
-
-    loadPrograms();
-  }, []);
-
-  const openProgramModal = (programId: string) => {
-    setSelectedProgram(programId);
+  const openProgramModal = (program: any) => {
+    setSelectedProgram(program);
     document.body.style.overflow = 'hidden';
   };
 
@@ -105,7 +137,7 @@ const ProgramsLandingPage: React.FC = () => {
           <div className="text-center py-16">
             <div className="bg-red-50 border border-red-200 rounded-xl p-8 max-w-md mx-auto">
               <h3 className="text-xl font-bold text-gray-900 mb-2">Unable to Load Programs</h3>
-              <p className="text-gray-600 mb-4">{error}</p>
+              <p className="text-gray-600 mb-4">{error?.message || 'An error occurred'}</p>
               <button 
                 onClick={() => window.location.reload()}
                 className="bg-red-800 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors"
@@ -272,7 +304,7 @@ const ProgramsLandingPage: React.FC = () => {
                               </div>
                             </div>
                             <button
-                              onClick={() => openProgramModal(featuredProgram.id)}
+                              onClick={() => openProgramModal(featuredProgram)}
                               className="inline-flex items-center gap-2 bg-red-800 text-white px-8 py-4 rounded-xl hover:bg-red-700 transition-colors font-semibold"
                             >
                               <Eye className="h-5 w-5" />
@@ -293,18 +325,15 @@ const ProgramsLandingPage: React.FC = () => {
                     </motion.div>
                   )}
 
-                  {/* All Programs Grid */}
-                  <ProgramGrid
-                    programs={mainPrograms}
-                    onProgramSelect={openProgramModal}
-                    showFilters={true}
-                  />
-
-                  {/* Additional Programs */}
-                  <AdditionalPrograms
-                    programs={additionalPrograms}
-                    onProgramClick={openProgramModal}
-                  />
+                  {/* All Programs Grid - Show all programs */}
+                  <div className="mb-12">
+                    <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">All Programs</h2>
+                    <ProgramGrid
+                      programs={allMappedPrograms}
+                      onProgramSelect={openProgramModal}
+                      showFilters={false}
+                    />
+                  </div>
                 </motion.div>
               )}
 
@@ -507,7 +536,7 @@ const ProgramsLandingPage: React.FC = () => {
         <AnimatePresence>
           {selectedProgram && (
             <ProgramModal
-              programId={selectedProgram}
+              program={selectedProgram}
               onClose={closeProgramModal}
             />
           )}

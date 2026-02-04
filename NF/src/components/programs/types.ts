@@ -54,7 +54,7 @@ export interface AdditionalProgram {
 }
 
 export interface ProgramModalProps {
-    programId: string | null;
+    program: any; // Full program object
     onClose: () => void;
 }
 

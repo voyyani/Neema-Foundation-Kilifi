@@ -2,56 +2,92 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Quote, ChevronLeft, ChevronRight, Play, Heart, Users } from 'lucide-react';
+import { usePublicStories } from '../hooks/public';
 
 const Stories: React.FC = () => {
   const [activeStory, setActiveStory] = useState(0);
+  const { data: stories = [], isLoading, error } = usePublicStories();
 
-  const stories = [
-    {
-      id: 1,
-      name: 'Mama Aisha',
-      role: 'Widow & Program Beneficiary',
-      image: '👩🏾',
-      quote: 'Before Neema Foundation, I struggled to feed my children. Now, I have a small business and my children eat at school every day. God bless this foundation.',
-      program: 'Widows Empowerment',
-      impact: 'Started successful small business, children in school'
-    },
-    {
-      id: 2,
-      name: 'Little Juma',
-      role: 'Ahoho Mission Child',
-      image: '👦🏾',
-      quote: 'I love coming to school now because I get porridge and can play football. The teachers are kind and I have new friends.',
-      program: 'Ahoho Mission',
-      impact: 'Improved school attendance, better nutrition'
-    },
-    {
-      id: 3,
-      name: 'Pastor John',
-      role: 'Community Leader',
-      image: '👨🏾‍💼',
-      quote: 'Neema Foundation has brought real hope to our community. The spiritual and physical support has transformed many families.',
-      program: 'Enendeni Mission',
-      impact: 'Community unity, spiritual growth'
-    },
-    {
-      id: 4,
-      name: 'Mwanamkuu Said',
-      role: 'Youth Mentor',
-      image: '👨🏾‍🏫',
-      quote: 'Through the sports program, we\'re keeping youth engaged and teaching important life skills. They have hope for their future.',
-      program: 'Sports Development',
-      impact: 'Youth engagement, talent development'
-    }
-  ];
+  // Log for debugging
+  React.useEffect(() => {
+    console.log('Stories component - Loading:', isLoading);
+    console.log('Stories component - Error:', error);
+    console.log('Stories component - Data:', stories);
+    console.log('Stories component - Count:', stories?.length || 0);
+  }, [stories, isLoading, error]);
 
   const nextStory = () => {
-    setActiveStory((prev) => (prev + 1) % stories.length);
+    if (stories.length > 0) {
+      setActiveStory((prev) => (prev + 1) % stories.length);
+    }
   };
 
   const prevStory = () => {
-    setActiveStory((prev) => (prev - 1 + stories.length) % stories.length);
+    if (stories.length > 0) {
+      setActiveStory((prev) => (prev - 1 + stories.length) % stories.length);
+    }
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <section id="stories" className="py-14 sm:py-16 md:py-20 bg-gray-50">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-full px-4 py-2 mb-6">
+              <Heart className="h-4 w-4 text-red-800" />
+              <span className="text-sm font-medium text-red-800">Impact Stories</span>
+            </div>
+            <div className="h-10 bg-gray-200 rounded w-2/3 mx-auto mb-4 animate-pulse"></div>
+            <div className="h-6 bg-gray-200 rounded w-1/2 mx-auto animate-pulse"></div>
+          </div>
+          <div className="bg-white rounded-2xl shadow-xl p-12 animate-pulse">
+            <div className="flex items-center gap-8">
+              <div className="w-32 h-32 bg-gray-300 rounded-full"></div>
+              <div className="flex-1 space-y-4">
+                <div className="h-6 bg-gray-200 rounded w-full"></div>
+                <div className="h-6 bg-gray-200 rounded w-5/6"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <section id="stories" className="py-14 sm:py-16 md:py-20 bg-gray-50">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="text-center">
+            <Users className="h-16 w-16 text-red-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Unable to Load Stories</h3>
+            <p className="text-gray-600 mb-4">We're having trouble loading our stories right now.</p>
+            <p className="text-sm text-gray-500 font-mono bg-red-50 p-4 rounded inline-block">
+              Error: {error instanceof Error ? error.message : 'Unknown error'}
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Empty state
+  if (!stories || stories.length === 0) {
+    return (
+      <section id="stories" className="py-14 sm:py-16 md:py-20 bg-gray-50">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="text-center">
+            <Users className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Stories Available</h3>
+            <p className="text-gray-600">Check back soon for inspiring stories from our community.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="stories" className="py-14 sm:py-16 md:py-20 bg-gradient-to-br from-red-50 to-white">
@@ -86,31 +122,49 @@ const Stories: React.FC = () => {
                 <div className="flex flex-col lg:flex-row items-center gap-8">
                   {/* Story Image/Icon */}
                   <div className="flex-shrink-0">
-                    <div className="w-32 h-32 bg-gradient-to-br from-red-600 to-red-800 rounded-full flex items-center justify-center text-4xl">
-                      {stories[activeStory].image}
-                    </div>
+                    {stories[activeStory].featured_image_url ? (
+                      <img 
+                        src={stories[activeStory].featured_image_url} 
+                        alt={stories[activeStory].title}
+                        className="w-32 h-32 rounded-full object-cover border-4 border-red-600"
+                      />
+                    ) : (
+                      <div className="w-32 h-32 bg-gradient-to-br from-red-600 to-red-800 rounded-full flex items-center justify-center text-4xl">
+                        <Users className="h-16 w-16 text-white" />
+                      </div>
+                    )}
                   </div>
 
                   {/* Story Content */}
                   <div className="flex-1 text-center lg:text-left">
                     <Quote className="h-8 w-8 text-red-800 mx-auto lg:mx-0 mb-4" />
                     <blockquote className="text-xl md:text-2xl text-gray-800 mb-6 leading-relaxed">
-                      "{stories[activeStory].quote}"
+                      "{stories[activeStory].excerpt || stories[activeStory].content?.substring(0, 200) + '...'}"
                     </blockquote>
                     
                     <div className="space-y-2">
                       <div className="font-bold text-lg text-gray-900">
-                        {stories[activeStory].name}
+                        {stories[activeStory].title}
                       </div>
-                      <div className="text-red-800 font-medium">
-                        {stories[activeStory].role}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Program: {stories[activeStory].program}
-                      </div>
-                      <div className="text-sm text-green-700 font-medium">
-                        Impact: {stories[activeStory].impact}
-                      </div>
+                      {stories[activeStory].author && (
+                        <div className="text-red-800 font-medium">
+                          {stories[activeStory].author}
+                        </div>
+                      )}
+                      {stories[activeStory].category && (
+                        <div className="text-sm text-gray-600">
+                          Category: {stories[activeStory].category}
+                        </div>
+                      )}
+                      {stories[activeStory].tags && stories[activeStory].tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 justify-center lg:justify-start mt-2">
+                          {stories[activeStory].tags.map((tag: string, idx: number) => (
+                            <span key={idx} className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

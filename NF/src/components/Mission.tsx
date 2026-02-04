@@ -2,18 +2,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Book, Utensils, Activity, Target } from 'lucide-react';
-import { useNFContent } from '../content/useNFContent';
+import { usePublicSiteSettings } from '../hooks/public';
 
 const Mission: React.FC = () => {
-  const { content } = useNFContent();
+  const { data: siteSettings, isLoading } = usePublicSiteSettings();
 
-  const vision =
-    content?.site?.vision ||
-    'A transformed, healthy and self-empowered Christ-loving community within Ganze Sub-county';
-  const mission =
-    content?.site?.mission ||
-    "Bringing God's transformative love to Kilifi County through compassionate healthcare, quality education, and sustainable community empowerment programs.";
-  const pptxValues = content?.site?.values?.filter(Boolean) ?? [];
+  const vision = siteSettings?.vision || 'A transformed, healthy and self-empowered Christ-loving community within Ganze Sub-county';
+  const mission = siteSettings?.mission || "Bringing God's transformative love to Kilifi County through compassionate healthcare, quality education, and sustainable community empowerment programs.";
+  const pptxValues = siteSettings?.values?.filter(Boolean) ?? [];
 
   const getPillarColorClasses = (color: string) => {
     const colors = {

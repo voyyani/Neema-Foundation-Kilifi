@@ -1,6 +1,9 @@
 // src/App.tsx
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Toaster } from 'sonner';
 import Navbar from './components/Navbar';
 import Landing from './pages/Landing';
 import Footer from './components/Footer';
@@ -16,6 +19,31 @@ import NotFound from './pages/NotFound';
 import Maintenance from './pages/Maintenance';
 // Use the barrel export to improve resolver compatibility on case-sensitive filesystems
 import { Programs } from './components/programs';
+import LoadingSpinner from './components/ui/LoadingSpinner';
+import { AuthProvider } from './admin/hooks/useAuth';
+import { queryClient } from './admin/config/queryClient';
+
+// Lazy load admin routes for code splitting
+const AdminLogin = lazy(() => import('./admin/pages/AdminLogin'));
+const ForgotPassword = lazy(() => import('./admin/pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./admin/pages/ResetPassword'));
+const AdminLayout = lazy(() => import('./admin/components/layout/AdminLayout'));
+const AuthGuard = lazy(() => import('./admin/components/auth/AuthGuard'));
+const AdminDashboard = lazy(() => import('./admin/pages/AdminDashboard'));
+const EventsPage = lazy(() => import('./admin/pages/events/EventsPage'));
+const NewEventPage = lazy(() => import('./admin/pages/events/NewEventPage'));
+const EventDetailPage = lazy(() => import('./admin/pages/events/EventDetailPage'));
+
+// Content Management Pages
+const ContentPage = lazy(() => import('./admin/pages/content/ContentPage'));
+const SiteSettingsPage = lazy(() => import('./admin/pages/content/SiteSettingsPage'));
+const HeroPage = lazy(() => import('./admin/pages/content/HeroPage'));
+const ProgramsPage = lazy(() => import('./admin/pages/content/ProgramsPage'));
+const StoriesPage = lazy(() => import('./admin/pages/content/StoriesPage'));
+const ImpactPage = lazy(() => import('./admin/pages/content/ImpactPage'));
+const BoardPage = lazy(() => import('./admin/pages/content/BoardPage'));
+const PartnersManagement = lazy(() => import('./admin/components/content/PartnersManagement'));
+
 // Global Error Boundary
 class GlobalErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -63,40 +91,88 @@ const App: React.FC = () => {
 
   return (
     <GlobalErrorBoundary>
-      <Router>
-        <div className="App">
-          <div className="min-h-screen flex flex-col">
-            <Navbar />
-            <main className="flex-1">
-              <Routes>
-                {isUnderMaintenance ? (
-                  // Maintenance mode routes
-                  <>
-                    <Route path="/volunteer" element={<Volunteer />} />
-                    <Route path="*" element={<Maintenance />} />
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Router>
+            <Toaster position="top-right" richColors />
+            <div className="App">
+              <div className="min-h-screen flex flex-col">
+                <Suspense fallback={<LoadingSpinner />}>
+                  <Routes>
+                  {/* Admin Routes - No Navbar/Footer */}
+                  <Route path="/admin/login" element={<AdminLogin />} />
+                  <Route path="/admin/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/admin/reset-password" element={<ResetPassword />} />
+                  <Route
+                    path="/admin/*"
+                    element={
+                      <AuthGuard>
+                        <AdminLayout />
+                      </AuthGuard>
+                    }
+                  >
+                    <Route path="dashboard" element={<AdminDashboard />} />
+                    {/* Event Management Routes */}
+                    <Route path="events" element={<EventsPage />} />
+                    <Route path="events/new" element={<NewEventPage />} />
+                    <Route path="events/:id" element={<EventDetailPage />} />
+                    {/* Site Settings Route */}
+                    <Route path="site-settings" element={<SiteSettingsPage />} />
+                    {/* Content Management Routes */}
+                    <Route path="content" element={<ContentPage />} />
+                    <Route path="content/hero" element={<HeroPage />} />
+                    <Route path="content/programs" element={<ProgramsPage />} />
+                    <Route path="content/stories" element={<StoriesPage />} />
+                    <Route path="content/impact" element={<ImpactPage />} />
+                    <Route path="content/partners" element={<PartnersManagement />} />
+                    <Route path="content/board" element={<BoardPage />} />
+                    {/* More admin routes will be added in future phases */}
+                  </Route>
 
-                  </>
-                ) : (
-                  // Normal mode - all routes accessible
-                  <>
-                    <Route path="/" element={<Landing />} />
-                    <Route path="/donate" element={<Donate />} />
-                    <Route path="/bank-details" element={<BankDetails />} />
-                    <Route path="/legacy-giving" element={<LegacyGiving />} />
-                    <Route path="/volunteer" element={<Volunteer />} />
-                    <Route path="/partner" element={<Partnership />} />
-                    <Route path="/sponsorship" element={<Sponsorship />} />
-                    <Route path="/board" element={<Board />} />
-                    <Route path="*" element={<NotFound />} />
-                    <Route path="/programs" element={<Programs />} />
-                  </>
-                )}
-              </Routes>
-            </main>
-            <Footer />
+                  {/* Public Routes - With Navbar/Footer */}
+                  <Route
+                    path="/*"
+                    element={
+                      <>
+                        <Navbar />
+                        <main className="flex-1">
+                          <Routes>
+                            {isUnderMaintenance ? (
+                              // Maintenance mode routes
+                              <>
+                                <Route path="/volunteer" element={<Volunteer />} />
+                                <Route path="*" element={<Maintenance />} />
+                              </>
+                            ) : (
+                              // Normal mode - all routes accessible
+                              <>
+                                <Route path="/" element={<Landing />} />
+                                <Route path="/donate" element={<Donate />} />
+                                <Route path="/bank-details" element={<BankDetails />} />
+                                <Route path="/legacy-giving" element={<LegacyGiving />} />
+                                <Route path="/volunteer" element={<Volunteer />} />
+                                <Route path="/partner" element={<Partnership />} />
+                                <Route path="/sponsorship" element={<Sponsorship />} />
+                                <Route path="/board" element={<Board />} />
+                                <Route path="/programs" element={<Programs />} />
+                                <Route path="*" element={<NotFound />} />
+                              </>
+                            )}
+                          </Routes>
+                        </main>
+                        <Footer />
+                      </>
+                    }
+                  />
+                </Routes>
+              </Suspense>
+            </div>
           </div>
-        </div>
-      </Router>
+        </Router>
+        <Analytics />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </AuthProvider>
+      </QueryClientProvider>
     </GlobalErrorBoundary>
   );
 };

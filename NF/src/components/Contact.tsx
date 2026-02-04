@@ -2,8 +2,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Send, MessageCircle, Clock } from 'lucide-react';
+import { usePublicSiteSettings } from '../hooks/public';
 
 const Contact: React.FC = () => {
+  const { data: siteSettings } = usePublicSiteSettings();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -60,38 +62,53 @@ const Contact: React.FC = () => {
 
             {/* Contact Methods */}
             <div className="space-y-6">
-              <div className="flex items-start space-x-4">
-                <div className="bg-red-100 p-3 rounded-xl">
-                  <MapPin className="h-6 w-6 text-red-800" />
+              {siteSettings?.contact_address && (
+                <div className="flex items-start space-x-4">
+                  <div className="bg-red-100 p-3 rounded-xl">
+                    <MapPin className="h-6 w-6 text-red-800" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-900 mb-1">Our Location</h4>
+                    <p className="text-gray-600">{siteSettings.contact_address}</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 mb-1">Our Location</h4>
-                  <p className="text-gray-600">Ganze Sub-county, Kilifi County</p>
-                  <p className="text-gray-500 text-sm">Kenya, East Africa</p>
-                </div>
-              </div>
+              )}
 
-              <div className="flex items-start space-x-4">
-                <div className="bg-red-100 p-3 rounded-xl">
-                  <Phone className="h-6 w-6 text-red-800" />
+              {siteSettings?.contact_phone && (
+                <div className="flex items-start space-x-4">
+                  <div className="bg-red-100 p-3 rounded-xl">
+                    <Phone className="h-6 w-6 text-red-800" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-900 mb-1">Phone & WhatsApp</h4>
+                    <a 
+                      href={`tel:${siteSettings.contact_phone.replace(/\s/g, '')}`}
+                      className="text-gray-600 hover:text-red-800 transition-colors"
+                    >
+                      {siteSettings.contact_phone}
+                    </a>
+                    <p className="text-gray-500 text-sm">Available Mon-Sat, 8AM-6PM</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 mb-1">Phone & WhatsApp</h4>
-                  <p className="text-gray-600">+254 700 000 000</p>
-                  <p className="text-gray-500 text-sm">Available Mon-Sat, 8AM-6PM</p>
-                </div>
-              </div>
+              )}
 
-              <div className="flex items-start space-x-4">
-                <div className="bg-red-100 p-3 rounded-xl">
-                  <Mail className="h-6 w-6 text-red-800" />
+              {siteSettings?.contact_email && (
+                <div className="flex items-start space-x-4">
+                  <div className="bg-red-100 p-3 rounded-xl">
+                    <Mail className="h-6 w-6 text-red-800" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-900 mb-1">Email Address</h4>
+                    <a 
+                      href={`mailto:${siteSettings.contact_email}`}
+                      className="text-gray-600 hover:text-red-800 transition-colors"
+                    >
+                      {siteSettings.contact_email}
+                    </a>
+                    <p className="text-gray-500 text-sm">We respond within 24 hours</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 mb-1">Email Address</h4>
-                  <p className="text-gray-600">info@neemafoundationkilifi.org</p>
-                  <p className="text-gray-500 text-sm">We respond within 24 hours</p>
-                </div>
-              </div>
+              )}
 
               <div className="flex items-start space-x-4">
                 <div className="bg-red-100 p-3 rounded-xl">

@@ -7,7 +7,7 @@ import ProgramCard from './ProgramCard';
 
 interface ProgramGridProps {
   programs: Program[];
-  onProgramSelect: (programId: string) => void;
+  onProgramSelect: (program: Program) => void;
   showFilters?: boolean;
 }
 
@@ -18,7 +18,7 @@ const ProgramGrid: React.FC<ProgramGridProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<ProgramFilter>({
-    status: ['active'],
+    status: [],
     category: [],
     location: []
   });
