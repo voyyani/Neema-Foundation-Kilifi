@@ -1,6 +1,6 @@
 // Public hook for fetching active partners (read-only)
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '../../admin/lib/supabase';
+import { supabasePublic as supabase } from '../../lib/supabase/client';
 
 export interface PublicPartner {
   id: string;

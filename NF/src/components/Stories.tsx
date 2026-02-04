@@ -122,9 +122,9 @@ const Stories: React.FC = () => {
                 <div className="flex flex-col lg:flex-row items-center gap-8">
                   {/* Story Image/Icon */}
                   <div className="flex-shrink-0">
-                    {stories[activeStory].featured_image_url ? (
+                    {stories[activeStory].image_url ? (
                       <img 
-                        src={stories[activeStory].featured_image_url} 
+                        src={stories[activeStory].image_url} 
                         alt={stories[activeStory].title}
                         className="w-32 h-32 rounded-full object-cover border-4 border-red-600"
                       />
@@ -146,23 +146,14 @@ const Stories: React.FC = () => {
                       <div className="font-bold text-lg text-gray-900">
                         {stories[activeStory].title}
                       </div>
-                      {stories[activeStory].author && (
+                      {stories[activeStory].author_name && (
                         <div className="text-red-800 font-medium">
-                          {stories[activeStory].author}
+                          {stories[activeStory].author_name}
                         </div>
                       )}
                       {stories[activeStory].category && (
                         <div className="text-sm text-gray-600">
                           Category: {stories[activeStory].category}
-                        </div>
-                      )}
-                      {stories[activeStory].tags && stories[activeStory].tags.length > 0 && (
-                        <div className="flex flex-wrap gap-2 justify-center lg:justify-start mt-2">
-                          {stories[activeStory].tags.map((tag: string, idx: number) => (
-                            <span key={idx} className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
-                              {tag}
-                            </span>
-                          ))}
                         </div>
                       )}
                     </div>

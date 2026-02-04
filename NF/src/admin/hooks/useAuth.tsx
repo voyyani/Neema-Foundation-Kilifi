@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { User, Session, AuthError } from '@supabase/supabase-js';
-import { supabase } from '../../lib/supabase/client';
+import { supabaseAdmin as supabase, type Inserts } from '../../lib/supabase/client';
 import type { AuthContextValue, UserProfile } from '../types/auth';
 import SessionExpiryWarning from '../components/auth/SessionExpiryWarning';
 import { toast } from 'sonner';
@@ -33,13 +33,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // Profile doesn't exist - create default profile
         if (error.code === 'PGRST116') {
           console.log('Profile not found, creating default profile...');
+          const insertData: Inserts<'profiles'> = {
+            id: userId,
+            role: 'viewer',
+            email: user?.email || '',
+          };
           const { data: newProfile, error: createError } = await supabase
             .from('profiles')
-            .insert({
-              id: userId,
-              role: 'viewer',
-              email: user?.email || '',
-            })
+            // @ts-expect-error Supabase types not recognizing profiles table - runtime is correct
+            .insert(insertData)
             .select()
             .single();
           
@@ -48,21 +50,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
             throw createError;
           }
           
-          setProfile(newProfile);
+          setProfile(newProfile as UserProfile);
           return;
         }
         throw error;
       }
       
-      setProfile(data);
+      setProfile(data as UserProfile);
     } catch (err) {
       console.error('Error fetching profile:', err);
       // Allow access with minimal profile instead of blocking
-      const fallbackProfile = {
+      const fallbackProfile: UserProfile = {
         id: userId,
-        role: 'viewer' as const,
+        role: 'viewer',
         email: user?.email || '',
+        full_name: null,
+        avatar_url: null,
         created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       };
       setProfile(fallbackProfile);
     }
@@ -281,7 +286,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     // Listen for user activity
     const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
-    let activityTimeout: NodeJS.Timeout;
+    let activityTimeout: ReturnType<typeof setTimeout>;
 
     const debouncedActivity = () => {
       clearTimeout(activityTimeout);

@@ -33,6 +33,7 @@ const Programs: React.FC = () => {
     totalPrograms: allPrograms.length,
     activePrograms: allPrograms.filter(p => p.is_active).length,
     totalBeneficiaries: allPrograms.reduce((sum, p) => sum + (p.beneficiary_count || 0), 0),
+    totalEvents: 0, // Events fetched separately if needed
   }), [allPrograms]);
 
   const openProgramModal = (program: any) => {
@@ -52,7 +53,7 @@ const Programs: React.FC = () => {
           <div className="text-center py-16">
             <div className="bg-red-50 border border-red-200 rounded-xl p-8 max-w-md mx-auto">
               <h3 className="text-xl font-bold text-gray-900 mb-2">Unable to Load Programs</h3>
-              <p className="text-gray-600 mb-4">{error}</p>
+              <p className="text-gray-600 mb-4">{error?.message || 'An error occurred'}</p>
               <button 
                 onClick={() => window.location.reload()}
                 className="bg-red-800 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors"

@@ -254,6 +254,47 @@ export interface Database {
           updated_at?: string
         }
       }
+      partners: {
+        Row: {
+          id: string
+          name: string
+          logo_url: string | null
+          type: string | null
+          description: string | null
+          website_url: string | null
+          is_featured: boolean
+          is_active: boolean
+          display_order: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          logo_url?: string | null
+          type?: string | null
+          description?: string | null
+          website_url?: string | null
+          is_featured?: boolean
+          is_active?: boolean
+          display_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          logo_url?: string | null
+          type?: string | null
+          description?: string | null
+          website_url?: string | null
+          is_featured?: boolean
+          is_active?: boolean
+          display_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

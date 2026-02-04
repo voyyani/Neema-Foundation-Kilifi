@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../../admin/lib/supabase';
+import { supabasePublic as supabase } from '../../lib/supabase/client';
 
 /**
  * Program image from the database

@@ -159,12 +159,12 @@ const ProgramList: React.FC = () => {
           <Link
             to={`/programs/${program.slug}`}
             className="group flex items-start space-x-3 text-gray-600 hover:text-red-800 transition-colors text-sm justify-center md:justify-start focus:outline-none focus:ring-2 focus:ring-red-800 focus:ring-offset-2 rounded-lg p-2 -m-2"
-            aria-label={`Learn more about ${program.name}: ${program.tagline || program.short_description}`}
+            aria-label={`Learn more about ${program.name}: ${program.summary || ''}`}
           >
             <div className="w-2 h-2 bg-red-800 rounded-full mt-2 flex-shrink-0 group-hover:scale-150 transition-transform" aria-hidden="true" />
             <div className="text-left flex-1">
               <span className="font-semibold group-hover:underline block">{program.name}</span>
-              <p className="text-xs text-gray-500 mt-1 leading-relaxed">{program.tagline || program.short_description}</p>
+              <p className="text-xs text-gray-500 mt-1 leading-relaxed">{program.summary || ''}</p>
             </div>
           </Link>
         </motion.li>
