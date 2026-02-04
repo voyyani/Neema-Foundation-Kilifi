@@ -118,7 +118,7 @@ export function RichMediaInput({
             value={url}
             onChange={(e) => handleUrlChange(e.target.value)}
             placeholder={placeholder}
-            className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E]"
           />
           {mediaInfo && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -144,7 +144,7 @@ export function RichMediaInput({
             )}
             {mediaInfo.type === 'vimeo' && (
               <>
-                <Video className="w-4 h-4 text-blue-600" />
+                <Video className="w-4 h-4 text-[#B01C2E]" />
                 Vimeo Video
               </>
             )}

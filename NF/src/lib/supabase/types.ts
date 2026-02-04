@@ -6,6 +6,9 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+// Role type for all role references
+export type UserRoleType = 'super_admin' | 'owner' | 'admin' | 'events_manager' | 'content_manager' | 'viewer'
+
 export interface Database {
   public: {
     Tables: {
@@ -15,7 +18,12 @@ export interface Database {
           email: string
           full_name: string | null
           avatar_url: string | null
-          role: 'super_admin' | 'admin' | 'editor' | 'viewer'
+          role: UserRoleType
+          is_active: boolean
+          last_login_at: string | null
+          last_login_ip: string | null
+          phone_number: string | null
+          organization: string | null
           created_at: string
           updated_at: string
         }
@@ -24,7 +32,12 @@ export interface Database {
           email: string
           full_name?: string | null
           avatar_url?: string | null
-          role?: 'super_admin' | 'admin' | 'editor' | 'viewer'
+          role?: UserRoleType
+          is_active?: boolean
+          last_login_at?: string | null
+          last_login_ip?: string | null
+          phone_number?: string | null
+          organization?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -33,9 +46,78 @@ export interface Database {
           email?: string
           full_name?: string | null
           avatar_url?: string | null
-          role?: 'super_admin' | 'admin' | 'editor' | 'viewer'
+          role?: UserRoleType
+          is_active?: boolean
+          last_login_at?: string | null
+          last_login_ip?: string | null
+          phone_number?: string | null
+          organization?: string | null
           created_at?: string
           updated_at?: string
+        }
+      }
+      user_activity_log: {
+        Row: {
+          id: string
+          user_id: string
+          action: string
+          resource_type: string | null
+          resource_id: string | null
+          details: Json | null
+          ip_address: string | null
+          user_agent: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          action: string
+          resource_type?: string | null
+          resource_id?: string | null
+          details?: Json | null
+          ip_address?: string | null
+          user_agent?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          action?: string
+          resource_type?: string | null
+          resource_id?: string | null
+          details?: Json | null
+          ip_address?: string | null
+          user_agent?: string | null
+          created_at?: string
+        }
+      }
+      role_change_audit: {
+        Row: {
+          id: string
+          user_id: string
+          changed_by: string
+          old_role: string
+          new_role: string
+          reason: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          changed_by: string
+          old_role: string
+          new_role: string
+          reason?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          changed_by?: string
+          old_role?: string
+          new_role?: string
+          reason?: string | null
+          created_at?: string
         }
       }
       events: {

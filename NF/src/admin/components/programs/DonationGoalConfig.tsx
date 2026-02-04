@@ -121,7 +121,7 @@ export default function DonationGoalConfig({
                   })}
                   className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${
                     currency === curr.code
-                      ? 'bg-blue-600 text-white border-blue-600'
+                      ? 'bg-[#B01C2E] text-white border-blue-600'
                       : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
                   }`}
                 >
@@ -152,7 +152,7 @@ export default function DonationGoalConfig({
                 placeholder="Enter goal amount"
                 min="0"
                 step="100"
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-lg"
               />
             </div>
             
@@ -165,7 +165,7 @@ export default function DonationGoalConfig({
                   onClick={() => handlePresetGoal(preset.amount)}
                   className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${
                     goal === preset.amount
-                      ? 'bg-blue-100 text-blue-700 border-blue-300'
+                      ? 'bg-[#B01C2E]/10 text-blue-700 border-blue-300'
                       : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
                   }`}
                 >
@@ -196,7 +196,7 @@ export default function DonationGoalConfig({
                 placeholder="0"
                 min="0"
                 step="100"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
               />
             </div>
             <p className="text-xs text-gray-500 mt-1">
@@ -223,7 +223,7 @@ export default function DonationGoalConfig({
                   donation_deadline: e.target.value || undefined,
                 })}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
               />
             </div>
             {daysUntilDeadline !== null && daysUntilDeadline > 0 && (

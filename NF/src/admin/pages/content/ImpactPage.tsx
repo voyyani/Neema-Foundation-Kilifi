@@ -207,7 +207,7 @@ function MetricModal({ metric, isOpen, onClose, onSave }: MetricModalProps) {
           {/* Form */}
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             {/* Preview */}
-            <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg p-6 border border-indigo-100">
+            <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-6 border border-indigo-100">
               <div className="flex items-start gap-4">
                 <div className="p-3 rounded-lg bg-white shadow-sm">
                   <IconComponent className="h-8 w-8 text-indigo-600" />

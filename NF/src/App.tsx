@@ -2,7 +2,6 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'sonner';
 import Navbar from './components/Navbar';
 import Landing from './pages/Landing';
@@ -43,6 +42,9 @@ const StoriesPage = lazy(() => import('./admin/pages/content/StoriesPage'));
 const ImpactPage = lazy(() => import('./admin/pages/content/ImpactPage'));
 const BoardPage = lazy(() => import('./admin/pages/content/BoardPage'));
 const PartnersManagement = lazy(() => import('./admin/components/content/PartnersManagement'));
+
+// Users Management Pages
+const UsersManagementPage = lazy(() => import('./admin/pages/users/UsersManagementPage'));
 
 // Global Error Boundary
 class GlobalErrorBoundary extends React.Component<
@@ -126,6 +128,8 @@ const App: React.FC = () => {
                     <Route path="content/impact" element={<ImpactPage />} />
                     <Route path="content/partners" element={<PartnersManagement />} />
                     <Route path="content/board" element={<BoardPage />} />
+                    {/* Users Management Routes */}
+                    <Route path="users" element={<UsersManagementPage />} />
                     {/* More admin routes will be added in future phases */}
                   </Route>
 
@@ -170,7 +174,6 @@ const App: React.FC = () => {
           </div>
         </Router>
         <Analytics />
-        <ReactQueryDevtools initialIsOpen={false} />
       </AuthProvider>
       </QueryClientProvider>
     </GlobalErrorBoundary>

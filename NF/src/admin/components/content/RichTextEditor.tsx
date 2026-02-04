@@ -30,7 +30,7 @@ export default function RichTextEditor({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-blue-600 underline',
+          class: 'text-[#B01C2E] underline',
         },
       }),
       Underline,

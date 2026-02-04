@@ -68,6 +68,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         avatar_url: null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
+        is_active: true,
+        last_login_at: null,
+        last_login_ip: null,
+        phone_number: null,
+        organization: null,
       };
       setProfile(fallbackProfile);
     }

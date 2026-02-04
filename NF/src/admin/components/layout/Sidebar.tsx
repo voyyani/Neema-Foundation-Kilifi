@@ -4,6 +4,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import clsx from 'clsx';
 import { useAuth } from '../../hooks/useAuth';
 import type { UserRole } from '../../types/auth';
+import { hasPermission, type Permission } from '../../types/roles';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -14,7 +15,7 @@ interface NavItem {
   name: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
-  roles?: UserRole[];
+  requiredPermission: Permission;
 }
 
 // Navigation icons
@@ -61,35 +62,36 @@ const SettingsIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const navigation: NavItem[] = [
-  { name: 'Dashboard', href: '/admin/dashboard', icon: DashboardIcon },
-  { name: 'Events', href: '/admin/events', icon: EventsIcon },
-  { name: 'Programs', href: '/admin/content/programs', icon: ProgramsIcon },
-  { name: 'Content', href: '/admin/content', icon: ContentIcon },
-  { name: 'Users', href: '/admin/users', icon: UsersIcon, roles: ['super_admin'] },
-  { name: 'Site Settings', href: '/admin/site-settings', icon: SettingsIcon, roles: ['super_admin', 'admin'] },
+const navigationWithIcons: NavItem[] = [
+  { name: 'Dashboard', href: '/admin/dashboard', icon: DashboardIcon, requiredPermission: 'view_dashboard' },
+  { name: 'Events', href: '/admin/events', icon: EventsIcon, requiredPermission: 'view_events' },
+  { name: 'Content', href: '/admin/content', icon: ContentIcon, requiredPermission: 'view_content' },
+  { name: 'Users', href: '/admin/users', icon: UsersIcon, requiredPermission: 'view_users' },
+  { name: 'Site Settings', href: '/admin/site-settings', icon: SettingsIcon, requiredPermission: 'view_settings' },
 ];
 
 function SidebarContent() {
   const location = useLocation();
-  const { profile, hasRole } = useAuth();
+  const { profile } = useAuth();
 
-  const filteredNavigation = navigation.filter((item) => {
-    if (!item.roles) return true;
-    return hasRole(item.roles);
+  const filteredNavigation = navigationWithIcons.filter((item) => {
+    if (!profile) return false;
+    return hasPermission(profile.role as UserRole, item.requiredPermission);
   });
 
   return (
-    <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gradient-to-b from-blue-600 to-blue-800 px-6 pb-4">
+    <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gradient-to-b from-[#B01C2E] to-[#8A1624] px-6 pb-4">
       {/* Logo */}
       <div className="flex h-16 shrink-0 items-center">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-md">
-            <span className="text-lg font-bold text-blue-600">NF</span>
-          </div>
+          <img 
+            src="https://res.cloudinary.com/dzqdxosk2/image/upload/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png" 
+            alt="Neema Foundation Logo" 
+            className="h-10 w-10 rounded-lg shadow-md bg-white p-0.5"
+          />
           <div className="text-white">
             <p className="text-sm font-semibold">Neema Foundation</p>
-            <p className="text-xs text-blue-200">Admin Portal</p>
+            <p className="text-xs text-red-200">Admin Portal</p>
           </div>
         </div>
       </div>
@@ -107,14 +109,14 @@ function SidebarContent() {
                       to={item.href}
                       className={clsx(
                         isActive
-                          ? 'bg-blue-700 text-white'
-                          : 'text-blue-100 hover:text-white hover:bg-blue-700',
+                          ? 'bg-[#8A1624] text-white'
+                          : 'text-red-100 hover:text-white hover:bg-[#8A1624]',
                         'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors'
                       )}
                     >
                       <item.icon
                         className={clsx(
-                          isActive ? 'text-white' : 'text-blue-200 group-hover:text-white',
+                          isActive ? 'text-white' : 'text-red-200 group-hover:text-white',
                           'h-6 w-6 shrink-0'
                         )}
                       />
@@ -128,10 +130,10 @@ function SidebarContent() {
 
           {/* User Info */}
           <li className="mt-auto">
-            <div className="bg-blue-700/50 rounded-lg p-3">
+            <div className="bg-[#8A1624]/50 rounded-lg p-3">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
+                  <div className="h-10 w-10 rounded-full bg-[#D42A3F] flex items-center justify-center">
                     <span className="text-white font-medium">
                       {profile?.full_name?.charAt(0).toUpperCase() || 'A'}
                     </span>
@@ -141,7 +143,7 @@ function SidebarContent() {
                   <p className="text-sm font-medium text-white">
                     {profile?.full_name || 'Admin'}
                   </p>
-                  <p className="text-xs font-medium text-blue-200 capitalize">
+                  <p className="text-xs font-medium text-red-200 capitalize">
                     {profile?.role?.replace('_', ' ')}
                   </p>
                 </div>

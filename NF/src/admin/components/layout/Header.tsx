@@ -88,7 +88,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <Menu as="div" className="relative">
             <Menu.Button className="-m-1.5 flex items-center p-1.5">
               <span className="sr-only">Open user menu</span>
-              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#B01C2E] to-[#8A1624] flex items-center justify-center">
                 <span className="text-sm font-semibold text-white">
                   {profile?.full_name?.charAt(0).toUpperCase() || 'A'}
                 </span>

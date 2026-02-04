@@ -96,7 +96,7 @@ function StoryCard({
                 </span>
               )}
 
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#B01C2E]/10 text-blue-800">
                 {CATEGORY_OPTIONS.find(cat => cat.value === story.category)?.label || story.category}
               </span>
             </div>

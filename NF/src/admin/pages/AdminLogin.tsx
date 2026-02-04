@@ -55,7 +55,7 @@ export default function AdminLogin() {
         {/* Header */}
         <div className="text-center">
           <div className="flex justify-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <div className="w-16 h-16 bg-gradient-to-br from-[#B01C2E] to-[#8A1624] rounded-2xl flex items-center justify-center shadow-lg">
               <span className="text-2xl font-bold text-white">NF</span>
             </div>
           </div>
@@ -83,7 +83,7 @@ export default function AdminLogin() {
                   {...register('email')}
                   className={`appearance-none block w-full px-4 py-3 border ${
                     errors.email ? 'border-red-300' : 'border-gray-300'
-                  } rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
+                  } rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent transition-all`}
                   placeholder="admin@neemafoundation.org"
                 />
                 {errors.email && (
@@ -105,7 +105,7 @@ export default function AdminLogin() {
                   {...register('password')}
                   className={`appearance-none block w-full px-4 py-3 border ${
                     errors.password ? 'border-red-300' : 'border-gray-300'
-                  } rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
+                  } rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent transition-all`}
                   placeholder="Enter your password"
                 />
                 {errors.password && (
@@ -121,7 +121,7 @@ export default function AdminLogin() {
                   id="rememberMe"
                   type="checkbox"
                   {...register('rememberMe')}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-[#B01C2E] focus:ring-[#B01C2E] border-gray-300 rounded"
                 />
                 <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">
                   Remember me
@@ -131,7 +131,7 @@ export default function AdminLogin() {
               <div className="text-sm">
                 <Link
                   to="/admin/forgot-password"
-                  className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
+                  className="font-medium text-[#B01C2E] hover:text-[#8A1624] transition-colors"
                 >
                   Forgot password?
                 </Link>
@@ -143,7 +143,7 @@ export default function AdminLogin() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-gradient-to-r from-[#B01C2E] to-[#8A1624] hover:from-[#8A1624] hover:to-[#6B111C] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#B01C2E] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <>

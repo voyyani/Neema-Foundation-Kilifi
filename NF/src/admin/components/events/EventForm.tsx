@@ -99,7 +99,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
             <input
               {...register('name')}
               type="text"
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] ${
                 errors.name ? 'border-red-300' : 'border-gray-300'
               }`}
               placeholder="e.g., Community Health Outreach"
@@ -119,7 +119,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
                 {...register('slug')}
                 type="text"
                 onFocus={() => setIsGeneratingSlug(false)}
-                className={`flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                className={`flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] ${
                   errors.slug ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="community-health-outreach"
@@ -139,7 +139,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
             <input
               {...register('purpose')}
               type="text"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
               placeholder="Short description of the event purpose"
             />
           </div>
@@ -150,7 +150,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
             <textarea
               {...register('description')}
               rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
               placeholder="Detailed event description..."
             />
           </div>
@@ -165,7 +165,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
         className="bg-white rounded-xl border border-gray-200 p-6"
       >
         <div className="flex items-center gap-2 mb-4">
-          <Calendar className="w-5 h-5 text-blue-600" />
+          <Calendar className="w-5 h-5 text-[#B01C2E]" />
           <h2 className="text-lg font-semibold text-gray-900">Date & Time</h2>
         </div>
 
@@ -183,7 +183,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
                   type="date"
                   value={field.value instanceof Date ? field.value.toISOString().split('T')[0] : ''}
                   onChange={(e) => field.onChange(new Date(e.target.value))}
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] ${
                     errors.start_date ? 'border-red-300' : 'border-gray-300'
                   }`}
                 />
@@ -207,7 +207,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
                   onChange={(e) =>
                     field.onChange(e.target.value ? new Date(e.target.value) : undefined)
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
                 />
               )}
             />
@@ -222,7 +222,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
             <input
               {...register('start_time')}
               type="time"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
             />
           </div>
 
@@ -232,7 +232,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
             <input
               {...register('end_time')}
               type="time"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
             />
           </div>
         </div>
@@ -247,9 +247,9 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
       >
         <div className="flex items-center gap-2 mb-4">
           {watchIsVirtual ? (
-            <Globe className="w-5 h-5 text-blue-600" />
+            <Globe className="w-5 h-5 text-[#B01C2E]" />
           ) : (
-            <MapPin className="w-5 h-5 text-blue-600" />
+            <MapPin className="w-5 h-5 text-[#B01C2E]" />
           )}
           <h2 className="text-lg font-semibold text-gray-900">Location</h2>
         </div>
@@ -260,7 +260,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
             <input
               {...register('is_virtual')}
               type="checkbox"
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              className="w-4 h-4 text-[#B01C2E] border-gray-300 rounded focus:ring-[#B01C2E]"
             />
             <span className="text-sm font-medium text-gray-700">This is a virtual event</span>
           </label>
@@ -275,7 +275,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
             <input
               {...register('virtual_link')}
               type="url"
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] ${
                 errors.virtual_link ? 'border-red-300' : 'border-gray-300'
               }`}
               placeholder="https://zoom.us/j/123456789"
@@ -294,7 +294,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
               <input
                 {...register('venue_name')}
                 type="text"
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] ${
                   errors.venue_name ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="e.g., Ganze Community Center"
@@ -310,7 +310,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
               <textarea
                 {...register('venue_address')}
                 rows={2}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
                 placeholder="Full address..."
               />
             </div>
@@ -326,7 +326,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
         className="bg-white rounded-xl border border-gray-200 p-6"
       >
         <div className="flex items-center gap-2 mb-4">
-          <Users className="w-5 h-5 text-blue-600" />
+          <Users className="w-5 h-5 text-[#B01C2E]" />
           <h2 className="text-lg font-semibold text-gray-900">Registration</h2>
         </div>
 
@@ -336,7 +336,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
             <input
               {...register('requires_registration')}
               type="checkbox"
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              className="w-4 h-4 text-[#B01C2E] border-gray-300 rounded focus:ring-[#B01C2E]"
             />
             <span className="text-sm font-medium text-gray-700">Requires registration</span>
           </label>
@@ -351,7 +351,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
             <input
               {...register('registration_link')}
               type="url"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
               placeholder="https://..."
             />
           </div>
@@ -372,7 +372,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
                     onChange={(e) =>
                       field.onChange(e.target.value ? new Date(e.target.value) : undefined)
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
                   />
                 )}
               />
@@ -386,7 +386,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
               <input
                 {...register('max_attendees', { valueAsNumber: true })}
                 type="number"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
                 placeholder="Leave empty for unlimited"
               />
             </div>
@@ -402,7 +402,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
         className="bg-white rounded-xl border border-gray-200 p-6"
       >
         <div className="flex items-center gap-2 mb-4">
-          <Tag className="w-5 h-5 text-blue-600" />
+          <Tag className="w-5 h-5 text-[#B01C2E]" />
           <h2 className="text-lg font-semibold text-gray-900">Publishing</h2>
         </div>
 
@@ -412,7 +412,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
             <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
             <select
               {...register('status')}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
             >
               <option value="draft">Draft</option>
               <option value="published">Published</option>
@@ -428,7 +428,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
               <input
                 {...register('is_featured')}
                 type="checkbox"
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                className="w-4 h-4 text-[#B01C2E] border-gray-300 rounded focus:ring-[#B01C2E]"
               />
               <span className="text-sm font-medium text-gray-700">Feature this event</span>
             </label>
@@ -449,7 +449,7 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
         <button
           type="submit"
           disabled={isSubmitting || isLoading}
-          className="flex-1 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-started"
+          className="flex-1 px-6 py-2 bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624] transition-colors disabled:opacity-50 disabled:cursor-not-started"
         >
           {isSubmitting || isLoading ? 'Saving...' : event ? 'Update Event' : 'Create Event'}
         </button>

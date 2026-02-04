@@ -60,7 +60,7 @@ export default function HeroPage() {
               onClick={() => setIsReorderMode(!isReorderMode)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
                 isReorderMode 
-                  ? 'bg-blue-600 text-white border-blue-600' 
+                  ? 'bg-[#B01C2E] text-white border-[#B01C2E]' 
                   : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
               }`}
             >
@@ -70,7 +70,7 @@ export default function HeroPage() {
           )}
           <button
             onClick={handleCreate}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="flex items-center gap-2 px-4 py-2 bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624]"
           >
             <Plus className="w-4 h-4" />
             Add Slide
@@ -79,8 +79,8 @@ export default function HeroPage() {
       </div>
 
       {isReorderMode && slides.length > 1 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-blue-800">
+        <div className="bg-[#B01C2E]/10 border border-[#B01C2E]/20 rounded-lg p-4">
+          <p className="text-sm text-[#B01C2E]">
             <strong>Reorder Mode:</strong> Drag slides by the handle to change their order. Changes are saved automatically.
           </p>
         </div>
@@ -92,7 +92,7 @@ export default function HeroPage() {
           <p className="text-gray-600 mb-4">Create your first hero slide to get started</p>
           <button
             onClick={handleCreate}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624]"
           >
             <Plus className="w-4 h-4" />
             Create First Slide
@@ -172,7 +172,7 @@ export default function HeroPage() {
                   <p className="text-sm text-gray-600 mb-3 line-clamp-2">{slide.subtitle}</p>
                 )}
                 {slide.cta_label && (
-                  <div className="text-xs text-blue-600 mb-3">
+                  <div className="text-xs text-[#B01C2E] mb-3">
                     Button: {slide.cta_label}
                   </div>
                 )}
@@ -285,7 +285,7 @@ function HeroSlideModal({
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E]"
               required
             />
           </div>
@@ -295,7 +295,7 @@ function HeroSlideModal({
             <textarea
               value={formData.subtitle}
               onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E]"
               rows={2}
             />
           </div>
@@ -322,7 +322,7 @@ function HeroSlideModal({
                 type="url"
                 value={formData.background_image}
                 onChange={(e) => setFormData({ ...formData, background_image: e.target.value })}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E]"
                 placeholder="https://..."
               />
             </div>
@@ -335,7 +335,7 @@ function HeroSlideModal({
                 type="text"
                 value={formData.cta_label}
                 onChange={(e) => setFormData({ ...formData, cta_label: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E]"
                 placeholder="Learn More"
               />
             </div>
@@ -346,7 +346,7 @@ function HeroSlideModal({
                 type="text"
                 value={formData.cta_href}
                 onChange={(e) => setFormData({ ...formData, cta_href: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E]"
                 placeholder="/about"
               />
             </div>
@@ -358,7 +358,7 @@ function HeroSlideModal({
               id="is_active"
               checked={formData.is_active}
               onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-              className="w-4 h-4 text-blue-600 rounded"
+              className="w-4 h-4 text-[#B01C2E] rounded"
             />
             <label htmlFor="is_active" className="text-sm text-gray-700">
               Active (show on website)
@@ -376,7 +376,7 @@ function HeroSlideModal({
             <button
               type="submit"
               disabled={isSaving}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="flex-1 px-4 py-2 bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624] disabled:opacity-50"
             >
               {isSaving ? 'Saving...' : 'Save Slide'}
             </button>

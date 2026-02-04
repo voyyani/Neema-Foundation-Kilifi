@@ -268,7 +268,7 @@ function SortablePartnerRow({ partner, onEdit, onDelete, onToggleFeatured, onTog
           )}
           <button
             onClick={() => onEdit(partner)}
-            className="p-2 text-blue-600 hover:text-blue-800"
+            className="p-2 text-[#B01C2E] hover:text-blue-800"
             title="Edit"
           >
             <Pencil className="h-4 w-4" />

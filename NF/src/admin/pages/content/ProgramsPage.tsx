@@ -73,7 +73,7 @@ export default function ProgramsPage() {
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+          className="px-4 py-2 bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624] flex items-center gap-2"
         >
           <Plus className="w-5 h-5" />
           Add Program
@@ -90,7 +90,7 @@ export default function ProgramsPage() {
               placeholder="Search programs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
             />
           </div>
         </div>
@@ -100,7 +100,7 @@ export default function ProgramsPage() {
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
           >
             <option value="all">All Categories</option>
             <option value="health">Health</option>
@@ -113,7 +113,7 @@ export default function ProgramsPage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
           >
             <option value="all">All Status</option>
             <option value="active">Active</option>
@@ -126,7 +126,7 @@ export default function ProgramsPage() {
       {/* Programs Grid */}
       {isLoading ? (
         <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B01C2E] mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading programs...</p>
         </div>
       ) : filteredPrograms.length === 0 ? (
@@ -139,7 +139,7 @@ export default function ProgramsPage() {
           {!searchQuery && categoryFilter === 'all' && statusFilter === 'all' && (
             <button
               onClick={() => handleOpenModal()}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 inline-flex items-center gap-2"
+              className="px-4 py-2 bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624] inline-flex items-center gap-2"
             >
               <Plus className="w-5 h-5" />
               Add First Program
@@ -246,7 +246,7 @@ function ProgramCard({
         {/* Title and Category */}
         <div className="mb-2">
           <h3 className="text-lg font-semibold text-gray-900 mb-1">{program.name}</h3>
-          <span className="inline-block px-2 py-1 text-xs font-medium rounded bg-blue-100 text-blue-800 capitalize">
+          <span className="inline-block px-2 py-1 text-xs font-medium rounded bg-[#B01C2E]/10 text-[#B01C2E] capitalize">
             {program.category}
           </span>
         </div>
@@ -311,7 +311,7 @@ function ProgramCard({
         <div className="flex gap-2">
           <button
             onClick={onEdit}
-            className="flex-1 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 flex items-center justify-center gap-2 text-sm font-medium"
+            className="flex-1 px-3 py-2 bg-[#B01C2E]/10 text-[#B01C2E] rounded-lg hover:bg-[#B01C2E]/20 flex items-center justify-center gap-2 text-sm font-medium"
           >
             <Edit2 className="w-4 h-4" />
             Edit

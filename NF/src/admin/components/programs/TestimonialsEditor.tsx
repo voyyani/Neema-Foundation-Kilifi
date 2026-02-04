@@ -110,7 +110,7 @@ function SortableTestimonialCard({
             <button
               type="button"
               onClick={onEdit}
-              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg"
+              className="p-1.5 text-[#B01C2E] hover:bg-blue-50 rounded-lg"
               title="Edit"
             >
               <Edit2 className="w-4 h-4" />
@@ -234,7 +234,7 @@ function TestimonialForm({
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="e.g., Jane Mwangi"
                 required
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
               />
             </div>
             <div>
@@ -246,7 +246,7 @@ function TestimonialForm({
                 value={formData.role || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value }))}
                 placeholder="e.g., Beneficiary, Parent"
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
               />
             </div>
           </div>
@@ -261,7 +261,7 @@ function TestimonialForm({
               placeholder="Their story or testimonial..."
               rows={3}
               required
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] resize-none"
             />
           </div>
         </div>
@@ -277,7 +277,7 @@ function TestimonialForm({
           value={formData.image || ''}
           onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
           placeholder="https://example.com/photo.jpg"
-          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
         />
       </div>
 
@@ -293,7 +293,7 @@ function TestimonialForm({
         <button
           type="submit"
           disabled={!formData.name || !formData.quote}
-          className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 text-sm bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isNew ? 'Add Testimonial' : 'Save Changes'}
         </button>

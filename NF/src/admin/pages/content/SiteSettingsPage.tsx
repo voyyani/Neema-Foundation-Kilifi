@@ -124,7 +124,7 @@ export default function SiteSettingsPage() {
                 type="text"
                 value={formData.brand_name}
                 onChange={(e) => setFormData({ ...formData, brand_name: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent"
                 placeholder="Neema Foundation"
               />
             </div>
@@ -135,7 +135,7 @@ export default function SiteSettingsPage() {
                 type="text"
                 value={formData.tagline}
                 onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent"
                 maxLength={100}
               />
             </div>
@@ -152,7 +152,7 @@ export default function SiteSettingsPage() {
               <textarea
                 value={formData.mission}
                 onChange={(e) => setFormData({ ...formData, mission: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent"
                 rows={3}
               />
             </div>
@@ -162,7 +162,7 @@ export default function SiteSettingsPage() {
               <textarea
                 value={formData.vision}
                 onChange={(e) => setFormData({ ...formData, vision: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent"
                 rows={3}
               />
             </div>
@@ -176,7 +176,7 @@ export default function SiteSettingsPage() {
                       type="text"
                       value={value}
                       onChange={(e) => updateValue(index, e.target.value)}
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent"
                       placeholder="Enter a core value"
                     />
                     <button
@@ -191,7 +191,7 @@ export default function SiteSettingsPage() {
                 <button
                   type="button"
                   onClick={addValue}
-                  className="text-sm text-blue-600 hover:text-blue-700"
+                  className="text-sm text-[#B01C2E] hover:text-[#8A1624]"
                 >
                   + Add Value
                 </button>
@@ -265,7 +265,7 @@ export default function SiteSettingsPage() {
                       type="checkbox"
                       checked={formData[`${name}_enabled` as keyof typeof formData] as boolean}
                       onChange={(e) => setFormData({ ...formData, [`${name}_enabled`]: e.target.checked })}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-300 text-blue-600 focus:ring-[#B01C2E]"
                     />
                     <span className="text-sm text-gray-600">Show in footer</span>
                   </label>
@@ -274,7 +274,7 @@ export default function SiteSettingsPage() {
                   type="url"
                   value={formData[name as keyof typeof formData] as string}
                   onChange={(e) => setFormData({ ...formData, [name]: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent"
                   placeholder={placeholder}
                 />
               </div>
@@ -293,7 +293,7 @@ export default function SiteSettingsPage() {
                 type="email"
                 value={formData.contact_email}
                 onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent"
                 placeholder="neemafoundationkilifi@gmail.com"
               />
             </div>
@@ -304,7 +304,7 @@ export default function SiteSettingsPage() {
                 type="tel"
                 value={formData.contact_phone}
                 onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent"
                 placeholder="+254 797 484 101"
               />
             </div>
@@ -314,7 +314,7 @@ export default function SiteSettingsPage() {
               <textarea
                 value={formData.contact_address}
                 onChange={(e) => setFormData({ ...formData, contact_address: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent"
                 rows={3}
                 placeholder="Ganze Sub-county, Kilifi County, Kenya"
               />
@@ -327,7 +327,7 @@ export default function SiteSettingsPage() {
           <button
             type="submit"
             disabled={isSaving}
-            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-6 py-3 bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSaving ? (
               <>

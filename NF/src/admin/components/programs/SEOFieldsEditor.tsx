@@ -89,8 +89,8 @@ export default function SEOFieldsEditor({
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-            <Search className="w-5 h-5 text-blue-600" />
+          <div className="w-10 h-10 bg-[#B01C2E]/10 rounded-lg flex items-center justify-center">
+            <Search className="w-5 h-5 text-[#B01C2E]" />
           </div>
           <div>
             <h4 className="font-medium text-gray-900">SEO & Social Sharing</h4>
@@ -121,7 +121,7 @@ export default function SEOFieldsEditor({
             <button
               type="button"
               onClick={useDefaults}
-              className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1"
+              className="text-sm text-[#B01C2E] hover:text-blue-700 flex items-center gap-1"
             >
               Auto-generate from program details
             </button>
@@ -149,7 +149,7 @@ export default function SEOFieldsEditor({
                 value={metaTitle || ''}
                 onChange={(e) => onMetaTitleChange(e.target.value)}
                 placeholder={`${programName} | Neema Foundation`}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
               />
             </div>
             <p className="text-xs text-gray-500 mt-1">
@@ -175,7 +175,7 @@ export default function SEOFieldsEditor({
               onChange={(e) => onMetaDescriptionChange(e.target.value)}
               placeholder={programSummary || 'Brief description of this program for search engines...'}
               rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] resize-none"
             />
             <p className="text-xs text-gray-500 mt-1">
               Ideal length: {DESC_MIN}-{DESC_MAX} characters. This appears below the title in search results.
@@ -234,7 +234,7 @@ export default function SEOFieldsEditor({
                 value={socialImage || ''}
                 onChange={(e) => onSocialImageChange(e.target.value)}
                 placeholder="Or paste image URL..."
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
               />
             </div>
             <p className="text-xs text-gray-500 mt-1">
