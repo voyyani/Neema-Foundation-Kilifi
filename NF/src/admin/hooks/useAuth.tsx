@@ -20,6 +20,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [sessionExpiresAt, setSessionExpiresAt] = useState<Date | null>(null);
   const [showExpiryWarning, setShowExpiryWarning] = useState(false);
 
+  const clearSupabaseStorage = () => {
+    try {
+      Object.keys(localStorage).forEach(key => {
+        if (key.includes('supabase') || key.includes('neema')) {
+          localStorage.removeItem(key);
+        }
+      });
+      Object.keys(sessionStorage).forEach(key => {
+        if (key.includes('supabase') || key.includes('neema')) {
+          sessionStorage.removeItem(key);
+        }
+      });
+    } catch (e) {
+      console.warn('Could not clear Supabase storage', e);
+    }
+  };
+
   // Fetch user profile from database
   const fetchProfile = async (userId: string, emailFallback?: string) => {
     try {
@@ -85,8 +102,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const initializeAuth = async () => {
       try {
         // Get initial session
-        const { data: { session: initialSession }, error: sessionError } = 
-          await supabase.auth.getSession();
+        let sessionError: Error | null = null;
+        let initialSession: Session | null = null;
+
+        try {
+          const res = await supabase.auth.getSession();
+          sessionError = res.error;
+          initialSession = res.data.session;
+        } catch (err: any) {
+          if (err?.name === 'AbortError') {
+            console.warn('[Auth Init] AbortError on getSession, clearing storage and retrying once');
+            clearSupabaseStorage();
+            const retry = await supabase.auth.getSession();
+            sessionError = retry.error;
+            initialSession = retry.data.session;
+          } else {
+            throw err;
+          }
+        }
 
         if (sessionError) throw sessionError;
 
@@ -194,6 +227,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Clear remember me data
       localStorage.removeItem('nf-remember-me');
       localStorage.removeItem('nf-remembered-email');
+      clearSupabaseStorage();
       
       // Then sign out from Supabase
       const { error: signOutError } = await supabase.auth.signOut();
