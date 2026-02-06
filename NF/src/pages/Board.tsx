@@ -240,6 +240,34 @@ const Board: React.FC = () => {
           </div>
         )}
 
+        {/* Board Member Form Download */}
+        <div className="mb-16">
+          <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Board Member Application Form</h3>
+              <p className="text-gray-700 max-w-2xl">
+                Download the latest board membership application template. Fill it digitally or print and return it to the leadership team.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <a
+                href={`data:text/plain;charset=utf-8,${encodeURIComponent(
+                  `Neema Foundation – Board Member Application\n\nContact Information\n- Full name:\n- Email:\n- Phone:\n- City/County:\n\nRole & Motivation\n- Which role or committee are you applying for?\n- Why do you want to serve on the board? (3–5 sentences)\n- Top 3 skills you bring (governance, finance, legal, fundraising, programs, other):\n\nExperience\n- Current employer/organization & title:\n- Prior board or leadership experience (org, role, dates):\n- Relevant accomplishments (bullets):\n\nCommitment\n- Availability (hours/month):\n- Any conflicts of interest to disclose?\n\nReferences\n- Reference 1: name, relationship, phone/email\n- Reference 2: name, relationship, phone/email\n\nSignature\n- I certify the information above is accurate.\n- Signature & Date:\n` )}`}
+                download="Neema-Board-Member-Application.txt"
+                className="inline-flex items-center justify-center bg-red-800 text-white hover:bg-red-900 transition-colors rounded-md py-3 px-5 font-semibold shadow"
+              >
+                Download Form (TXT)
+              </a>
+              <Link
+                to="/partner"
+                className="inline-flex items-center justify-center border border-red-800 text-red-800 hover:bg-red-800 hover:text-white transition-colors rounded-md py-3 px-5 font-semibold"
+              >
+                Need help? Contact Us
+              </Link>
+            </div>
+          </div>
+        </div>
+
         <div className="text-center">
           <h3 className="text-2xl font-bold mb-4">Want to Support Our Work?</h3>
           <p className="text-gray-700 max-w-2xl mx-auto mb-8">

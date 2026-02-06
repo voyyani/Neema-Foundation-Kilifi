@@ -11,8 +11,13 @@ export default function NewEventPage() {
   const { createEvent } = useEvents();
 
   const handleSubmit = async (data: EventFormSchema) => {
-    await createEvent(data);
-    navigate('/admin/events');
+    try {
+      await createEvent(data);
+      navigate('/admin/events');
+    } catch (err) {
+      // createEvent already toasts; keep user on form for fixes
+      console.error('[NewEventPage] create failed', err);
+    }
   };
 
   return (

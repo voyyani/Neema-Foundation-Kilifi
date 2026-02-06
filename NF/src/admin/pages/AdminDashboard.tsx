@@ -273,16 +273,16 @@ export default function AdminDashboard() {
         if (hasPermission(userRole, 'view_events')) {
           const { data: events } = await supabase
             .from('events')
-            .select('id, title, updated_at, created_at')
+            .select('id, name, updated_at, created_at')
             .order('updated_at', { ascending: false })
             .limit(3);
 
-          (events as Array<{ id: string; title: string; updated_at: string; created_at: string }> | null)?.forEach(event => {
+          (events as Array<{ id: string; name: string; updated_at: string; created_at: string }> | null)?.forEach(event => {
             const isNew = Math.abs(new Date(event.created_at).getTime() - new Date(event.updated_at).getTime()) < 60000;
             activities.push({
               id: `event-${event.id}`,
               action: isNew ? 'Event created' : 'Event updated',
-              item: event.title,
+              item: event.name,
               table: 'events',
               time: event.updated_at,
               user: 'System',

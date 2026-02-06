@@ -118,18 +118,47 @@ export function useEvents(filters?: EventFilters) {
         created_by: user.id,
       };
 
+      // Preflight: ensure slug is unique to avoid opaque 409 errors
+      const { data: existingSlug, error: slugCheckError } = await supabase
+        .from('events')
+        .select('id')
+        .eq('slug', eventData.slug)
+        .maybeSingle();
+
+      if (slugCheckError && slugCheckError.code !== 'PGRST116') {
+        console.warn('[createEvent] slug check error', slugCheckError);
+      }
+
+      if (existingSlug) {
+        throw new Error('Slug already exists. Please use a unique event slug.');
+      }
+
       const { data: newEvent, error: createError } = await eventsTable()
         .insert([eventData])
         .select()
         .single();
 
-      if (createError) throw createError;
+      if (createError) {
+        // Map common Supabase/Postgres errors to clearer messages
+        const msg = createError.message || 'Unknown error';
+        if (msg.includes('permission denied')) {
+          throw new Error('Not allowed to create events. Check RLS policies for the events table.');
+        }
+        if (msg.includes('relation') && msg.includes('events')) {
+          throw new Error('Events table missing. Run supabase-schema.sql on your Supabase project.');
+        }
+        if (msg.includes('duplicate key value') || msg.includes('slug')) {
+          throw new Error('Slug already exists. Please use a unique event slug.');
+        }
+        throw createError;
+      }
 
       toast.success('Event created successfully!');
       fetchEvents(); // Refresh list
       return newEvent;
     } catch (err) {
       const error = err as Error;
+      console.error('[createEvent] failed', error);
       toast.error('Failed to create event: ' + error.message);
       throw error;
     }
@@ -237,6 +266,11 @@ export function useEvents(filters?: EventFilters) {
         created_at: undefined,
         updated_at: undefined,
       };
+
+      // Remove keys so PostgREST doesn't send nulls to NOT NULL/DEFAULT columns
+      delete duplicateData.id;
+      delete duplicateData.created_at;
+      delete duplicateData.updated_at;
 
       const { data: newEvent, error: createError } = await eventsTable()
         .insert([duplicateData])

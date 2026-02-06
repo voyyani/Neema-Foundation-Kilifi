@@ -199,6 +199,10 @@ const Volunteer: React.FC = () => {
     return () => clearInterval(timer);
   }, [nextTestimonial]);
 
+  // Downloadable story-sharing form (plain text via data URL)
+  const storyFormHref = `data:text/plain;charset=utf-8,${encodeURIComponent(
+    `Neema Foundation – Volunteer Story Share Form\n\nContact\n- Full name:\n- Email:\n- Phone:\n- Volunteer role/team:\n\nYour Story\n- Title:\n- Date or period of the story:\n- Location:\n- What happened? (5-10 sentences)\n- Who was impacted? (individuals/groups)\n- What was the outcome or change?\n- Key numbers (people reached, hours contributed, funds raised, etc.):\n\nMedia & Consent\n- Do you have photos/videos to share? (Y/N)\n- If yes, list filenames/links:\n- Do you grant permission to publish this story on NF channels? (Y/N)\n- If the story includes others, do you have their consent? (Y/N)\n\nFollow-up\n- Best time/method to contact you for clarification:\n\nSignature\n- I confirm this story is accurate to the best of my knowledge.\n- Signature & Date:\n`)}`;
+
   const nextStep = useCallback(() => {
     setCurrentStep(prev => Math.min(5, prev + 1));
   }, []);
@@ -237,6 +241,34 @@ const Volunteer: React.FC = () => {
       />
 
       <VolunteerBenefits benefits={benefits} />
+
+      {/* Downloadable Story Form */}
+      <div className="px-4 sm:px-6 lg:px-8 mb-12">
+        <div className="max-w-5xl mx-auto bg-white border border-gray-200 rounded-2xl shadow-lg p-6 sm:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div>
+            <p className="text-sm uppercase tracking-wide text-red-700 font-semibold mb-2">Share Your Impact</p>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">Volunteer Story Download</h3>
+            <p className="text-gray-700 max-w-2xl">
+              Download a quick template to capture your story. You can fill it digitally or print and hand it in during your next visit.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <a
+              href={storyFormHref}
+              download="Neema-Volunteer-Story-Form.txt"
+              className="inline-flex items-center justify-center bg-red-800 text-white hover:bg-red-900 transition-colors rounded-md py-3 px-5 font-semibold shadow"
+            >
+              Download Story Form (TXT)
+            </a>
+            <button
+              onClick={openApplicationModal}
+              className="inline-flex items-center justify-center border border-red-800 text-red-800 hover:bg-red-800 hover:text-white transition-colors rounded-md py-3 px-5 font-semibold"
+            >
+              Submit via Portal
+            </button>
+          </div>
+        </div>
+      </div>
 
       <ApplicationCTA onOpenModal={openApplicationModal} />
 
