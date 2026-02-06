@@ -122,17 +122,30 @@ const Stories: React.FC = () => {
                 <div className="flex flex-col lg:flex-row items-center gap-8">
                   {/* Story Image/Icon */}
                   <div className="flex-shrink-0">
-                    {stories[activeStory].image_url ? (
-                      <img 
-                        src={stories[activeStory].image_url} 
-                        alt={stories[activeStory].title}
-                        className="w-32 h-32 rounded-full object-cover border-4 border-red-600"
-                      />
-                    ) : (
-                      <div className="w-32 h-32 bg-gradient-to-br from-red-600 to-red-800 rounded-full flex items-center justify-center text-4xl">
-                        <Users className="h-16 w-16 text-white" />
-                      </div>
-                    )}
+                    {(() => {
+                      const story = stories[activeStory] as any;
+                      const photo =
+                        story.author_photo ||
+                        story.author_photo_url ||
+                        story.cover_image ||
+                        story.image_url ||
+                        null;
+                      if (photo) {
+                        return (
+                          <img
+                            src={photo}
+                            alt={stories[activeStory].title}
+                            className="w-32 h-32 rounded-full object-cover border-4 border-red-600"
+                            loading="lazy"
+                          />
+                        );
+                      }
+                      return (
+                        <div className="w-32 h-32 bg-gradient-to-br from-red-600 to-red-800 rounded-full flex items-center justify-center text-4xl">
+                          <Users className="h-16 w-16 text-white" />
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   {/* Story Content */}

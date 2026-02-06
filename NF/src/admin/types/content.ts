@@ -184,7 +184,7 @@ export interface ProgramInput {
 }
 
 // Stories
-export type StoryCategory = 'impact' | 'testimonial' | 'event' | 'news' | 'volunteer';
+export type StoryCategory = 'impact' | 'testimonial' | 'news' | 'announcement' | 'event' | 'volunteer';
 
 export interface Story {
   id: string;
@@ -194,10 +194,10 @@ export interface Story {
   content: string | null;
   author_name: string | null;
   author_role: string | null;
-  author_photo_url: string | null;
-  image_url: string | null;
+  author_photo: string | null;
+  cover_image: string | null;
   category: StoryCategory;
-  status: 'draft' | 'published';
+  is_published: boolean;
   is_featured: boolean;
   published_at: string | null;
   created_at: string;
@@ -211,10 +211,10 @@ export interface StoryInput {
   content?: string;
   author_name?: string;
   author_role?: string;
-  author_photo_url?: string;
-  image_url?: string;
+  author_photo_url?: string; // UI field, mapped to author_photo
+  image_url?: string;        // UI field, mapped to cover_image
   category: StoryCategory;
-  status?: 'draft' | 'published';
+  status?: 'draft' | 'published'; // UI field, mapped to is_published
   is_featured?: boolean;
   published_at?: string;
 }

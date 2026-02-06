@@ -47,8 +47,10 @@ export function usePublicImpactMetrics() {
       
       return data || [];
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    staleTime: 0,              // always consider stale; force network
+    gcTime: 5 * 60 * 1000,     // keep in cache for 5 minutes but refresh on render
+    refetchOnWindowFocus: true,
+    refetchInterval: 60 * 1000, // refresh every 60 seconds
+    retry: 1,
   });
 }

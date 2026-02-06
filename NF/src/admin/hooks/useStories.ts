@@ -44,13 +44,23 @@ export function useStories() {
     try {
       const slug = input.slug || slugify(input.title);
 
+      const payload = {
+        slug,
+        title: input.title,
+        excerpt: input.excerpt ?? '',
+        content: input.content ?? '',
+        category: input.category,
+        is_featured: input.is_featured ?? false,
+        is_published: (input.status || 'draft') === 'published',
+        published_at: input.status === 'published' ? input.published_at || new Date().toISOString() : null,
+        cover_image: input.image_url || null,
+        author_name: input.author_name || null,
+        author_role: input.author_role || null,
+        author_photo: input.author_photo_url || null,
+      };
+
       const { data, error: createError } = await storiesTable()
-        .insert([{
-          ...input,
-          slug,
-          status: input.status || 'draft',
-          is_featured: input.is_featured ?? false,
-        }])
+        .insert([payload])
         .select()
         .single();
 
@@ -69,12 +79,27 @@ export function useStories() {
   // Update story
   const updateStory = async (id: string, input: Partial<StoryInput>): Promise<Story> => {
     try {
+      const update: any = { ...input };
+
       if (input.title && !input.slug) {
-        input.slug = slugify(input.title);
+        update.slug = slugify(input.title);
       }
+      if (input.status) {
+        update.is_published = input.status === 'published';
+        update.published_at = input.status === 'published' ? input.published_at || new Date().toISOString() : null;
+      }
+      if (input.image_url !== undefined) {
+        update.cover_image = input.image_url || null;
+      }
+      if (input.author_photo_url !== undefined) {
+        update.author_photo = input.author_photo_url || null;
+      }
+      delete update.image_url;
+      delete update.author_photo_url;
+      delete update.status;
 
       const { data, error: updateError } = await storiesTable()
-        .update(input)
+        .update(update)
         .eq('id', id)
         .select()
         .single();

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStories } from '../../hooks/useStories';
 import { 
   Plus, 
@@ -202,16 +202,35 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
     slug: story?.slug || '',
     excerpt: story?.excerpt || '',
     content: story?.content || '',
-    category: story?.category || 'impact',
-    image_url: story?.image_url || '',
+    category: (story?.category as StoryCategory) || 'impact',
+    image_url: (story as any)?.cover_image || '',
     author_name: story?.author_name || '',
     author_role: story?.author_role || '',
-    author_photo_url: story?.author_photo_url || '',
-    status: story?.status || 'draft',
+    author_photo_url: (story as any)?.author_photo || '',
+    status: story?.is_published ? 'published' : 'draft',
     is_featured: story?.is_featured || false,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Sync form data when opening or when story changes
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        title: story?.title || '',
+        slug: story?.slug || '',
+        excerpt: story?.excerpt || '',
+        content: story?.content || '',
+        category: (story?.category as StoryCategory) || 'impact',
+        image_url: (story as any)?.cover_image || '',
+        author_name: story?.author_name || '',
+        author_role: story?.author_role || '',
+        author_photo_url: (story as any)?.author_photo || '',
+        status: story?.is_published ? 'published' : 'draft',
+        is_featured: story?.is_featured || false,
+      });
+    }
+  }, [story, isOpen]);
 
   if (!isOpen) return null;
 

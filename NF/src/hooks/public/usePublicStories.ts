@@ -5,15 +5,19 @@ export interface PublicStory {
   id: string;
   title: string;
   slug: string;
-  excerpt: string;
-  content: string;
-  category: 'impact' | 'testimonial' | 'event' | 'news' | 'volunteer';
-  author_name?: string;
-  author_photo_url?: string;
-  image_url?: string;
-  status: 'draft' | 'published';
+  excerpt: string | null;
+  content: string | null;
+  category: 'impact' | 'testimonial' | 'news' | 'announcement' | 'event' | 'volunteer';
+  author_name: string | null;
+  author_role: string | null;
+  author_photo: string | null; // DB column
+  cover_image: string | null;  // DB column
+  // Legacy/compat fields (for older rows)
+  author_photo_url?: string | null;
+  image_url?: string | null;
+  is_published: boolean;
   is_featured: boolean;
-  published_at?: string;
+  published_at: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -29,7 +33,7 @@ export function usePublicStories() {
       const { data, error } = await supabase
         .from('stories')
         .select('*')
-        .eq('status', 'published')
+        .or('is_published.eq.true,status.eq.published') // support legacy rows
         .order('published_at', { ascending: false });
       
       if (error) {
@@ -39,9 +43,11 @@ export function usePublicStories() {
       
       return data || [];
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    staleTime: 0,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+    refetchInterval: 60 * 1000,
+    retry: 1,
   });
 }
 
@@ -56,7 +62,7 @@ export function usePublicFeaturedStories() {
       const { data, error } = await supabase
         .from('stories')
         .select('*')
-        .eq('status', 'published')
+        .or('is_published.eq.true,status.eq.published')
         .eq('is_featured', true)
         .order('published_at', { ascending: false })
         .limit(3);
@@ -68,9 +74,11 @@ export function usePublicFeaturedStories() {
       
       return data || [];
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    staleTime: 0,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+    refetchInterval: 60 * 1000,
+    retry: 1,
   });
 }
 
@@ -87,7 +95,7 @@ export function usePublicStory(slug: string) {
         .from('stories')
         .select('*')
         .eq('slug', slug)
-        .eq('status', 'published')
+        .or('is_published.eq.true,status.eq.published')
         .single();
       
       if (error) {
@@ -101,8 +109,11 @@ export function usePublicStory(slug: string) {
       
       return data;
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    staleTime: 0,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+    refetchInterval: 60 * 1000,
+    retry: 1,
     enabled: !!slug,
   });
 }

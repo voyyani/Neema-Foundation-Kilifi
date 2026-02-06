@@ -14,18 +14,8 @@ const Impact: React.FC = () => {
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const [counts, setCounts] = useState<Record<string, number>>({});
 
-  // Fallback metrics if database is empty
-  const fallbackMetrics = [
-    { id: 'fb-1', label: 'Beneficiaries Served', value: 60793, suffix: '+', icon: 'users', program: { category: 'community' } },
-    { id: 'fb-2', label: 'Active Programs', value: programs.length || 6, suffix: '', icon: 'target', program: { category: 'blue' } },
-    { id: 'fb-3', label: 'Meals Served', value: 45000, suffix: '+', icon: 'utensils', program: { category: 'green' } },
-    { id: 'fb-4', label: 'Books Distributed', value: 2500, suffix: '+', icon: 'book', program: { category: 'purple' } },
-    { id: 'fb-5', label: 'Volunteers', value: 150, suffix: '+', icon: 'heart', program: { category: 'red' } },
-    { id: 'fb-6', label: 'Health Consultations', value: 8500, suffix: '+', icon: 'heart', program: { category: 'red' } },
-  ];
-
-  // Use database metrics if available, otherwise use fallback
-  const displayMetrics = metrics.length > 0 ? metrics : fallbackMetrics;
+  // Always use live database metrics; show empty-state if none
+  const displayMetrics = metrics;
 
   // Build targets from metrics
   const targets = displayMetrics.reduce((acc, metric) => {
@@ -102,6 +92,27 @@ const Impact: React.FC = () => {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Empty state if no metrics in DB
+  if (!metricsLoading && displayMetrics.length === 0) {
+    return (
+      <section id="impact" className="py-14 sm:py-16 md:py-20 bg-gradient-to-br from-gray-50 to-white">
+        <div className="container max-w-5xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Impact metrics coming soon</h2>
+          <p className="text-gray-600 mb-6">
+            No impact metrics are published yet. Add records in Supabase `impact_metrics` (set `is_active = true`)
+            to display them here.
+          </p>
+          <Link
+            to="/admin/content/impact"
+            className="inline-flex items-center justify-center bg-red-800 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-900 transition-colors"
+          >
+            Go to Impact Admin
+          </Link>
         </div>
       </section>
     );
