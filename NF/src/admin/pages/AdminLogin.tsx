@@ -39,10 +39,7 @@ export default function AdminLogin() {
     try {
       await signIn(data.email, data.password, data.rememberMe);
       toast.success('Welcome back!');
-      // Small delay to ensure profile is loaded
-      setTimeout(() => {
-        navigate(from, { replace: true });
-      }, 100);
+      navigate(from, { replace: true });
     } catch (error) {
       toast.error(formatAuthError(error as Error));
       setIsLoading(false);

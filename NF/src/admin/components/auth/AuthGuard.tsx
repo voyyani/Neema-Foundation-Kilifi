@@ -30,13 +30,13 @@ export default function AuthGuard({ children, allowedRoles }: AuthGuardProps) {
     return <AuthLoadingScreen />;
   }
 
-  // Redirect to login if not authenticated
+  // Redirect to login only after we know we're not authenticated
   if (!isAuthenticated) {
     console.log('[AuthGuard] Redirecting to login - no auth');
     return <Navigate to="/admin/login" state={{ from: location }} replace />;
   }
 
-  // Wait for profile to load
+  // If user exists but profile still loading, show loading instead of bouncing
   if (!profile) {
     console.log('[AuthGuard] Waiting for profile...');
     return <AuthLoadingScreen />;

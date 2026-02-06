@@ -21,7 +21,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [showExpiryWarning, setShowExpiryWarning] = useState(false);
 
   // Fetch user profile from database
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = async (userId: string, emailFallback?: string) => {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -36,7 +36,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           const insertData: Inserts<'profiles'> = {
             id: userId,
             role: 'viewer',
-            email: user?.email || '',
+            email: emailFallback || user?.email || '',
           };
           const { data: newProfile, error: createError } = await supabase
             .from('profiles')
@@ -63,7 +63,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const fallbackProfile: UserProfile = {
         id: userId,
         role: 'viewer',
-        email: user?.email || '',
+        email: emailFallback || user?.email || '',
         full_name: null,
         avatar_url: null,
         created_at: new Date().toISOString(),
@@ -95,7 +95,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           setUser(initialSession?.user ?? null);
           
           if (initialSession?.user) {
-            await fetchProfile(initialSession.user.id);
+            await fetchProfile(initialSession.user.id, initialSession.user.email);
           } else {
             // No session - clear everything immediately
             setProfile(null);
@@ -130,7 +130,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         
         if (newSession?.user) {
           // User signed in - fetch profile
-          await fetchProfile(newSession.user.id);
+          await fetchProfile(newSession.user.id, newSession.user.email);
         } else {
           // User signed out or session expired - clear everything
           setProfile(null);
@@ -166,7 +166,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       if (data.user) {
-        await fetchProfile(data.user.id);
+        // Immediately reflect authenticated user to prevent redirect loops
+        setUser(data.user);
+        await fetchProfile(data.user.id, data.user.email);
       }
       
       // Ensure session is properly stored
@@ -337,7 +339,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     resetPassword,
     updatePassword,
     hasRole,
-    isAuthenticated: !!user && !!profile,
+    // Consider authenticated once we have a Supabase user; profile may populate shortly after
+    isAuthenticated: !!user,
   };
 
   return (
@@ -360,4 +363,9 @@ export function useAuth() {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
+}
+
+// Optional accessor for public surfaces that only need best-effort auth info
+export function useAuthOptional() {
+  return useContext(AuthContext);
 }

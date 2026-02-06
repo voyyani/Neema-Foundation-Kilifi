@@ -4,7 +4,7 @@ import { Menu, X, ChevronDown, Heart, ArrowRight, Shield } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import AdminLoginModal from './AdminLoginModal';
-import { useAuth } from '../admin/hooks/useAuth';
+import { AuthProvider, useAuthOptional } from '../admin/hooks/useAuth';
 
 // Types
 interface NavLink {
@@ -342,9 +342,10 @@ const MobileMenu: React.FC<{
 const Navbar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const auth = useAuth();
+  const auth = useAuthOptional();
   
-  const { isAuthenticated, loading: authLoading } = auth;
+  const isAuthenticated = auth?.isAuthenticated ?? false;
+  const authLoading = auth?.loading ?? false;
   
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -596,7 +597,11 @@ const Navbar: React.FC = () => {
       <div className={`h-${isScrolled ? '20' : '24'}`} aria-hidden="true" />
       
       {/* Admin Login Modal */}
-      <AdminLoginModal isOpen={adminModalOpen} onClose={() => setAdminModalOpen(false)} />
+      {adminModalOpen && (
+        <AuthProvider>
+          <AdminLoginModal isOpen={adminModalOpen} onClose={() => setAdminModalOpen(false)} />
+        </AuthProvider>
+      )}
     </>
   );
 };

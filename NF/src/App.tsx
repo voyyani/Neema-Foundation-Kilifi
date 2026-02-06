@@ -1,6 +1,6 @@
 // src/App.tsx
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import Navbar from './components/Navbar';
@@ -88,20 +88,27 @@ class GlobalErrorBoundary extends React.Component<
   }
 }
 
+// Scope AuthProvider only to admin subtree to keep public pages auth-free
+const AdminShell = () => (
+  <AuthProvider>
+    <Outlet />
+  </AuthProvider>
+);
+
 const App: React.FC = () => {
   const isUnderMaintenance = import.meta.env.VITE_UNDER_MAINTENANCE === 'true';
 
   return (
     <GlobalErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <Router>
-            <Toaster position="top-right" richColors />
-            <div className="App">
-              <div className="min-h-screen flex flex-col">
-                <Suspense fallback={<LoadingSpinner />}>
-                  <Routes>
-                  {/* Admin Routes - No Navbar/Footer */}
+        <Router>
+          <Toaster position="top-right" richColors />
+          <div className="App">
+            <div className="min-h-screen flex flex-col">
+              <Suspense fallback={<LoadingSpinner />}>
+                <Routes>
+                {/* Admin Routes - No Navbar/Footer */}
+                <Route element={<AdminShell />}>
                   <Route path="/admin/login" element={<AdminLogin />} />
                   <Route path="/admin/forgot-password" element={<ForgotPassword />} />
                   <Route path="/admin/reset-password" element={<ResetPassword />} />
@@ -113,6 +120,7 @@ const App: React.FC = () => {
                       </AuthGuard>
                     }
                   >
+                    <Route index element={<Navigate to="dashboard" replace />} />
                     <Route path="dashboard" element={<AdminDashboard />} />
                     {/* Event Management Routes */}
                     <Route path="events" element={<EventsPage />} />
@@ -132,49 +140,49 @@ const App: React.FC = () => {
                     <Route path="users" element={<UsersManagementPage />} />
                     {/* More admin routes will be added in future phases */}
                   </Route>
+                </Route>
 
-                  {/* Public Routes - With Navbar/Footer */}
-                  <Route
-                    path="/*"
-                    element={
-                      <>
-                        <Navbar />
-                        <main className="flex-1">
-                          <Routes>
-                            {isUnderMaintenance ? (
-                              // Maintenance mode routes
-                              <>
-                                <Route path="/volunteer" element={<Volunteer />} />
-                                <Route path="*" element={<Maintenance />} />
-                              </>
-                            ) : (
-                              // Normal mode - all routes accessible
-                              <>
-                                <Route path="/" element={<Landing />} />
-                                <Route path="/donate" element={<Donate />} />
-                                <Route path="/bank-details" element={<BankDetails />} />
-                                <Route path="/legacy-giving" element={<LegacyGiving />} />
-                                <Route path="/volunteer" element={<Volunteer />} />
-                                <Route path="/partner" element={<Partnership />} />
-                                <Route path="/sponsorship" element={<Sponsorship />} />
-                                <Route path="/board" element={<Board />} />
-                                <Route path="/programs" element={<Programs />} />
-                                <Route path="*" element={<NotFound />} />
-                              </>
-                            )}
-                          </Routes>
-                        </main>
-                        <Footer />
-                      </>
-                    }
-                  />
-                </Routes>
-              </Suspense>
-            </div>
+                {/* Public Routes - With Navbar/Footer */}
+                <Route
+                  path="/*"
+                  element={
+                    <>
+                      <Navbar />
+                      <main className="flex-1">
+                        <Routes>
+                          {isUnderMaintenance ? (
+                            // Maintenance mode routes
+                            <>
+                              <Route path="/volunteer" element={<Volunteer />} />
+                              <Route path="*" element={<Maintenance />} />
+                            </>
+                          ) : (
+                            // Normal mode - all routes accessible
+                            <>
+                              <Route path="/" element={<Landing />} />
+                              <Route path="/donate" element={<Donate />} />
+                              <Route path="/bank-details" element={<BankDetails />} />
+                              <Route path="/legacy-giving" element={<LegacyGiving />} />
+                              <Route path="/volunteer" element={<Volunteer />} />
+                              <Route path="/partner" element={<Partnership />} />
+                              <Route path="/sponsorship" element={<Sponsorship />} />
+                              <Route path="/board" element={<Board />} />
+                              <Route path="/programs" element={<Programs />} />
+                              <Route path="*" element={<NotFound />} />
+                            </>
+                          )}
+                        </Routes>
+                      </main>
+                      <Footer />
+                    </>
+                  }
+                />
+              </Routes>
+            </Suspense>
           </div>
-        </Router>
-        <Analytics />
-      </AuthProvider>
+        </div>
+      </Router>
+      <Analytics />
       </QueryClientProvider>
     </GlobalErrorBoundary>
   );

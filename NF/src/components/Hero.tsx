@@ -1119,25 +1119,6 @@ const Hero = () => {
         </motion.div>
       </div>
 
-      {/* Scroll Indicator */}
-      <motion.div 
-        className="absolute bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 z-20"
-        animate={{ y: [0, 8, 0] }}
-        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <button 
-          onClick={handleLearnMore}
-          className="w-6 h-10 border-2 border-red-800 rounded-full flex justify-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-800 focus:ring-offset-2"
-          aria-label="Scroll to learn more"
-        >
-          <motion.div 
-            className="w-1 h-3 bg-red-800 rounded-full mt-2"
-            animate={{ y: [0, 12, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            aria-hidden="true"
-          />
-        </button>
-      </motion.div>
 
       {/* Video Modal */}
       <AnimatePresence>
