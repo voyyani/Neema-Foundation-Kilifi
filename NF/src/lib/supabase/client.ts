@@ -42,13 +42,6 @@ export const supabaseAdmin = createClient<Database>(supabaseUrl, supabaseAnonKey
     storage: typeof window !== 'undefined' ? window.localStorage : undefined,
     storageKey: 'neema-admin-auth',
     flowType: 'pkce',
-    // Reduce lock conflicts that can trigger AbortError in multi-tab scenarios
-    lock: {
-      key: 'neema-admin-auth-lock',
-      retryCount: 5,
-      retryInterval: 300,
-      acquireTimeout: 5000,
-    },
   },
 });
 

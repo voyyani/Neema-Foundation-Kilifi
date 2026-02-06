@@ -141,7 +141,7 @@ const Impact: React.FC = () => {
           {displayMetrics.map((metric, index) => {
             const IconComponent = iconMap[metric.icon] || Target;
             const key = metric.label.toLowerCase().replace(/\s+/g, '_');
-            const count = counts[key] || 0;
+            const count = counts[key] ?? metric.value ?? 0;
             
             return (
               <motion.div
