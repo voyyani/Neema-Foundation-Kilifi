@@ -1,5 +1,5 @@
 // src/App.tsx
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
@@ -21,30 +21,31 @@ import { Programs } from './components/programs';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 import { AuthProvider } from './admin/hooks/useAuth';
 import { queryClient } from './admin/config/queryClient';
+import { lazyWithRetry } from './lib/lazyWithRetry';
 
 // Lazy load admin routes for code splitting
-const AdminLogin = lazy(() => import('./admin/pages/AdminLogin'));
-const ForgotPassword = lazy(() => import('./admin/pages/ForgotPassword'));
-const ResetPassword = lazy(() => import('./admin/pages/ResetPassword'));
-const AdminLayout = lazy(() => import('./admin/components/layout/AdminLayout'));
-const AuthGuard = lazy(() => import('./admin/components/auth/AuthGuard'));
-const AdminDashboard = lazy(() => import('./admin/pages/AdminDashboard'));
-const EventsPage = lazy(() => import('./admin/pages/events/EventsPage'));
-const NewEventPage = lazy(() => import('./admin/pages/events/NewEventPage'));
-const EventDetailPage = lazy(() => import('./admin/pages/events/EventDetailPage'));
+const AdminLogin = lazyWithRetry(() => import('./admin/pages/AdminLogin'));
+const ForgotPassword = lazyWithRetry(() => import('./admin/pages/ForgotPassword'));
+const ResetPassword = lazyWithRetry(() => import('./admin/pages/ResetPassword'));
+const AdminLayout = lazyWithRetry(() => import('./admin/components/layout/AdminLayout'));
+const AuthGuard = lazyWithRetry(() => import('./admin/components/auth/AuthGuard'));
+const AdminDashboard = lazyWithRetry(() => import('./admin/pages/AdminDashboard'));
+const EventsPage = lazyWithRetry(() => import('./admin/pages/events/EventsPage'));
+const NewEventPage = lazyWithRetry(() => import('./admin/pages/events/NewEventPage'));
+const EventDetailPage = lazyWithRetry(() => import('./admin/pages/events/EventDetailPage'));
 
 // Content Management Pages
-const ContentPage = lazy(() => import('./admin/pages/content/ContentPage'));
-const SiteSettingsPage = lazy(() => import('./admin/pages/content/SiteSettingsPage'));
-const HeroPage = lazy(() => import('./admin/pages/content/HeroPage'));
-const ProgramsPage = lazy(() => import('./admin/pages/content/ProgramsPage'));
-const StoriesPage = lazy(() => import('./admin/pages/content/StoriesPage'));
-const ImpactPage = lazy(() => import('./admin/pages/content/ImpactPage'));
-const BoardPage = lazy(() => import('./admin/pages/content/BoardPage'));
-const PartnersManagement = lazy(() => import('./admin/components/content/PartnersManagement'));
+const ContentPage = lazyWithRetry(() => import('./admin/pages/content/ContentPage'));
+const SiteSettingsPage = lazyWithRetry(() => import('./admin/pages/content/SiteSettingsPage'));
+const HeroPage = lazyWithRetry(() => import('./admin/pages/content/HeroPage'));
+const ProgramsPage = lazyWithRetry(() => import('./admin/pages/content/ProgramsPage'));
+const StoriesPage = lazyWithRetry(() => import('./admin/pages/content/StoriesPage'));
+const ImpactPage = lazyWithRetry(() => import('./admin/pages/content/ImpactPage'));
+const BoardPage = lazyWithRetry(() => import('./admin/pages/content/BoardPage'));
+const PartnersManagement = lazyWithRetry(() => import('./admin/components/content/PartnersManagement'));
 
 // Users Management Pages
-const UsersManagementPage = lazy(() => import('./admin/pages/users/UsersManagementPage'));
+const UsersManagementPage = lazyWithRetry(() => import('./admin/pages/users/UsersManagementPage'));
 
 // Global Error Boundary
 class GlobalErrorBoundary extends React.Component<
