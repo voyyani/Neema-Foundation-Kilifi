@@ -66,6 +66,7 @@ const navigationWithIcons: NavItem[] = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: DashboardIcon, requiredPermission: 'view_dashboard' },
   { name: 'Events', href: '/admin/events', icon: EventsIcon, requiredPermission: 'view_events' },
   { name: 'Content', href: '/admin/content', icon: ContentIcon, requiredPermission: 'view_content' },
+  { name: 'Programs', href: '/admin/content/programs', icon: ProgramsIcon, requiredPermission: 'view_content' },
   { name: 'Users', href: '/admin/users', icon: UsersIcon, requiredPermission: 'view_users' },
   { name: 'Site Settings', href: '/admin/site-settings', icon: SettingsIcon, requiredPermission: 'view_settings' },
 ];

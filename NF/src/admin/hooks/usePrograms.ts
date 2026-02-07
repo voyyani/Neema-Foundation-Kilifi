@@ -143,8 +143,14 @@ export function usePrograms() {
       const program = programs.find(p => p.id === id);
       if (!program) throw new Error('Program not found');
 
+      // Optimistic UI update so the badge flips immediately
+      const nextFeatured = !program.is_featured;
+      setPrograms(prev =>
+        prev.map(p => (p.id === id ? { ...p, is_featured: nextFeatured } : p))
+      );
+
       const { data, error: updateError } = await programsTable()
-        .update({ is_featured: !program.is_featured })
+        .update({ is_featured: nextFeatured })
         .eq('id', id)
         .select()
         .single();
@@ -156,6 +162,12 @@ export function usePrograms() {
       return data;
     } catch (err) {
       const error = err as Error;
+      // Revert optimistic change if the request fails
+      setPrograms(prev =>
+        prev.map(p =>
+          p.id === id ? { ...p, is_featured: !p.is_featured } : p
+        )
+      );
       toast.error('Failed to toggle featured: ' + error.message);
       throw error;
     }

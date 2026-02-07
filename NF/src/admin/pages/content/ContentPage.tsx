@@ -6,6 +6,13 @@ import { Settings, Image, Layout, BookOpen, TrendingUp, Users, Handshake } from 
 export default function ContentPage() {
   const contentSections = [
     {
+      title: 'Programs',
+      description: 'Manage foundation programs and initiatives',
+      icon: Layout,
+      href: '/admin/content/programs',
+      color: 'bg-blue-500',
+    },
+    {
       title: 'Hero Slides',
       description: 'Manage homepage hero section slides',
       icon: Image,
