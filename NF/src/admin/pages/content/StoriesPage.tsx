@@ -47,20 +47,20 @@ function StoryCard({
   onUnpublish,
   onToggleFeatured 
 }: StoryCardProps) {
-  const isPublished = story.status === 'published';
+  const isPublished = story.is_published;
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
       {/* Image */}
-      {story.image_url ? (
-        <div className="h-48 overflow-hidden bg-gray-100">
-          <img 
-            src={story.image_url} 
-            alt={story.title}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      ) : (
+            {story.cover_image ? (
+              <div className="h-48 overflow-hidden bg-gray-100">
+                <img 
+                  src={story.cover_image} 
+                  alt={story.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
         <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
           <ImageIcon className="h-16 w-16 text-gray-400" />
         </div>
@@ -522,7 +522,7 @@ export default function StoriesPage() {
     const matchesSearch = story.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          (story.excerpt?.toLowerCase() || '').includes(searchQuery.toLowerCase());
     const matchesCategory = categoryFilter === 'all' || story.category === categoryFilter;
-    const matchesStatus = statusFilter === 'all' || story.status === statusFilter;
+    const matchesStatus = statusFilter === 'all' || (story.is_published ? 'published' : 'draft') === statusFilter;
     
     return matchesSearch && matchesCategory && matchesStatus;
   });

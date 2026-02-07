@@ -144,6 +144,7 @@ export function mapProgramToLegacyFormat(program: PublicProgram) {
     donationGoal,
     donationProgress,
     acceptsDonations: program.accepts_donations !== false,
+    donationLink: (program as any).donation_link || null,
     
     // Volunteer opportunities
     volunteerOpportunities: program.volunteer_opportunities || [],
@@ -151,6 +152,7 @@ export function mapProgramToLegacyFormat(program: PublicProgram) {
     volunteerCurrent: program.volunteer_current,
     volunteerSkillsNeeded: program.volunteer_skills_needed || [],
     acceptsVolunteers: program.accepts_volunteers !== false,
+    volunteerLink: (program as any).volunteer_link || null,
     
     // Testimonials
     testimonials: program.testimonials || [],

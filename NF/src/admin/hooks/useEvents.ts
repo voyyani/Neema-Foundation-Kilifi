@@ -110,6 +110,8 @@ export function useEvents(filters?: EventFilters) {
         registration_link: data.registration_link || null,
         registration_deadline: toISOString(data.registration_deadline),
         max_attendees: data.max_attendees || null,
+        donation_link: (data as any).donation_link || null,
+        volunteer_link: (data as any).volunteer_link || null,
         status: data.status,
         is_featured: data.is_featured,
         program_id: data.program_id || null,
@@ -186,6 +188,8 @@ export function useEvents(filters?: EventFilters) {
       if (data.registration_link !== undefined) updateData.registration_link = data.registration_link || null;
       if (data.registration_deadline !== undefined) updateData.registration_deadline = toISOString(data.registration_deadline);
       if (data.max_attendees !== undefined) updateData.max_attendees = data.max_attendees || null;
+      if ((data as any).donation_link !== undefined) updateData.donation_link = (data as any).donation_link || null;
+      if ((data as any).volunteer_link !== undefined) updateData.volunteer_link = (data as any).volunteer_link || null;
       if (data.status !== undefined) updateData.status = data.status;
       if (data.is_featured !== undefined) updateData.is_featured = data.is_featured;
       if (data.program_id !== undefined) updateData.program_id = data.program_id || null;

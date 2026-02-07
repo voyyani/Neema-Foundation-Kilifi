@@ -39,9 +39,13 @@ export interface ProgramEvent {
     description: string;
     image: string;
     registrationLink?: string;
+    donationLink?: string;
+    volunteerLink?: string;
     maxAttendees?: number;
     currentAttendees?: number;
     status: 'upcoming' | 'ongoing' | 'completed' | 'cancelled';
+    program?: string;
+    programColor?: 'red' | 'green' | 'blue' | 'purple';
 }
 
 export interface AdditionalProgram {

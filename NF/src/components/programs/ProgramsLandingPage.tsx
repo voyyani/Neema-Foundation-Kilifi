@@ -74,27 +74,41 @@ const ProgramsLandingPage: React.FC = () => {
     totalEvents: upcomingEvents.length,
   }), [allPrograms, upcomingEvents]);
 
-  // Get all upcoming events from database
+  // Map program id -> program meta for event linking
+  const programById = useMemo(() => {
+    const map: Record<string, any> = {};
+    allPrograms.forEach(p => { map[p.id] = p; });
+    return map;
+  }, [allPrograms]);
+
+  // Get all upcoming events from database, linked to programs
   const allUpcomingEvents = useMemo(() => {
-    // TODO: Link events to programs in Phase 2
-    // For now, return all events
-    return upcomingEvents.map((event: any) => ({
-      id: event.id,
-      title: event.title,
-      description: event.description || '',
-      date: event.event_date,
-      time: event.event_time || 'TBA',
-      location: event.location || 'Ganze',
-      image: event.cover_image || '',
-      status: event.status,
-      program: 'General', // TODO: Link to program in Phase 2
-      programId: 'general',
-      programColor: 'red',
-      maxAttendees: event.max_attendees,
-      currentAttendees: event.current_attendees || 0,
-      registrationLink: event.registration_link || '',
-    }));
-  }, [upcomingEvents]);
+    return upcomingEvents.map((event: any) => {
+      const prog = event.program_id ? programById[event.program_id] : undefined;
+      const programColor = prog?.category === 'education' ? 'blue'
+        : prog?.category === 'health' ? 'green'
+        : prog?.category === 'empowerment' ? 'purple'
+        : 'red';
+      return {
+        id: event.id,
+        title: event.name,
+        description: event.description || '',
+        date: event.start_date,
+        time: event.start_time || 'TBA',
+        location: event.is_virtual ? 'Virtual' : (event.venue_name || 'TBA'),
+        image: event.cover_image || '',
+        status: event.status === 'published' ? 'upcoming' : 'draft',
+        program: prog?.name || 'General',
+        programId: prog?.id || 'general',
+        programColor,
+        maxAttendees: event.max_attendees,
+        currentAttendees: event.current_attendees || 0,
+        registrationLink: event.registration_link || '',
+        donationLink: event.donation_link || prog?.donation_link || '/donate',
+        volunteerLink: event.volunteer_link || prog?.volunteer_link || '/volunteer',
+      } as ProgramEvent;
+    });
+  }, [upcomingEvents, programById]);
 
   // Featured program (could be based on logic like most beneficiaries, etc.)
   const featuredProgram = useMemo(() => {
@@ -127,8 +141,6 @@ const ProgramsLandingPage: React.FC = () => {
   const closeEventModal = () => {
     setSelectedEvent(null);
   };
-
-  
 
   if (error) {
     return (
@@ -375,8 +387,8 @@ const ProgramsLandingPage: React.FC = () => {
                           </div>
                           <div className="p-6">
                             <div className="flex items-center gap-2 mb-3">
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getEventColor(event.programColor)}`}>
-                                {event.program}
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getEventColor(event.programColor || 'red')}`}>
+                                {event.program || 'General'}
                               </span>
                               <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full border border-blue-200">
                                 {event.status}
@@ -401,12 +413,34 @@ const ProgramsLandingPage: React.FC = () => {
                                 <div className="flex items-center gap-2">
                                   <Users className="h-4 w-4" />
                                   <span>
-                                    {event.currentAttendees || 0} / {event.maxAttendees} attendees
-                                  </span>
-                                </div>
-                              )}
+                                {event.currentAttendees || 0} / {event.maxAttendees} attendees
+                              </span>
                             </div>
-                            <button className="w-full mt-4 bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors rounded-xl py-3 font-semibold">
+                          )}
+                        </div>
+                            <div className="grid grid-cols-2 gap-3 mt-4">
+                              <a
+                                href={event.donationLink || '/donate'}
+                                onClick={(e) => e.stopPropagation()}
+                                className="inline-flex items-center justify-center px-3 py-3 rounded-xl bg-red-700 text-white text-sm font-semibold hover:bg-red-800 transition-colors"
+                              >
+                                Donate
+                              </a>
+                              <a
+                                href={event.volunteerLink || '/volunteer'}
+                                onClick={(e) => e.stopPropagation()}
+                                className="inline-flex items-center justify-center px-3 py-3 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors"
+                              >
+                                Volunteer
+                              </a>
+                            </div>
+                            <button
+                              className="w-full mt-3 bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors rounded-xl py-3 font-semibold"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openEventModal(event);
+                              }}
+                            >
                               View Details
                             </button>
                           </div>
@@ -630,25 +664,47 @@ const EventModal: React.FC<{ event: any; onClose: () => void }> = ({ event, onCl
                 </div>
               </div>
             )}
-            <div className="flex gap-3">
-              {event.registrationLink ? (
+            <div className="flex flex-col gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 <a
-                  href={event.registrationLink}
-                  className="flex-1 bg-red-800 text-white text-center py-3 rounded-xl hover:bg-red-700 transition-colors font-semibold"
+                  href={event.donationLink || '/donate'}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center bg-red-700 text-white py-3 rounded-xl hover:bg-red-800 transition-colors font-semibold"
                 >
-                  Register Now
+                  Donate
                 </a>
-              ) : (
-                <button className="flex-1 bg-gray-800 text-white py-3 rounded-xl hover:bg-gray-700 transition-colors font-semibold">
-                  Learn More
+                <a
+                  href={event.volunteerLink || '/volunteer'}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center bg-emerald-600 text-white py-3 rounded-xl hover:bg-emerald-700 transition-colors font-semibold"
+                >
+                  Volunteer
+                </a>
+              </div>
+              <div className="flex gap-3">
+                {event.registrationLink ? (
+                  <a
+                    href={event.registrationLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 bg-red-800 text-white text-center py-3 rounded-xl hover:bg-red-700 transition-colors font-semibold"
+                  >
+                    Register Now
+                  </a>
+                ) : (
+                  <button className="flex-1 bg-gray-800 text-white py-3 rounded-xl hover:bg-gray-700 transition-colors font-semibold">
+                    Learn More
+                  </button>
+                )}
+                <button
+                  onClick={onClose}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-semibold"
+                >
+                  Close
                 </button>
-              )}
-              <button
-                onClick={onClose}
-                className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-semibold"
-              >
-                Close
-              </button>
+              </div>
             </div>
           </div>
         </motion.div>

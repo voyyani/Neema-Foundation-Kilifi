@@ -24,6 +24,8 @@ const Events: React.FC = () => {
   };
 
   const isLoading = upcomingLoading || pastLoading;
+  const resolveDonate = (event: any) => event.donation_link || '/donate';
+  const resolveVolunteer = (event: any) => event.volunteer_link || '/volunteer';
 
   return (
     <section id="events" className="py-14 sm:py-16 md:py-20 bg-gradient-to-br from-gray-50 to-white">
@@ -113,18 +115,36 @@ const Events: React.FC = () => {
                       </span>
                     </div>
 
-                    {(event.registration_link || event.virtual_link) && (
-                      <button
-                        className="inline-flex items-center justify-center space-x-2 bg-red-100 text-red-800 hover:bg-red-200 transition-colors rounded-xl px-4 py-3 font-semibold w-full sm:w-auto min-h-[44px]"
-                        onClick={() => {
-                          const link = event.registration_link || event.virtual_link;
-                          if (link) window.open(link, '_blank', 'noopener,noreferrer');
-                        }}
+                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                      {(event.registration_link || event.virtual_link) && (
+                        <button
+                          className="inline-flex items-center justify-center space-x-2 bg-red-100 text-red-800 hover:bg-red-200 transition-colors rounded-xl px-4 py-3 font-semibold w-full sm:w-auto min-h-[44px]"
+                          onClick={() => {
+                            const link = event.registration_link || event.virtual_link;
+                            if (link) window.open(link, '_blank', 'noopener,noreferrer');
+                          }}
+                        >
+                          <span>{event.registration_link ? 'Register' : 'Join Event'}</span>
+                          <ArrowRight className="h-4 w-4" />
+                        </button>
+                      )}
+                      <a
+                        href={resolveDonate(event)}
+                        className="inline-flex items-center justify-center bg-red-700 text-white rounded-xl px-4 py-3 font-semibold hover:bg-red-800 transition-colors w-full sm:w-auto min-h-[44px]"
+                        target="_blank"
+                        rel="noreferrer"
                       >
-                        <span>{event.registration_link ? 'Register' : 'Join Event'}</span>
-                        <ArrowRight className="h-4 w-4" />
-                      </button>
-                    )}
+                        Donate
+                      </a>
+                      <a
+                        href={resolveVolunteer(event)}
+                        className="inline-flex items-center justify-center bg-emerald-600 text-white rounded-xl px-4 py-3 font-semibold hover:bg-emerald-700 transition-colors w-full sm:w-auto min-h-[44px]"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Volunteer
+                      </a>
+                    </div>
                   </div>
                 </div>
               </motion.div>

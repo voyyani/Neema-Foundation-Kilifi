@@ -81,6 +81,7 @@ export interface PublicProgram {
   donation_currency?: string;
   donation_deadline?: string;
   accepts_donations?: boolean;
+  donation_link?: string | null;
   
   // Volunteer
   volunteer_opportunities?: string[];
@@ -88,6 +89,7 @@ export interface PublicProgram {
   volunteer_current?: number;
   volunteer_skills_needed?: string[];
   accepts_volunteers?: boolean;
+  volunteer_link?: string | null;
   
   // Content
   impact_statement?: string;

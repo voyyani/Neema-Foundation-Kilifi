@@ -20,6 +20,8 @@ export const eventSchema = z.object({
   registration_deadline: z.coerce.date().optional(),
   max_attendees: z.number().positive('Must be a positive number').optional(),
   cover_image: z.string().optional(),
+  donation_link: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  volunteer_link: z.string().url('Must be a valid URL').optional().or(z.literal('')),
   program_id: z.string().uuid('Invalid program ID').optional(),
   partners: z.array(z.string()).default([]),
   status: z.enum(['draft', 'published', 'cancelled', 'completed', 'archived']).default('draft'),

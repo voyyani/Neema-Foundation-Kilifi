@@ -24,10 +24,14 @@ export interface PublicEvent {
   program_id: string | null;
   cover_image: string | null;
   partners: string[] | null;
+  donation_link?: string | null;
+  volunteer_link?: string | null;
   created_at: string;
   updated_at: string;
   // Joined data
   program_name?: string;
+  program_slug?: string;
+  program_category?: string;
 }
 
 /**
@@ -44,7 +48,10 @@ export function usePublicEvents(options?: { enabled?: boolean }) {
         .select(`
           *,
           programs:program_id (
-            name
+            id,
+            slug,
+            name,
+            category
           )
         `)
         .eq('status', 'published')
@@ -59,6 +66,8 @@ export function usePublicEvents(options?: { enabled?: boolean }) {
       const events = (data || []).map((event: any) => ({
         ...event,
         program_name: event.programs?.name || undefined,
+        program_slug: event.programs?.slug || undefined,
+        program_category: event.programs?.category || undefined,
       }));
       
       return events;
@@ -86,7 +95,10 @@ export function usePublicUpcomingEvents(options?: { enabled?: boolean; limit?: n
         .select(`
           *,
           programs:program_id (
-            name
+            id,
+            slug,
+            name,
+            category
           )
         `)
         .eq('status', 'published')
@@ -108,6 +120,8 @@ export function usePublicUpcomingEvents(options?: { enabled?: boolean; limit?: n
       const events = (data || []).map((event: any) => ({
         ...event,
         program_name: event.programs?.name || undefined,
+        program_slug: event.programs?.slug || undefined,
+        program_category: event.programs?.category || undefined,
       }));
       
       return events;
@@ -135,7 +149,10 @@ export function usePublicPastEvents(options?: { enabled?: boolean; limit?: numbe
         .select(`
           *,
           programs:program_id (
-            name
+            id,
+            slug,
+            name,
+            category
           )
         `)
         .eq('status', 'published')
@@ -157,6 +174,8 @@ export function usePublicPastEvents(options?: { enabled?: boolean; limit?: numbe
       const events = (data || []).map((event: any) => ({
         ...event,
         program_name: event.programs?.name || undefined,
+        program_slug: event.programs?.slug || undefined,
+        program_category: event.programs?.category || undefined,
       }));
       
       return events;
@@ -186,7 +205,15 @@ export function usePublicProgramEvents(programId: string | null | undefined, opt
 
       const { data, error } = await supabase
         .from('events')
-        .select('*')
+        .select(`
+          *,
+          programs:program_id (
+            id,
+            slug,
+            name,
+            category
+          )
+        `)
         .eq('status', 'published')
         .eq('program_id', programId)
         .order('start_date', { ascending: false });
@@ -197,10 +224,16 @@ export function usePublicProgramEvents(programId: string | null | undefined, opt
       }
       
       const events = (data || []) as PublicEvent[];
+      const withPrograms = events.map((event: any) => ({
+        ...event,
+        program_name: event.programs?.name || undefined,
+        program_slug: event.programs?.slug || undefined,
+        program_category: event.programs?.category || undefined,
+      }));
       
       // Split into upcoming and past
-      const upcoming = events.filter((e: PublicEvent) => e.start_date >= today).reverse();
-      const past = events.filter((e: PublicEvent) => e.start_date < today);
+      const upcoming = withPrograms.filter((e: PublicEvent) => e.start_date >= today).reverse();
+      const past = withPrograms.filter((e: PublicEvent) => e.start_date < today);
       
       return { upcoming, past };
     },
@@ -225,7 +258,10 @@ export function usePublicFeaturedEvents(options?: { enabled?: boolean }) {
         .select(`
           *,
           programs:program_id (
-            name
+            id,
+            slug,
+            name,
+            category
           )
         `)
         .eq('status', 'published')

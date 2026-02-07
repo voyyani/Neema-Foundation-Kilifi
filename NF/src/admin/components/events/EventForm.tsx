@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { usePrograms } from '../../hooks/usePrograms';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, MapPin, Globe, Users, Image as ImageIcon, Tag } from 'lucide-react';
@@ -19,41 +20,46 @@ interface EventFormProps {
 export default function EventForm({ event, onSubmit, isLoading }: EventFormProps) {
   const navigate = useNavigate();
   const [isGeneratingSlug, setIsGeneratingSlug] = useState(true);
+  const { programs } = usePrograms();
 
-  const form = useForm({
-    resolver: zodResolver(eventSchema),
-    defaultValues: event
-      ? {
-          name: event.name,
-          slug: event.slug,
-          purpose: event.purpose || '',
-          description: event.description || '',
-          start_date: new Date(event.start_date),
-          end_date: event.end_date ? new Date(event.end_date) : undefined,
-          start_time: event.start_time || undefined,
-          end_time: event.end_time || undefined,
-          is_virtual: event.is_virtual,
-          venue_name: event.venue_name || undefined,
-          venue_address: event.venue_address || undefined,
-          virtual_link: event.virtual_link || undefined,
-          requires_registration: event.requires_registration,
-          registration_link: event.registration_link || undefined,
-          registration_deadline: event.registration_deadline
-            ? new Date(event.registration_deadline)
-            : undefined,
-          max_attendees: event.max_attendees || undefined,
-          cover_image: event.cover_image || undefined,
-          program_id: event.program_id || undefined,
-          partners: event.partners || [],
-          status: event.status,
-          is_featured: event.is_featured,
-        }
+const form = useForm({
+  resolver: zodResolver(eventSchema),
+  defaultValues: event
+    ? {
+        name: event.name,
+        slug: event.slug,
+        purpose: event.purpose || '',
+        description: event.description || '',
+        start_date: new Date(event.start_date),
+        end_date: event.end_date ? new Date(event.end_date) : undefined,
+        start_time: event.start_time || undefined,
+        end_time: event.end_time || undefined,
+        is_virtual: event.is_virtual,
+        venue_name: event.venue_name || undefined,
+        venue_address: event.venue_address || undefined,
+        virtual_link: event.virtual_link || undefined,
+        requires_registration: event.requires_registration,
+        registration_link: event.registration_link || undefined,
+        registration_deadline: event.registration_deadline
+          ? new Date(event.registration_deadline)
+          : undefined,
+        max_attendees: event.max_attendees || undefined,
+        cover_image: event.cover_image || undefined,
+        donation_link: (event as any).donation_link || undefined,
+        volunteer_link: (event as any).volunteer_link || undefined,
+        program_id: event.program_id || undefined,
+        partners: event.partners || [],
+        status: event.status,
+        is_featured: event.is_featured,
+      }
       : {
           is_virtual: false,
           requires_registration: false,
           partners: [],
           status: 'draft',
           is_featured: false,
+          donation_link: '',
+          volunteer_link: '',
         },
   });
 
@@ -142,6 +148,25 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
               placeholder="Short description of the event purpose"
             />
+          </div>
+
+          {/* Program ID (link event to program) */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Program (link this event to a program)
+            </label>
+            <select
+              {...register('program_id')}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+            >
+              <option value="">Select a program</option>
+              {programs.map((p) => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-gray-500">
+              Choose a program; upcoming events will display on that program’s page.
+            </p>
           </div>
 
           {/* Description */}
@@ -432,6 +457,28 @@ export default function EventForm({ event, onSubmit, isLoading }: EventFormProps
               />
               <span className="text-sm font-medium text-gray-700">Feature this event</span>
             </label>
+          </div>
+
+          {/* Donation / Volunteer Links */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Donation Link</label>
+              <input
+                {...register('donation_link' as const)}
+                type="url"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                placeholder="https://donate.example.com/event"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Volunteer Link</label>
+              <input
+                {...register('volunteer_link' as const)}
+                type="url"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                placeholder="https://volunteer.example.com/event"
+              />
+            </div>
           </div>
         </div>
       </motion.div>
