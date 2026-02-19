@@ -13,7 +13,9 @@ import {
   Edit,
   Settings,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  Images,
+  X
 } from 'lucide-react';
 
 // =============================================================================
@@ -156,6 +158,8 @@ export default function AdminDashboard() {
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [completedWithoutStory, setCompletedWithoutStory] = useState<Array<{ id: string; name: string; slug: string }>>([]);
+  const [storyBannerDismissed, setStoryBannerDismissed] = useState(false);
 
   const userRole = (profile?.role || 'viewer') as UserRole;
 
@@ -262,6 +266,39 @@ export default function AdminDashboard() {
       fetchStats();
     }
   }, [userRole, profile]);
+
+  // Fetch completed events that have no published media album
+  useEffect(() => {
+    if (!hasPermission(userRole, 'view_events')) return;
+    async function fetchCompletedWithoutAlbum() {
+      try {
+        const { data: completedEvents } = await supabase
+          .from('events')
+          .select('id, name, slug')
+          .eq('status', 'completed')
+          .limit(20);
+
+        if (!completedEvents || completedEvents.length === 0) return;
+
+        const eventIds = (completedEvents as Array<{ id: string; name: string; slug: string }>).map((e) => e.id);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: linkedAlbums } = await (supabase as any)
+          .from('media_albums')
+          .select('event_id')
+          .in('event_id', eventIds)
+          .eq('is_published', true);
+
+        const linkedIds = new Set((linkedAlbums ?? []).map((a: { event_id: string }) => a.event_id));
+        const withoutStory = (completedEvents as Array<{ id: string; name: string; slug: string }>).filter(
+          (e) => !linkedIds.has(e.id),
+        );
+        setCompletedWithoutStory(withoutStory);
+      } catch (_) {
+        // Non-critical — silently ignore
+      }
+    }
+    fetchCompletedWithoutAlbum();
+  }, [userRole]);
 
   // Fetch recent activity based on permissions
   useEffect(() => {
@@ -485,6 +522,54 @@ export default function AdminDashboard() {
           You're signed in as <span className="font-semibold">{getRoleDisplayName(profile?.role || '')}</span>
         </p>
       </div>
+
+      {/* Story Archive Banner — completed events with no published album */}
+      {!storyBannerDismissed && completedWithoutStory.length > 0 && (
+        <div className="relative flex items-start gap-4 rounded-lg border border-amber-200 bg-amber-50 p-5 shadow-sm">
+          <div className="shrink-0 mt-0.5">
+            <Images className="h-5 w-5 text-amber-600" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-amber-900">
+              {completedWithoutStory.length === 1
+                ? '1 completed event has no story album'
+                : `${completedWithoutStory.length} completed events have no story album`}
+            </p>
+            <p className="text-xs text-amber-700 mt-1">
+              Turn past events into visual stories. Create a gallery album and publish it to make the
+              event live at{' '}
+              <code className="font-mono">/media/events/:slug</code>.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {completedWithoutStory.slice(0, 3).map((evt) => (
+                <Link
+                  key={evt.id}
+                  to="/admin/media"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium transition-colors"
+                >
+                  <Images className="w-3 h-3" />
+                  Create album — {evt.name}
+                </Link>
+              ))}
+              {completedWithoutStory.length > 3 && (
+                <Link
+                  to="/admin/media"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium transition-colors"
+                >
+                  +{completedWithoutStory.length - 3} more →
+                </Link>
+              )}
+            </div>
+          </div>
+          <button
+            onClick={() => setStoryBannerDismissed(true)}
+            aria-label="Dismiss"
+            className="shrink-0 text-amber-500 hover:text-amber-700 transition-colors mt-0.5"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Error Alert */}
       {error && (

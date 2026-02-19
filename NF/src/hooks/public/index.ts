@@ -41,3 +41,19 @@ export {
   usePublicProgramEvents
 } from './usePublicEvents';
 export type { PublicEvent } from './usePublicEvents';
+
+export {
+  usePublicAlbums,
+  usePublicFeaturedAlbums,
+  usePublicAlbum,
+  usePublicProgramAlbums,
+  usePublicEventAlbum,
+  buildCloudinaryUrl,
+} from './usePublicMedia';
+export type {
+  PublicMediaAlbum,
+  PublicMediaItem,
+  PublicAlbumDetail,
+  AlbumType,
+  AlbumFilterType,
+} from './usePublicMedia';

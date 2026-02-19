@@ -70,20 +70,55 @@ export function usePrograms() {
 
   // Update program
   const updateProgram = async (id: string, input: Partial<ProgramInput>): Promise<Program> => {
-    try {
-      // Generate slug if name changed
-      if (input.name && !input.slug) {
-        input.slug = slugify(input.name);
+    // Normalize payload: generate slug, strip empty strings, leave only truthy arrays
+    const normalizeInput = (payload: Partial<ProgramInput>) => {
+      const normalized: Record<string, any> = { ...payload };
+
+      if (normalized.name && (!normalized.slug || normalized.slug.trim() === '')) {
+        normalized.slug = slugify(normalized.name);
       }
 
+      Object.entries(normalized).forEach(([key, value]) => {
+        // Remove empty strings to avoid overwriting with ''
+        if (typeof value === 'string' && value.trim() === '') {
+          normalized[key] = null;
+        }
+        // Collapse empty arrays to null to avoid PostgREST errors on non-array columns
+        if (Array.isArray(value) && value.length === 0) {
+          normalized[key] = null;
+        }
+      });
+
+      return normalized;
+    };
+
+    // Attempt update, removing offending columns if backend schema is missing them
+    const tryUpdate = async (payload: Record<string, any>): Promise<Program> => {
       const { data, error: updateError } = await programsTable()
-        .update(input)
+        .update(payload)
         .eq('id', id)
         .select()
         .single();
 
-      if (updateError) throw updateError;
+      if (!updateError) return data;
 
+      // If the error is "column does not exist", drop that column and retry
+      const columnMatch = updateError.message.match(/column \"?([^\"]+)\"? does not exist/i) ||
+        updateError.details?.match(/column \"?([^\"]+)\"? does not exist/i);
+
+      if (updateError.code === '42703' && columnMatch?.[1]) {
+        const missing = columnMatch[1];
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete payload[missing];
+        return tryUpdate(payload);
+      }
+
+      throw updateError;
+    };
+
+    try {
+      const normalized = normalizeInput(input);
+      const data = await tryUpdate(normalized);
       toast.success('Program updated successfully!');
       fetchPrograms();
       return data;

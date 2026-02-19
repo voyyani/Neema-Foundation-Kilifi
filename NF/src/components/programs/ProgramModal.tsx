@@ -1,17 +1,19 @@
 // ProgramModal.tsx
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Calendar, MapPin, Users, Target, Clock, Heart, ArrowRight, 
   CheckCircle, Activity, Handshake, DollarSign, UserPlus, 
   Image as ImageIcon, ChevronLeft, ChevronRight, Share2, ExternalLink,
-  Sparkles, TrendingUp, Quote, AlertCircle, History
+  Sparkles, TrendingUp, Quote, AlertCircle, History, Camera
 } from 'lucide-react';
 import type { ProgramModalProps } from './types';
 import { RichContent } from '../ui/RichContent';
 import { ShareButtons } from '../ui/ShareButtons';
 import { VideoEmbed } from '../ui/VideoEmbed';
 import { usePublicProgramEvents } from '../../hooks/public';
+import { usePublicProgramAlbums } from '../../hooks/public/usePublicMedia';
 import type { PublicEvent } from '../../hooks/public/usePublicEvents';
 
 const ProgramModal: React.FC<ProgramModalProps> = ({ program, onClose }) => {
@@ -64,7 +66,7 @@ const ProgramModal: React.FC<ProgramModalProps> = ({ program, onClose }) => {
 // Default program view for programs without custom components
 const DefaultProgramView: React.FC<{ program: any; onClose: () => void }> = ({ program, onClose }) => {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState<'about' | 'impact' | 'getInvolved'>('about');
+  const [activeTab, setActiveTab] = useState<'about' | 'impact' | 'getInvolved' | 'gallery'>('about');
   
   // Build unified media array with both videos and images
   const videos = program.videos || (program.videoUrl ? [program.videoUrl] : program.video_url ? [program.video_url] : []);
@@ -82,6 +84,12 @@ const DefaultProgramView: React.FC<{ program: any; onClose: () => void }> = ({ p
   // Fetch program-specific events from database
   const programId = program.dbId || program.id;
   const { data: programEvents, isLoading: eventsLoading } = usePublicProgramEvents(programId);
+
+  // Fetch program gallery albums (Phase 4)
+  const programSlug = program.slug || '';
+  const { data: galleryAlbums = [], isLoading: galleryLoading } = usePublicProgramAlbums(
+    activeTab === 'gallery' ? programSlug : undefined,
+  );
   
   const progressPercentage = program.donationGoal 
     ? Math.min(100, (program.donationGoal.current / program.donationGoal.target) * 100)
@@ -381,6 +389,7 @@ const DefaultProgramView: React.FC<{ program: any; onClose: () => void }> = ({ p
               { id: 'about', label: 'About', icon: Sparkles },
               { id: 'impact', label: 'Impact', icon: TrendingUp },
               { id: 'getInvolved', label: 'Get Involved', icon: Heart },
+              { id: 'gallery', label: 'Gallery', icon: Camera },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -917,6 +926,96 @@ const DefaultProgramView: React.FC<{ program: any; onClose: () => void }> = ({ p
                     variant="inline"
                   />
                 </div>
+              </motion.div>
+            )}
+
+            {/* ════════════════════════════════════════════════════════════
+                GALLERY TAB — Phase 4
+                ════════════════════════════════════════════════════════════ */}
+            {activeTab === 'gallery' && (
+              <motion.div
+                key="gallery"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="mb-6">
+                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 flex items-center gap-2">
+                    <Camera className={`h-5 w-5 ${colorScheme.accent}`} />
+                    Program Gallery
+                  </h3>
+                  <p className="text-gray-500 text-sm">Recent photo albums from this program</p>
+                </div>
+
+                {galleryLoading ? (
+                  <div className="flex items-center justify-center py-16 gap-3 text-gray-400">
+                    <div className={`animate-spin h-6 w-6 border-2 border-gray-200 border-t-[#B01C2E] rounded-full`} />
+                    <span className="text-sm">Loading gallery…</span>
+                  </div>
+                ) : galleryAlbums.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-16 gap-3 text-center">
+                    <Camera className="h-14 w-14 text-gray-200" />
+                    <p className="text-gray-500 text-sm">No published albums yet for this program.</p>
+                  </div>
+                ) : (
+                  <>
+                    {/* 3 most recent album covers */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                      {galleryAlbums.slice(0, 3).map((album, i) => (
+                        <Link
+                          key={album.id}
+                          to={
+                            album.event?.slug
+                              ? `/media/events/${album.event.slug}`
+                              : `/media/albums/${album.slug}`
+                          }
+                          onClick={onClose}
+                          className="group block rounded-xl overflow-hidden border border-gray-200 hover:border-[#B01C2E]/30 hover:shadow-lg transition-all duration-300"
+                        >
+                          <div className="relative aspect-video overflow-hidden bg-gray-100">
+                            {album.cover_image ? (
+                              <img
+                                src={album.cover_image}
+                                alt={album.title}
+                                className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-500"
+                                loading={i === 0 ? 'eager' : 'lazy'}
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                                <ImageIcon className="w-10 h-10 text-gray-300" />
+                              </div>
+                            )}
+                            <div className="absolute bottom-2 left-2 inline-flex items-center gap-1 bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium px-2 py-0.5 rounded-full">
+                              <Camera className="w-2.5 h-2.5" />
+                              {album.photo_count ?? 0}
+                            </div>
+                          </div>
+                          <div className="p-3">
+                            <p className="text-sm font-semibold text-gray-900 line-clamp-1 group-hover:text-[#B01C2E] transition-colors">
+                              {album.title}
+                            </p>
+                            {(album.taken_at ?? album.created_at) && (
+                              <p className="text-xs text-gray-400 mt-0.5">
+                                {new Date(album.taken_at ?? album.created_at).toLocaleDateString('en-KE', { month: 'short', year: 'numeric' })}
+                              </p>
+                            )}
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+
+                    {/* "View full gallery" link */}
+                    <Link
+                      to={`/media/programs/${programSlug}`}
+                      onClick={onClose}
+                      className={`inline-flex items-center gap-2 ${colorScheme.accent} font-semibold text-sm hover:underline`}
+                    >
+                      View full gallery
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

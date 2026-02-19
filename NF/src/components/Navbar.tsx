@@ -24,7 +24,7 @@ interface GetInvolvedLink {
 const NAV_LINKS: NavLink[] = [
   { name: 'Home', href: '/', type: 'route' },
   { name: 'Programs', href: '/programs', type: 'route' }, 
-  { name: 'Media', href: '/#media', type: 'hash' },
+  { name: 'Media', href: '/media', type: 'route' },
   { name: 'About Us', href: '/board', type: 'route' },
 ];
 

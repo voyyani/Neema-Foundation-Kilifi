@@ -2,6 +2,7 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'sonner';
 import Navbar from './components/Navbar';
 import Landing from './pages/Landing';
@@ -46,6 +47,17 @@ const PartnersManagement = lazyWithRetry(() => import('./admin/components/conten
 
 // Users Management Pages
 const UsersManagementPage = lazyWithRetry(() => import('./admin/pages/users/UsersManagementPage'));
+
+// Media Management Pages (Phase 1 — Admin)
+const MediaLibraryPage = lazyWithRetry(() => import('./admin/pages/media/MediaLibraryPage'));
+const AlbumDetailPage  = lazyWithRetry(() => import('./admin/pages/media/AlbumDetailPage'));
+const BulkUploadPage   = lazyWithRetry(() => import('./admin/pages/media/BulkUploadPage'));
+
+// Public Media Pages (Phase 2)
+const MediaPage          = lazyWithRetry(() => import('./pages/MediaPage'));
+const EventStoryPage     = lazyWithRetry(() => import('./pages/media/EventStoryPage'));
+const ProgramGalleryPage = lazyWithRetry(() => import('./pages/media/ProgramGalleryPage'));
+const AlbumPage          = lazyWithRetry(() => import('./pages/media/AlbumPage'));
 
 // Global Error Boundary
 class GlobalErrorBoundary extends React.Component<
@@ -100,6 +112,7 @@ const App: React.FC = () => {
   const isUnderMaintenance = import.meta.env.VITE_UNDER_MAINTENANCE === 'true';
 
   return (
+    <HelmetProvider>
     <GlobalErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <Router>
@@ -139,7 +152,10 @@ const App: React.FC = () => {
                     <Route path="content/board" element={<BoardPage />} />
                     {/* Users Management Routes */}
                     <Route path="users" element={<UsersManagementPage />} />
-                    {/* More admin routes will be added in future phases */}
+                    {/* Media Management Routes — Phase 1 */}
+                    <Route path="media" element={<MediaLibraryPage />} />
+                    <Route path="media/upload" element={<BulkUploadPage />} />
+                    <Route path="media/albums/:id" element={<AlbumDetailPage />} />
                   </Route>
                 </Route>
 
@@ -169,6 +185,11 @@ const App: React.FC = () => {
                               <Route path="/sponsorship" element={<Sponsorship />} />
                               <Route path="/board" element={<Board />} />
                               <Route path="/programs" element={<Programs />} />
+                              {/* Media Gallery — Phase 2 */}
+                              <Route path="/media" element={<MediaPage />} />
+                              <Route path="/media/events/:slug" element={<EventStoryPage />} />
+                              <Route path="/media/programs/:slug" element={<ProgramGalleryPage />} />
+                              <Route path="/media/albums/:slug" element={<AlbumPage />} />
                               <Route path="*" element={<NotFound />} />
                             </>
                           )}
@@ -186,6 +207,7 @@ const App: React.FC = () => {
       <Analytics />
       </QueryClientProvider>
     </GlobalErrorBoundary>
+    </HelmetProvider>
   );
 };
 
