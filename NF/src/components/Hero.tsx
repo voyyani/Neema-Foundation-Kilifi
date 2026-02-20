@@ -803,29 +803,58 @@ const useBackgroundAnimation = (enabled: boolean) => {
   return sceneRef;
 };
 
-// Main Hero Component - World Class Implementation
+// ─── constants ───────────────────────────────────────────────────────────────
+const HERO_INTERVAL_MS = 5500;
+
+// Main Hero Component — fullscreen rotating-image hero (MediaHero / ProgramsHero style)
 const Hero = () => {
-  const sceneRef = useBackgroundAnimation(typeof window !== 'undefined' && window.innerWidth > 768);
   const videoRef = useRef<HTMLVideoElement>(null);
+  // still used by keyboard handler
   const location = useLocation();
-  
+
   // Fetch data from database
-  const { data: heroSlides = [fallbackHeroSlide], isLoading: slidesLoading } = usePublicHeroSlides();
-  const { data: siteSettings = fallbackSiteSettings, isLoading: settingsLoading } = usePublicSiteSettings();
+  const { data: heroSlides = [fallbackHeroSlide] } = usePublicHeroSlides();
+  const { data: siteSettings = fallbackSiteSettings } = usePublicSiteSettings();
 
-  // Use first slide for hero content (or could implement carousel)
-  const mainSlide = heroSlides[0] || fallbackHeroSlide;
-  const mappedSlide = mapHeroSlideToUI(mainSlide);
+  // Slides that have a background image — used for rotating backgrounds
+  const imageSlides = heroSlides.filter((s) => !!s.background_image);
 
-  const heroTitle = mappedSlide.title;
-  const heroSubtitle = mappedSlide.subtitle;
-  const heroBadge = siteSettings?.brand_name || 'Christ-Centered Community Transformation';
+  // Slide rotation state
+  const [slideIndex, setSlideIndex] = useState(0);
+  const [heroPaused, setHeroPaused] = useState(false);
+  const heroIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Hero stats (could be enhanced with actual data later)
+  const startHeroInterval = useCallback(() => {
+    if (imageSlides.length <= 1) return;
+    heroIntervalRef.current = setInterval(
+      () => setSlideIndex((prev) => (prev + 1) % imageSlides.length),
+      HERO_INTERVAL_MS,
+    );
+  }, [imageSlides.length]);
+
+  const stopHeroInterval = useCallback(() => {
+    if (heroIntervalRef.current) {
+      clearInterval(heroIntervalRef.current);
+      heroIntervalRef.current = null;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!heroPaused) startHeroInterval();
+    else stopHeroInterval();
+    return stopHeroInterval;
+  }, [heroPaused, startHeroInterval, stopHeroInterval]);
+
+  const currentSlide    = imageSlides[slideIndex];
+  const mappedSlide     = mapHeroSlideToUI(currentSlide ?? heroSlides[0] ?? fallbackHeroSlide);
+  const heroTitle       = mappedSlide.title;
+  const heroSubtitle    = mappedSlide.subtitle;
+  const heroBadge       = siteSettings?.brand_name || 'Neema Foundation Kilifi';
+
   const heroStats = [
-    { icon: Users, label: 'Years Active', value: '2020–Present' },
-    { icon: Heart, label: 'Beneficiaries', value: '650+' },
-    { icon: Play, label: 'Programs', value: '6 Active' }
+    { label: 'Beneficiaries', value: '62,000+' },
+    { label: 'Programs',      value: '4 Active' },
+    { label: 'Est.',          value: '2020' },
   ];
 
   const [isLoaded, setIsLoaded] = useState(false);
@@ -988,136 +1017,136 @@ const Hero = () => {
   }, []);
 
   return (
-    <section 
-      id="home" 
-      className="relative min-h-screen flex items-center justify-center pt-16 md:pt-20 overflow-hidden bg-white"
+    <section
+      id="home"
+      className="relative w-full h-[560px] md:h-[680px] lg:h-screen overflow-hidden bg-gray-900 focus:outline-none"
+      onMouseEnter={() => setHeroPaused(true)}
+      onMouseLeave={() => setHeroPaused(false)}
       aria-label="Hero section"
     >
-      {/* Background Elements */}
-      <div ref={sceneRef} className="absolute inset-0 z-0" aria-hidden="true" />
-      <div className="absolute inset-0 bg-gradient-to-br from-white/80 via-white/60 to-red-50/30 backdrop-blur-[1px] z-1" aria-hidden="true" />
-      
-      {/* Performance-optimized floating elements */}
-      <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-        <motion.div
-          className="absolute top-1/4 left-1/4 w-64 h-64 md:w-96 md:h-96 bg-red-100/20 rounded-full blur-3xl"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute bottom-1/3 right-1/3 w-56 h-56 md:w-80 md:h-80 bg-purple-100/10 rounded-full blur-3xl"
-          animate={{ scale: [1.2, 1, 1.2], opacity: [0.05, 0.15, 0.05] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        />
-      </div>
-
-      {/* Main Content */}
-      <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <motion.div 
-          className="max-w-4xl mx-auto text-center"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 30 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-        >
-          {/* Mission Badge with Fixed Red Dot Animation */}
+      {/* ── Rotating background images ─────────────────────────────────── */}
+      <AnimatePresence mode="sync">
+        {currentSlide?.background_image ? (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
+            key={currentSlide.id}
+            initial={{ opacity: 0, scale: 1.06 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-red-200 rounded-full px-4 py-2 md:px-6 md:py-3 mb-6 md:mb-8 shadow-sm"
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.4, ease: 'easeInOut' }}
+            className="absolute inset-0"
+            aria-hidden="true"
           >
-            <motion.div
-              className="w-2 h-2 bg-red-800 rounded-full"
-              animate={{
-                scale: [1, 1.2, 1],
-                opacity: [1, 0.7, 1]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              aria-hidden="true"
+            <img
+              src={currentSlide.background_image}
+              alt={mappedSlide.title}
+              className="w-full h-full object-cover"
+              loading="eager"
             />
-            <span className="text-xs md:text-sm font-semibold text-red-800">
-              {heroBadge}
-            </span>
           </motion.div>
+        ) : (
+          /* Fallback gradient when no image is uploaded */
+          <div className="absolute inset-0 bg-gradient-to-br from-[#8A1624] via-[#B01C2E] to-gray-900" aria-hidden="true" />
+        )}
+      </AnimatePresence>
 
-          {/* Main Heading */}
-          <motion.h1 
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 md:mb-8 leading-tight"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.7 }}
-          >
-            <span className="bg-gradient-to-r from-red-800 via-red-600 to-red-800 bg-clip-text text-transparent block mb-3 md:mb-4">
-              {heroTitle}
-            </span>
-            <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent block text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
-              In Ganze Community
-            </span>
-          </motion.h1>
+      {/* ── Gradient overlays ─────────────────────────────────────────── */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/75 pointer-events-none" aria-hidden="true" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent pointer-events-none" aria-hidden="true" />
+
+      {/* ── Hero content ──────────────────────────────────────────────── */}
+      <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6 max-w-4xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 24 }}
+          transition={{ delay: 0.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {/* Eyebrow badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/80 text-xs font-medium uppercase tracking-widest mb-6">
+            <Heart className="w-3.5 h-3.5" aria-hidden="true" />
+            {heroBadge} — Kilifi, Kenya
+          </div>
+
+          {/* H1 */}
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white leading-tight tracking-tight">
+            {heroTitle}
+            <br />
+            <span className="text-[#D42A3F]">In Ganze Community</span>
+          </h1>
 
           {/* Subtitle */}
-          <motion.p 
-            className="text-lg sm:text-xl md:text-2xl text-gray-700 mb-8 md:mb-12 max-w-3xl mx-auto leading-relaxed font-medium px-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1.2 }}
-          >
-            {heroSubtitle}
-          </motion.p>
+          {heroSubtitle && (
+            <p className="mt-5 text-white/75 text-lg md:text-xl max-w-xl mx-auto leading-relaxed">
+              {heroSubtitle}
+            </p>
+          )}
 
-          {/* CTA Button */}
-          <motion.div 
-            className="flex justify-center items-center mb-12 md:mb-16"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.5 }}
+          {/* CTAs */}
+          <motion.div
+            className="mt-8 flex flex-wrap items-center justify-center gap-3"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 16 }}
+            transition={{ delay: 0.5, duration: 0.7 }}
           >
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="relative group"
+            <button
+              onClick={handleWatchVideo}
+              className="inline-flex items-center gap-2 bg-[#B01C2E] text-white px-7 py-3.5 rounded-xl font-semibold hover:bg-[#8A1624] transition-colors shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              aria-label="Watch our mission video"
             >
-              <button
-                onClick={handleWatchVideo}
-                className="inline-flex items-center justify-center bg-gradient-to-r from-red-800 to-red-700 text-white hover:from-red-700 hover:to-red-800 transition-all duration-500 rounded-2xl px-6 py-3 md:px-8 md:py-4 text-base md:text-lg font-semibold shadow-xl hover:shadow-2xl border border-red-700/20 overflow-hidden group min-h-[56px] focus:outline-none focus:ring-4 focus:ring-red-300"
-                aria-label="Discover our mission through video"
-              >
-                <Play className="mr-2 md:mr-3 h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:scale-110" aria-hidden="true" />
-                Discover Our Mission
-                <ArrowRight className="ml-2 md:ml-2 h-4 w-4 md:h-5 md:w-5 transition-transform group-hover:translate-x-1" aria-hidden="true" />
-              </button>
-            </motion.div>
-          </motion.div>
-
-          {/* Stats */}
-          <motion.div 
-            className="grid grid-cols-3 gap-4 md:gap-8 max-w-2xl mx-auto"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1.8 }}
-          >
-            {[
-              ...heroStats
-            ].map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                className="text-center"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 1.8 + index * 0.1 }}
-              >
-                <stat.icon className="h-6 w-6 md:h-8 md:w-8 text-red-800 mx-auto mb-2" aria-hidden="true" />
-                <div className="text-lg md:text-xl font-bold text-gray-900">{stat.value}</div>
-                <div className="text-xs md:text-sm text-gray-600">{stat.label}</div>
-              </motion.div>
-            ))}
+              <Play className="w-4 h-4" aria-hidden="true" />
+              Watch Our Story
+            </button>
+            <a
+              href="#programs"
+              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white border border-white/30 px-7 py-3.5 rounded-xl font-semibold hover:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            >
+              Our Programs
+              <ArrowRight className="w-4 h-4" aria-hidden="true" />
+            </a>
           </motion.div>
         </motion.div>
+
+        {/* ── Stats row ─────────────────────────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ delay: 0.6, duration: 0.6 }}
+          className="mt-12 flex items-center gap-8"
+          aria-label="Impact statistics"
+        >
+          {heroStats.map(({ value, label }, i) => (
+            <React.Fragment key={label}>
+              {i > 0 && <div className="w-px h-8 bg-white/20" aria-hidden="true" />}
+              <div className="text-center">
+                <div className="text-2xl font-bold text-white">{value}</div>
+                <div className="text-white/60 text-xs uppercase tracking-wide">{label}</div>
+              </div>
+            </React.Fragment>
+          ))}
+        </motion.div>
       </div>
+
+      {/* ── Slide dots (when multiple slides with images) ─────────────── */}
+      {imageSlides.length > 1 && (
+        <div
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20"
+          role="tablist"
+          aria-label="Slideshow navigation"
+        >
+          {imageSlides.map((s, i) => (
+            <button
+              key={s.id}
+              role="tab"
+              aria-selected={i === slideIndex}
+              aria-label={`Slide ${i + 1}`}
+              onClick={() => setSlideIndex(i)}
+              className={`h-1.5 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
+                i === slideIndex ? 'w-6 bg-white' : 'w-1.5 bg-white/40 hover:bg-white/70'
+              }`}
+            />
+          ))}
+        </div>
+      )}
 
 
       {/* Video Modal */}

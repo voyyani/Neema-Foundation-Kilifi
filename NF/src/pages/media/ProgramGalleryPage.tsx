@@ -244,8 +244,11 @@ const AlbumTimeline: React.FC<{ albums: PublicMediaAlbum[] }> = ({ albums }) => 
                               loading={i < 3 ? 'eager' : 'lazy'}
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-                              <ImageOff className="w-12 h-12 text-gray-300" />
+                            <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-[#B01C2E]/10 via-gray-100 to-gray-200 p-4">
+                              <Camera className="w-8 h-8 text-[#B01C2E]/30" />
+                              <span className="text-xs text-center text-gray-400 font-medium leading-tight line-clamp-2">
+                                {album.title}
+                              </span>
                             </div>
                           )}
                           {/* Photo count badge */}

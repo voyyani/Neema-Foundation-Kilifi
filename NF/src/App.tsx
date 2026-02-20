@@ -59,6 +59,9 @@ const EventStoryPage     = lazyWithRetry(() => import('./pages/media/EventStoryP
 const ProgramGalleryPage = lazyWithRetry(() => import('./pages/media/ProgramGalleryPage'));
 const AlbumPage          = lazyWithRetry(() => import('./pages/media/AlbumPage'));
 
+// Program Detail Page (Phase 7)
+const ProgramDetailPage  = lazyWithRetry(() => import('./pages/ProgramDetailPage'));
+
 // Global Error Boundary
 class GlobalErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -185,6 +188,8 @@ const App: React.FC = () => {
                               <Route path="/sponsorship" element={<Sponsorship />} />
                               <Route path="/board" element={<Board />} />
                               <Route path="/programs" element={<Programs />} />
+                              {/* Program Detail — Phase 7 */}
+                              <Route path="/programs/:slug" element={<ProgramDetailPage />} />
                               {/* Media Gallery — Phase 2 */}
                               <Route path="/media" element={<MediaPage />} />
                               <Route path="/media/events/:slug" element={<EventStoryPage />} />

@@ -1,10 +1,12 @@
 // ProgramModal/MediaGallery.tsx
 // Image/video gallery with lightbox, navigation arrows, and thumbnail strip
+// Phase 2: raw <img> tags replaced with OptimizedImage for blur-up LQIP + Cloudinary srcSet.
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Image as ImageIcon, X, ZoomIn } from 'lucide-react';
 import { VideoEmbed } from '../../ui/VideoEmbed';
+import OptimizedImage from '../../media/OptimizedImage';
 import type { ProgramData, ColorScheme } from './types';
 import { defaultColorScheme } from './types';
 
@@ -91,10 +93,13 @@ export function MediaGallery({
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.4 }}
               >
-                <img 
-                  src={currentItem?.url} 
+                {/* OptimizedImage: blur-up LQIP + Cloudinary srcSet (Phase 2) */}
+                <OptimizedImage
+                  src={currentItem?.url ?? ''}
                   alt={`${program.title} - Image ${currentIndex + 1}`}
-                  className="w-full h-full object-cover"
+                  aspectRatio="free"
+                  priority={currentIndex === 0}
+                  className="w-full h-full"
                 />
                 
                 {/* Zoom button for images */}
@@ -289,7 +294,8 @@ function ThumbnailStrip({
               </svg>
             </div>
           ) : (
-            <img src={item.url} alt="" className="w-full h-full object-cover" />
+            /* OptimizedImage in thumbnail strip — blur-up LQIP even at small size */
+            <OptimizedImage src={item.url} alt="" aspectRatio="free" className="w-full h-full" />
           )}
         </button>
       ))}

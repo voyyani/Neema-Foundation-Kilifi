@@ -4,146 +4,125 @@ import { motion } from 'framer-motion';
 import { Calendar, MapPin, Users, Clock, ArrowRight, Loader2 } from 'lucide-react';
 import { usePublicUpcomingEvents, usePublicPastEvents } from '../hooks/public';
 
+const easing = [0.22, 1, 0.36, 1] as const;
+
 const Events: React.FC = () => {
-  const { data: upcomingEventsData, isLoading: upcomingLoading } = usePublicUpcomingEvents({ limit: 4 });
-  const { data: pastEventsData, isLoading: pastLoading } = usePublicPastEvents({ limit: 4 });
+  const { data: upcoming = [], isLoading: ul } = usePublicUpcomingEvents({ limit: 4 });
+  const { data: past = [],     isLoading: pl } = usePublicPastEvents({ limit: 3 });
 
-  const upcomingEvents = upcomingEventsData || [];
-  const pastEvents = pastEventsData || [];
-  
-  // Show upcoming events if available, otherwise show past events
-  const eventsToDisplay = upcomingEvents.length > 0 ? upcomingEvents : pastEvents;
+  const events   = upcoming.length > 0 ? upcoming : past;
+  const isLoading = ul || pl;
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  };
-
-  const isLoading = upcomingLoading || pastLoading;
-  const resolveDonate = (event: any) => event.donation_link || '/donate';
-  const resolveVolunteer = (event: any) => event.volunteer_link || '/volunteer';
+  const formatDate = (d: string) =>
+    new Date(d).toLocaleDateString('en-KE', { day: 'numeric', month: 'long', year: 'numeric' });
 
   return (
-    <section id="events" className="py-14 sm:py-16 md:py-20 bg-gradient-to-br from-gray-50 to-white">
-      <div className="container max-w-7xl mx-auto px-4 sm:px-6">
+    <section id="events" className="py-16 md:py-24 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+
+        {/* Header */}
         <motion.div
-          className="text-center mb-10 md:mb-16"
-          initial={{ opacity: 0, y: 30 }}
+          className="text-center mb-14"
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: easing }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
-            Upcoming Events
+          <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-full px-4 py-2 mb-5">
+            <Calendar className="h-4 w-4 text-[#B01C2E]" aria-hidden="true" />
+            <span className="text-sm font-medium text-[#B01C2E]">
+              {upcoming.length > 0 ? 'Upcoming Events' : 'Recent Events'}
+            </span>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+            {upcoming.length > 0 ? 'Join Us' : 'Recent Impact'}
           </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Join us in our community activities and be part of the transformation
+          <p className="text-gray-500 max-w-xl mx-auto">
+            Community activities and programmes across Ganze Sub-county.
           </p>
         </motion.div>
 
-        {/* Loading State */}
+        {/* Loading */}
         {isLoading && (
-          <div className="flex justify-center items-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-red-800" />
+          <div className="flex justify-center py-12">
+            <Loader2 className="h-7 w-7 animate-spin text-[#B01C2E]" />
           </div>
         )}
 
-        {/* No Events Message */}
-        {!isLoading && eventsToDisplay.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">No events scheduled at the moment. Check back soon!</p>
-          </div>
+        {/* Empty */}
+        {!isLoading && events.length === 0 && (
+          <p className="text-center text-gray-400 text-sm py-12">No events scheduled right now. Check back soon!</p>
         )}
 
-        {/* Upcoming Events */}
-        {!isLoading && eventsToDisplay.length > 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 md:gap-8 mb-12 md:mb-16">
-            {eventsToDisplay.map((event, index) => (
+        {/* Event grid */}
+        {!isLoading && events.length > 0 && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5">
+            {events.map((event, index) => (
               <motion.div
                 key={event.id}
-                className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300"
-                initial={{ opacity: 0, y: 30 }}
+                className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-[#B01C2E]/20 hover:shadow-sm transition-all duration-300"
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -5 }}
+                transition={{ delay: index * 0.07, duration: 0.55, ease: easing }}
               >
-                {/* Event Header */}
-                <div className="bg-gradient-to-r from-red-800 to-red-600 p-5 sm:p-6 text-white">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <h3 className="text-xl font-bold mb-2">{event.name}</h3>
-                      <div className="flex flex-wrap gap-x-4 gap-y-2 text-white/90 text-sm">
-                        <div className="flex items-center space-x-1">
-                          <Calendar className="h-4 w-4" />
-                          <span>{formatDate(event.start_date)}</span>
-                        </div>
-                        {event.start_time && (
-                          <div className="flex items-center space-x-1">
-                            <Clock className="h-4 w-4" />
-                            <span>{event.start_time}</span>
-                          </div>
+                {/* Left accent */}
+                <div className="flex">
+                  <div className="w-1 flex-shrink-0 bg-[#B01C2E]/20 group-hover:bg-[#B01C2E] transition-colors duration-300" />
+                  <div className="p-6 flex-1">
+                    {/* Program badge */}
+                    {event.program_name && (
+                      <span className="inline-block text-[10px] uppercase tracking-widest font-medium text-[#B01C2E] border border-[#B01C2E]/25 rounded-full px-2.5 py-0.5 mb-3">
+                        {event.program_name}
+                      </span>
+                    )}
+
+                    <h3 className="text-base font-bold text-gray-900 mb-3 leading-snug">{event.name}</h3>
+
+                    <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-gray-500 mb-3">
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="h-3.5 w-3.5 text-[#B01C2E]/70" />
+                        {formatDate(event.start_date)}
+                      </span>
+                      {event.start_time && (
+                        <span className="flex items-center gap-1.5">
+                          <Clock className="h-3.5 w-3.5 text-[#B01C2E]/70" />
+                          {event.start_time}
+                        </span>
+                      )}
+                      <span className="flex items-center gap-1.5">
+                        <MapPin className="h-3.5 w-3.5 text-[#B01C2E]/70" />
+                        {event.is_virtual ? 'Virtual' : (event.venue_name || 'TBD')}
+                      </span>
+                    </div>
+
+                    {(event.description || event.purpose) && (
+                      <p className="text-sm text-gray-500 leading-relaxed mb-4 line-clamp-2">
+                        {event.description || event.purpose}
+                      </p>
+                    )}
+
+                    <div className="flex items-center justify-between">
+                      {event.max_attendees && (
+                        <span className="flex items-center gap-1.5 text-xs text-gray-400">
+                          <Users className="h-3.5 w-3.5" />
+                          Max {event.max_attendees}
+                        </span>
+                      )}
+                      <div className="flex gap-2 ml-auto">
+                        {(event.registration_link || event.virtual_link) && (
+                          <button
+                            onClick={() => {
+                              const link = event.registration_link || event.virtual_link;
+                              if (link) window.open(link, '_blank', 'noopener,noreferrer');
+                            }}
+                            className="text-xs font-semibold text-[#B01C2E] hover:underline underline-offset-2 flex items-center gap-1"
+                          >
+                            {event.registration_link ? 'Register' : 'Join'}
+                            <ArrowRight className="h-3 w-3" />
+                          </button>
                         )}
                       </div>
-                    </div>
-                    <div className="mt-3 sm:mt-0">
-                      <span className="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
-                        {event.program_name || 'Community'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Event Details */}
-                <div className="p-5 sm:p-6">
-                  <div className="flex items-center space-x-2 text-gray-600 mb-4">
-                    <MapPin className="h-4 w-4" />
-                    <span>{event.is_virtual ? 'Virtual Event' : (event.venue_name || 'TBD')}</span>
-                  </div>
-
-                  <p className="text-gray-700 mb-4">{event.description || event.purpose || 'Join us for this community event'}</p>
-
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div className="flex items-center space-x-2 text-gray-600">
-                      <Users className="h-4 w-4" />
-                      <span className="text-sm">
-                        {event.max_attendees ? `Max ${event.max_attendees} attendees` : 'Community activity'}
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                      {(event.registration_link || event.virtual_link) && (
-                        <button
-                          className="inline-flex items-center justify-center space-x-2 bg-red-100 text-red-800 hover:bg-red-200 transition-colors rounded-xl px-4 py-3 font-semibold w-full sm:w-auto min-h-[44px]"
-                          onClick={() => {
-                            const link = event.registration_link || event.virtual_link;
-                            if (link) window.open(link, '_blank', 'noopener,noreferrer');
-                          }}
-                        >
-                          <span>{event.registration_link ? 'Register' : 'Join Event'}</span>
-                          <ArrowRight className="h-4 w-4" />
-                        </button>
-                      )}
-                      <a
-                        href={resolveDonate(event)}
-                        className="inline-flex items-center justify-center bg-red-700 text-white rounded-xl px-4 py-3 font-semibold hover:bg-red-800 transition-colors w-full sm:w-auto min-h-[44px]"
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        Donate
-                      </a>
-                      <a
-                        href={resolveVolunteer(event)}
-                        className="inline-flex items-center justify-center bg-emerald-600 text-white rounded-xl px-4 py-3 font-semibold hover:bg-emerald-700 transition-colors w-full sm:w-auto min-h-[44px]"
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        Volunteer
-                      </a>
                     </div>
                   </div>
                 </div>
@@ -152,79 +131,6 @@ const Events: React.FC = () => {
           </div>
         )}
 
-        {/* Past Events & Calendar */}
-        {!isLoading && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Past Events */}
-            <motion.div
-              className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 sm:p-8"
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <h3 className="text-2xl font-bold mb-6 text-gray-900">Recent Impact</h3>
-              {pastEvents.length > 0 ? (
-                <div className="space-y-6">
-                  {pastEvents.map((event) => (
-                    <div key={event.id} className="border-l-4 border-red-800 pl-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-bold text-gray-900">{event.name}</h4>
-                        <span className="text-sm text-gray-500">{formatDate(event.start_date)}</span>
-                      </div>
-                      <p className="text-gray-600 text-sm mb-2">
-                        {event.description || event.purpose || 'Community activity and outreach'}
-                      </p>
-                      <span className="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded">
-                        {event.program_name || 'Neema Foundation'}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-600">No past events to display</p>
-              )}
-            </motion.div>
-
-            {/* Event Calendar CTA */}
-            <motion.div
-              className="bg-gradient-to-br from-red-800 to-red-600 rounded-2xl p-6 sm:p-8 text-white"
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <h3 className="text-2xl font-bold mb-4">Stay Connected</h3>
-              <p className="text-white/90 mb-6">
-                Never miss an event! Subscribe to our community calendar and get updates about upcoming activities.
-              </p>
-              
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3 bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-                  <Calendar className="h-6 w-6" />
-                  <div>
-                    <div className="font-semibold">Monthly Events Calendar</div>
-                    <div className="text-white/70 text-sm">Download our schedule</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-3 bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-                  <Users className="h-6 w-6" />
-                  <div>
-                    <div className="font-semibold">Volunteer Opportunities</div>
-                    <div className="text-white/70 text-sm">Join our next event</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <button className="w-full bg-white text-red-800 hover:bg-gray-100 transition-colors rounded-xl py-3 font-semibold">
-                  Download Event Calendar
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
       </div>
     </section>
   );

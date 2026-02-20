@@ -57,3 +57,12 @@ export type {
   AlbumType,
   AlbumFilterType,
 } from './usePublicMedia';
+
+// ─── Program Gallery (Phase 1+) ───────────────────────────────────────────────
+export {
+  usePublicProgramImages,
+  usePublicCoverProgramImage,
+  /** @deprecated use usePublicCoverProgramImage */
+  usePublicPrimaryProgramImage,
+} from './useProgramImages';
+export type { ProgramImage, ProgramImageInput } from './useProgramImages';

@@ -1,124 +1,91 @@
 // components/Action.tsx
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Users, Handshake, Star, ArrowRight, Check } from 'lucide-react';
+import { Heart, Users, Handshake, Star, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const Action: React.FC = () => {
-  const involvementOptions = [
-    {
-      icon: Heart,
-      title: 'Donate',
-      description: 'Support our programs with a one-time or monthly donation',
-      features: ['Direct Program Support', 'Tax Deductible', 'Transparent Reporting'],
-      cta: 'Donate Now',
-      path: '/donate',
-      color: 'red'
-    },
-    {
-      icon: Users,
-      title: 'Volunteer',
-      description: 'Join our team on the ground or support remotely',
-      features: ['Local & Remote Opportunities', 'Skill-Based Volunteering', 'Community Immersion'],
-      cta: 'Get Involved',
-      path: '/volunteer',
-      color: 'green'
-    },
-    {
-      icon: Handshake,
-      title: 'Partner',
-      description: 'Corporate, church, or organizational partnerships',
-      features: ['Strategic Partnerships', 'Employee Engagement', 'Shared Impact'],
-      cta: 'Partner With Us',
-      path: '/partner',
-      color: 'blue'
-    },
-    {
-      icon: Star,
-      title: 'Sponsor',
-      description: 'Sponsor a child, widow, or specific program',
-      features: ['Child Sponsorship', 'Program Sponsorship', 'Legacy Giving'],
-      cta: 'Learn More',
-      path: '/sponsorship',
-      color: 'purple'
-    }
-  ];
+const easing = [0.22, 1, 0.36, 1] as const;
 
-  const getColorClasses = (color: string) => {
-    const colors = {
-      red: 'bg-red-100 text-red-800 border-red-200',
-      green: 'bg-green-100 text-green-800 border-green-200',
-      blue: 'bg-blue-100 text-blue-800 border-blue-200',
-      purple: 'bg-purple-100 text-purple-800 border-purple-200'
-    };
-    return colors[color as keyof typeof colors] || colors.red;
-  };
+const options = [
+  {
+    icon: Heart,
+    title: 'Donate',
+    description: 'Support our programs with a one-time or monthly gift.',
+    cta: 'Donate Now',
+    path: '/donate',
+  },
+  {
+    icon: Users,
+    title: 'Volunteer',
+    description: 'Join us on the ground or support remotely with your skills.',
+    cta: 'Get Involved',
+    path: '/volunteer',
+  },
+  {
+    icon: Handshake,
+    title: 'Partner',
+    description: 'Corporate, church, or organisational strategic partnerships.',
+    cta: 'Partner With Us',
+    path: '/partner',
+  },
+  {
+    icon: Star,
+    title: 'Sponsor',
+    description: 'Sponsor a child, widow or specific program initiative.',
+    cta: 'Learn More',
+    path: '/sponsorship',
+  },
+];
 
-  return (
-    <section id="action" className="py-14 sm:py-16 md:py-20 bg-white">
-      <div className="container max-w-7xl mx-auto px-4 sm:px-6">
-        <motion.div
-          className="text-center mb-10 md:mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-        >
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
-            Join Our Mission
-          </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Be part of the transformation in Ganze. Choose how you'd like to make a difference.
-          </p>
-        </motion.div>
+const Action: React.FC = () => (
+  <section id="action" className="py-16 md:py-24 bg-gray-950">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
-        {/* Involvement Options */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8 mb-12 md:mb-16">
-          {involvementOptions.map((option, index) => (
-            <motion.div
-              key={option.title}
-              className="group"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -5 }}
+      {/* Header */}
+      <motion.div
+        className="text-center mb-14"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, ease: easing }}
+      >
+        <p className="text-white/40 text-xs uppercase tracking-widest font-medium mb-4">Get Involved</p>
+        <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
+          Join Our Mission
+        </h2>
+        <p className="text-white/50 max-w-xl mx-auto text-sm">
+          Be part of the transformation in Ganze. Choose how you'd like to make a difference.
+        </p>
+      </motion.div>
+
+      {/* Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+        {options.map((opt, index) => (
+          <motion.div
+            key={opt.title}
+            className="group relative bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col hover:bg-white/10 hover:border-[#B01C2E]/40 transition-all duration-300"
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: index * 0.08, duration: 0.55, ease: easing }}
+          >
+            <div className="w-10 h-10 bg-[#B01C2E]/15 rounded-xl flex items-center justify-center mb-5 group-hover:bg-[#B01C2E] transition-colors duration-300">
+              <opt.icon className="h-5 w-5 text-[#B01C2E] group-hover:text-white transition-colors duration-300" aria-hidden="true" />
+            </div>
+            <h3 className="text-base font-bold text-white mb-2">{opt.title}</h3>
+            <p className="text-sm text-white/50 leading-relaxed flex-grow mb-6">{opt.description}</p>
+            <Link
+              to={opt.path}
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#B01C2E] hover:text-white transition-colors"
             >
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 sm:p-8 h-full flex flex-col hover:shadow-xl transition-all duration-300">
-                {/* Icon */}
-                <div className={`w-16 h-16 rounded-2xl ${getColorClasses(option.color)} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
-                  <option.icon className="h-8 w-8" />
-                </div>
-
-                {/* Content */}
-                <h3 className="text-xl font-bold text-gray-900 mb-4">{option.title}</h3>
-                <p className="text-gray-600 mb-6 flex-grow">{option.description}</p>
-
-                {/* Features */}
-                <div className="space-y-2 mb-6">
-                  {option.features.map((feature) => (
-                    <div key={feature} className="flex items-center space-x-2">
-                      <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
-                      <span className="text-sm text-gray-600">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* CTA */}
-                <Link
-                  to={option.path}
-                  className="inline-flex items-center justify-center w-full bg-gray-900 text-white hover:bg-gray-800 transition-colors rounded-xl py-3 font-semibold group-hover:bg-red-800 group-hover:text-white"
-                >
-                  {option.cta}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              {opt.cta} <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+            </Link>
+          </motion.div>
+        ))}
       </div>
-    </section>
-  );
-};
+
+    </div>
+  </section>
+);
 
 export default Action;

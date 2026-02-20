@@ -1,308 +1,246 @@
-// ProgramFilters.tsx
-// Category and status filters for program listings
+/**
+ * ProgramFilters.tsx
+ * Neema Foundation Kilifi — Programs Section Phase 6
+ *
+ * Animated pill filter bar + search — mirrors FilterBar.tsx architecture exactly.
+ *
+ * Features:
+ *  - motion.button pills with layoutId="program-filter-pill" sliding background (spring)
+ *  - whileHover scale-1.03 / whileTap scale-0.97 — same as media FilterBar
+ *  - Active state: bg-[#B01C2E] text-white shadow-md
+ *  - Count badge per category pill (derived from passed counts map)
+ *  - Search input: Escape clears; animated clear button
+ *  - Active-filter summary row with inline remove chips
+ *  - Fully controlled: all state lives in ProgramsLandingPage
+ *  - ARIA: role="tablist", role="tab", aria-selected, aria-label
+ */
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Filter, X, ChevronDown, Check, Search, Grid3X3, List } from 'lucide-react';
+import React, { useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Grid,
+  Heart,
+  Trophy,
+  Activity,
+  Compass,
+  BookOpen,
+  Users2,
+  Search,
+  X,
+} from 'lucide-react';
 
-interface FilterOption {
-  value: string;
+// ─── Filter definitions ───────────────────────────────────────────────────────
+
+export type ProgramCategory =
+  | 'all'
+  | 'empowerment'
+  | 'sports'
+  | 'health'
+  | 'mission'
+  | 'education'
+  | 'community';
+
+interface PillFilter {
+  value: ProgramCategory;
   label: string;
-  count?: number;
+  Icon: React.ComponentType<{ className?: string }>;
 }
 
-interface ProgramFiltersProps {
-  categories?: FilterOption[];
-  statuses?: FilterOption[];
-  selectedCategory?: string;
-  selectedStatus?: string;
-  searchQuery?: string;
-  onCategoryChange?: (category: string) => void;
-  onStatusChange?: (status: string) => void;
-  onSearchChange?: (query: string) => void;
-  viewMode?: 'grid' | 'list';
-  onViewModeChange?: (mode: 'grid' | 'list') => void;
-  showViewToggle?: boolean;
+export const PROGRAM_FILTERS: PillFilter[] = [
+  { value: 'all',         label: 'All Programs', Icon: Grid     },
+  { value: 'empowerment', label: 'Empowerment',  Icon: Heart    },
+  { value: 'sports',      label: 'Sports',       Icon: Trophy   },
+  { value: 'health',      label: 'Health',       Icon: Activity },
+  { value: 'mission',     label: 'Mission',      Icon: Compass  },
+  { value: 'education',   label: 'Education',    Icon: BookOpen },
+  { value: 'community',   label: 'Community',    Icon: Users2   },
+];
+
+// ─── Props ────────────────────────────────────────────────────────────────────
+
+export interface ProgramFiltersProps {
+  /** Currently active category */
+  activeFilter: ProgramCategory;
+  /** Notify parent of category change */
+  onFilterChange: (category: ProgramCategory) => void;
+
+  /** Current raw search string (controlled) */
+  searchValue: string;
+  /** Called on every keystroke — parent debounces */
+  onSearchChange: (value: string) => void;
+
+  /**
+   * Count per category.
+   * 'all' = total; others = programs in that category.
+   */
+  counts?: Partial<Record<ProgramCategory, number>>;
+
+  className?: string;
 }
 
-// Default categories based on the database schema
-const defaultCategories: FilterOption[] = [
-  { value: 'all', label: 'All Programs' },
-  { value: 'health', label: 'Health' },
-  { value: 'education', label: 'Education' },
-  { value: 'empowerment', label: 'Empowerment' },
-  { value: 'community', label: 'Community' },
-];
+// ─── Component ────────────────────────────────────────────────────────────────
 
-// Default statuses
-const defaultStatuses: FilterOption[] = [
-  { value: 'all', label: 'All Statuses' },
-  { value: 'active', label: 'Active' },
-  { value: 'upcoming', label: 'Upcoming' },
-  { value: 'completed', label: 'Completed' },
-];
-
-export function ProgramFilters({
-  categories = defaultCategories,
-  statuses = defaultStatuses,
-  selectedCategory = 'all',
-  selectedStatus = 'all',
-  searchQuery = '',
-  onCategoryChange,
-  onStatusChange,
+const ProgramFilters: React.FC<ProgramFiltersProps> = ({
+  activeFilter,
+  onFilterChange,
+  searchValue,
   onSearchChange,
-  viewMode = 'grid',
-  onViewModeChange,
-  showViewToggle = true
-}: ProgramFiltersProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const hasActiveFilters = selectedCategory !== 'all' || selectedStatus !== 'all' || searchQuery.length > 0;
+  counts,
+  className = '',
+}) => {
+  const searchRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="space-y-4">
-      {/* Main Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-        {/* Search */}
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+    <div className={`space-y-4 ${className}`}>
+      {/* ── Pill filter bar ──────────────────────────────────────────── */}
+      <div
+        role="tablist"
+        aria-label="Filter programs by category"
+        className="flex flex-wrap gap-2 justify-center"
+      >
+        {PROGRAM_FILTERS.map(({ value, label, Icon }) => {
+          const count = counts?.[value];
+          // Hide category pills (not 'all') with zero results
+          if (value !== 'all' && count === 0) return null;
+
+          const isActive = activeFilter === value;
+
+          return (
+            <motion.button
+              key={value}
+              role="tab"
+              aria-selected={isActive}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => onFilterChange(value)}
+              className={`
+                relative flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium
+                transition-colors duration-200 focus:outline-none
+                focus-visible:ring-2 focus-visible:ring-[#B01C2E] focus-visible:ring-offset-2
+                ${isActive
+                  ? 'bg-[#B01C2E] text-white shadow-md'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:border-[#B01C2E]/40 hover:text-[#B01C2E]'
+                }
+              `}
+            >
+              <Icon className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
+              {label}
+              {count !== undefined && (
+                <span
+                  className={`ml-0.5 px-1.5 py-0.5 rounded-full text-xs font-semibold ${
+                    isActive ? 'bg-white/25 text-white' : 'bg-gray-100 text-gray-500'
+                  }`}
+                >
+                  {count}
+                </span>
+              )}
+              {/* Animated sliding background shared across pills */}
+              {isActive && (
+                <motion.span
+                  layoutId="program-filter-pill"
+                  className="absolute inset-0 rounded-full bg-[#B01C2E] -z-10"
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
+              )}
+            </motion.button>
+          );
+        })}
+      </div>
+
+      {/* ── Search input ─────────────────────────────────────────────── */}
+      <div className="flex justify-center">
+        <div className="relative w-full max-w-md">
+          <Search
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
+            aria-hidden="true"
+          />
           <input
-            type="text"
-            placeholder="Search programs..."
-            value={searchQuery}
-            onChange={(e) => onSearchChange?.(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#B01C2E]/20 focus:border-[#B01C2E] transition-colors bg-white"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => onSearchChange?.('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
-        </div>
-
-        {/* Category Dropdown */}
-        <FilterDropdown
-          label="Category"
-          options={categories}
-          value={selectedCategory}
-          onChange={onCategoryChange}
-        />
-
-        {/* Status Dropdown */}
-        <FilterDropdown
-          label="Status"
-          options={statuses}
-          value={selectedStatus}
-          onChange={onStatusChange}
-        />
-
-        {/* View Toggle */}
-        {showViewToggle && onViewModeChange && (
-          <div className="flex rounded-lg border border-gray-300 overflow-hidden">
-            <button
-              onClick={() => onViewModeChange('grid')}
-              className={`p-2.5 transition-colors ${
-                viewMode === 'grid' 
-                  ? 'bg-[#B01C2E] text-white' 
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
-              }`}
-              title="Grid view"
-            >
-              <Grid3X3 className="h-5 w-5" />
-            </button>
-            <button
-              onClick={() => onViewModeChange('list')}
-              className={`p-2.5 border-l border-gray-300 transition-colors ${
-                viewMode === 'list' 
-                  ? 'bg-[#B01C2E] text-white' 
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
-              }`}
-              title="List view"
-            >
-              <List className="h-5 w-5" />
-            </button>
-          </div>
-        )}
-
-        {/* Mobile Filter Toggle */}
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="sm:hidden flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50"
-        >
-          <Filter className="h-5 w-5" />
-          Filters
-          {hasActiveFilters && (
-            <span className="bg-[#B01C2E] text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-              {(selectedCategory !== 'all' ? 1 : 0) + (selectedStatus !== 'all' ? 1 : 0)}
-            </span>
-          )}
-        </button>
-      </div>
-
-      {/* Active Filters */}
-      {hasActiveFilters && (
-        <motion.div 
-          className="flex flex-wrap gap-2"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          {selectedCategory !== 'all' && (
-            <FilterTag 
-              label={categories.find(c => c.value === selectedCategory)?.label || selectedCategory}
-              onRemove={() => onCategoryChange?.('all')}
-            />
-          )}
-          {selectedStatus !== 'all' && (
-            <FilterTag 
-              label={statuses.find(s => s.value === selectedStatus)?.label || selectedStatus}
-              onRemove={() => onStatusChange?.('all')}
-            />
-          )}
-          {searchQuery && (
-            <FilterTag 
-              label={`"${searchQuery}"`}
-              onRemove={() => onSearchChange?.('')}
-            />
-          )}
-          <button
-            onClick={() => {
-              onCategoryChange?.('all');
-              onStatusChange?.('all');
-              onSearchChange?.('');
+            ref={searchRef}
+            type="search"
+            placeholder="Search programs…"
+            value={searchValue}
+            onChange={(e) => onSearchChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') {
+                onSearchChange('');
+                searchRef.current?.blur();
+              }
             }}
-            className="text-sm text-[#B01C2E] hover:underline font-medium"
-          >
-            Clear all
-          </button>
-        </motion.div>
-      )}
-
-      {/* Category Chips (Desktop) */}
-      <div className="hidden sm:flex flex-wrap gap-2">
-        {categories.map((cat) => (
-          <button
-            key={cat.value}
-            onClick={() => onCategoryChange?.(cat.value)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-              selectedCategory === cat.value
-                ? 'bg-[#B01C2E] text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            {cat.label}
-            {cat.count !== undefined && (
-              <span className={`ml-1.5 ${
-                selectedCategory === cat.value ? 'text-white/80' : 'text-gray-500'
-              }`}>
-                ({cat.count})
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/**
- * Filter Dropdown Component
- */
-function FilterDropdown({
-  label,
-  options,
-  value,
-  onChange
-}: {
-  label: string;
-  options: FilterOption[];
-  value: string;
-  onChange?: (value: string) => void;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  const selectedOption = options.find(o => o.value === value);
-
-  return (
-    <div className="relative hidden sm:block">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 px-4 py-2.5 border rounded-xl transition-colors ${
-          value !== 'all' 
-            ? 'border-[#B01C2E] bg-[#B01C2E]/5 text-[#B01C2E]' 
-            : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-        }`}
-      >
-        <span className="text-sm font-medium">
-          {selectedOption?.label || label}
-        </span>
-        <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
-
-      {/* Dropdown */}
-      {isOpen && (
-        <>
-          <div 
-            className="fixed inset-0 z-10" 
-            onClick={() => setIsOpen(false)} 
+            aria-label="Search programs by name or description"
+            className="w-full pl-10 pr-10 py-3 text-sm border border-gray-200 rounded-full
+              bg-white text-gray-900 placeholder-gray-400
+              focus:outline-none focus:ring-2 focus:ring-[#B01C2E]/30 focus:border-[#B01C2E]
+              transition-all duration-200 shadow-sm"
           />
-          <motion.div
-            className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 py-2 min-w-[180px] z-20"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-          >
-            {options.map((option) => (
-              <button
-                key={option.value}
+          <AnimatePresence>
+            {searchValue && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.15 }}
                 onClick={() => {
-                  onChange?.(option.value);
-                  setIsOpen(false);
+                  onSearchChange('');
+                  searchRef.current?.focus();
                 }}
-                className={`w-full flex items-center justify-between px-4 py-2 text-sm hover:bg-gray-50 ${
-                  value === option.value ? 'text-[#B01C2E] font-medium' : 'text-gray-700'
-                }`}
+                aria-label="Clear search"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400
+                  hover:text-gray-600 transition-colors"
               >
-                <span>{option.label}</span>
-                {value === option.value && <Check className="h-4 w-4" />}
-                {option.count !== undefined && (
-                  <span className="text-gray-400 text-xs">{option.count}</span>
-                )}
+                <X className="w-4 h-4" />
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* ── Active filter chips ───────────────────────────────────────── */}
+      <AnimatePresence>
+        {(activeFilter !== 'all' || searchValue) && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="flex justify-center"
+          >
+            <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
+              {activeFilter !== 'all' && (
+                <span className="inline-flex items-center gap-1 bg-[#B01C2E]/8 text-[#B01C2E] px-3 py-1 rounded-full text-xs font-medium border border-[#B01C2E]/20">
+                  {PROGRAM_FILTERS.find((f) => f.value === activeFilter)?.label}
+                  <button
+                    onClick={() => onFilterChange('all')}
+                    aria-label={`Remove ${activeFilter} filter`}
+                    className="hover:text-[#8A1624] transition-colors ml-0.5"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+              {searchValue && (
+                <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-medium">
+                  "{searchValue}"
+                  <button
+                    onClick={() => onSearchChange('')}
+                    aria-label="Clear search"
+                    className="hover:text-gray-800 transition-colors ml-0.5"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+              <button
+                onClick={() => { onFilterChange('all'); onSearchChange(''); }}
+                className="text-gray-400 hover:text-[#B01C2E] transition-colors underline underline-offset-2 text-xs"
+              >
+                Clear all
               </button>
-            ))}
+            </div>
           </motion.div>
-        </>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   );
-}
-
-/**
- * Active Filter Tag
- */
-function FilterTag({
-  label,
-  onRemove
-}: {
-  label: string;
-  onRemove: () => void;
-}) {
-  return (
-    <motion.span
-      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#B01C2E]/10 text-[#B01C2E] rounded-full text-sm font-medium"
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-    >
-      {label}
-      <button 
-        onClick={onRemove}
-        className="hover:bg-[#B01C2E]/20 rounded-full p-0.5 transition-colors"
-      >
-        <X className="h-3.5 w-3.5" />
-      </button>
-    </motion.span>
-  );
-}
+};
 
 export default ProgramFilters;

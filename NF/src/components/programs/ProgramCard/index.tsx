@@ -4,6 +4,9 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Users, MapPin, Heart, Eye } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import OptimizedImage from '../../media/OptimizedImage';
+import { resolveProgramCover } from '../../../lib/programImageUtils';
+import type { ProgramImage } from '../../../lib/programImageUtils';
 
 export interface ProgramCardData {
   id: string;
@@ -16,7 +19,10 @@ export interface ProgramCardData {
   icon?: LucideIcon;
   coverImage?: string;
   cover_image?: string;
+  /** Phase-1 program_images rows — used to resolve cover + preview strip */
+  programImages?: ProgramImage[];
   beneficiaryCount?: number;
+  benefit_count?: number;
   beneficiary_count?: number;
   location?: string;
   beneficiary_where?: string;
@@ -42,7 +48,10 @@ export function ProgramCard({
   showQuickActions = true,
   index = 0
 }: ProgramCardProps) {
-  const image = program.coverImage || program.cover_image;
+  // Prefer program_images rows (Phase-1) over legacy scalar fields
+  const image = program.programImages?.length
+    ? resolveProgramCover(program.programImages, program.coverImage ?? program.cover_image ?? null)
+    : (program.coverImage ?? program.cover_image ?? null);
   const beneficiaries = program.beneficiaryCount || program.beneficiary_count || 0;
   const location = program.location || program.beneficiary_where || 'Ganze';
 
@@ -77,10 +86,11 @@ export function ProgramCard({
       {/* Image Section */}
       <div className="relative h-48 overflow-hidden">
         {image ? (
-          <img 
+          <OptimizedImage
             src={image}
             alt={program.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            aspectRatio="free"
+            className="w-full h-full group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-[#B01C2E]/20 to-[#B01C2E]/40 flex items-center justify-center">
@@ -200,7 +210,9 @@ export function ProgramCardCompact({
   onClick?: () => void;
   index?: number;
 }) {
-  const image = program.coverImage || program.cover_image;
+  const image = program.programImages?.length
+    ? resolveProgramCover(program.programImages, program.coverImage ?? program.cover_image ?? null)
+    : (program.coverImage ?? program.cover_image ?? null);
 
   return (
     <motion.div
@@ -214,10 +226,11 @@ export function ProgramCardCompact({
       {/* Thumbnail */}
       <div className="w-24 h-24 flex-shrink-0 overflow-hidden">
         {image ? (
-          <img 
+          <OptimizedImage
             src={image}
             alt={program.title}
-            className="w-full h-full object-cover"
+            aspectRatio="1:1"
+            className="w-full h-full"
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-[#B01C2E]/10 to-[#B01C2E]/30 flex items-center justify-center">
@@ -258,7 +271,9 @@ export function ProgramCardFeatured({
   program: ProgramCardData;
   onClick?: () => void;
 }) {
-  const image = program.coverImage || program.cover_image;
+  const image = program.programImages?.length
+    ? resolveProgramCover(program.programImages, program.coverImage ?? program.cover_image ?? null)
+    : (program.coverImage ?? program.cover_image ?? null);
   const beneficiaries = program.beneficiaryCount || program.beneficiary_count || 0;
   const location = program.location || program.beneficiary_where || 'Ganze';
 
@@ -274,10 +289,12 @@ export function ProgramCardFeatured({
       {/* Full-width Image */}
       <div className="relative aspect-[21/9] overflow-hidden">
         {image ? (
-          <img 
+          <OptimizedImage
             src={image}
             alt={program.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            aspectRatio="free"
+            priority
+            className="w-full h-full group-hover:scale-105 transition-transform duration-700"
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-[#B01C2E] to-[#8A1624] flex items-center justify-center">

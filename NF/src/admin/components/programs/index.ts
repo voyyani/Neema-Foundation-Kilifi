@@ -7,3 +7,4 @@ export { default as DonationGoalConfig } from './DonationGoalConfig';
 export { default as VolunteerOpportunitiesManager } from './VolunteerOpportunitiesManager';
 export { default as TestimonialsEditor } from './TestimonialsEditor';
 export { default as SEOFieldsEditor } from './SEOFieldsEditor';
+export { default as ProgramImageUploader } from './ProgramImageUploader';

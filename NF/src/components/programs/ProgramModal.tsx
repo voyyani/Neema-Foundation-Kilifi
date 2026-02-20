@@ -12,6 +12,7 @@ import type { ProgramModalProps } from './types';
 import { RichContent } from '../ui/RichContent';
 import { ShareButtons } from '../ui/ShareButtons';
 import { VideoEmbed } from '../ui/VideoEmbed';
+import OptimizedImage from '../media/OptimizedImage';
 import { usePublicProgramEvents } from '../../hooks/public';
 import { usePublicProgramAlbums } from '../../hooks/public/usePublicMedia';
 import type { PublicEvent } from '../../hooks/public/usePublicEvents';
@@ -312,7 +313,8 @@ const DefaultProgramView: React.FC<{ program: any; onClose: () => void }> = ({ p
                         </svg>
                       </div>
                     ) : (
-                      <img src={item.url} alt="" className="w-full h-full object-cover" />
+                      /* Phase 2: blur-up LQIP thumbnail strip */
+                      <OptimizedImage src={item.url} alt="" aspectRatio="free" className="w-full h-full" />
                     )}
                   </button>
                 ))}
@@ -975,11 +977,12 @@ const DefaultProgramView: React.FC<{ program: any; onClose: () => void }> = ({ p
                         >
                           <div className="relative aspect-video overflow-hidden bg-gray-100">
                             {album.cover_image ? (
-                              <img
+                              <OptimizedImage
                                 src={album.cover_image}
                                 alt={album.title}
-                                className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-500"
-                                loading={i === 0 ? 'eager' : 'lazy'}
+                                aspectRatio="16:9"
+                                priority={i === 0}
+                                className="w-full h-full group-hover:scale-[1.05] transition-transform duration-500"
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">

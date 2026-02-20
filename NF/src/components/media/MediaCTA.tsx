@@ -9,7 +9,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink, MessageCircle, Camera } from 'lucide-react';
 
-const WHATSAPP_NUMBER = '+254700000000'; // Update with actual NF WhatsApp number
+const WHATSAPP_NUMBER = '+254797484101';
 const INSTAGRAM_URL   = 'https://www.instagram.com/neemafoundationkilifi/';
 
 const MediaCTA: React.FC = () => (

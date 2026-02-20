@@ -1,61 +1,110 @@
+/**
+ * useProgramImages.ts
+ * Neema Foundation Kilifi — Programs Gallery · Phase 1
+ *
+ * Public + admin hooks for the program_images table.
+ * Supports both the legacy schema (image_url / is_primary) and the
+ * new Cloudinary-native schema (url / cloudinary_id / is_cover / taken_at)
+ * added by migration: phase1-program-gallery-cloudinary.sql
+ */
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabasePublic as supabase } from '../../lib/supabase/client';
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
 /**
- * Program image from the database
+ * Full program image row — matches post-Phase-1 DB schema.
+ * Legacy columns (image_url, is_primary) are kept for backward compat.
  */
 export interface ProgramImage {
   id: string;
   program_id: string;
+
+  // ── Cloudinary-native (Phase 1+) ────────────────────────────────────────
+  /** Cloudinary public_id — e.g. "neema-foundation/programs/ahoho/img_001" */
+  cloudinary_id: string | null;
+  /** Canonical Cloudinary URL — always prefer over image_url */
+  url: string | null;
+  /** Cover/hero flag — canonical name going forward */
+  is_cover: boolean;
+  /** When the photo was taken */
+  taken_at: string | null;
+
+  // ── Legacy (pre-Phase-1) — kept for backward compat ────────────────────
+  /** Legacy URL column — use url ?? image_url to resolve */
   image_url: string;
-  caption?: string;
-  alt_text?: string;
+  /** Legacy primary flag — synced with is_cover by DB trigger */
   is_primary: boolean;
+
+  // ── Shared metadata ─────────────────────────────────────────────────────
+  caption: string | null;
+  alt_text: string | null;
   display_order: number;
-  width?: number;
-  height?: number;
-  file_size?: number;
-  mime_type?: string;
+  width: number | null;
+  height: number | null;
+  file_size: number | null;
+  mime_type: string | null;
   created_at: string;
   updated_at: string;
 }
 
+/** Columns to select for the public-facing gallery */
+const PUBLIC_COLUMNS =
+  'id, program_id, cloudinary_id, url, image_url, caption, alt_text, is_cover, is_primary, display_order, taken_at, created_at' as const;
+
 /**
- * Input for creating/updating a program image
+ * Input for creating/updating a program image.
+ * Supply either `url` + `cloudinary_id` (new) or `image_url` (legacy).
  */
 export interface ProgramImageInput {
   program_id: string;
-  image_url: string;
-  caption?: string;
-  alt_text?: string;
+  /** Cloudinary public_id */
+  cloudinary_id?: string | null;
+  /** Canonical Cloudinary URL */
+  url?: string | null;
+  /** Legacy URL — used when uploading non-Cloudinary assets */
+  image_url?: string;
+  caption?: string | null;
+  alt_text?: string | null;
+  is_cover?: boolean;
+  /** @deprecated use is_cover — kept for backward compat */
   is_primary?: boolean;
   display_order?: number;
-  width?: number;
-  height?: number;
-  file_size?: number;
-  mime_type?: string;
+  width?: number | null;
+  height?: number | null;
+  file_size?: number | null;
+  mime_type?: string | null;
+  taken_at?: string | null;
 }
 
-// Helper to access the program_images table (will exist after migration)
-// Using this pattern to avoid TypeScript issues with non-existent table in generated types
-const getProgramImagesTable = () => {
+// ─── Supabase table accessor ──────────────────────────────────────────────────
+
+// Uses `any` cast to avoid TS errors when generated types are stale
+const getProgramImagesTable = () =>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (supabase as any).from('program_images');
-};
+  (supabase as any).from('program_images');
+
+// ─── Public read hooks ───────────────────────────────────────────────────────
 
 /**
- * Fetch all images for a specific program (public)
+ * Fetch the ordered gallery for a program (public, read-only).
+ * Selects the Phase-1 Cloudinary columns plus legacy columns for compat.
+ *
  * @param programId - The program's UUID
- * @param options - Query options
+ * @param options.enabled - Override the auto-enable guard (default: true)
  */
-export function usePublicProgramImages(programId: string | undefined, options?: { enabled?: boolean }) {
+export function usePublicProgramImages(
+  programId: string | undefined,
+  options?: { enabled?: boolean },
+) {
   return useQuery({
     queryKey: ['public', 'program-images', programId],
     queryFn: async (): Promise<ProgramImage[]> => {
       if (!programId) return [];
 
       const { data, error } = await getProgramImagesTable()
-        .select('*')
+        .select(PUBLIC_COLUMNS)
         .eq('program_id', programId)
         .order('display_order', { ascending: true });
 
@@ -64,12 +113,60 @@ export function usePublicProgramImages(programId: string | undefined, options?: 
         throw error;
       }
 
-      return (data || []) as ProgramImage[];
+      return (data ?? []) as ProgramImage[];
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000,
+    staleTime: 10 * 60 * 1000, // 10 minutes — gallery changes infrequently
+    gcTime:    15 * 60 * 1000,
     refetchOnWindowFocus: false,
     enabled: options?.enabled !== false && !!programId,
+  });
+}
+
+/**
+ * Returns just the cover image row for a program.
+ * Checks is_cover first, then falls back to is_primary.
+ */
+export function usePublicCoverProgramImage(programId: string | undefined) {
+  return useQuery({
+    queryKey: ['public', 'program-images', programId, 'cover'],
+    queryFn: async (): Promise<ProgramImage | null> => {
+      if (!programId) return null;
+
+      // Try is_cover first (Phase 1+)
+      const { data: coverData, error: coverError } = await getProgramImagesTable()
+        .select(PUBLIC_COLUMNS)
+        .eq('program_id', programId)
+        .eq('is_cover', true)
+        .limit(1)
+        .maybeSingle();
+
+      if (coverError) throw coverError;
+      if (coverData) return coverData as ProgramImage;
+
+      // Fallback: is_primary (legacy rows)
+      const { data: primaryData, error: primaryError } = await getProgramImagesTable()
+        .select(PUBLIC_COLUMNS)
+        .eq('program_id', programId)
+        .eq('is_primary', true)
+        .limit(1)
+        .maybeSingle();
+
+      if (primaryError) throw primaryError;
+      if (primaryData) return primaryData as ProgramImage;
+
+      // Final fallback: first image in order
+      const { data: firstData, error: firstError } = await getProgramImagesTable()
+        .select(PUBLIC_COLUMNS)
+        .eq('program_id', programId)
+        .order('display_order', { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+      if (firstError) throw firstError;
+      return firstData ? (firstData as ProgramImage) : null;
+    },
+    staleTime: 10 * 60 * 1000,
+    enabled: !!programId,
   });
 }
 
@@ -77,29 +174,12 @@ export function usePublicProgramImages(programId: string | undefined, options?: 
  * Fetch the primary image for a program
  * @param programId - The program's UUID
  */
+/**
+ * @deprecated Use usePublicCoverProgramImage — this wrapper is kept for
+ * backward compat and delegates to the new cover hook.
+ */
 export function usePublicPrimaryProgramImage(programId: string | undefined) {
-  return useQuery({
-    queryKey: ['public', 'program-images', programId, 'primary'],
-    queryFn: async (): Promise<ProgramImage | null> => {
-      if (!programId) return null;
-
-      const { data, error } = await getProgramImagesTable()
-        .select('*')
-        .eq('program_id', programId)
-        .eq('is_primary', true)
-        .limit(1)
-        .single();
-
-      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
-        console.error('Failed to fetch primary image:', error);
-        throw error;
-      }
-
-      return data ? (data as ProgramImage) : null;
-    },
-    staleTime: 5 * 60 * 1000,
-    enabled: !!programId,
-  });
+  return usePublicCoverProgramImage(programId);
 }
 
 /**
@@ -131,9 +211,16 @@ export function useProgramImages(programId: string | undefined) {
     enabled: !!programId,
   });
 
-  // Create a new image
+  // Create a new image — normalise Cloudinary fields before inserting
   const createImage = useMutation({
-    mutationFn: async (input: ProgramImageInput): Promise<ProgramImage> => {
+    mutationFn: async (raw: ProgramImageInput): Promise<ProgramImage> => {
+      // Keep url ↔ image_url in sync so both legacy and new code stays happy
+      const input: ProgramImageInput = { ...raw };
+      if (input.url && !input.image_url)       input.image_url = input.url;
+      if (input.image_url && !input.url)       input.url = input.image_url;
+      if (input.is_cover !== undefined)         input.is_primary = input.is_cover;
+      if (input.is_primary !== undefined)       input.is_cover   = input.is_primary;
+
       const { data, error } = await getProgramImagesTable()
         .insert(input)
         .select()
@@ -192,16 +279,15 @@ export function useProgramImages(programId: string | undefined) {
     },
   });
 
-  // Set primary image
+  // Set cover image (sets both is_cover and is_primary — DB trigger syncs siblings)
   const setPrimaryImage = useMutation({
     mutationFn: async (imageId: string): Promise<void> => {
-      // The database trigger will handle unsetting other primaries
       const { error } = await getProgramImagesTable()
-        .update({ is_primary: true })
+        .update({ is_cover: true, is_primary: true })
         .eq('id', imageId);
 
       if (error) {
-        console.error('Failed to set primary image:', error);
+        console.error('Failed to set cover image:', error);
         throw error;
       }
     },

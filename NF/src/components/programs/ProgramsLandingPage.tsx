@@ -1,17 +1,22 @@
 // ProgramsLandingPage.tsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 import { 
-  Search, Calendar, Users, Target, MapPin, 
-  ArrowRight, Heart, Star, Award, TrendingUp, Eye, X
+  Calendar, Users, Target, MapPin, 
+  ArrowRight, Heart, TrendingUp, X
 } from 'lucide-react';
 
 // Components
 import ProgramsHero from './ProgramsHero';
 import ProgramGrid from './ProgramGrid';
 import ProgramModal from './ProgramModal';
+import FeaturedProgram, { FeaturedProgramSkeleton } from './FeaturedProgram';
+import ProgramFilters from './ProgramFilters';
+import type { ProgramCategory } from './ProgramFilters';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import ErrorBoundary from '../ui/ErrorBoundary';
+import OptimizedImage from '../media/OptimizedImage';
 
 // Hooks
 import { usePublicPrograms, usePublicFeaturedPrograms } from '../../hooks/public';
@@ -35,9 +40,39 @@ const getEventColor = (programColor: string) => {
 };
 
 const ProgramsLandingPage: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedProgram, setSelectedProgram] = useState<any | null>(null);
   const [activeView, setActiveView] = useState<'programs' | 'events' | 'impact'>('programs');
   const [selectedEvent, setSelectedEvent] = useState<ProgramEvent | null>(null);
+
+  // Phase 6: URL-synced category filter
+  const activeCategory = (searchParams.get('category') ?? 'all') as ProgramCategory;
+  const setActiveCategory = (cat: ProgramCategory) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (cat === 'all') next.delete('category');
+      else next.set('category', cat);
+      return next;
+    }, { replace: true });
+  };
+
+  // Phase 6: Debounced search (200 ms)
+  const [rawSearch, setRawSearch] = useState(() => searchParams.get('q') ?? '');
+  const [debouncedSearch, setDebouncedSearch] = useState(rawSearch);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleSearchChange = (value: string) => {
+    setRawSearch(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setDebouncedSearch(value);
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        if (value) next.set('q', value);
+        else next.delete('q');
+        return next;
+      }, { replace: true });
+    }, 200);
+  };
 
   // Fetch programs from database
   const { data: allPrograms = [], isLoading, error } = usePublicPrograms();
@@ -65,6 +100,32 @@ const ProgramsLandingPage: React.FC = () => {
     featuredPrograms.map(p => mapProgramToLegacyFormat(p) as any),
     [featuredPrograms]
   );
+
+  // Phase 6: Category counts for the pill filter bar
+  const categoryCounts = useMemo((): Partial<Record<ProgramCategory, number>> => {
+    const counts: Partial<Record<ProgramCategory, number>> = { all: allPrograms.length };
+    allPrograms.forEach((p) => {
+      const cat = (p.category as ProgramCategory) ?? 'other';
+      counts[cat] = (counts[cat] ?? 0) + 1;
+    });
+    return counts;
+  }, [allPrograms]);
+
+  // Phase 6: Filtered programs (category + debounced search)
+  const filteredPrograms = useMemo(() => {
+    return allPrograms.filter((p) => {
+      const matchesCategory =
+        activeCategory === 'all' || p.category === activeCategory;
+      if (!matchesCategory) return false;
+      if (!debouncedSearch) return true;
+      const q = debouncedSearch.toLowerCase();
+      return (
+        p.name.toLowerCase().includes(q) ||
+        (p.summary ?? '').toLowerCase().includes(q) ||
+        (p.description ?? '').toLowerCase().includes(q)
+      );
+    });
+  }, [allPrograms, activeCategory, debouncedSearch]);
 
   // Calculate stats from database programs
   const programsStats = useMemo(() => ({
@@ -109,11 +170,6 @@ const ProgramsLandingPage: React.FC = () => {
       } as ProgramEvent;
     });
   }, [upcomingEvents, programById]);
-
-  // Featured program (could be based on logic like most beneficiaries, etc.)
-  const featuredProgram = useMemo(() => {
-    return mainPrograms.find(program => program.id === 'ahoho-marye-mashome') || mainPrograms[0];
-  }, [mainPrograms]);
 
   // Impact statistics from database
   const impactStats = useMemo(() => ({
@@ -176,93 +232,57 @@ const ProgramsLandingPage: React.FC = () => {
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-gray-50 pt-20">
-        {/* Enhanced Hero Section */}
-        <section className="bg-gradient-to-br from-red-600 to-red-800 text-white py-14 sm:py-16 md:py-20">
-          <div className="container max-w-7xl mx-auto px-4 sm:px-6">
-            <motion.div
-              className="text-center"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-6 py-3 mb-8">
-                <Award className="h-5 w-5" />
-                <span className="font-medium">Transforming Ganze Community Since 2018</span>
-              </div>
-              
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
-                Our <span className="text-yellow-300">Programs</span>
-              </h1>
-              
-              <p className="text-xl md:text-2xl text-red-100 max-w-4xl mx-auto mb-12 leading-relaxed">
-                Comprehensive, Christ-centered initiatives creating sustainable impact in Ganze sub-county through education, empowerment, and community development.
-              </p>
-
-              {/* Quick Stats */}
-              <motion.div 
-                className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 max-w-4xl mx-auto"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.6 }}
-              >
-                <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-yellow-300 mb-2">{programsStats.totalPrograms}</div>
-                  <div className="text-red-100">Active Programs</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-yellow-300 mb-2">{impactStats.totalBeneficiaries.toLocaleString()}+</div>
-                  <div className="text-red-100">Lives Impacted</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-yellow-300 mb-2">{impactStats.communitiesReached}</div>
-                  <div className="text-red-100">Communities</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl md:text-4xl font-bold text-yellow-300 mb-2">{impactStats.activeVolunteers}</div>
-                  <div className="text-red-100">Volunteers</div>
-                </div>
-              </motion.div>
-            </motion.div>
-          </div>
-        </section>
+        {/* Phase 4 — Immersive rotating hero */}
+        <ProgramsHero
+          programs={allPrograms}
+          totalBeneficiaries={programsStats.totalBeneficiaries}
+          totalPrograms={programsStats.totalPrograms}
+          activePrograms={programsStats.activePrograms}
+        />
 
         {/* Navigation Tabs */}
         <section className="bg-white border-b border-gray-200 sticky top-20 z-30">
           <div className="container max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="flex overflow-x-auto">
+            <div role="tablist" aria-label="Programs navigation" className="flex overflow-x-auto">
               <button
+                role="tab"
+                aria-selected={activeView === 'programs'}
                 onClick={() => setActiveView('programs')}
-                className={`flex items-center gap-2 px-6 py-4 border-b-2 font-semibold whitespace-nowrap ${
+                className={`flex items-center gap-2 px-6 py-4 border-b-2 font-semibold whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2E] focus-visible:ring-inset ${
                   activeView === 'programs'
-                    ? 'border-red-600 text-red-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                    ? 'border-[#B01C2E] text-[#B01C2E]'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
                 <Target className="h-4 w-4" />
                 All Programs
               </button>
               <button
+                role="tab"
+                aria-selected={activeView === 'events'}
                 onClick={() => setActiveView('events')}
-                className={`flex items-center gap-2 px-6 py-4 border-b-2 font-semibold whitespace-nowrap ${
+                className={`flex items-center gap-2 px-6 py-4 border-b-2 font-semibold whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2E] focus-visible:ring-inset ${
                   activeView === 'events'
-                    ? 'border-red-600 text-red-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                    ? 'border-[#B01C2E] text-[#B01C2E]'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
                 <Calendar className="h-4 w-4" />
                 Upcoming Events
                 {allUpcomingEvents.length > 0 && (
-                  <span className="bg-red-100 text-red-800 text-xs rounded-full px-2 py-1">
+                  <span className="bg-[#B01C2E]/10 text-[#B01C2E] text-xs rounded-full px-2 py-1 font-semibold">
                     {allUpcomingEvents.length}
                   </span>
                 )}
               </button>
               <button
+                role="tab"
+                aria-selected={activeView === 'impact'}
                 onClick={() => setActiveView('impact')}
-                className={`flex items-center gap-2 px-6 py-4 border-b-2 font-semibold whitespace-nowrap ${
+                className={`flex items-center gap-2 px-6 py-4 border-b-2 font-semibold whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2E] focus-visible:ring-inset ${
                   activeView === 'impact'
-                    ? 'border-red-600 text-red-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                    ? 'border-[#B01C2E] text-[#B01C2E]'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
                 <TrendingUp className="h-4 w-4" />
@@ -273,7 +293,7 @@ const ProgramsLandingPage: React.FC = () => {
         </section>
 
         {/* Main Content */}
-        <section className="py-16">
+        <section className="py-16 md:py-24">
           <div className="container max-w-7xl mx-auto px-4 sm:px-6">
             <AnimatePresence mode="wait">
               {activeView === 'programs' && (
@@ -284,65 +304,39 @@ const ProgramsLandingPage: React.FC = () => {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
                 >
-                  {/* Featured Program */}
-                  {featuredProgram && (
-                    <motion.div
-                      className="mb-16"
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.6 }}
-                    >
-                      <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
-                        <div className="grid grid-cols-1 lg:grid-cols-2">
-                          <div className="p-8 lg:p-12">
-                            <div className="inline-flex items-center gap-2 bg-red-100 text-red-800 rounded-full px-4 py-2 mb-4">
-                              <Star className="h-4 w-4" />
-                              <span className="text-sm font-medium">Featured Program</span>
-                            </div>
-                            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-                              {featuredProgram.title}
-                            </h2>
-                            <p className="text-lg text-gray-600 mb-6">
-                              {featuredProgram.fullDescription || featuredProgram.description}
-                            </p>
-                            <div className="flex flex-wrap gap-4 mb-6">
-                              <div className="flex items-center gap-2 text-gray-700">
-                                <Users className="h-5 w-5 text-red-600" />
-                                <span>{featuredProgram.impactMetrics.beneficiaries.toLocaleString()}+ beneficiaries</span>
-                              </div>
-                              <div className="flex items-center gap-2 text-gray-700">
-                                <MapPin className="h-5 w-5 text-red-600" />
-                                <span>{featuredProgram.impactMetrics.location}</span>
-                              </div>
-                            </div>
-                            <button
-                              onClick={() => openProgramModal(featuredProgram)}
-                              className="inline-flex items-center gap-2 bg-red-800 text-white px-8 py-4 rounded-xl hover:bg-red-700 transition-colors font-semibold"
-                            >
-                              <Eye className="h-5 w-5" />
-                              Explore Program
-                              <ArrowRight className="h-4 w-4" />
-                            </button>
-                          </div>
-                          <div className="relative">
-                            <img
-                              src={featuredProgram.images[0]}
-                              alt={featuredProgram.title}
-                              className="w-full h-full object-cover"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-r from-white/50 to-transparent lg:bg-gradient-to-l" />
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
+                  {/* Phase 5 — Featured Program Spotlight */}
+                  <div className="mb-16">
+                    {isLoading ? (
+                      <FeaturedProgramSkeleton />
+                    ) : featuredPrograms[0] ? (
+                      <FeaturedProgram program={featuredPrograms[0]} />
+                    ) : null}
+                  </div>
 
-                  {/* All Programs Grid - Show all programs */}
+                  {/* All Programs Grid — Phase 6: pill filter + search + animated grid */}
                   <div className="mb-12">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">All Programs</h2>
+                    <div className="text-center mb-10">
+                      <h2 className="text-3xl font-bold text-gray-900 mb-2">All Programs</h2>
+                      <p className="text-gray-500 text-sm">Discover how Neema Foundation transforms lives in Kilifi County</p>
+                    </div>
+
+                    {/* Phase 6 — Animated pill filter bar + search */}
+                    <ProgramFilters
+                      activeFilter={activeCategory}
+                      onFilterChange={setActiveCategory}
+                      searchValue={rawSearch}
+                      onSearchChange={handleSearchChange}
+                      counts={categoryCounts}
+                      className="mb-10"
+                    />
+
+                    {/* Phase 3 + 6 — Photo-first grid, receives pre-filtered programs */}
                     <ProgramGrid
-                      programs={allMappedPrograms}
-                      onProgramSelect={openProgramModal}
+                      publicPrograms={filteredPrograms}
+                      isLoading={isLoading}
+                      activeCategory={activeCategory}
+                      searchQuery={debouncedSearch}
+                      totalCount={allPrograms.length}
                       showFilters={false}
                     />
                   </div>
@@ -371,18 +365,19 @@ const ProgramsLandingPage: React.FC = () => {
                       {allUpcomingEvents.map((event, index) => (
                         <motion.div
                           key={event.id}
-                          className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer"
+                          className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer"
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.1 }}
-                          whileHover={{ y: -5 }}
+                          whileHover={{ y: -4, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
                           onClick={() => openEventModal(event)}
                         >
                           <div className="h-48 overflow-hidden">
-                            <img
+                            <OptimizedImage
                               src={event.image}
                               alt={event.title}
-                              className="w-full h-full object-cover transition-transform hover:scale-105"
+                              aspectRatio="free"
+                              className="w-full h-full transition-transform group-hover:scale-105"
                             />
                           </div>
                           <div className="p-6">
@@ -422,7 +417,7 @@ const ProgramsLandingPage: React.FC = () => {
                               <a
                                 href={event.donationLink || '/donate'}
                                 onClick={(e) => e.stopPropagation()}
-                                className="inline-flex items-center justify-center px-3 py-3 rounded-xl bg-red-700 text-white text-sm font-semibold hover:bg-red-800 transition-colors"
+                                className="inline-flex items-center justify-center px-3 py-3 rounded-xl bg-[#B01C2E] text-white text-sm font-semibold hover:bg-[#8A1624] transition-colors"
                               >
                                 Donate
                               </a>
@@ -479,23 +474,23 @@ const ProgramsLandingPage: React.FC = () => {
                   {/* Impact Statistics */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
                     <motion.div
-                      className="bg-white rounded-2xl p-8 text-center shadow-lg border border-gray-200"
+                      className="bg-white rounded-2xl p-8 text-center shadow-sm hover:shadow-xl border border-gray-100 transition-shadow duration-300"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 }}
-                      whileHover={{ y: -5 }}
+                      whileHover={{ y: -4, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
                     >
-                      <Users className="h-12 w-12 text-red-600 mx-auto mb-4" />
+                      <Users className="h-12 w-12 text-[#B01C2E] mx-auto mb-4" />
                       <div className="text-3xl font-bold text-gray-900 mb-2">{impactStats.totalBeneficiaries.toLocaleString()}+</div>
                       <div className="text-gray-600">Lives Transformed</div>
                     </motion.div>
 
                     <motion.div
-                      className="bg-white rounded-2xl p-8 text-center shadow-lg border border-gray-200"
+                      className="bg-white rounded-2xl p-8 text-center shadow-sm hover:shadow-xl border border-gray-100 transition-shadow duration-300"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2 }}
-                      whileHover={{ y: -5 }}
+                      whileHover={{ y: -4, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
                     >
                       <Heart className="h-12 w-12 text-green-600 mx-auto mb-4" />
                       <div className="text-3xl font-bold text-gray-900 mb-2">{impactStats.mealsServed.toLocaleString()}+</div>
@@ -503,11 +498,11 @@ const ProgramsLandingPage: React.FC = () => {
                     </motion.div>
 
                     <motion.div
-                      className="bg-white rounded-2xl p-8 text-center shadow-lg border border-gray-200"
+                      className="bg-white rounded-2xl p-8 text-center shadow-sm hover:shadow-xl border border-gray-100 transition-shadow duration-300"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 }}
-                      whileHover={{ y: -5 }}
+                      whileHover={{ y: -4, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
                     >
                       <Target className="h-12 w-12 text-blue-600 mx-auto mb-4" />
                       <div className="text-3xl font-bold text-gray-900 mb-2">{impactStats.activeVolunteers}</div>
@@ -515,11 +510,11 @@ const ProgramsLandingPage: React.FC = () => {
                     </motion.div>
 
                     <motion.div
-                      className="bg-white rounded-2xl p-8 text-center shadow-lg border border-gray-200"
+                      className="bg-white rounded-2xl p-8 text-center shadow-sm hover:shadow-xl border border-gray-100 transition-shadow duration-300"
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.4 }}
-                      whileHover={{ y: -5 }}
+                      whileHover={{ y: -4, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
                     >
                       <MapPin className="h-12 w-12 text-purple-600 mx-auto mb-4" />
                       <div className="text-3xl font-bold text-gray-900 mb-2">{impactStats.communitiesReached}</div>
@@ -542,8 +537,8 @@ const ProgramsLandingPage: React.FC = () => {
                           transition={{ delay: index * 0.1 }}
                         >
                           <div className="flex items-center gap-4">
-                            <div className="bg-red-100 p-3 rounded-xl">
-                              <program.icon className="h-6 w-6 text-red-800" />
+                            <div className="bg-[#B01C2E]/10 p-3 rounded-xl">
+                              <program.icon className="h-6 w-6 text-[#B01C2E]" />
                             </div>
                             <div>
                               <h4 className="font-bold text-gray-900">{program.title}</h4>
@@ -609,10 +604,12 @@ const EventModal: React.FC<{ event: any; onClose: () => void }> = ({ event, onCl
           onClick={(e) => e.stopPropagation()}
         >
           <div className="relative">
-            <img
+            <OptimizedImage
               src={event.image}
               alt={event.title}
-              className="w-full h-64 object-cover"
+              aspectRatio="free"
+              priority
+              className="w-full h-64"
             />
             <button
               onClick={onClose}

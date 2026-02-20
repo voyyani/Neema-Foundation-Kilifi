@@ -24,66 +24,66 @@ const TestimonialsCarousel: React.FC<TestimonialsCarouselProps> = ({
   }, [onAutoPlay]);
 
   return (
-    <section className="py-16 md:py-20 bg-red-800 text-white w-full">
-      <div className="w-full flex justify-center">
-        <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12 md:mb-16 w-full"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Stories of Impact</h2>
-            <p className="text-lg md:text-xl text-red-100">Hear from our incredible volunteers</p>
-          </motion.div>
+    <section className="py-16 md:py-24 bg-gray-950 w-full relative overflow-hidden">
+      <div className="absolute left-0 top-0 h-full w-1 bg-[#B01C2E]" aria-hidden="true" />
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-10"
+        >
+          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-2 mb-5">
+            <Users className="h-4 w-4 text-white/60" aria-hidden="true" />
+            <span className="text-xs uppercase tracking-widest font-medium text-white/60">Volunteer Stories</span>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">Stories of Impact</h2>
+          <p className="text-white/40 text-sm">Hear from our incredible volunteers</p>
+        </motion.div>
 
-          <div className="w-full flex justify-center">
-            <div className="w-full max-w-4xl">
-              <div className="relative">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={currentIndex}
-                    initial={{ opacity: 0, x: 100 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -100 }}
-                    transition={{ duration: 0.5 }}
-                    className="bg-white text-gray-900 rounded-2xl p-6 md:p-8 shadow-lg w-full"
-                  >
-                    <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
-                      <div className="flex-shrink-0">
-                        <div className="w-16 h-16 md:w-24 md:h-24 bg-red-200 rounded-full flex items-center justify-center">
-                          <Users className="h-8 w-8 md:h-12 md:w-12 text-red-800" />
-                        </div>
-                      </div>
-                      <div className="flex-1 text-center md:text-left">
-                        <p className="text-lg md:text-xl italic mb-4">"{testimonials[currentIndex].quote}"</p>
-                        <div>
-                          <div className="font-bold text-base md:text-lg">{testimonials[currentIndex].name}</div>
-                          <div className="text-red-800 mb-2">{testimonials[currentIndex].role}</div>
-                          <div className="text-gray-600 text-sm">{testimonials[currentIndex].stats}</div>
-                        </div>
-                      </div>
+        <div className="max-w-3xl mx-auto">
+          <div className="relative">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentIndex}
+                initial={{ opacity: 0, x: 40 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -40 }}
+                transition={{ duration: 0.4 }}
+                className="bg-white rounded-2xl border border-gray-100 p-7 md:p-10"
+              >
+                <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
+                  <div className="shrink-0">
+                    <div className="w-14 h-14 bg-red-50 rounded-xl flex items-center justify-center">
+                      <Users className="h-7 w-7 text-[#B01C2E]" />
                     </div>
-                  </motion.div>
-                </AnimatePresence>
-
-                <div className="flex justify-center mt-6 md:mt-8 gap-4">
-                  <button
-                    onClick={onPrevious}
-                    className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
-                    aria-label="Previous testimonial"
-                  >
-                    <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
-                  </button>
-                  <button
-                    onClick={onNext}
-                    className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
-                    aria-label="Next testimonial"
-                  >
-                    <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />
-                  </button>
+                  </div>
+                  <div className="flex-1 text-center md:text-left">
+                    <p className="text-base text-gray-700 italic leading-relaxed mb-4">"{testimonials[currentIndex].quote}"</p>
+                    <p className="font-bold text-gray-900 text-sm">{testimonials[currentIndex].name}</p>
+                    <p className="text-xs text-[#B01C2E] font-medium mt-0.5 mb-1">{testimonials[currentIndex].role}</p>
+                    <p className="text-xs text-gray-400">{testimonials[currentIndex].stats}</p>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
+            </AnimatePresence>
+
+            <div className="flex justify-center mt-6 gap-3">
+              <button
+                onClick={onPrevious}
+                className="p-2 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 transition-colors"
+                aria-label="Previous testimonial"
+              >
+                <ChevronLeft className="h-4 w-4 text-white" />
+              </button>
+              <button
+                onClick={onNext}
+                className="p-2 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 transition-colors"
+                aria-label="Next testimonial"
+              >
+                <ChevronRight className="h-4 w-4 text-white" />
+              </button>
             </div>
           </div>
         </div>

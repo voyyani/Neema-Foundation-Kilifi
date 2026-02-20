@@ -1,6 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { CheckCircle } from 'lucide-react';
 import type { JourneyStep } from './types';
+
+const easing = [0.22, 1, 0.36, 1] as const;
 
 interface VolunteerJourneyProps {
   journey: JourneyStep[];
@@ -8,51 +11,53 @@ interface VolunteerJourneyProps {
 
 const VolunteerJourney: React.FC<VolunteerJourneyProps> = ({ journey }) => {
   return (
-    <section className="py-16 md:py-20 bg-gray-50 w-full">
-      <div className="w-full flex justify-center">
-        <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12 md:mb-16 w-full"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Your Volunteer Journey</h2>
-            <p className="text-lg md:text-xl text-gray-600">From application to impact - here's what to expect</p>
-          </motion.div>
+    <section className="py-16 md:py-24 bg-gray-50 w-full">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <motion.div
+          className="text-center mb-12"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: easing }}
+        >
+          <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-full px-4 py-2 mb-5">
+            <CheckCircle className="h-4 w-4 text-[#B01C2E]" aria-hidden="true" />
+            <span className="text-xs uppercase tracking-widest font-medium text-[#B01C2E]">The Process</span>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Your Volunteer Journey</h2>
+          <p className="text-gray-500 max-w-xl mx-auto">
+            From application to impact — here's exactly what to expect.
+          </p>
+        </motion.div>
 
-          <div className="w-full">
-            <div className="relative">
-              {/* Timeline line */}
-              <div className="absolute left-4 md:left-1/2 transform md:-translate-x-1/2 w-1 bg-red-200 h-full"></div>
-              
-              <div className="space-y-8 md:space-y-12">
-                {journey.map((step, index) => (
+        <div className="relative max-w-4xl mx-auto">
+          <div className="absolute left-5 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-[#B01C2E]/50 to-[#B01C2E]/10 md:-translate-x-1/2" aria-hidden="true" />
+
+          <div className="space-y-8">
+            {journey.map((step, index) => (
+              <div key={step.step} className="relative">
+                <div className="absolute left-5 md:left-1/2 top-4 w-7 h-7 bg-[#B01C2E] rounded-full flex items-center justify-center shadow-sm md:-translate-x-1/2 z-10">
+                  <span className="text-white text-xs font-bold">{step.step}</span>
+                </div>
+                <div
+                  className={`ml-14 md:ml-0 md:w-[calc(50%-44px)] ${
+                    index % 2 === 0 ? 'md:mr-auto md:pr-8' : 'md:ml-auto md:pl-8'
+                  }`}
+                >
                   <motion.div
-                    key={step.step}
-                    initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                    className="bg-white rounded-2xl border border-gray-100 p-5 hover:border-[#B01C2E]/25 hover:shadow-sm transition-all duration-300"
+                    initial={{ opacity: 0, x: index % 2 === 0 ? -24 : 24 }}
                     whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.2 }}
-                    className={`flex items-center ${index % 2 === 0 ? 'flex-row' : 'md:flex-row-reverse'}`}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.07, duration: 0.5, ease: easing }}
                   >
-                    <div className="w-full md:w-1/2 pr-4 md:pr-8 pl-8 md:pl-8">
-                      <div className={`bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-200 ${index % 2 === 0 ? 'md:text-right' : 'text-left'}`}>
-                        <div className="text-xs md:text-sm text-red-800 font-semibold mb-2">{step.duration}</div>
-                        <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2">{step.title}</h3>
-                        <p className="text-gray-600 text-sm md:text-base">{step.description}</p>
-                      </div>
-                    </div>
-                    
-                    {/* Timeline dot */}
-                    <div className="absolute left-4 md:left-1/2 transform -translate-x-1/2 w-6 h-6 md:w-8 md:h-8 bg-red-800 rounded-full border-4 border-white shadow-lg flex items-center justify-center">
-                      <span className="text-white text-xs md:text-sm font-bold">{step.step}</span>
-                    </div>
-                    
-                    <div className="w-0 md:w-1/2"></div>
+                    <span className="text-xs font-semibold text-[#B01C2E] block mb-1.5">{step.duration}</span>
+                    <h3 className="text-base font-bold text-gray-900 mb-1">{step.title}</h3>
+                    <p className="text-sm text-gray-500 leading-relaxed">{step.description}</p>
                   </motion.div>
-                ))}
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>

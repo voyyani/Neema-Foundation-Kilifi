@@ -235,6 +235,21 @@ export async function bulkAddItems(
   // Update photo_count on album
   await syncPhotoCount(albumId);
 
+  // Auto-set cover_image if none exists yet — use first uploaded item
+  try {
+    const { data: albumRow } = await albumsTable()
+      .select('cover_image')
+      .eq('id', albumId)
+      .single();
+    if (!albumRow?.cover_image && rows[0]?.url) {
+      await albumsTable()
+        .update({ cover_image: rows[0].url, updated_at: new Date().toISOString() })
+        .eq('id', albumId);
+    }
+  } catch {
+    // Non-critical — cover can be set manually via ImageItem → ImageIcon
+  }
+
   toast.success(`${results.length} photo${results.length !== 1 ? 's' : ''} added`);
   return data;
 }

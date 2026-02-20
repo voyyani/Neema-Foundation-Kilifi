@@ -243,26 +243,28 @@ const Volunteer: React.FC = () => {
       <VolunteerBenefits benefits={benefits} />
 
       {/* Downloadable Story Form */}
-      <div className="px-4 sm:px-6 lg:px-8 mb-12">
-        <div className="max-w-5xl mx-auto bg-white border border-gray-200 rounded-2xl shadow-lg p-6 sm:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+      <div className="py-12 px-4 sm:px-6 lg:px-8 bg-gray-50 w-full">
+        <div className="max-w-4xl mx-auto bg-white rounded-2xl border border-gray-100 p-8 md:p-10 flex flex-col md:flex-row md:items-center md:justify-between gap-8 hover:border-[#B01C2E]/20 hover:shadow-sm transition-all duration-300">
           <div>
-            <p className="text-sm uppercase tracking-wide text-red-700 font-semibold mb-2">Share Your Impact</p>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Volunteer Story Download</h3>
-            <p className="text-gray-700 max-w-2xl">
-              Download a quick template to capture your story. You can fill it digitally or print and hand it in during your next visit.
+            <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-full px-3 py-1.5 mb-4">
+              <span className="text-xs uppercase tracking-widest font-medium text-[#B01C2E]">Share Your Impact</span>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Volunteer Story Form</h3>
+            <p className="text-sm text-gray-500 max-w-md">
+              Download a quick template to capture your story. Fill it digitally or print and hand it in during your next visit.
             </p>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3 shrink-0">
             <a
               href={storyFormHref}
               download="Neema-Volunteer-Story-Form.txt"
-              className="inline-flex items-center justify-center bg-red-800 text-white hover:bg-red-900 transition-colors rounded-md py-3 px-5 font-semibold shadow"
+              className="bg-[#B01C2E] text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-[#8A1624] transition-colors inline-flex items-center gap-2 text-sm"
             >
-              Download Story Form (TXT)
+              Download Form
             </a>
             <button
               onClick={openApplicationModal}
-              className="inline-flex items-center justify-center border border-red-800 text-red-800 hover:bg-red-800 hover:text-white transition-colors rounded-md py-3 px-5 font-semibold"
+              className="bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl font-semibold hover:border-gray-300 transition-colors text-sm"
             >
               Submit via Portal
             </button>

@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { X, Users, Sprout, Building2, Heart, Target, MapPin, Clock, Award } from 'lucide-react';
 import type { Program } from '../types';
+import OptimizedImage from '../../media/OptimizedImage';
 
 interface WidowsEmpowermentProps {
   program: Program;
@@ -42,10 +43,12 @@ const WidowsEmpowerment: React.FC<WidowsEmpowermentProps> = ({ program, onClose 
           {/* Hero Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             <div>
-              <img 
-                src={program.images[0]} 
+              <OptimizedImage
+                src={program.images[0]}
                 alt={program.title}
-                className="w-full h-56 sm:h-64 lg:h-80 object-cover rounded-2xl"
+                aspectRatio="free"
+                priority
+                className="w-full h-56 sm:h-64 lg:h-80 rounded-2xl"
               />
             </div>
             <div className="space-y-6">

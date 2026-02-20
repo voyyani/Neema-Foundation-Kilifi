@@ -59,6 +59,15 @@ const MEDIA_QUERY_CONFIG = {
   retry: 2,
 } as const;
 
+// Shorter cache for album LIST queries — cover images updated in admin must
+// appear on the public site without a long wait.
+const ALBUM_LIST_QUERY_CONFIG = {
+  staleTime: 60 * 1000,         // 1 min — picks up cover_image changes quickly
+  gcTime:    10 * 60 * 1000,
+  refetchOnWindowFocus: false,
+  retry: 2,
+} as const;
+
 // ─── Supabase Table Helpers ───────────────────────────────────────────────────
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -97,7 +106,7 @@ export function usePublicAlbums(filter: AlbumFilterType = 'all') {
       if (error) throw new Error(error.message);
       return (data ?? []) as PublicMediaAlbum[];
     },
-    ...MEDIA_QUERY_CONFIG,
+    ...ALBUM_LIST_QUERY_CONFIG,
   });
 }
 
@@ -119,7 +128,7 @@ export function usePublicFeaturedAlbums(limit = 6) {
       if (error) throw new Error(error.message);
       return (data ?? []) as PublicMediaAlbum[];
     },
-    ...MEDIA_QUERY_CONFIG,
+    ...ALBUM_LIST_QUERY_CONFIG,
   });
 }
 
@@ -198,7 +207,7 @@ export function usePublicProgramAlbums(programSlug: string | undefined) {
       return (data ?? []) as PublicMediaAlbum[];
     },
     enabled: !!programSlug,
-    ...MEDIA_QUERY_CONFIG,
+    ...ALBUM_LIST_QUERY_CONFIG,
   });
 }
 

@@ -1,22 +1,44 @@
-// src/pages/Partnership.tsx
+/**
+ * Partnership.tsx — Partner With Us page
+ * Neema Foundation Kilifi
+ *
+ * Revamped to match the Programs & Media section visual language:
+ *  • Fullscreen image hero with gradient overlays (mirrors ProgramsHero / MediaHero)
+ *  • Glassmorphism badge, font-serif headline, [#D42A3F] red accent span
+ *  • Stats row with dividers
+ *  • Section alternation: white → gray-50 → white → gray-50 → dark
+ */
+
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { 
-  Handshake, 
-  Building, 
-  Briefcase, 
-  Heart, 
-  Users, 
-  Award, 
-  Globe, 
-  Check, 
-  Mail, 
+import { motion, AnimatePresence } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
+import {
+  Handshake,
+  Building,
+  Briefcase,
+  Heart,
+  Users,
+  Award,
+  Check,
+  Mail,
   Phone,
   ArrowRight,
-  Star,
   Shield,
-  Target
+  Target,
+  Star,
+  Globe,
+  MapPin,
 } from 'lucide-react';
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const easing = [0.22, 1, 0.36, 1] as const;
+
+/** Cloudinary image used as the hero background */
+const HERO_BG_URL =
+  'https://res.cloudinary.com/dzqdxosk2/image/upload/q_auto,f_auto,w_1920/v1762006443/0917_1080p_100mb_cvl4of.jpg';
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 const Partnership: React.FC = () => {
   const [activeTab, setActiveTab] = useState('corporate');
@@ -24,84 +46,84 @@ const Partnership: React.FC = () => {
   const partnershipTypes = [
     {
       id: 'corporate',
-      name: 'Corporate Partnerships',
+      name: 'Corporate',
+      fullName: 'Corporate Partnerships',
       icon: Building,
-      description: 'Align your CSR goals with meaningful community impact',
-      color: 'red',
+      description: 'Align your CSR goals with meaningful community impact in Ganze',
       benefits: [
-        'Employee volunteer programs in Ganze',
+        'Employee volunteer programmes on-site in Ganze',
         'Brand association with trusted community work',
-        'Customized impact reports and transparency',
-        'Team-building through hands-on projects',
-        'Media and recognition opportunities'
+        'Customised impact reports & full transparency',
+        'Team-building through hands-on community projects',
+        'Media recognition and event co-branding',
       ],
       examples: [
         'Project-specific sponsorship',
         'Employee matching gifts',
-        'In-kind donations and services',
-        'Cause-related marketing campaigns'
-      ]
+        'In-kind donations & services',
+        'Cause-related marketing',
+      ],
     },
     {
       id: 'ngo',
-      name: 'NGO & Foundation Partners',
+      name: 'NGO / Foundation',
+      fullName: 'NGO & Foundation Partners',
       icon: Briefcase,
-      description: 'Collaborate to amplify our collective impact',
-      color: 'blue',
+      description: 'Collaborate to amplify our collective impact across Kilifi County',
       benefits: [
-        'Joint program implementation',
-        'Shared resources and expertise',
+        'Joint programme implementation & co-design',
+        'Shared resources, expertise, and networks',
         'Cross-learning and capacity building',
-        'Expanded reach in Kilifi County',
-        'Grant-making and funding opportunities'
+        'Expanded reach in underserved areas',
+        'Grant-making and co-funding opportunities',
       ],
       examples: [
-        'Program co-design and delivery',
-        'Technical assistance and training',
+        'Programme co-design and delivery',
+        'Technical assistance & training',
         'Research and evaluation partnerships',
-        'Advocacy and awareness campaigns'
-      ]
+        'Advocacy and awareness campaigns',
+      ],
     },
     {
       id: 'church',
-      name: 'Church & Faith Groups',
+      name: 'Church / Faith',
+      fullName: 'Church & Faith Groups',
       icon: Heart,
-      description: 'Join hands in Christ-centered service',
-      color: 'purple',
+      description: 'Join hands in Christ-centered service to the Ganze community',
       benefits: [
-        'Mission trip opportunities',
-        'Congregational sponsorship programs',
+        'Mission trip opportunities to Kilifi',
+        'Congregational sponsorship programmes',
         'Prayer partnerships and spiritual support',
         'Community outreach collaborations',
-        'Discipleship and mentorship programs'
+        'Discipleship and mentorship programmes',
       ],
       examples: [
         'Church planting support',
-        'Pastoral training programs',
+        'Pastoral training programmes',
         'Community evangelism events',
-        'Children and youth ministries'
-      ]
+        'Children and youth ministries',
+      ],
     },
     {
       id: 'individual',
-      name: 'Individual Partners',
+      name: 'Individual',
+      fullName: 'Individual Partners',
       icon: Users,
-      description: 'Make a personal impact in Ganze community',
-      color: 'green',
+      description: 'Make a personal, lasting impact in the Ganze community',
       benefits: [
-        'Child sponsorship programs',
-        'Monthly giving opportunities',
-        'Legacy and planned giving',
-        'Skills-based volunteering',
-        'Personal connection with beneficiaries'
+        'Child sponsorship through Ahoho Mission',
+        'Monthly giving with full impact updates',
+        'Legacy and planned giving options',
+        'Skills-based volunteering opportunities',
+        'Direct connection with beneficiaries',
       ],
       examples: [
         'Ahoho Mission child sponsorship',
         'Widows empowerment support',
         'Educational scholarship funding',
-        'Medical mission participation'
-      ]
-    }
+        'Medical mission participation',
+      ],
+    },
   ];
 
   const currentPartners = [
@@ -109,49 +131,53 @@ const Partnership: React.FC = () => {
       name: 'Dzarino CBO',
       type: 'Community Partner',
       logo: 'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760969357/Dzarnio-logo_y9trca.png',
-      impact: 'Health initiative collaboration'
+      impact: 'Health initiative collaboration',
     },
     {
       name: 'KickStart International',
       type: 'Agriculture Partner',
       logo: 'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760969470/KickStart-Logo_Color_RGB_sg1t6p.svg',
-      impact: 'Water pumps and farming training'
+      impact: 'Water pumps and farming training',
     },
     {
       name: 'ICC Mombasa',
-      type: 'Feeding Program Partner',
-      logo: 'ICC',
-      impact: 'Daily porridge program support'
+      type: 'Feeding Programme Partner',
+      logo: null as string | null,
+      impact: 'Daily porridge programme support',
     },
     {
       name: 'CITAM Mombasa',
       type: 'Faith Partner',
       logo: 'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760969566/citam-logo-1_lg4qqi.png',
-      impact: 'Spiritual and outreach support'
-    }
+      impact: 'Spiritual and outreach support',
+    },
   ];
 
   const partnershipBenefits = [
     {
       icon: Target,
       title: 'Measurable Impact',
-      description: 'See tangible results with detailed impact reports and community feedback'
+      description:
+        'See tangible results with detailed impact reports, dashboards, and community feedback.',
     },
     {
       icon: Shield,
       title: 'Full Transparency',
-      description: 'Complete financial and program transparency with regular updates'
+      description:
+        'Complete financial and programme transparency with regular updates and open books.',
     },
     {
       icon: Users,
       title: 'Community Integration',
-      description: 'Work directly with local community leaders and beneficiaries'
+      description:
+        'Work directly alongside local community leaders, families, and beneficiaries.',
     },
     {
       icon: Award,
       title: 'Recognition',
-      description: 'Get acknowledged across our platforms and community events'
-    }
+      description:
+        'Acknowledged prominently across our digital platforms and community events.',
+    },
   ];
 
   const [formData, setFormData] = useState({
@@ -159,234 +185,364 @@ const Partnership: React.FC = () => {
     email: '',
     organization: '',
     partnershipType: 'corporate',
-    message: ''
+    message: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
     console.log('Partnership form submitted:', formData);
-    alert('Thank you for your interest in partnership! We will contact you soon.');
+    alert('Thank you for your interest! We will contact you within 24 hours.');
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const activePartnership = partnershipTypes.find(p => p.id === activeTab);
-
-  const getAccentClasses = (color: string) => {
-    const colors = {
-      red: { bg: 'bg-red-100', text: 'text-red-800' },
-      green: { bg: 'bg-green-100', text: 'text-green-800' },
-      blue: { bg: 'bg-blue-100', text: 'text-blue-800' },
-      purple: { bg: 'bg-purple-100', text: 'text-purple-800' },
-      orange: { bg: 'bg-orange-100', text: 'text-orange-800' },
-      yellow: { bg: 'bg-yellow-100', text: 'text-yellow-800' },
-    } as const;
-    return (colors as any)[color] || colors.red;
-  };
+  const activePartnership = partnershipTypes.find((p) => p.id === activeTab);
 
   return (
-    <div className="min-h-screen flex flex-col pt-20">
-      {/* Hero Section */}
-      <section className="py-14 sm:py-16 md:py-20 bg-gradient-to-br from-red-800 to-red-600 text-white">
-        <div className="container max-w-7xl mx-auto px-4 sm:px-6">
-          <motion.div
-            className="text-center max-w-4xl mx-auto"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <motion.div
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-3 mb-8 border border-white/20"
-            >
-              <Handshake className="h-5 w-5" />
-              <span className="font-semibold">Transform Lives Together</span>
-            </motion.div>
+    <>
+      <Helmet>
+        <title>Partner With Us — Neema Foundation Kilifi</title>
+        <meta
+          name="description"
+          content="Partner with Neema Foundation Kilifi to create sustainable change in Ganze. Corporate, NGO, church and individual partnership opportunities available."
+        />
+        <meta property="og:title" content="Partner With Us — Neema Foundation Kilifi" />
+        <meta
+          property="og:description"
+          content="Join our mission to feed children, empower widows, and build a brighter future in Ganze, Kilifi County."
+        />
+        <link rel="canonical" href="https://neemafoundationkilifi.org/partner" />
+      </Helmet>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-              Partner With <span className="text-yellow-300">Neema Foundation</span>
+      {/* ══════════════════════════════════════════════════════
+          HERO — fullscreen image, mirrors ProgramsHero exactly
+      ══════════════════════════════════════════════════════ */}
+      <section className="relative w-full h-[520px] md:h-[640px] overflow-hidden bg-gray-900">
+
+        {/* Background image */}
+        <motion.div
+          initial={{ opacity: 0, scale: 1.06 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.4, ease: 'easeInOut' }}
+          className="absolute inset-0"
+          aria-hidden="true"
+        >
+          <img
+            src={HERO_BG_URL}
+            alt="Neema Foundation community work in Ganze"
+            className="w-full h-full object-cover"
+            loading="eager"
+          />
+        </motion.div>
+
+        {/* Gradient overlays — identical to ProgramsHero & MediaHero */}
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/45 to-black/80 pointer-events-none"
+          aria-hidden="true"
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent pointer-events-none"
+          aria-hidden="true"
+        />
+
+        {/* Hero copy — centred */}
+        <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6 max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.7, ease: easing }}
+          >
+            {/* Eyebrow badge — glassmorphism */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/80 text-xs font-medium uppercase tracking-widest mb-6">
+              <Handshake className="w-3.5 h-3.5" aria-hidden="true" />
+              Partner With Us — Kilifi, Kenya
+            </div>
+
+            {/* H1 — serif, mirrors ProgramsHero */}
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white leading-tight tracking-tight">
+              Together We
+              <br />
+              <span className="text-[#D42A3F]">Transform Ganze</span>
             </h1>
-            
-            <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Join our mission to create sustainable change in Ganze. Together, we can feed children, empower widows, and build a brighter future for generations.
+
+            <p className="mt-5 text-white/75 text-lg md:text-xl max-w-xl mx-auto leading-relaxed">
+              Join our mission to feed children, empower widows, and build a
+              brighter future for generations across Kilifi County.
             </p>
 
-            <motion.div
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => document.getElementById('partnership-options')?.scrollIntoView({ behavior: 'smooth' })}
-                className="bg-white text-red-800 hover:bg-gray-100 transition-colors rounded-2xl px-8 py-4 font-semibold text-lg flex items-center gap-3"
+            {/* CTAs */}
+            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                onClick={() =>
+                  document
+                    .getElementById('partnership-options')
+                    ?.scrollIntoView({ behavior: 'smooth' })
+                }
+                className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 bg-[#D42A3F] text-white text-sm font-semibold rounded-xl hover:bg-[#B01C2E] transition-colors"
               >
-                <Handshake className="h-5 w-5" />
+                <Handshake className="w-4 h-4" aria-hidden="true" />
                 Explore Partnership Options
-                <ArrowRight className="h-5 w-5" />
-              </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}
-                className="border-2 border-white text-white hover:bg-white hover:text-red-800 transition-colors rounded-2xl px-8 py-4 font-semibold text-lg"
+              </button>
+              <button
+                onClick={() =>
+                  document
+                    .getElementById('contact-form')
+                    ?.scrollIntoView({ behavior: 'smooth' })
+                }
+                className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 bg-white/10 backdrop-blur-sm border border-white/25 text-white text-sm font-semibold rounded-xl hover:bg-white/20 transition-colors"
               >
-                Start Conversation
-              </motion.button>
-            </motion.div>
+                Start a Conversation
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
+              </button>
+            </div>
+          </motion.div>
+
+          {/* Stats row — identical to ProgramsHero & MediaHero */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.55, duration: 0.6 }}
+            className="mt-12 flex items-center gap-8"
+            aria-label="Partnership statistics"
+          >
+            {[
+              { value: '4+', label: 'Active Partners' },
+              { value: '62,000+', label: 'Lives Touched' },
+              { value: '10+', label: 'Years Serving' },
+            ].map(({ value, label }, i) => (
+              <React.Fragment key={label}>
+                {i > 0 && (
+                  <div className="w-px h-8 bg-white/20" aria-hidden="true" />
+                )}
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-white">{value}</div>
+                  <div className="text-white/60 text-xs uppercase tracking-wide">
+                    {label}
+                  </div>
+                </div>
+              </React.Fragment>
+            ))}
           </motion.div>
         </div>
+
+        {/* Location label — bottom-left, mirrors MediaHero */}
+        <motion.div
+          initial={{ opacity: 0, x: -16 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
+          className="absolute bottom-8 left-6 md:left-10 z-20"
+        >
+          <p className="text-white/50 text-xs uppercase tracking-widest mb-0.5">
+            Impact destination
+          </p>
+          <p className="text-white font-semibold text-sm flex items-center gap-1.5">
+            <MapPin className="w-3.5 h-3.5 text-[#D42A3F]" aria-hidden="true" />
+            Ganze, Kilifi County, Kenya
+          </p>
+        </motion.div>
       </section>
 
-      {/* Current Partners Showcase */}
-      <section className="py-16 bg-white">
-        <div className="container max-w-7xl mx-auto px-4 sm:px-6">
+      {/* ══════════════════════════════════════════════════════
+          CURRENT PARTNERS — white
+      ══════════════════════════════════════════════════════ */}
+      <section className="py-20 md:py-28 bg-white w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
           <motion.div
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: 30 }}
+            className="text-center mb-14"
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: easing }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
-              Trusted by Impact-Driven Organizations
+            <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-full px-4 py-1.5 mb-5">
+              <Star className="h-3.5 w-3.5 text-[#B01C2E]" aria-hidden="true" />
+              <span className="text-xs uppercase tracking-widest font-medium text-[#B01C2E]">
+                Trusted Partners
+              </span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-3">
+              Organisations We Work With
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              We're proud to collaborate with organizations that share our commitment to transforming Ganze community.
+            <p className="text-gray-500 max-w-xl mx-auto text-sm leading-relaxed">
+              Impact-driven organisations that share our commitment to
+              transforming the Ganze community.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
             {currentPartners.map((partner, index) => (
               <motion.div
                 key={partner.name}
-                className="text-center"
-                initial={{ opacity: 0, y: 30 }}
+                className="group bg-white rounded-2xl border border-gray-100 p-7 flex flex-col items-center text-center hover:border-[#D42A3F]/30 hover:shadow-md transition-all duration-300"
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
+                transition={{ delay: index * 0.08, duration: 0.5, ease: easing }}
               >
-                <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200 h-full flex flex-col items-center justify-center">
-                  {partner.logo.startsWith('http') ? (
-                    <img 
-                      src={partner.logo} 
+                <div className="w-14 h-14 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden mb-4 group-hover:border-[#D42A3F]/20 transition-colors">
+                  {partner.logo ? (
+                    <img
+                      src={partner.logo}
                       alt={`${partner.name} logo`}
-                      className="h-12 w-auto mb-4 object-contain"
+                      className="w-full h-full object-contain p-2"
                     />
                   ) : (
-                    <div className="h-12 w-12 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center text-white font-bold text-lg mb-4">
-                      {partner.name.split(' ').map(word => word[0]).join('')}
-                    </div>
+                    <span className="text-xs font-bold text-[#B01C2E]">
+                      {partner.name
+                        .split(' ')
+                        .slice(0, 2)
+                        .map((w) => w[0])
+                        .join('')}
+                    </span>
                   )}
-                  <h3 className="font-bold text-gray-900 mb-2">{partner.name}</h3>
-                  <div className="text-red-800 text-xs font-semibold bg-red-50 px-2 py-1 rounded-full mb-2">
-                    {partner.type}
-                  </div>
-                  <p className="text-gray-600 text-sm">{partner.impact}</p>
                 </div>
+                <h3 className="font-bold text-gray-900 text-sm mb-1.5">
+                  {partner.name}
+                </h3>
+                <span className="text-xs font-medium text-[#B01C2E] bg-red-50 border border-red-100 rounded-full px-2.5 py-0.5 mb-2.5">
+                  {partner.type}
+                </span>
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  {partner.impact}
+                </p>
               </motion.div>
             ))}
           </div>
+
+          <motion.p
+            className="text-center text-sm text-gray-400 mt-10"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+          >
+            Want to join this list?{' '}
+            <button
+              onClick={() =>
+                document
+                  .getElementById('contact-form')
+                  ?.scrollIntoView({ behavior: 'smooth' })
+              }
+              className="text-[#B01C2E] font-semibold hover:underline"
+            >
+              Start a partnership conversation →
+            </button>
+          </motion.p>
         </div>
       </section>
 
-      {/* Partnership Options */}
-      <section id="partnership-options" className="py-14 sm:py-16 md:py-20 bg-gray-50">
-        <div className="container max-w-7xl mx-auto px-4 sm:px-6">
+      {/* ══════════════════════════════════════════════════════
+          PARTNERSHIP OPTIONS — gray-50
+      ══════════════════════════════════════════════════════ */}
+      <section id="partnership-options" className="py-20 md:py-28 bg-gray-50 w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
           <motion.div
-            className="text-center mb-10 md:mb-16"
-            initial={{ opacity: 0, y: 30 }}
+            className="text-center mb-14"
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: easing }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
+            <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-full px-4 py-1.5 mb-5">
+              <Handshake className="h-3.5 w-3.5 text-[#B01C2E]" aria-hidden="true" />
+              <span className="text-xs uppercase tracking-widest font-medium text-[#B01C2E]">
+                Partnership Paths
+              </span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-3">
               Choose Your Partnership Path
             </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Whether you're a corporation, NGO, church, or individual, there's a meaningful way to join our mission.
+            <p className="text-gray-500 max-w-xl mx-auto text-sm leading-relaxed">
+              Whether you're a corporation, NGO, faith group, or individual —
+              there's a meaningful way to join our mission.
             </p>
           </motion.div>
 
-          {/* Partnership Tabs */}
-          <div className="max-w-6xl mx-auto">
-            {/* Tab Headers */}
-            <div className="flex flex-wrap justify-center gap-4 mb-12">
-              {partnershipTypes.map((type) => (
-                <motion.button
-                  key={type.id}
-                  onClick={() => setActiveTab(type.id)}
-                  className={`flex items-center gap-3 px-6 py-4 rounded-2xl font-semibold transition-all duration-300 ${
-                    activeTab === type.id
-                      ? 'bg-red-800 text-white shadow-lg'
-                      : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <type.icon className="h-5 w-5" />
-                  {type.name}
-                </motion.button>
-              ))}
-            </div>
+          {/* Tab selector */}
+          <div className="flex flex-wrap justify-center gap-3 mb-10">
+            {partnershipTypes.map((type) => (
+              <button
+                key={type.id}
+                onClick={() => setActiveTab(type.id)}
+                className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                  activeTab === type.id
+                    ? 'bg-[#B01C2E] text-white shadow-sm'
+                    : 'bg-white border border-gray-200 text-gray-600 hover:border-[#D42A3F]/30 hover:text-[#B01C2E]'
+                }`}
+              >
+                <type.icon className="h-4 w-4" aria-hidden="true" />
+                {type.name}
+              </button>
+            ))}
+          </div>
 
-            {/* Active Tab Content */}
+          {/* Active tab content */}
+          <AnimatePresence mode="wait">
             {activePartnership && (
               <motion.div
                 key={activePartnership.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden"
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.35, ease: easing }}
+                className="max-w-5xl mx-auto bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm"
               >
                 <div className="grid grid-cols-1 lg:grid-cols-2">
-                  {/* Left Content */}
-                  <div className="p-8 lg:p-12">
-                    <div className="flex items-center gap-4 mb-6">
-                      {(() => {
-                        const c = getAccentClasses(activePartnership.color);
-                        return (
-                      <div className={`w-12 h-12 ${c.bg} rounded-xl flex items-center justify-center`}>
-                        <activePartnership.icon className={`h-6 w-6 ${c.text}`} />
+
+                  {/* Left — benefits & examples */}
+                  <div className="p-8 md:p-10">
+                    <div className="flex items-start gap-3.5 mb-7">
+                      <div className="w-11 h-11 bg-red-50 rounded-xl flex items-center justify-center shrink-0">
+                        <activePartnership.icon
+                          className="h-5 w-5 text-[#B01C2E]"
+                          aria-hidden="true"
+                        />
                       </div>
-                        );
-                      })()}
                       <div>
-                        <h3 className="text-2xl font-bold text-gray-900">{activePartnership.name}</h3>
-                        <p className="text-gray-600">{activePartnership.description}</p>
+                        <h3 className="font-bold text-gray-900 text-base leading-snug">
+                          {activePartnership.fullName}
+                        </h3>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                          {activePartnership.description}
+                        </p>
                       </div>
                     </div>
 
-                    <div className="space-y-6">
+                    <div className="space-y-7">
                       <div>
-                        <h4 className="font-semibold text-gray-900 mb-4">Partnership Benefits</h4>
-                        <ul className="space-y-3">
-                          {activePartnership.benefits.map((benefit, index) => (
-                            <li key={index} className="flex items-start gap-3">
-                              <Check className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
-                              <span className="text-gray-700">{benefit}</span>
+                        <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
+                          Benefits
+                        </p>
+                        <ul className="space-y-2.5">
+                          {activePartnership.benefits.map((benefit, i) => (
+                            <li key={i} className="flex items-start gap-2.5">
+                              <Check
+                                className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0"
+                                aria-hidden="true"
+                              />
+                              <span className="text-sm text-gray-600">{benefit}</span>
                             </li>
                           ))}
                         </ul>
                       </div>
 
                       <div>
-                        <h4 className="font-semibold text-gray-900 mb-4">Partnership Examples</h4>
+                        <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">
+                          Examples
+                        </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          {activePartnership.examples.map((example, index) => (
-                            <div key={index} className="bg-gray-50 rounded-lg px-3 py-2">
-                              <span className="text-sm text-gray-700">{example}</span>
+                          {activePartnership.examples.map((example, i) => (
+                            <div
+                              key={i}
+                              className="bg-gray-50 border border-gray-100 rounded-xl px-3.5 py-2.5 text-xs text-gray-500"
+                            >
+                              {example}
                             </div>
                           ))}
                         </div>
@@ -394,201 +550,325 @@ const Partnership: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Right Content - CTA */}
-                  <div className="bg-gradient-to-br from-red-800 to-red-600 p-8 lg:p-12 text-white flex flex-col justify-center">
-                    <h4 className="text-2xl font-bold mb-4">Ready to Make an Impact?</h4>
-                    <p className="text-white/90 mb-6">
-                      Let's discuss how we can create meaningful change together in Ganze community.
+                  {/* Right — dark CTA panel */}
+                  <div className="relative bg-gray-950 p-8 md:p-10 flex flex-col justify-center">
+                    <div
+                      className="absolute left-0 top-0 h-full w-1 bg-[#D42A3F]"
+                      aria-hidden="true"
+                    />
+
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-white/60 text-xs uppercase tracking-widest mb-5 self-start">
+                      <Globe className="w-3 h-3" aria-hidden="true" />
+                      Ready to Start?
+                    </div>
+
+                    <h4 className="text-xl md:text-2xl font-serif font-bold text-white mb-3 leading-snug">
+                      Ready to Make
+                      <br />
+                      an Impact?
+                    </h4>
+                    <p className="text-white/55 text-sm leading-relaxed mb-8">
+                      Let's explore how we can create meaningful, lasting change
+                      together in the Ganze community.
                     </p>
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}
-                      className="bg-white text-red-800 hover:bg-gray-100 transition-colors rounded-xl px-6 py-3 font-semibold w-full"
+
+                    <button
+                      onClick={() =>
+                        document
+                          .getElementById('contact-form')
+                          ?.scrollIntoView({ behavior: 'smooth' })
+                      }
+                      className="inline-flex items-center gap-2 bg-[#D42A3F] text-white px-6 py-3 rounded-xl font-semibold text-sm hover:bg-[#B01C2E] transition-colors self-start"
                     >
                       Start Partnership Conversation
-                    </motion.button>
+                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </button>
                   </div>
                 </div>
               </motion.div>
             )}
-          </div>
+          </AnimatePresence>
         </div>
       </section>
 
-      {/* Benefits Section */}
-      <section className="py-14 sm:py-16 md:py-20 bg-white">
-        <div className="container max-w-7xl mx-auto px-4 sm:px-6">
+      {/* ══════════════════════════════════════════════════════
+          WHY PARTNER — white
+      ══════════════════════════════════════════════════════ */}
+      <section className="py-20 md:py-28 bg-white w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
           <motion.div
-            className="text-center mb-10 md:mb-16"
-            initial={{ opacity: 0, y: 30 }}
+            className="text-center mb-14"
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: easing }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
+            <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-full px-4 py-1.5 mb-5">
+              <Award className="h-3.5 w-3.5 text-[#B01C2E]" aria-hidden="true" />
+              <span className="text-xs uppercase tracking-widest font-medium text-[#B01C2E]">
+                Why Partner
+              </span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-3">
               Why Partner With Neema Foundation?
             </h2>
+            <p className="text-gray-500 max-w-xl mx-auto text-sm leading-relaxed">
+              We believe in partnerships that create deep, verifiable impact —
+              not just donations.
+            </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {partnershipBenefits.map((benefit, index) => (
               <motion.div
                 key={benefit.title}
-                className="text-center"
-                initial={{ opacity: 0, y: 30 }}
+                className="bg-white rounded-2xl border border-gray-100 p-7 hover:border-[#D42A3F]/25 hover:shadow-md transition-all duration-300 group"
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
+                transition={{ delay: index * 0.08, duration: 0.5, ease: easing }}
               >
-                <div className="bg-red-50 rounded-2xl p-6 sm:p-8 border border-red-200 h-full">
-                  <benefit.icon className="h-12 w-12 text-red-800 mx-auto mb-4" />
-                  <h3 className="font-bold text-gray-900 text-lg mb-3">{benefit.title}</h3>
-                  <p className="text-gray-600 text-sm">{benefit.description}</p>
+                <div className="w-11 h-11 bg-red-50 rounded-xl flex items-center justify-center mb-5 group-hover:bg-red-100 transition-colors">
+                  <benefit.icon
+                    className="h-5 w-5 text-[#B01C2E]"
+                    aria-hidden="true"
+                  />
                 </div>
+                <h3 className="font-bold text-gray-900 text-sm mb-2">
+                  {benefit.title}
+                </h3>
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  {benefit.description}
+                </p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Contact Form */}
-      <section id="contact-form" className="py-14 sm:py-16 md:py-20 bg-gray-50">
-        <div className="container max-w-4xl mx-auto px-4 sm:px-6">
-          <motion.div
-            className="bg-white rounded-2xl shadow-xl border border-gray-200 p-6 sm:p-8 md:p-12"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-4 text-gray-900">Start Your Partnership Journey</h2>
-              <p className="text-gray-600">
-                Fill out the form below and our partnership team will contact you within 24 hours.
-              </p>
-            </div>
+      {/* ══════════════════════════════════════════════════════
+          CONTACT FORM — gray-50
+      ══════════════════════════════════════════════════════ */}
+      <section id="contact-form" className="py-20 md:py-28 bg-gray-50 w-full">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto">
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                    Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    required
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-800 focus:border-transparent transition-colors"
-                    placeholder="Your full name"
-                  />
+            <motion.div
+              className="bg-white rounded-2xl border border-gray-100 p-8 md:p-12 shadow-sm"
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: easing }}
+            >
+              <div className="mb-9">
+                <div className="inline-flex items-center gap-2 bg-red-50 border border-red-100 rounded-full px-3 py-1.5 mb-4">
+                  <Handshake className="h-3.5 w-3.5 text-[#B01C2E]" aria-hidden="true" />
+                  <span className="text-xs uppercase tracking-widest font-medium text-[#B01C2E]">
+                    Get In Touch
+                  </span>
                 </div>
-
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-800 focus:border-transparent transition-colors"
-                    placeholder="your.email@example.com"
-                  />
-                </div>
+                <h2 className="text-2xl font-serif font-bold text-gray-900 mb-2">
+                  Start Your Partnership Journey
+                </h2>
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  Fill out the form below and our team will contact you within 24 hours.
+                </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="organization" className="block text-sm font-medium text-gray-700 mb-2">
-                    Organization
-                  </label>
-                  <input
-                    type="text"
-                    id="organization"
-                    name="organization"
-                    value={formData.organization}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-800 focus:border-transparent transition-colors"
-                    placeholder="Your organization name"
-                  />
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
+                    >
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      required
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-100 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-[#B01C2E]/20 focus:border-[#B01C2E]/40 focus:outline-none transition-colors"
+                      placeholder="Your full name"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
+                    >
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-100 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-[#B01C2E]/20 focus:border-[#B01C2E]/40 focus:outline-none transition-colors"
+                      placeholder="you@example.com"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div>
+                    <label
+                      htmlFor="organization"
+                      className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
+                    >
+                      Organisation
+                    </label>
+                    <input
+                      type="text"
+                      id="organization"
+                      name="organization"
+                      value={formData.organization}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-100 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-[#B01C2E]/20 focus:border-[#B01C2E]/40 focus:outline-none transition-colors"
+                      placeholder="Your organisation name"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="partnershipType"
+                      className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
+                    >
+                      Partnership Interest *
+                    </label>
+                    <select
+                      id="partnershipType"
+                      name="partnershipType"
+                      required
+                      value={formData.partnershipType}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-100 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-[#B01C2E]/20 focus:border-[#B01C2E]/40 focus:outline-none transition-colors"
+                    >
+                      <option value="corporate">Corporate Partnership</option>
+                      <option value="ngo">NGO / Foundation Partnership</option>
+                      <option value="church">Church / Faith Group</option>
+                      <option value="individual">Individual Partnership</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div>
-                  <label htmlFor="partnershipType" className="block text-sm font-medium text-gray-700 mb-2">
-                    Partnership Interest *
-                  </label>
-                  <select
-                    id="partnershipType"
-                    name="partnershipType"
-                    required
-                    value={formData.partnershipType}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-800 focus:border-transparent transition-colors"
+                  <label
+                    htmlFor="message"
+                    className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2"
                   >
-                    <option value="corporate">Corporate Partnership</option>
-                    <option value="ngo">NGO/Foundation Partnership</option>
-                    <option value="church">Church/Faith Group</option>
-                    <option value="individual">Individual Partnership</option>
-                    <option value="other">Other</option>
-                  </select>
+                    Tell us about your partnership interests *
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    required
+                    rows={5}
+                    value={formData.message}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-100 rounded-xl bg-gray-50 text-sm focus:ring-2 focus:ring-[#B01C2E]/20 focus:border-[#B01C2E]/40 focus:outline-none transition-colors resize-none"
+                    placeholder="How would you like to partner with us? What impact are you hoping to create?"
+                  />
                 </div>
-              </div>
 
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                  Tell us about your partnership interests *
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  required
-                  rows={6}
-                  value={formData.message}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-800 focus:border-transparent transition-colors resize-none"
-                  placeholder="How would you like to partner with us? What impact are you hoping to create?"
-                />
-              </div>
+                <button
+                  type="submit"
+                  className="w-full bg-[#B01C2E] text-white px-6 py-3.5 rounded-xl font-semibold text-sm hover:bg-[#8A1624] transition-colors"
+                >
+                  Submit Partnership Inquiry
+                </button>
+              </form>
 
-              <motion.button
-                type="submit"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full bg-red-800 text-white hover:bg-red-700 transition-colors rounded-xl py-4 font-semibold text-lg"
-              >
-                Submit Partnership Inquiry
-              </motion.button>
-            </form>
-
-            {/* Contact Information */}
-            <div className="mt-8 pt-8 border-t border-gray-200">
-              <h3 className="font-semibold text-gray-900 mb-4 text-center">Prefer to talk directly?</h3>
-              <div className="flex flex-col sm:flex-row justify-center gap-6 text-center">
-                <div className="flex items-center justify-center gap-2 text-gray-600">
-                  <Mail className="h-4 w-4" />
-                  <a href="mailto:partnerships@neemafoundationkilifi.org" className="hover:text-red-800">
+              <div className="mt-9 pt-7 border-t border-gray-100">
+                <p className="text-xs text-gray-400 text-center mb-5 uppercase tracking-widest font-medium">
+                  Prefer to talk directly?
+                </p>
+                <div className="flex flex-col sm:flex-row justify-center gap-6 text-sm">
+                  <a
+                    href="mailto:partnerships@neemafoundationkilifi.org"
+                    className="inline-flex items-center justify-center gap-2 text-gray-500 hover:text-[#B01C2E] transition-colors"
+                  >
+                    <Mail className="h-4 w-4 shrink-0" aria-hidden="true" />
                     partnerships@neemafoundationkilifi.org
                   </a>
-                </div>
-                <div className="flex items-center justify-center gap-2 text-gray-600">
-                  <Phone className="h-4 w-4" />
-                  <a href="tel:+254700000000" className="hover:text-red-800">
-                    +254 700 000 000
+                  <a
+                    href="tel:+254797484101"
+                    className="inline-flex items-center justify-center gap-2 text-gray-500 hover:text-[#B01C2E] transition-colors"
+                  >
+                    <Phone className="h-4 w-4 shrink-0" aria-hidden="true" />
+                    +254 797 484 101
                   </a>
                 </div>
               </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════
+          CTA BAND — dark, mirrors landing & programs closing band
+      ══════════════════════════════════════════════════════ */}
+      <section className="relative py-20 md:py-28 bg-gray-950 overflow-hidden w-full">
+        <div
+          className="absolute left-0 top-0 h-full w-1 bg-[#D42A3F]"
+          aria-hidden="true"
+        />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: easing }}
+            className="max-w-2xl"
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-white/60 text-xs uppercase tracking-widest mb-5">
+              <Heart className="w-3 h-3 text-[#D42A3F]" aria-hidden="true" />
+              Together We Transform
+            </div>
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mb-3 leading-snug">
+              Transform Lives
+              <br />
+              <span className="text-[#D42A3F]">Together</span>
+            </h2>
+            <p className="text-white/55 text-sm leading-relaxed max-w-lg mb-9">
+              Every partnership brings us closer to a thriving, self-sufficient
+              Ganze community. Reach out today and let's make it happen.
+            </p>
+
+            <div className="flex flex-wrap gap-4">
+              <button
+                onClick={() =>
+                  document
+                    .getElementById('contact-form')
+                    ?.scrollIntoView({ behavior: 'smooth' })
+                }
+                className="inline-flex items-center gap-2.5 bg-[#D42A3F] text-white px-6 py-3 rounded-xl font-semibold text-sm hover:bg-[#B01C2E] transition-colors"
+              >
+                <Handshake className="h-4 w-4" aria-hidden="true" />
+                Start Partnership
+              </button>
+              <button
+                onClick={() =>
+                  document
+                    .getElementById('partnership-options')
+                    ?.scrollIntoView({ behavior: 'smooth' })
+                }
+                className="inline-flex items-center gap-2.5 bg-white/10 border border-white/20 text-white px-6 py-3 rounded-xl font-semibold text-sm hover:bg-white/20 transition-colors"
+              >
+                Explore Options
+              </button>
             </div>
           </motion.div>
         </div>
       </section>
-    </div>
+    </>
   );
 };
 

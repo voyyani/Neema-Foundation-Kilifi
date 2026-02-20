@@ -6,6 +6,7 @@ import { X, ChevronLeft, ChevronRight, Save, Loader2, AlertCircle } from 'lucide
 import type { Program, ProgramInput, ProgramCategory, ProgramTestimonial } from '../../types/content';
 import RichTextEditor from '../content/RichTextEditor';
 import ImageGalleryUploader from './ImageGalleryUploader';
+import ProgramImageUploader from './ProgramImageUploader';
 import VideoUrlInput from './VideoUrlInput';
 import DonationGoalConfig from './DonationGoalConfig';
 import VolunteerOpportunitiesManager from './VolunteerOpportunitiesManager';
@@ -634,29 +635,37 @@ export default function EnhancedProgramForm({
             {/* MEDIA SECTION */}
             {activeSection === 'media' && (
               <div className="space-y-8">
-                {/* Image Gallery */}
-                <ImageGalleryUploader
-                  images={[
-                    ...(formData.cover_image ? [formData.cover_image] : []),
-                    ...(formData.gallery_images || [])
-                  ]}
-                  onChange={(images) => {
-                    if (images.length > 0) {
-                      setFormData(prev => ({
-                        ...prev,
-                        cover_image: images[0],
-                        gallery_images: images.slice(1)
-                      }));
-                    } else {
-                      setFormData(prev => ({
-                        ...prev,
-                        cover_image: '',
-                        gallery_images: []
-                      }));
-                    }
-                  }}
-                  maxImages={10}
-                />
+                {/* ── Phase 9: Supabase-backed Program Photo Gallery ── */}
+                <ProgramImageUploader programId={program?.id} />
+
+                {/* ── Legacy cover image + gallery_images (URL-based) ── */}
+                <div className="pt-6 border-t border-gray-200">
+                  <p className="text-xs text-gray-400 uppercase tracking-wide font-semibold mb-3">
+                    Legacy cover image (URL-based)
+                  </p>
+                  <ImageGalleryUploader
+                    images={[
+                      ...(formData.cover_image ? [formData.cover_image] : []),
+                      ...(formData.gallery_images || [])
+                    ]}
+                    onChange={(images) => {
+                      if (images.length > 0) {
+                        setFormData(prev => ({
+                          ...prev,
+                          cover_image: images[0],
+                          gallery_images: images.slice(1)
+                        }));
+                      } else {
+                        setFormData(prev => ({
+                          ...prev,
+                          cover_image: '',
+                          gallery_images: []
+                        }));
+                      }
+                    }}
+                    maxImages={10}
+                  />
+                </div>
 
                 {/* Video */}
                 <div className="pt-6 border-t border-gray-200">

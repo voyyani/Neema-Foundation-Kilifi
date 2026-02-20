@@ -1,242 +1,197 @@
 // components/Contact.tsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Send, MessageCircle, Clock } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Clock } from 'lucide-react';
 import { usePublicSiteSettings } from '../hooks/public';
+
+const easing = [0.22, 1, 0.36, 1] as const;
 
 const Contact: React.FC = () => {
   const { data: siteSettings } = usePublicSiteSettings();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  });
+  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const [sent, setSent] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log('Form submitted:', formData);
+    console.log('Contact form:', form);
+    setSent(true);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
-  };
+  const contactItems = [
+    siteSettings?.contact_address && {
+      icon: MapPin,
+      label: 'Location',
+      value: siteSettings.contact_address,
+      href: undefined,
+    },
+    siteSettings?.contact_phone && {
+      icon: Phone,
+      label: 'Phone & WhatsApp',
+      value: siteSettings.contact_phone,
+      href: `tel:${siteSettings.contact_phone.replace(/\s/g, '')}`,
+    },
+    siteSettings?.contact_email && {
+      icon: Mail,
+      label: 'Email',
+      value: siteSettings.contact_email,
+      href: `mailto:${siteSettings.contact_email}`,
+    },
+    {
+      icon: Clock,
+      label: 'Hours',
+      value: 'Mon – Fri 8 AM – 5 PM · Sat 9 AM – 1 PM',
+      href: undefined,
+    },
+  ].filter(Boolean) as { icon: React.ElementType; label: string; value: string; href?: string }[];
 
   return (
-    <section id="contact" className="py-14 sm:py-16 md:py-20 bg-white">
-      <div className="container max-w-7xl mx-auto px-4 sm:px-6">
+    <section id="contact" className="py-16 md:py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+
+        {/* Header */}
         <motion.div
-          className="text-center mb-10 md:mb-16"
-          initial={{ opacity: 0, y: 30 }}
+          className="text-center mb-14"
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: easing }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
+          <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-full px-4 py-2 mb-5">
+            <Mail className="h-4 w-4 text-[#B01C2E]" aria-hidden="true" />
+            <span className="text-sm font-medium text-[#B01C2E]">Contact Us</span>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
             Get In Touch
           </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            We'd love to hear from you. Reach out to learn more, volunteer, or partner with us.
+          <p className="text-gray-500 max-w-xl mx-auto">
+            We'd love to hear from you — to learn more, volunteer, or partner with us.
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
-          {/* Contact Information */}
+
+          {/* Contact info */}
           <motion.div
-            className="space-y-8"
-            initial={{ opacity: 0, x: -30 }}
+            initial={{ opacity: 0, x: -24 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: easing }}
           >
-            <div>
-              <h3 className="text-2xl font-bold mb-6 text-gray-900">Contact Information</h3>
-              <p className="text-gray-600 mb-8">
-                Reach out to us through any of the following channels. We're here to help and answer any questions you may have.
+            <div className="space-y-5 mb-10">
+              {contactItems.map((item) => (
+                <div key={item.label} className="flex items-start gap-4">
+                  <div className="w-9 h-9 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <item.icon className="h-4 w-4 text-[#B01C2E]" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-0.5">{item.label}</p>
+                    {item.href ? (
+                      <a href={item.href} className="text-sm text-gray-700 hover:text-[#B01C2E] transition-colors">
+                        {item.value}
+                      </a>
+                    ) : (
+                      <p className="text-sm text-gray-700">{item.value}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Dark info band */}
+            <div className="relative rounded-2xl overflow-hidden bg-gray-950 p-8">
+              <div className="absolute left-0 top-0 h-full w-1 bg-[#B01C2E]" />
+              <p className="text-white/40 text-xs uppercase tracking-widest mb-3 font-medium">Neema Foundation Kilifi</p>
+              <p className="text-white/80 text-sm leading-relaxed">
+                A Christ-centred community development organisation serving Ganze Sub-county, Kilifi County, Kenya — since 2020.
               </p>
-            </div>
-
-            {/* Contact Methods */}
-            <div className="space-y-6">
-              {siteSettings?.contact_address && (
-                <div className="flex items-start space-x-4">
-                  <div className="bg-red-100 p-3 rounded-xl">
-                    <MapPin className="h-6 w-6 text-red-800" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-900 mb-1">Our Location</h4>
-                    <p className="text-gray-600">{siteSettings.contact_address}</p>
-                  </div>
-                </div>
-              )}
-
-              {siteSettings?.contact_phone && (
-                <div className="flex items-start space-x-4">
-                  <div className="bg-red-100 p-3 rounded-xl">
-                    <Phone className="h-6 w-6 text-red-800" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-900 mb-1">Phone & WhatsApp</h4>
-                    <a 
-                      href={`tel:${siteSettings.contact_phone.replace(/\s/g, '')}`}
-                      className="text-gray-600 hover:text-red-800 transition-colors"
-                    >
-                      {siteSettings.contact_phone}
-                    </a>
-                    <p className="text-gray-500 text-sm">Available Mon-Sat, 8AM-6PM</p>
-                  </div>
-                </div>
-              )}
-
-              {siteSettings?.contact_email && (
-                <div className="flex items-start space-x-4">
-                  <div className="bg-red-100 p-3 rounded-xl">
-                    <Mail className="h-6 w-6 text-red-800" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-gray-900 mb-1">Email Address</h4>
-                    <a 
-                      href={`mailto:${siteSettings.contact_email}`}
-                      className="text-gray-600 hover:text-red-800 transition-colors"
-                    >
-                      {siteSettings.contact_email}
-                    </a>
-                    <p className="text-gray-500 text-sm">We respond within 24 hours</p>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex items-start space-x-4">
-                <div className="bg-red-100 p-3 rounded-xl">
-                  <Clock className="h-6 w-6 text-red-800" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-gray-900 mb-1">Office Hours</h4>
-                  <p className="text-gray-600">Monday - Friday: 8:00 AM - 5:00 PM</p>
-                  <p className="text-gray-600">Saturday: 9:00 AM - 1:00 PM</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="bg-gray-50 rounded-2xl p-6">
-              <h4 className="font-bold text-gray-900 mb-4">Quick Actions</h4>
-              <div className="space-y-3">
-                <button className="w-full flex items-center justify-between bg-white border border-gray-300 rounded-xl p-4 hover:border-red-800 transition-colors">
-                  <span className="font-medium text-gray-800">Volunteer Application</span>
-                  <MessageCircle className="h-5 w-5 text-red-800" />
-                </button>
-                <button className="w-full flex items-center justify-between bg-white border border-gray-300 rounded-xl p-4 hover:border-red-800 transition-colors">
-                  <span className="font-medium text-gray-800">Partnership Inquiry</span>
-                  <MessageCircle className="h-5 w-5 text-red-800" />
-                </button>
-                <button className="w-full flex items-center justify-between bg-white border border-gray-300 rounded-xl p-4 hover:border-red-800 transition-colors">
-                  <span className="font-medium text-gray-800">Program Information</span>
-                  <MessageCircle className="h-5 w-5 text-red-800" />
-                </button>
-              </div>
             </div>
           </motion.div>
 
-          {/* Contact Form */}
+          {/* Form */}
           <motion.div
-            className="bg-gray-50 rounded-2xl p-6 sm:p-8"
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 24 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: easing }}
           >
-            <h3 className="text-2xl font-bold mb-6 text-gray-900">Send us a Message</h3>
-            
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                    Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    required
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-800 focus:border-transparent transition-colors"
-                    placeholder="Your full name"
-                  />
+            {sent ? (
+              <div className="h-full flex flex-col items-center justify-center text-center p-10 border border-gray-100 rounded-2xl">
+                <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center mb-4">
+                  <Send className="h-5 w-5 text-green-600" />
                 </div>
-
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address *
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-800 focus:border-transparent transition-colors"
-                    placeholder="your.email@example.com"
-                  />
-                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Message sent!</h3>
+                <p className="text-sm text-gray-500">We'll get back to you within 24 hours.</p>
               </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="name" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+                      Full Name *
+                    </label>
+                    <input
+                      id="name" name="name" type="text" required
+                      value={form.name} onChange={handleChange}
+                      placeholder="Your full name"
+                      className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#B01C2E]/20 focus:border-[#B01C2E] outline-none transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+                      Email *
+                    </label>
+                    <input
+                      id="email" name="email" type="email" required
+                      value={form.email} onChange={handleChange}
+                      placeholder="you@example.com"
+                      className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#B01C2E]/20 focus:border-[#B01C2E] outline-none transition-colors"
+                    />
+                  </div>
+                </div>
 
-              <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
-                  Subject *
-                </label>
-                <select
-                  id="subject"
-                  name="subject"
-                  required
-                  value={formData.subject}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-800 focus:border-transparent transition-colors"
+                <div>
+                  <label htmlFor="subject" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+                    Subject *
+                  </label>
+                  <select
+                    id="subject" name="subject" required
+                    value={form.subject} onChange={handleChange}
+                    className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#B01C2E]/20 focus:border-[#B01C2E] outline-none transition-colors bg-white"
+                  >
+                    <option value="">Select a subject</option>
+                    <option value="volunteer">Volunteer Enquiry</option>
+                    <option value="partnership">Partnership Proposal</option>
+                    <option value="donation">Donation / Sponsorship</option>
+                    <option value="programs">Program Information</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="message" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+                    Message *
+                  </label>
+                  <textarea
+                    id="message" name="message" rows={5} required
+                    value={form.message} onChange={handleChange}
+                    placeholder="Tell us how we can help…"
+                    className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#B01C2E]/20 focus:border-[#B01C2E] outline-none transition-colors resize-none"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full inline-flex items-center justify-center gap-2 bg-[#B01C2E] text-white px-6 py-3.5 rounded-xl font-semibold text-sm hover:bg-[#8A1624] transition-colors"
                 >
-                  <option value="">Select a subject</option>
-                  <option value="volunteer">Volunteer Opportunity</option>
-                  <option value="donation">Donation Inquiry</option>
-                  <option value="partnership">Partnership</option>
-                  <option value="program">Program Information</option>
-                  <option value="general">General Inquiry</option>
-                </select>
-              </div>
-
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                  Message *
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  required
-                  rows={6}
-                  value={formData.message}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-red-800 focus:border-transparent transition-colors resize-none"
-                  placeholder="Tell us how we can help you..."
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-red-800 text-white hover:bg-red-700 transition-colors rounded-xl py-4 font-semibold flex items-center justify-center space-x-2"
-              >
-                <Send className="h-5 w-5" />
-                <span>Send Message</span>
-              </button>
-
-              <p className="text-center text-gray-500 text-sm">
-                We'll get back to you within 24 hours
-              </p>
-            </form>
+                  Send Message <Send className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </form>
+            )}
           </motion.div>
+
         </div>
       </div>
     </section>

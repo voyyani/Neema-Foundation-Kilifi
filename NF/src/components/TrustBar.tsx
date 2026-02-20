@@ -1,154 +1,119 @@
 // components/TrustBar.tsx
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Award, Users, Heart, Check } from 'lucide-react';
+import { Shield, Award, Users, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { usePublicFeaturedPartners } from '../hooks/public';
 
 const TrustBar: React.FC = () => {
-  const { data: partners = [], isLoading } = usePublicFeaturedPartners();
+  const { data: partners = [] } = usePublicFeaturedPartners();
 
-  const trustIndicators = [
-    {
-      icon: Shield,
-      title: 'Verified Non-Profit',
-      description: 'Registered CBO in Kilifi County'
-    },
-    {
-      icon: Award,
-      title: 'Transparent Operations',
-      description: 'Regular impact reports and financial transparency'
-    },
-    {
-      icon: Users,
-      title: 'Community-Led',
-      description: 'Programs designed with local community input'
-    },
-    {
-      icon: Heart,
-      title: 'Christ-Centered',
-      description: 'Serving with compassion and faith-based values'
-    }
+  const trustItems = [
+    { icon: Shield, label: 'Verified Non-Profit',      sub: 'Registered CBO in Kilifi County' },
+    { icon: Award,  label: 'Transparent Operations',   sub: 'Regular impact reports' },
+    { icon: Users,  label: 'Community-Led',             sub: 'Programs designed locally' },
+    { icon: Heart,  label: 'Christ-Centered',           sub: 'Serving with faith & compassion' },
   ];
 
+  const easing = [0.22, 1, 0.36, 1] as const;
+
   return (
-    <section className="py-14 sm:py-16 md:py-16 bg-gradient-to-br from-white to-gray-50 border-y border-gray-200">
-      <div className="container max-w-7xl mx-auto px-4 sm:px-6">
-        {/* Header */}
-        <motion.div
-          className="text-center mb-10 md:mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-        >
-          <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-full px-4 py-2 mb-6">
-            <Check className="h-4 w-4 text-red-800" />
-            <span className="text-sm font-medium text-red-800">Trusted Partners</span>
-          </div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
-            Working Together for Ganze
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            We collaborate with dedicated organizations to maximize our impact and create sustainable change in the community.
-          </p>
-        </motion.div>
+    <section className="py-16 md:py-20 bg-gray-50 border-y border-gray-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
-        {/* Partners Grid */}
-        <motion.div
-          className={`grid gap-5 md:gap-8 mb-12 md:mb-16 ${
-            partners.length === 1
-              ? 'grid-cols-1 max-w-md mx-auto'
-              : partners.length === 2
-              ? 'grid-cols-1 md:grid-cols-2 max-w-2xl mx-auto'
-              : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'
-          }`}
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-        >
-          {partners.map((partner, index) => (
-            <motion.div
-              key={partner.name}
-              className="group"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+        {/* ── Partners ─────────────────────────────────────────────────── */}
+        {partners.length > 0 && (
+          <>
+            <motion.p
+              className="text-center text-xs uppercase tracking-widest text-gray-400 font-medium mb-8"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              whileHover={{ y: -5 }}
+              transition={{ duration: 0.5 }}
             >
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 text-center hover:shadow-xl transition-all duration-300 h-full flex flex-col items-center">
-                {/* Logo Container */}
-                <div className="w-20 h-20 mb-4 flex items-center justify-center bg-white rounded-xl border border-gray-200 p-3 group-hover:border-red-300 transition-colors">
-                  {partner.logo_url ? (
-                    <img 
-                      src={partner.logo_url} 
-                      alt={`${partner.name} logo`}
-                      className="max-w-full max-h-full object-contain"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = 'none';
-                        // Show fallback if image fails to load
-                        const fallback = target.parentElement?.querySelector('.logo-fallback') as HTMLElement;
-                        if (fallback) fallback.style.display = 'flex';
-                      }}
-                    />
-                  ) : null}
-                  
-                  {/* Fallback for partners without logos or broken images */}
-                  <div 
-                    className="logo-fallback w-16 h-16 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center text-white font-bold text-lg"
-                    style={{ display: !partner.logo_url ? 'flex' : 'none' }}
-                  >
-                    {partner.name.split(' ').map(word => word[0]).join('')}
-                  </div>
-                </div>
+              Trusted Partners &amp; Collaborators
+            </motion.p>
 
-                {/* Partner Info */}
-                <h3 className="font-bold text-gray-900 text-lg mb-2">{partner.name}</h3>
-                {partner.type && (
-                  <div className="bg-red-50 text-red-800 text-xs font-semibold px-3 py-1 rounded-full mb-3">
-                    {partner.type}
+            <motion.div
+              className="flex flex-wrap justify-center items-center gap-6 md:gap-10 mb-14"
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: easing }}
+            >
+              {partners.map((partner, i) => (
+                <motion.div
+                  key={partner.name}
+                  className="group flex items-center gap-3"
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.07, duration: 0.5, ease: easing }}
+                >
+                  {/* Logo or initials */}
+                  <div className="w-12 h-12 rounded-xl bg-white border border-gray-200 flex items-center justify-center overflow-hidden shadow-sm group-hover:border-[#B01C2E]/40 transition-colors">
+                    {partner.logo_url ? (
+                      <img
+                        src={partner.logo_url}
+                        alt={partner.name}
+                        className="w-full h-full object-contain p-1.5"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    ) : (
+                      <span className="text-xs font-bold text-[#B01C2E]">
+                        {partner.name.split(' ').slice(0, 2).map((w: string) => w[0]).join('')}
+                      </span>
+                    )}
                   </div>
-                )}
-                <p className="text-gray-600 text-sm flex-grow leading-relaxed">
-                  {partner.description}
-                </p>
-                
-                {/* Hover Effect Indicator */}
-                <div className="w-0 h-0.5 bg-gradient-to-r from-red-600 to-red-800 rounded-full mt-4 group-hover:w-12 transition-all duration-300" />
+                  <div className="hidden sm:block">
+                    <p className="text-sm font-semibold text-gray-900 leading-tight">{partner.name}</p>
+                    {partner.type && <p className="text-xs text-gray-400">{partner.type}</p>}
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </>
+        )}
+
+        {/* ── Trust indicators row ──────────────────────────────────────── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-10">
+          {trustItems.map((item, i) => (
+            <motion.div
+              key={item.label}
+              className="flex items-start gap-3 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm"
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.08, duration: 0.55, ease: easing }}
+            >
+              <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                <item.icon className="h-4 w-4 text-[#B01C2E]" aria-hidden="true" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-900 leading-tight">{item.label}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{item.sub}</p>
               </div>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
 
-        
-
-        {/* CTA - Fixed Link */}
+        {/* ── Partner CTA ───────────────────────────────────────────────── */}
         <motion.div
-          className="text-center mt-12"
+          className="text-center"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <p className="text-gray-600 mb-4">
-            Interested in partnering with us to transform more lives in Ganze?
-          </p>
-          <motion.div 
-            whileHover={{ scale: 1.05 }} 
-            whileTap={{ scale: 0.95 }}
+          <Link
+            to="/partner"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[#B01C2E] hover:underline underline-offset-4"
           >
-            <Link
-              to="/partner"
-              className="inline-flex items-center gap-2 bg-red-800 text-white hover:bg-red-700 transition-colors rounded-xl px-6 py-3 font-semibold"
-            >
-              <Users className="h-4 w-4" />
-              Become a Partner
-            </Link>
-          </motion.div>
+            <Users className="h-4 w-4" aria-hidden="true" />
+            Become a Partner
+          </Link>
         </motion.div>
+
       </div>
     </section>
   );

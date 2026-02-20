@@ -4,17 +4,40 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, SlidersHorizontal } from 'lucide-react';
 import type { Program, ProgramFilter } from './types';
 import ProgramCard from './ProgramCard';
+import ProgramPhotoCard, { ProgramPhotoCardSkeleton } from './ProgramPhotoCard';
+import type { PublicProgram } from '../../hooks/public/usePublicPrograms';
 
 interface ProgramGridProps {
-  programs: Program[];
-  onProgramSelect: (program: Program) => void;
+  /** Legacy program format — used when publicPrograms is not provided */
+  programs?: Program[];
+  onProgramSelect?: (program: Program) => void;
   showFilters?: boolean;
+  /**
+   * Phase-3: Supabase PublicProgram rows.
+   * When provided the grid renders ProgramPhotoCard (3-col, photo-first).
+   * Takes precedence over `programs` when both are supplied.
+   * Phase-6: Pass already-filtered programs (filtering done in ProgramsLandingPage).
+   */
+  publicPrograms?: PublicProgram[];
+  /** Show skeleton placeholders while programs are loading */
+  isLoading?: boolean;
+  /** Phase-6: Active category filter — used for empty state messaging */
+  activeCategory?: string;
+  /** Phase-6: Current debounced search query — used for empty state messaging */
+  searchQuery?: string;
+  /** Phase-6: Total unfiltered count — used for empty state subtext */
+  totalCount?: number;
 }
 
-const ProgramGrid: React.FC<ProgramGridProps> = ({ 
-  programs, 
+const ProgramGrid: React.FC<ProgramGridProps> = ({
+  programs = [],
   onProgramSelect,
-  showFilters = true 
+  showFilters = true,
+  publicPrograms,
+  isLoading = false,
+  activeCategory,
+  searchQuery = '',
+  totalCount,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState<ProgramFilter>({
@@ -88,6 +111,136 @@ const ProgramGrid: React.FC<ProgramGridProps> = ({
   };
 
   const activeFilterCount = Object.values(filters).flat().length + (searchTerm ? 1 : 0);
+
+  // ─── Phase 3 + 6: Photo-first grid with external filter state ──────────────
+  // publicPrograms is PRE-FILTERED by ProgramsLandingPage (Phase 6).
+  // This branch just renders + animates — no internal search state needed.
+  if (publicPrograms !== undefined) {
+    const SKELETON_COUNT = 6;
+    // Result description
+    const hasActiveFilter = activeCategory && activeCategory !== 'all';
+    const hasSearch = !!searchQuery;
+
+    return (
+      <div className="w-full">
+        {/* Result count — visible when a filter or search is active */}
+        {(hasActiveFilter || hasSearch) && !isLoading && (
+          <motion.p
+            key={`count-${publicPrograms.length}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-sm text-gray-500 text-center mb-6"
+          >
+            Showing{' '}
+            <strong className="text-gray-800">{publicPrograms.length}</strong>
+            {totalCount !== undefined && totalCount !== publicPrograms.length && (
+              <> of <strong className="text-gray-800">{totalCount}</strong></>
+            )}{' '}
+            program{publicPrograms.length !== 1 ? 's' : ''}
+            {hasSearch && <> for "<strong>{searchQuery}</strong>"</>}
+          </motion.p>
+        )}
+
+        {/* Photo-first 3-column grid with layout animation */}
+        <AnimatePresence mode="wait">
+          {isLoading ? (
+            <motion.div
+              key="skeleton-grid"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+                <ProgramPhotoCardSkeleton key={i} />
+              ))}
+            </motion.div>
+          ) : publicPrograms.length > 0 ? (
+            <motion.div
+              key="photo-grid"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              aria-label="Programs gallery"
+            >
+              {publicPrograms.map((program, index) => (
+                <motion.div
+                  key={program.id}
+                  layout
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{
+                    layout: { type: 'spring', stiffness: 300, damping: 30 },
+                    opacity: { delay: index * 0.04, duration: 0.3 },
+                    y: { delay: index * 0.04, duration: 0.3 },
+                  }}
+                >
+                  <ProgramPhotoCard program={program} />
+                </motion.div>
+              ))}
+            </motion.div>
+          ) : (
+            // Empty state — friendly illustration + context-aware message
+            <motion.div
+              key="empty-state"
+              className="text-center py-24"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              {/* Illustration */}
+              <div className="relative w-24 h-24 mx-auto mb-6">
+                <div className="absolute inset-0 bg-[#B01C2E]/8 rounded-full" />
+                <div className="absolute inset-3 bg-[#B01C2E]/12 rounded-full" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Search className="h-9 w-9 text-[#B01C2E]/50" aria-hidden="true" />
+                </div>
+              </div>
+
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                No programs found
+              </h3>
+              <p className="text-gray-500 mb-8 max-w-sm mx-auto text-sm leading-relaxed">
+                {hasSearch && hasActiveFilter
+                  ? `No "${activeCategory}" programs match "${searchQuery}". Try broadening your search.`
+                  : hasSearch
+                  ? `No programs match "${searchQuery}". Try a different search term.`
+                  : hasActiveFilter
+                  ? `No programs found in the "${activeCategory}" category yet.`
+                  : 'No programs are available right now.'}
+              </p>
+
+              {/* Contextual clear actions */}
+              <div className="flex flex-wrap gap-3 justify-center">
+                {hasSearch && (
+                  <a
+                    href="?category=all"
+                    className="inline-flex items-center gap-2 bg-[#B01C2E] text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#8A1624] transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                    Clear search
+                  </a>
+                )}
+                {hasActiveFilter && (
+                  <a
+                    href="?category=all"
+                    className="inline-flex items-center gap-2 border border-gray-200 text-gray-700 px-6 py-2.5 rounded-xl text-sm font-semibold hover:border-[#B01C2E] hover:text-[#B01C2E] transition-colors bg-white"
+                  >
+                    View all programs
+                  </a>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  }
+  // ─── End Phase 3 + 6 photo grid ───────────────────────────────────────────
 
   return (
     <div className="w-full">
@@ -238,7 +391,7 @@ const ProgramGrid: React.FC<ProgramGridProps> = ({
             <ProgramCard
               key={program.id}
               program={program}
-              onProgramSelect={onProgramSelect}
+              onProgramSelect={onProgramSelect ?? (() => {})}
               index={index}
             />
           ))}

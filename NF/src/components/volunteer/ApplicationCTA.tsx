@@ -8,32 +8,29 @@ interface ApplicationCTAProps {
 
 const ApplicationCTA: React.FC<ApplicationCTAProps> = ({ onOpenModal }) => {
   return (
-    <section className="py-16 md:py-20 bg-gray-50 w-full">
-      <div className="w-full flex justify-center">
-        <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center w-full"
+    <section className="relative py-14 md:py-20 bg-gray-50 w-full">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="max-w-3xl mx-auto bg-white rounded-2xl border border-gray-100 p-8 md:p-10 text-center hover:border-[#B01C2E]/20 hover:shadow-sm transition-all duration-300"
+        >
+          <div className="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center mx-auto mb-5">
+            <Users className="h-6 w-6 text-[#B01C2E]" aria-hidden="true" />
+          </div>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">Ready to Make a Difference?</h2>
+          <p className="text-gray-500 text-sm mb-8">Join our volunteer family and start your journey today.</p>
+          <button
+            onClick={onOpenModal}
+            className="bg-[#B01C2E] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#8A1624] transition-colors inline-flex items-center gap-2 text-sm"
           >
-            <div className="w-full max-w-4xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">Ready to Make a Difference?</h2>
-              <p className="text-lg md:text-xl text-gray-600 mb-8 md:mb-10">Join our volunteer family and start your journey today</p>
-              
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={onOpenModal}
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-red-800 focus:ring-offset-2 bg-red-800 text-white hover:bg-red-900 px-6 md:px-8 py-3 md:py-4 text-base md:text-lg"
-              >
-                <Users className="mr-2 h-4 w-4 md:h-5 md:w-5" />
-                Start Your Application
-                <ArrowRight className="ml-2 h-4 w-4 md:h-5 md:w-5" />
-              </motion.button>
-            </div>
-          </motion.div>
-        </div>
+            <Users className="h-4 w-4" aria-hidden="true" />
+            Start Your Application
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </motion.div>
       </div>
     </section>
   );

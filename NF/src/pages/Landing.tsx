@@ -12,15 +12,24 @@ import Contact from '../components/Contact';
 
 const Landing: React.FC = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
+      {/* Dark fullscreen hero */}
       <Hero />
+      {/* Partners & trust indicators — gray-50 */}
       <TrustBar />
+      {/* Who we are — white */}
       <Mission />
+      {/* Featured program — gray-50 */}
       <Programs featuredOnly={true} />
+      {/* Impact numbers — white */}
       <Impact />
+      {/* Community voices — white */}
       <Stories />
+      {/* Get involved — gray-950 dark band */}
       <Action />
+      {/* Events — gray-50 */}
       <Events />
+      {/* Contact — white */}
       <Contact />
     </div>
   );
