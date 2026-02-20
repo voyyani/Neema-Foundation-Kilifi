@@ -117,6 +117,9 @@ export interface Program {
   impact_statement: string | null;
   testimonials: ProgramTestimonial[] | null;
   
+  // Full rich-text description (HTML)
+  full_description: string | null;
+  
   // SEO fields
   meta_title: string | null;
   meta_description: string | null;
@@ -140,7 +143,8 @@ export interface ProgramInput {
   slug?: string;
   category: ProgramCategory;
   summary?: string;
-  description?: string; // Now supports HTML from rich text editor
+  description?: string;
+  full_description?: string; // Rich HTML from the WYSIWYG editor
   objectives?: string[];
   activities?: string[];
   partners?: string[];

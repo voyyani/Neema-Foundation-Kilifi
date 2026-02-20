@@ -51,6 +51,7 @@ export default function EnhancedProgramForm({
     
     // Content
     description: program?.description || '',
+    full_description: program?.full_description ?? program?.description ?? '',
     objectives: program?.objectives || [],
     activities: program?.activities || [],
     partners: program?.partners || [],
@@ -417,8 +418,8 @@ export default function EnhancedProgramForm({
                   </label>
                   <RichTextEditor
                     key={program?.id ?? 'new-description'}
-                    content={formData.description || ''}
-                    onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
+                    content={formData.full_description || ''}
+                    onChange={(content) => setFormData(prev => ({ ...prev, full_description: content }))}
                     placeholder="Detailed program description with rich formatting..."
                     minHeight="300px"
                   />

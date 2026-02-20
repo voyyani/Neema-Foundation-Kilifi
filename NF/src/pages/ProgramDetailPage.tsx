@@ -295,7 +295,7 @@ const ProgramStory: React.FC<{ program: PublicProgram }> = ({ program }) => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="prose prose-gray prose-base max-w-none text-gray-600 leading-relaxed"
             >
-              <p>{description}</p>
+              <div dangerouslySetInnerHTML={{ __html: description }} />
             </motion.div>
           )}
 
