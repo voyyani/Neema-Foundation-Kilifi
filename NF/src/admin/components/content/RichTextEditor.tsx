@@ -6,6 +6,7 @@ import Link from '@tiptap/extension-link';
 import Underline from '@tiptap/extension-underline';
 import Placeholder from '@tiptap/extension-placeholder';
 import { Bold, Italic, List, ListOrdered, Link as LinkIcon, Heading2, Quote } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 
 interface RichTextEditorProps {
   content: string;
@@ -20,28 +21,26 @@ export default function RichTextEditor({
   placeholder = 'Start typing...',
   minHeight = '200px'
 }: RichTextEditorProps) {
+  // Keep a stable ref to the latest onChange so TipTap's event listener
+  // is never stale regardless of how many times the parent re-renders.
+  const onChangeRef = useRef(onChange);
+  useEffect(() => { onChangeRef.current = onChange; }, [onChange]);
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        heading: {
-          levels: [2, 3, 4],
-        },
+        heading: { levels: [2, 3, 4] },
       }),
       Link.configure({
         openOnClick: false,
-        HTMLAttributes: {
-          class: 'text-[#B01C2E] underline',
-        },
+        HTMLAttributes: { class: 'text-[#B01C2E] underline' },
       }),
       Underline,
-      Placeholder.configure({
-        placeholder,
-      }),
+      Placeholder.configure({ placeholder }),
     ],
+    // `content` here is the one-time initial value; live updates come
+    // via the effect below so TipTap v3 never sees a stale prop.
     content,
-    onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
-    },
     editorProps: {
       attributes: {
         class: 'prose prose-sm max-w-none focus:outline-none p-4',
@@ -49,6 +48,25 @@ export default function RichTextEditor({
       },
     },
   });
+
+  // Register the update listener after the editor is ready and clean it up
+  // on unmount. Using editor.on/off ensures the latest onChangeRef is always
+  // called — avoids the TipTap v3 stale-closure issue with onUpdate option.
+  useEffect(() => {
+    if (!editor) return;
+
+    const handleUpdate = () => {
+      const html = editor.getHTML();
+      // Treat a bare empty paragraph as an empty string so the DB stores null.
+      const isEmpty = html === '<p></p>' || html === '';
+      onChangeRef.current(isEmpty ? '' : html);
+    };
+
+    editor.on('update', handleUpdate);
+    return () => {
+      editor.off('update', handleUpdate);
+    };
+  }, [editor]);
 
   if (!editor) {
     return null;
@@ -159,9 +177,9 @@ export default function RichTextEditor({
       {/* Editor */}
       <EditorContent editor={editor} />
       
-      {/* Character Count */}
+      {/* Character Count — derived from plain-text content, no extension needed */}
       <div className="border-t border-gray-200 bg-gray-50 px-4 py-2 text-xs text-gray-500">
-        {editor.storage.characterCount?.characters() || 0} characters
+        {editor.state.doc.textContent.length} characters
       </div>
     </div>
   );
