@@ -340,13 +340,13 @@ export default function EnhancedProgramForm({
                   <textarea
                     value={formData.summary || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, summary: e.target.value }))}
-                    maxLength={200}
+                    maxLength={500}
                     rows={3}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] resize-none"
-                    placeholder="Brief one-liner description (shows on cards)"
+                    placeholder="Brief description shown on program cards (up to 500 characters)"
                   />
                   <p className="text-xs text-gray-500 mt-1 text-right">
-                    {formData.summary?.length || 0}/200 characters
+                    {formData.summary?.length || 0}/500 characters
                   </p>
                 </div>
 
@@ -416,6 +416,7 @@ export default function EnhancedProgramForm({
                     Full Description
                   </label>
                   <RichTextEditor
+                    key={program?.id ?? 'new-description'}
                     content={formData.description || ''}
                     onChange={(content) => setFormData(prev => ({ ...prev, description: content }))}
                     placeholder="Detailed program description with rich formatting..."
