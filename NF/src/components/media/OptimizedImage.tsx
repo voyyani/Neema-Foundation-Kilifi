@@ -195,8 +195,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       sizes={sizes}
       alt={alt}
       loading={priority ? 'eager' : 'lazy'}
-      // @ts-expect-error fetchpriority is valid HTML5 but not yet typed in React
-      fetchpriority={priority ? 'high' : 'auto'}
+      fetchPriority={priority ? 'high' : 'auto'}
       decoding={priority ? 'sync' : 'async'}
       onLoad={handleLoad}
       className={[
@@ -222,8 +221,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
           sizes={sizes}
           alt={alt}
           loading={priority ? 'eager' : 'lazy'}
-          // @ts-expect-error fetchpriority is valid HTML5 but not yet typed in React
-          fetchpriority={priority ? 'high' : 'auto'}
+          fetchPriority={priority ? 'high' : 'auto'}
           decoding={priority ? 'sync' : 'async'}
           onLoad={handleLoad}
           className={[
