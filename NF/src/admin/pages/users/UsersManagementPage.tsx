@@ -719,18 +719,23 @@ const UsersManagementPage: React.FC = () => {
     }
   };
 
-  // Handle invite user
+  // Handle invite user — calls the `invite-user` Supabase Edge Function
   const handleInviteUser = async (email: string, role: UserRole, fullName: string) => {
-    try {
-      // For now, show instructions since Supabase Admin API requires server-side
-      toast.info(
-        'To invite users, use the Supabase dashboard to create a new user, then assign their role here.',
-        { duration: 5000 }
-      );
-      throw new Error('Manual invitation required');
-    } catch (err) {
-      throw err;
+    const { data, error } = await supabase.functions.invoke('invite-user', {
+      body: { email, role, fullName },
+    });
+
+    if (error) {
+      // error.message may be a raw fetch error; also check the response body
+      const message = (data as any)?.error || error.message || 'Failed to send invitation.';
+      toast.error(message);
+      throw new Error(message);
     }
+
+    toast.success((data as any)?.message || `Invitation sent to ${email}!`);
+
+    // Refresh the user list — the profile row was pre-seeded by the Edge Function
+    await fetchUsers();
   };
 
   // Filter users

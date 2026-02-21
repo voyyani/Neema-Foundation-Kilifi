@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useImpactMetrics } from '../../hooks/useImpactMetrics';
+import { queryClient } from '../../config/queryClient';
 import { usePrograms } from '../../hooks/usePrograms';
 import { 
   Plus,
@@ -150,6 +151,19 @@ function MetricModal({ metric, isOpen, onClose, onSave }: MetricModalProps) {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Reinitialise form whenever the metric being edited changes
+  useEffect(() => {
+    setFormData({
+      label: metric?.label || '',
+      value: metric?.value || 0,
+      suffix: metric?.suffix || '',
+      description: metric?.description || '',
+      icon: metric?.icon || 'users',
+      program_id: metric?.program_id || undefined,
+      is_active: metric?.is_active ?? true,
+    });
+  }, [metric, isOpen]);
 
   if (!isOpen) return null;
 
@@ -397,8 +411,14 @@ export default function ImpactPage() {
 
   const handleDelete = async (id: string) => {
     if (deleteConfirmId === id) {
+      // Capture program_id before deletion for cache invalidation
+      const target = metrics.find(m => m.id === id);
       await deleteMetric(id);
       setDeleteConfirmId(null);
+      queryClient.invalidateQueries({ queryKey: ['public', 'impact-metrics'] });
+      if (target?.program_id) {
+        queryClient.invalidateQueries({ queryKey: ['public', 'impact-metrics', 'program', target.program_id] });
+      }
     } else {
       setDeleteConfirmId(id);
       setTimeout(() => setDeleteConfirmId(null), 3000);
@@ -410,6 +430,11 @@ export default function ImpactPage() {
       await updateMetric(selectedMetric.id, data);
     } else {
       await createMetric(data);
+    }
+    // Keep public site in sync
+    queryClient.invalidateQueries({ queryKey: ['public', 'impact-metrics'] });
+    if (data.program_id) {
+      queryClient.invalidateQueries({ queryKey: ['public', 'impact-metrics', 'program', data.program_id] });
     }
   };
 

@@ -1,7 +1,7 @@
 // Event Form Component
 
 import { useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useWatch } from 'react-hook-form';
 import { usePrograms } from '../../hooks/usePrograms';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
@@ -9,6 +9,7 @@ import { Calendar, MapPin, Globe, Users, Image as ImageIcon, Tag } from 'lucide-
 import { motion } from 'framer-motion';
 import { eventSchema, type EventFormSchema } from '../../lib/validators';
 import { slugify } from '../../lib/utils';
+import { toast } from 'sonner';
 import type { Event, EventStatus } from '../../types/events';
 
 interface EventFormProps {
@@ -20,10 +21,13 @@ interface EventFormProps {
 export default function EventForm({ event, onSubmit, isLoading }: EventFormProps) {
   const navigate = useNavigate();
   const [isGeneratingSlug, setIsGeneratingSlug] = useState(true);
+  const [localLoading, setLocalLoading] = useState(false);
   const { programs } = usePrograms();
 
 const form = useForm({
   resolver: zodResolver(eventSchema),
+  mode: 'onSubmit',
+  reValidateMode: 'onSubmit',
   defaultValues: event
     ? {
         name: event.name,
@@ -67,13 +71,14 @@ const form = useForm({
     register,
     control,
     handleSubmit,
-    watch,
     setValue,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, submitCount },
   } = form;
 
-  const watchName = watch('name');
-  const watchIsVirtual = watch('is_virtual');
+  // useWatch subscribes only to the specific field — typing in description/other
+  // fields does NOT re-render this component at all.
+  const watchName = useWatch({ control, name: 'name' });
+  const watchIsVirtual = useWatch({ control, name: 'is_virtual' });
 
   // Auto-generate slug from name
   useEffect(() => {
@@ -83,11 +88,36 @@ const form = useForm({
   }, [watchName, isGeneratingSlug, setValue]);
 
   const handleFormSubmit = async (data: EventFormSchema) => {
-    await onSubmit(data);
+    setLocalLoading(true);
+    try {
+      await onSubmit(data);
+    } finally {
+      setLocalLoading(false);
+    }
   };
 
+  const handleInvalid = (errs: typeof errors) => {
+    const messages = Object.values(errs)
+      .map((e: any) => e?.message)
+      .filter(Boolean);
+    const first = messages[0];
+    toast.error(
+      messages.length === 1
+        ? `Fix before saving: ${first}`
+        : `Fix ${messages.length} errors before saving — first: ${first}`
+    );
+    // Scroll to first visible error element
+    const el = document.querySelector('[data-form-error]') as HTMLElement | null;
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    console.error('[EventForm] validation errors', errs);
+  };
+
+  const isBusy = localLoading || isSubmitting || !!isLoading;
+  // Only show the error banner after at least one submit attempt
+  const hasErrors = submitCount > 0 && Object.keys(errors).length > 0;
+
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
+    <form onSubmit={handleSubmit(handleFormSubmit, handleInvalid)} className="space-y-8">
       {/* Basic Information */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -111,7 +141,7 @@ const form = useForm({
               placeholder="e.g., Community Health Outreach"
             />
             {errors.name && (
-              <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+              <p data-form-error className="mt-1 text-sm text-red-600">{errors.name.message}</p>
             )}
           </div>
 
@@ -163,8 +193,9 @@ const form = useForm({
               {programs.map((p) => (
                 <option key={p.id} value={p.id}>{p.name}</option>
               ))}
-            </select>
-            <p className="mt-1 text-xs text-gray-500">
+            </select>            {errors.program_id && (
+              <p className="mt-1 text-sm text-red-600">{errors.program_id.message}</p>
+            )}            <p className="mt-1 text-xs text-gray-500">
               Choose a program; upcoming events will display on that program’s page.
             </p>
           </div>
@@ -175,9 +206,13 @@ const form = useForm({
             <textarea
               {...register('description')}
               rows={4}
+              maxLength={10000}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
               placeholder="Detailed event description..."
             />
+            {errors.description && (
+              <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+            )}
           </div>
         </div>
       </motion.div>
@@ -207,7 +242,9 @@ const form = useForm({
                 <input
                   type="date"
                   value={field.value instanceof Date ? field.value.toISOString().split('T')[0] : ''}
-                  onChange={(e) => field.onChange(new Date(e.target.value))}
+                  onChange={(e) =>
+                    field.onChange(e.target.value ? new Date(e.target.value) : undefined)
+                  }
                   className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] ${
                     errors.start_date ? 'border-red-300' : 'border-gray-300'
                   }`}
@@ -335,6 +372,7 @@ const form = useForm({
               <textarea
                 {...register('venue_address')}
                 rows={2}
+                maxLength={1000}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
                 placeholder="Full address..."
               />
@@ -411,9 +449,13 @@ const form = useForm({
               <input
                 {...register('max_attendees', { valueAsNumber: true })}
                 type="number"
+                min={1}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
                 placeholder="Leave empty for unlimited"
               />
+              {errors.max_attendees && (
+                <p className="mt-1 text-sm text-red-600">{errors.max_attendees.message}</p>
+              )}
             </div>
           </div>
         </div>
@@ -483,22 +525,38 @@ const form = useForm({
         </div>
       </motion.div>
 
+      {/* Error summary */}
+      {hasErrors && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <strong>Please fix the following before saving:</strong>
+          <ul className="mt-1 list-disc list-inside space-y-0.5">
+            {(Object.entries(errors) as [string, any][]).map(([key, err]) =>
+              err?.message ? (
+                <li key={key}>
+                  <span className="capitalize">{key.replace(/_/g, ' ')}</span>: {err.message}
+                </li>
+              ) : null
+            )}
+          </ul>
+        </div>
+      )}
+
       {/* Form Actions */}
       <div className="flex gap-4">
         <button
           type="button"
           onClick={() => navigate('/admin/events')}
           className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-          disabled={isSubmitting || isLoading}
+          disabled={isBusy}
         >
           Cancel
         </button>
         <button
           type="submit"
-          disabled={isSubmitting || isLoading}
-          className="flex-1 px-6 py-2 bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624] transition-colors disabled:opacity-50 disabled:cursor-not-started"
+          disabled={isBusy}
+          className="flex-1 px-6 py-2 bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSubmitting || isLoading ? 'Saving...' : event ? 'Update Event' : 'Create Event'}
+          {isBusy ? 'Saving...' : event ? 'Update Event' : 'Create Event'}
         </button>
       </div>
     </form>

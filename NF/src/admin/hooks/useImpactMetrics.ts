@@ -2,6 +2,15 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import type { ImpactMetric, ImpactMetricInput } from '../types/content';
 import { toast } from 'sonner';
+import { queryClient } from '../config/queryClient';
+
+// Helper: invalidate all public impact-metrics caches
+const invalidatePublicCache = (programId?: string | null) => {
+  queryClient.invalidateQueries({ queryKey: ['public', 'impact-metrics'] });
+  if (programId) {
+    queryClient.invalidateQueries({ queryKey: ['public', 'impact-metrics', 'program', programId] });
+  }
+};
 
 // Type helper for Supabase operations
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -59,6 +68,7 @@ export function useImpactMetrics() {
 
       toast.success('Impact metric created successfully!');
       fetchMetrics();
+      invalidatePublicCache(input.program_id);
       return data;
     } catch (err) {
       const error = err as Error;
@@ -80,6 +90,7 @@ export function useImpactMetrics() {
 
       toast.success('Metric updated successfully!');
       fetchMetrics();
+      invalidatePublicCache(input.program_id);
       return data;
     } catch (err) {
       const error = err as Error;
@@ -100,6 +111,7 @@ export function useImpactMetrics() {
 
       toast.success('Metric deleted successfully!');
       fetchMetrics();
+      invalidatePublicCache();
     } catch (err) {
       const error = err as Error;
       toast.error('Failed to delete metric: ' + error.message);
@@ -123,6 +135,7 @@ export function useImpactMetrics() {
 
       toast.success(`Metric ${data.is_active ? 'activated' : 'deactivated'}`);
       fetchMetrics();
+      invalidatePublicCache(data.program_id);
       return data;
     } catch (err) {
       const error = err as Error;

@@ -88,10 +88,13 @@ export function useEvents(filters?: EventFilters) {
   // Create event
   const createEvent = async (data: EventFormData): Promise<Event> => {
     try {
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) throw new Error('Not authenticated');
+      // Use getSession() (reads from localStorage, no network lock) instead of
+      // getUser() which acquires GoTrue's async lock and can hang indefinitely
+      // when using flowType: 'pkce' on the admin client.
+      const { data: sessionData } = await supabase.auth.getSession();
+      const user = sessionData.session?.user;
+
+      if (!user) throw new Error('Not authenticated. Please log in and try again.');
 
       const eventData = {
         name: data.name,

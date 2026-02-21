@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import type { SiteSettings, SiteSettingsInput } from '../types/content';
 import { toast } from 'sonner';
+import { queryClient } from '../config/queryClient';
 
 // Type helper for Supabase operations
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,6 +22,7 @@ export function useSiteSettings() {
       const { data, error: fetchError } = await supabase
         .from('site_settings')
         .select('*')
+        .eq('id', 'main')
         .single();
 
       if (fetchError) throw fetchError;
@@ -50,6 +52,8 @@ export function useSiteSettings() {
       if (updateError) throw updateError;
 
       setSettings(data);
+      // Invalidate the public React Query cache so the public site reflects changes immediately
+      queryClient.invalidateQueries({ queryKey: ['public', 'site-settings'] });
       toast.success('Settings updated successfully!');
     } catch (err) {
       const error = err as Error;

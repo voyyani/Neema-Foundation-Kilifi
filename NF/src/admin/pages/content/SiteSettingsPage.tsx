@@ -110,7 +110,7 @@ export default function SiteSettingsPage() {
         <p className="text-sm text-gray-600 mt-1">Manage your website's global configuration</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} noValidate className="space-y-6">
         {/* Brand Identity */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Brand Identity</h2>

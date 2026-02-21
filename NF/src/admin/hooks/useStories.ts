@@ -3,10 +3,16 @@ import { supabase } from '../lib/supabase';
 import type { Story, StoryInput } from '../types/content';
 import { toast } from 'sonner';
 import { slugify } from '../lib/utils';
+import { queryClient } from '../config/queryClient';
 
 // Type helper for Supabase operations
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const storiesTable = () => supabase.from('stories') as any;
+
+/** Invalidate every public stories cache entry so the landing page reflects changes immediately */
+const invalidatePublicStories = () => {
+  queryClient.invalidateQueries({ queryKey: ['public', 'stories'] });
+};
 
 export function useStories() {
   const [stories, setStories] = useState<Story[]>([]);
@@ -42,8 +48,21 @@ export function useStories() {
   // Create story
   const createStory = async (input: StoryInput): Promise<Story> => {
     try {
-      const slug = input.slug || slugify(input.title);
+      // Resolve a unique slug: try the base slug, then append incrementing suffix
+      const baseSlug = input.slug || slugify(input.title);
+      let slug = baseSlug;
+      let attempt = 0;
+      while (true) {
+        const { data: existing } = await storiesTable()
+          .select('id')
+          .eq('slug', slug)
+          .maybeSingle();
+        if (!existing) break;
+        attempt += 1;
+        slug = `${baseSlug}-${attempt}`;
+      }
 
+      const isPublished = (input.status || 'draft') === 'published';
       const payload = {
         slug,
         title: input.title,
@@ -51,8 +70,10 @@ export function useStories() {
         content: input.content ?? '',
         category: input.category,
         is_featured: input.is_featured ?? false,
-        is_published: (input.status || 'draft') === 'published',
-        published_at: input.status === 'published' ? input.published_at || new Date().toISOString() : null,
+        is_published: isPublished,
+        // Keep text 'status' column in sync — the public RLS policy checks status = 'published'
+        status: isPublished ? 'published' : 'draft',
+        published_at: isPublished ? input.published_at || new Date().toISOString() : null,
         cover_image: input.image_url || null,
         author_name: input.author_name || null,
         author_role: input.author_role || null,
@@ -68,6 +89,7 @@ export function useStories() {
 
       toast.success('Story created successfully!');
       fetchStories();
+      invalidatePublicStories();
       return data;
     } catch (err) {
       const error = err as Error;
@@ -79,24 +101,35 @@ export function useStories() {
   // Update story
   const updateStory = async (id: string, input: Partial<StoryInput>): Promise<Story> => {
     try {
-      const update: any = { ...input };
+      // Build a clean DB-column object — never send UI-alias fields to Supabase
+      const update: Record<string, unknown> = {};
 
-      if (input.title && !input.slug) {
-        update.slug = slugify(input.title);
+      if (input.title !== undefined)           update.title        = input.title;
+      if (input.excerpt !== undefined)         update.excerpt      = input.excerpt ?? '';
+      if (input.content !== undefined)         update.content      = input.content ?? '';
+      if (input.category !== undefined)        update.category     = input.category;
+      if (input.is_featured !== undefined)     update.is_featured  = input.is_featured;
+      if (input.author_name !== undefined)     update.author_name  = input.author_name  || null;
+      if (input.author_role !== undefined)     update.author_role  = input.author_role  || null;
+      if (input.author_photo_url !== undefined) update.author_photo = input.author_photo_url || null;
+      if (input.image_url !== undefined)       update.cover_image  = input.image_url    || null;
+
+      // Slug: prefer explicit value, fall back to auto-generating from title
+      if (input.slug !== undefined || input.title !== undefined) {
+        update.slug = input.slug?.trim() || slugify(input.title || (update.title as string) || '');
       }
-      if (input.status) {
-        update.is_published = input.status === 'published';
-        update.published_at = input.status === 'published' ? input.published_at || new Date().toISOString() : null;
+
+      // Status → is_published + published_at + status (text column used by RLS)
+      if (input.status !== undefined) {
+        const publishing = input.status === 'published';
+        update.is_published = publishing;
+        update.status = publishing ? 'published' : 'draft';
+        update.published_at = publishing
+          ? (input.published_at || new Date().toISOString())
+          : null;
+      } else if (input.published_at !== undefined) {
+        update.published_at = input.published_at;
       }
-      if (input.image_url !== undefined) {
-        update.cover_image = input.image_url || null;
-      }
-      if (input.author_photo_url !== undefined) {
-        update.author_photo = input.author_photo_url || null;
-      }
-      delete update.image_url;
-      delete update.author_photo_url;
-      delete update.status;
 
       const { data, error: updateError } = await storiesTable()
         .update(update)
@@ -108,6 +141,7 @@ export function useStories() {
 
       toast.success('Story updated successfully!');
       fetchStories();
+      invalidatePublicStories();
       return data;
     } catch (err) {
       const error = err as Error;
@@ -128,6 +162,7 @@ export function useStories() {
 
       toast.success('Story deleted successfully!');
       fetchStories();
+      invalidatePublicStories();
     } catch (err) {
       const error = err as Error;
       toast.error('Failed to delete story: ' + error.message);
@@ -140,7 +175,8 @@ export function useStories() {
     try {
       const { data, error: updateError } = await storiesTable()
         .update({ 
-          status: 'published',
+          is_published: true,
+          status: 'published',   // keep text column in sync with RLS policy
           published_at: new Date().toISOString()
         })
         .eq('id', id)
@@ -151,6 +187,7 @@ export function useStories() {
 
       toast.success('Story published!');
       fetchStories();
+      invalidatePublicStories();
       return data;
     } catch (err) {
       const error = err as Error;
@@ -164,7 +201,8 @@ export function useStories() {
     try {
       const { data, error: updateError } = await storiesTable()
         .update({ 
-          status: 'draft',
+          is_published: false,
+          status: 'draft',       // keep text column in sync with RLS policy
           published_at: null
         })
         .eq('id', id)
@@ -175,6 +213,7 @@ export function useStories() {
 
       toast.success('Story unpublished!');
       fetchStories();
+      invalidatePublicStories();
       return data;
     } catch (err) {
       const error = err as Error;
@@ -199,6 +238,7 @@ export function useStories() {
 
       toast.success(`Story ${data.is_featured ? 'featured' : 'unfeatured'}`);
       fetchStories();
+      invalidatePublicStories();
       return data;
     } catch (err) {
       const error = err as Error;

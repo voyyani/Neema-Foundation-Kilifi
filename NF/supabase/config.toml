@@ -1,0 +1,14 @@
+# Supabase project config — required by the Supabase CLI for Edge Function deployment.
+# Replace `project_id` below with your actual project ref from:
+#   https://supabase.com/dashboard/project/<ref>/settings/general
+#
+# To deploy the invite-user function:
+#   npx supabase login
+#   npx supabase link --project-ref <your-project-ref>
+#   npx supabase functions deploy invite-user
+
+[project]
+id = "your-project-ref"
+
+[functions.invite-user]
+verify_jwt = true

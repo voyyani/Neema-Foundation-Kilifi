@@ -236,7 +236,7 @@ CREATE TABLE public.stories (
   author_name TEXT,
   author_role TEXT,
   author_photo TEXT,
-  category TEXT CHECK (category IN ('impact', 'testimonial', 'news', 'announcement')),
+  category TEXT CHECK (category IN ('impact', 'testimonial', 'news', 'announcement', 'event', 'volunteer')),
   is_featured BOOLEAN DEFAULT FALSE,
   is_published BOOLEAN DEFAULT FALSE,
   cover_image TEXT,

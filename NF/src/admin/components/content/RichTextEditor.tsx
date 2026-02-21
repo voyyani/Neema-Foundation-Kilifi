@@ -6,7 +6,7 @@ import Link from '@tiptap/extension-link';
 import Underline from '@tiptap/extension-underline';
 import Placeholder from '@tiptap/extension-placeholder';
 import { Bold, Italic, List, ListOrdered, Link as LinkIcon, Heading2, Quote } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 interface RichTextEditorProps {
   content: string;
@@ -31,25 +31,33 @@ export default function RichTextEditor({
   const [sourceMode, setSourceMode] = useState(false);
   const [sourceHtml, setSourceHtml] = useState(content);
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: { levels: [2, 3, 4] },
-      }),
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: { class: 'text-[#B01C2E] underline' },
-      }),
-      Underline,
-      Placeholder.configure({ placeholder }),
-    ],
-    content,
-    editorProps: {
-      attributes: {
-        class: 'prose prose-sm max-w-none focus:outline-none p-4',
-        style: `min-height: ${minHeight}`,
-      },
+  // Stable references — TipTap compares by identity; recreating these on every
+  // render triggers the "Duplicate extension names" warning and unnecessary
+  // editor re-initialisation.
+  const extensions = useMemo(() => [
+    StarterKit.configure({
+      heading: { levels: [2, 3, 4] },
+    }),
+    Link.configure({
+      openOnClick: false,
+      HTMLAttributes: { class: 'text-[#B01C2E] underline' },
+    }),
+    Underline,
+    Placeholder.configure({ placeholder }),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [placeholder]); // placeholder is the only prop that affects extensions
+
+  const editorProps = useMemo(() => ({
+    attributes: {
+      class: 'prose prose-sm max-w-none focus:outline-none p-4',
+      style: `min-height: ${minHeight}`,
     },
+  }), [minHeight]);
+
+  const editor = useEditor({
+    extensions,
+    content,
+    editorProps,
   });
 
   // Register the update listener after the editor is ready.
@@ -58,7 +66,10 @@ export default function RichTextEditor({
 
     const handleUpdate = () => {
       const html = editor.getHTML();
-      const isEmpty = html === '<p></p>' || html === '';
+      // Consider empty when TipTap has no meaningful text content
+      // (covers <p></p>, <p><br></p>, whitespace-only nodes, etc.)
+      const textContent = editor.state.doc.textContent.trim();
+      const isEmpty = !textContent && (html === '<p></p>' || html === '' || !/\S/.test(html.replace(/<[^>]*>/g, '')));
       onChangeRef.current(isEmpty ? '' : html);
     };
 

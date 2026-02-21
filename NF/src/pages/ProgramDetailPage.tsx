@@ -36,6 +36,9 @@ import {
   Camera,
   ExternalLink,
   Handshake,
+  Award,
+  TrendingUp,
+  BarChart3,
 } from 'lucide-react';
 
 import OptimizedImage, { buildCloudinaryUrl } from '../components/media/OptimizedImage';
@@ -43,6 +46,7 @@ import ProgramPhotoGallery from '../components/programs/ProgramPhotoGallery';
 import { usePublicProgram }          from '../hooks/public/usePublicPrograms';
 import { usePublicProgramImages }    from '../hooks/public';
 import { usePublicProgramEvents }    from '../hooks/public/usePublicEvents';
+import { usePublicImpactMetricsByProgram } from '../hooks/public/usePublicImpactMetrics';
 import { resolveProgramCover, buildProgramOGImageUrl } from '../lib/programImageUtils';
 import type { PublicProgram } from '../hooks/public/usePublicPrograms';
 import type { PublicEvent }   from '../hooks/public/usePublicEvents';
@@ -453,6 +457,62 @@ const ProgramImpactStats: React.FC<{ program: PublicProgram; photoCount: number 
   );
 };
 
+// 3b. CMS-Linked Impact Metrics (from impact_metrics table) ──────────────────
+
+type IconName = 'users' | 'heart' | 'award' | 'target' | 'trending-up' | 'bar-chart' | 'calendar';
+
+function metricIcon(name: string | null): React.ReactNode {
+  const cls = 'w-5 h-5 text-[#B01C2E]';
+  switch (name as IconName) {
+    case 'users':       return <Users className={cls} />;
+    case 'heart':       return <Heart className={cls} />;
+    case 'award':       return <Award className={cls} />;
+    case 'target':      return <Target className={cls} />;
+    case 'trending-up': return <TrendingUp className={cls} />;
+    case 'bar-chart':   return <BarChart3 className={cls} />;
+    case 'calendar':    return <Calendar className={cls} />;
+    default:            return <Activity className={cls} />;
+  }
+}
+
+const ProgramDBMetrics: React.FC<{ programId: string }> = ({ programId }) => {
+  const { data: dbMetrics = [], isLoading } = usePublicImpactMetricsByProgram(programId);
+
+  if (isLoading || dbMetrics.length === 0) return null;
+
+  return (
+    <section className="py-14 md:py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mb-10 text-center"
+        >
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#B01C2E] mb-2">
+            By the numbers
+          </p>
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-900">
+            Program Impact
+          </h2>
+        </motion.div>
+        <div className={`grid grid-cols-2 md:grid-cols-${Math.min(dbMetrics.length, 4)} gap-px bg-gray-100 border border-gray-100 rounded-2xl overflow-hidden shadow-sm`}>
+          {dbMetrics.map((metric, i) => (
+            <StatItem
+              key={metric.id}
+              value={metric.value}
+              suffix={metric.suffix ?? ''}
+              label={metric.label}
+              icon={metricIcon(metric.icon)}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
 // 4. Photo Gallery section wrapper ─────────────────────────────────────────────
 // (Uses ProgramPhotoGallery component)
 
@@ -750,8 +810,11 @@ const ProgramDetailPage: React.FC = () => {
       {/* 2 — Story */}
       <ProgramStory program={program} />
 
-      {/* 3 — Impact Stats */}
+      {/* 3 — Impact Stats (from program fields) */}
       <ProgramImpactStats program={program} photoCount={photoCount} />
+
+      {/* 3b — CMS Impact Metrics (from admin Impact page, linked by program) */}
+      {program?.id && <ProgramDBMetrics programId={program.id} />}
 
       {/* 4 — Photo Gallery */}
       <section className="py-14 md:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">

@@ -11,7 +11,7 @@ export {
 } from './usePublicPrograms';
 export type { PublicProgram } from './usePublicPrograms';
 
-export { usePublicImpactMetrics } from './usePublicImpactMetrics';
+export { usePublicImpactMetrics, usePublicImpactMetricsByProgram } from './usePublicImpactMetrics';
 export type { 
   PublicImpactMetric, 
   PublicImpactMetricWithProgram 

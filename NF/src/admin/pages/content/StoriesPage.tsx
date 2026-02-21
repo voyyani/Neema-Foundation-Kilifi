@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useStories } from '../../hooks/useStories';
 import { 
   Plus, 
@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import RichTextEditor from '../../components/content/RichTextEditor';
 import type { Story, StoryInput } from '../../types/content';
+import { slugify } from '../../lib/utils';
 import { format } from 'date-fns';
 
 type StoryCategory = 'impact' | 'testimonial' | 'event' | 'news' | 'volunteer';
@@ -197,7 +198,7 @@ interface StoryModalProps {
 }
 
 function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
-  const [formData, setFormData] = useState<StoryInput>({
+  const emptyForm = (): StoryInput => ({
     title: story?.title || '',
     slug: story?.slug || '',
     excerpt: story?.excerpt || '',
@@ -211,11 +212,18 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
     is_featured: story?.is_featured || false,
   });
 
+  const [formData, setFormData] = useState<StoryInput>(emptyForm());
+  const [formErrors, setFormErrors] = useState<Partial<Record<keyof StoryInput, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const slugManuallyEdited = useRef(!!story?.slug);
 
   // Sync form data when opening or when story changes
   useEffect(() => {
     if (isOpen) {
+      slugManuallyEdited.current = !!story?.slug;
+      setFormErrors({});
+      setSubmitError(null);
       setFormData({
         title: story?.title || '',
         slug: story?.slug || '',
@@ -234,18 +242,44 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
 
   if (!isOpen) return null;
 
+  // Strip HTML tags to get plain text length for content validation
+  const getTextFromHtml = (html: string): string =>
+    html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+
+  const validate = (): boolean => {
+    const errors: Partial<Record<keyof StoryInput, string>> = {};
+    if (!formData.title.trim()) errors.title = 'Title is required.';
+    if (!formData.excerpt?.trim()) errors.excerpt = 'Excerpt is required.';
+    if (!getTextFromHtml(formData.content || '')) errors.content = 'Content is required.';
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    setSubmitError(null);
+    if (!validate()) return;
     try {
       setIsSubmitting(true);
       await onSave(formData);
       onClose();
-    } catch (error) {
+    } catch (err) {
+      const error = err as Error & { message?: string; details?: string; hint?: string };
       console.error('Error saving story:', error);
+      const msg = error.details || error.hint || error.message || 'Unknown error';
+      setSubmitError(msg);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleTitleChange = (value: string) => {
+    const update: Partial<StoryInput> = { title: value };
+    if (!slugManuallyEdited.current) {
+      update.slug = slugify(value);
+    }
+    setFormData(prev => ({ ...prev, ...update }));
+    if (formErrors.title) setFormErrors(prev => ({ ...prev, title: undefined }));
   };
 
   return (
@@ -291,10 +325,14 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
                 <input
                   type="text"
                   value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  required
+                  onChange={(e) => handleTitleChange(e.target.value)}
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                    formErrors.title ? 'border-red-400 bg-red-50' : 'border-gray-300'
+                  }`}
                 />
+                {formErrors.title && (
+                  <p className="mt-1 text-xs text-red-600">{formErrors.title}</p>
+                )}
               </div>
 
               <div>
@@ -304,11 +342,14 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
                 <input
                   type="text"
                   value={formData.slug}
-                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                  onChange={(e) => {
+                    slugManuallyEdited.current = true;
+                    setFormData(prev => ({ ...prev, slug: e.target.value }));
+                  }}
                   placeholder="auto-generated-from-title"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm"
                 />
-                <p className="mt-1 text-xs text-gray-500">Leave empty to auto-generate from title</p>
+                <p className="mt-1 text-xs text-gray-500">Auto-generated from title — edit to override</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -318,7 +359,7 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
                   </label>
                   <select
                     value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value as StoryCategory })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as StoryCategory }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     required
                   >
@@ -336,7 +377,7 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
                   </label>
                   <select
                     value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value as 'draft' | 'published' })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as 'draft' | 'published' }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
                     <option value="draft">Draft</option>
@@ -351,12 +392,20 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
                 </label>
                 <textarea
                   value={formData.excerpt}
-                  onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+                  onChange={(e) => {
+                    setFormData(prev => ({ ...prev, excerpt: e.target.value }));
+                    if (formErrors.excerpt) setFormErrors(prev => ({ ...prev, excerpt: undefined }));
+                  }}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  required
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                    formErrors.excerpt ? 'border-red-400 bg-red-50' : 'border-gray-300'
+                  }`}
                 />
-                <p className="mt-1 text-xs text-gray-500">Brief summary (2-3 sentences)</p>
+                {formErrors.excerpt ? (
+                  <p className="mt-1 text-xs text-red-600">{formErrors.excerpt}</p>
+                ) : (
+                  <p className="mt-1 text-xs text-gray-500">Brief summary (2-3 sentences)</p>
+                )}
               </div>
 
               <div>
@@ -364,9 +413,9 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
                   Featured Image URL
                 </label>
                 <input
-                  type="url"
+                  type="text"
                   value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
                   placeholder="https://example.com/image.jpg"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
@@ -377,7 +426,7 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
                   type="checkbox"
                   id="is_featured"
                   checked={formData.is_featured}
-                  onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, is_featured: e.target.checked }))}
                   className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                 />
                 <label htmlFor="is_featured" className="text-sm font-medium text-gray-700">
@@ -400,7 +449,7 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
                 <input
                   type="text"
                   value={formData.author_name}
-                  onChange={(e) => setFormData({ ...formData, author_name: e.target.value })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, author_name: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
@@ -413,7 +462,7 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
                   <input
                     type="text"
                     value={formData.author_role}
-                    onChange={(e) => setFormData({ ...formData, author_role: e.target.value })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, author_role: e.target.value }))}
                     placeholder="e.g., Program Director"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
@@ -424,9 +473,9 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
                     Author Photo URL
                   </label>
                   <input
-                    type="url"
+                    type="text"
                     value={formData.author_photo_url}
-                    onChange={(e) => setFormData({ ...formData, author_photo_url: e.target.value })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, author_photo_url: e.target.value }))}
                     placeholder="https://example.com/photo.jpg"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
@@ -439,13 +488,28 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Content *
               </label>
-              <RichTextEditor
-                content={formData.content || ''}
-                onChange={(content: string) => setFormData({ ...formData, content })}
-              />
+              <div className={formErrors.content ? 'ring-2 ring-red-400 rounded-lg' : ''}>
+                <RichTextEditor
+                  content={formData.content || ''}
+                  onChange={(content: string) => {
+                    setFormData(prev => ({ ...prev, content }));
+                    if (formErrors.content) setFormErrors(prev => ({ ...prev, content: undefined }));
+                  }}
+                />
+              </div>
+              {formErrors.content && (
+                <p className="mt-1 text-xs text-red-600">{formErrors.content}</p>
+              )}
             </div>
 
             {/* Actions */}
+            {/* Submit Error */}
+            {submitError && (
+              <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+                <strong className="font-semibold">Save failed:</strong> {submitError}
+              </div>
+            )}
+
             <div className="flex items-center justify-end gap-3 pt-6 border-t">
               <button
                 type="button"

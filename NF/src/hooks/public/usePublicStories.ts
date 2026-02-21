@@ -33,20 +33,21 @@ export function usePublicStories() {
       const { data, error } = await supabase
         .from('stories')
         .select('*')
-        .or('is_published.eq.true,status.eq.published') // support legacy rows
-        .order('published_at', { ascending: false });
+        .eq('is_published', true)
+        .order('published_at', { ascending: false, nullsFirst: false })
+        .order('created_at', { ascending: false });
       
       if (error) {
         console.error('Failed to fetch stories:', error);
         throw error;
       }
-      
+
       return data || [];
     },
     staleTime: 0,
     gcTime: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
-    refetchInterval: 60 * 1000,
+    refetchInterval: 10 * 1000,
     retry: 1,
   });
 }
@@ -62,7 +63,7 @@ export function usePublicFeaturedStories() {
       const { data, error } = await supabase
         .from('stories')
         .select('*')
-        .or('is_published.eq.true,status.eq.published')
+        .eq('is_published', true)
         .eq('is_featured', true)
         .order('published_at', { ascending: false })
         .limit(3);
@@ -95,7 +96,7 @@ export function usePublicStory(slug: string) {
         .from('stories')
         .select('*')
         .eq('slug', slug)
-        .or('is_published.eq.true,status.eq.published')
+        .eq('is_published', true)
         .single();
       
       if (error) {

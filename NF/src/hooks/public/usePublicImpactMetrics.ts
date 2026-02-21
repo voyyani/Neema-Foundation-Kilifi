@@ -54,3 +54,34 @@ export function usePublicImpactMetrics() {
     retry: 1,
   });
 }
+
+/**
+ * Fetch active impact metrics linked to a specific program
+ * Used by ProgramDetailPage to show CMS-managed stats
+ */
+export function usePublicImpactMetricsByProgram(programId: string | undefined) {
+  return useQuery({
+    queryKey: ['public', 'impact-metrics', 'program', programId],
+    queryFn: async (): Promise<PublicImpactMetric[]> => {
+      if (!programId) return [];
+      const { data, error } = await supabase
+        .from('impact_metrics')
+        .select('*')
+        .eq('program_id', programId)
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+
+      if (error) {
+        console.error('Failed to fetch program impact metrics:', error);
+        throw error;
+      }
+
+      return data || [];
+    },
+    enabled: !!programId,
+    staleTime: 0,
+    gcTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+    retry: 1,
+  });
+}
