@@ -29,8 +29,13 @@ export default function EventDetailPage() {
 
   const handleSubmit = async (data: EventFormSchema) => {
     if (id) {
-      await updateEvent(id, data);
-      navigate('/admin/events');
+      try {
+        await updateEvent(id, data);
+        navigate('/admin/events');
+      } catch (err) {
+        // updateEvent already shows a toast — keep user on the form for fixes
+        console.error('[EventDetailPage] update failed', err);
+      }
     }
   };
 

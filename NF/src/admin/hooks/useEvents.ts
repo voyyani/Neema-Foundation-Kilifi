@@ -172,6 +172,13 @@ export function useEvents(filters?: EventFilters) {
   // Update event
   const updateEvent = async (id: string, data: Partial<EventFormData>): Promise<Event> => {
     try {
+      // Use getSession() (reads from localStorage, no network lock) instead of
+      // getUser() which acquires GoTrue's async lock and can hang indefinitely
+      // when using flowType: 'pkce' on the admin client.
+      const { data: sessionData } = await supabase.auth.getSession();
+      const user = sessionData.session?.user;
+      if (!user) throw new Error('Not authenticated. Please log in and try again.');
+
       const updateData: any = {};
 
       // Only include fields that are provided
@@ -201,20 +208,33 @@ export function useEvents(filters?: EventFilters) {
 
       updateData.updated_at = new Date().toISOString();
 
-      const { data: updatedEvent, error: updateError } = await eventsTable()
-        .update(updateData)
-        .eq('id', id)
-        .select()
-        .single();
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000); // 15 s safety net
 
-      if (updateError) throw updateError;
+      let updatedEvent: any;
+      try {
+        const { data, error: updateError } = await eventsTable()
+          .update(updateData)
+          .eq('id', id)
+          .select()
+          .single()
+          .abortSignal(controller.signal);
+
+        if (updateError) throw updateError;
+        updatedEvent = data;
+      } finally {
+        clearTimeout(timeout);
+      }
 
       toast.success('Event updated successfully!');
       fetchEvents(); // Refresh list
       return updatedEvent;
     } catch (err) {
       const error = err as Error;
-      toast.error('Failed to update event: ' + error.message);
+      const msg = error.name === 'AbortError'
+        ? 'Save timed out — please check your connection and try again.'
+        : 'Failed to update event: ' + error.message;
+      toast.error(msg);
       throw error;
     }
   };
