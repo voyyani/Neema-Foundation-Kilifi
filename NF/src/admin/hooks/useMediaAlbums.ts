@@ -17,13 +17,13 @@ import type {
 } from '../types/media';
 
 // ─── Type escape hatch (matches pattern used across this codebase) ────────────
-// Tables live in the `media` schema — use .schema('media') so PostgREST
-// routes requests to the correct schema (requires `media` to be in the
-// project's Exposed Schemas list: Supabase Dashboard → API → Exposed schemas).
+// These target the public-schema views (public.media_albums / public.media_items)
+// which proxy to media.media_albums / media.media_items. See migration:
+// migrations/create-public-media-views.sql
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const albumsTable = () => (supabase as any).schema('media').from('media_albums');
+const albumsTable = () => supabase.from('media_albums') as any;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const itemsTable = () => (supabase as any).schema('media').from('media_items');
+const itemsTable = () => supabase.from('media_items') as any;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // useMediaAlbums — list all albums with optional filters
