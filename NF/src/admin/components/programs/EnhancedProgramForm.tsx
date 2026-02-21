@@ -38,6 +38,7 @@ export default function EnhancedProgramForm({
   const [activeSection, setActiveSection] = useState<FormSection>('basic');
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Form state
   const [formData, setFormData] = useState<ProgramInput>({
@@ -131,15 +132,28 @@ export default function EnhancedProgramForm({
   // Save handler
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    
+    setSubmitError(null);
+
     if (!validateForm()) {
       setActiveSection('basic');
       return;
     }
-    
+
     setIsSaving(true);
     try {
       await onSave(formData);
+      // onSave closes the modal on success — if we're still here something went wrong
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'An unexpected error occurred. Check the browser console for details.';
+      console.error('[ProgramForm] Save failed:', {
+        error: err,
+        formData,
+        program_id: program?.id ?? '(new)',
+      });
+      setSubmitError(message);
     } finally {
       setIsSaving(false);
     }
@@ -255,6 +269,23 @@ export default function EnhancedProgramForm({
 
         {/* Form content */}
         <div className="flex-1 overflow-y-auto p-6">
+          {/* ── inline error banner ── */}
+          {submitError && (
+            <div className="mb-4 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+              <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
+              <div>
+                <p className="font-semibold">Save failed</p>
+                <p className="mt-0.5 whitespace-pre-wrap">{submitError}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSubmitError(null)}
+                className="ml-auto flex-shrink-0 text-red-400 hover:text-red-600"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          )}
           <form onSubmit={handleSubmit}>
             {/* BASIC INFO SECTION */}
             {activeSection === 'basic' && (
@@ -757,8 +788,28 @@ export default function EnhancedProgramForm({
             >
               Cancel
             </button>
-            
-            {canGoForward ? (
+
+            {/* Save is always visible — no need to reach the last tab */}
+            <button
+              type="button"
+              onClick={() => handleSubmit()}
+              disabled={isSaving}
+              className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="w-5 h-5" />
+                  {program ? 'Update Program' : 'Create Program'}
+                </>
+              )}
+            </button>
+
+            {canGoForward && (
               <button
                 type="button"
                 onClick={goToNext}
@@ -766,25 +817,6 @@ export default function EnhancedProgramForm({
               >
                 Next
                 <ChevronRight className="w-5 h-5" />
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => handleSubmit()}
-                disabled={isSaving}
-                className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSaving ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-5 h-5" />
-                    {program ? 'Update Program' : 'Create Program'}
-                  </>
-                )}
               </button>
             )}
           </div>

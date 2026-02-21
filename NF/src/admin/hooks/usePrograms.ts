@@ -8,6 +8,126 @@ import { slugify } from '../lib/utils';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const programsTable = () => supabase.from('programs') as any;
 
+/**
+ * Normalize a raw ProgramInput (or partial) before sending to PostgREST:
+ *  - Empty strings → null   (avoids overwriting fields with '')
+ *  - Empty arrays  → null   (avoids PostgREST type errors on non-array columns)
+ *  - Ensures slug is generated from name when not supplied
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function normalizePayload(payload: Record<string, any>, name?: string): Record<string, any> {
+  const out: Record<string, any> = { ...payload };
+
+  // Auto-generate slug
+  if (name && (!out.slug || String(out.slug).trim() === '')) {
+    out.slug = slugify(name);
+  }
+
+  for (const key of Object.keys(out)) {
+    const v = out[key];
+    if (typeof v === 'string' && v.trim() === '') {
+      out[key] = null;
+    }
+    if (Array.isArray(v) && v.length === 0) {
+      out[key] = null;
+    }
+  }
+
+  return out;
+}
+
+/**
+ * Attempt a PostgREST write, automatically dropping any column that the
+ * database doesn't know about yet (code === '42703') and retrying once.
+ * This lets the app stay functional when a migration hasn't been applied.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function tryWrite(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  buildQuery: (payload: Record<string, any>) => PromiseLike<{ data: any; error: any }>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  payload: Record<string, any>,
+): Promise<Program> {
+  const res = await buildQuery(payload);
+
+  if (!res.error) return res.data as Program;
+
+  const { error } = res;
+  console.error('[Programs] DB error:', {
+    code: error.code,
+    message: error.message,
+    details: error.details,
+    hint: error.hint,
+    payload_keys: Object.keys(payload),
+  });
+
+  // 42703 = undefined_column — drop the offending column and retry once
+  const colMatch =
+    (error.message as string | undefined)?.match(/column "?([^"]+)"? (of relation|does not exist)/i) ||
+    (error.details as string | undefined)?.match(/column "?([^"]+)"? (of relation|does not exist)/i);
+
+  if (error.code === '42703' && colMatch?.[1]) {
+    const bad = colMatch[1];
+    console.warn(`[Programs] Column "${bad}" missing in DB — dropping and retrying`);
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete payload[bad];
+    const retry = await buildQuery(payload);
+    if (!retry.error) return retry.data as Program;
+    throw retry.error;
+  }
+
+  throw error;
+}
+
+/**
+ * Convert a raw Supabase/PostgREST error into a human-readable message that
+ * names the field or constraint that caused the failure, so the UI can surface
+ * exactly what went wrong.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function buildErrorMessage(err: any): string {
+  const code: string = err?.code ?? '';
+  const msg: string = err?.message ?? String(err);
+  const hint: string = err?.hint ?? '';
+  const detail: string = err?.details ?? '';
+
+  // Unique constraint → slug conflict
+  if (code === '23505') {
+    const colMatch = detail.match(/Key \(([^)]+)\)=/);
+    const col = colMatch?.[1] ?? 'slug';
+    return `Duplicate value for "${col}". A program with this ${col} already exists.`;
+  }
+  // Not-null violation
+  if (code === '23502') {
+    const colMatch = msg.match(/column "([^"]+)"/);
+    const col = colMatch?.[1] ?? 'a required field';
+    return `"${col}" is required and cannot be empty.`;
+  }
+  // Check constraint
+  if (code === '23514') {
+    return `Invalid value: the data doesn't pass a database rule. ${hint || msg}`;
+  }
+  // Foreign key constraint
+  if (code === '23503') {
+    return `Related record not found. ${hint || msg}`;
+  }
+  // Undefined column (migration mismatch)
+  if (code === '42703') {
+    const colMatch = msg.match(/column "?([^"]+)"?/);
+    return `Database column "${colMatch?.[1] ?? '?'}" doesn't exist — a migration may be pending.`;
+  }
+  // RLS policy block — PostgREST returns 0 rows on INSERT and a generic error on UPDATE
+  if (code === 'PGRST116') {
+    return 'Permission denied: your role may not have write access to programs. Check Supabase RLS policies.';
+  }
+  // JWT / auth errors
+  if (code === 'PGRST301' || msg.toLowerCase().includes('jwt')) {
+    return 'Session expired. Please sign out and sign back in.';
+  }
+
+  return `Save failed: ${msg}`;
+}
+
 export function usePrograms() {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,89 +163,50 @@ export function usePrograms() {
   const createProgram = async (input: ProgramInput): Promise<Program> => {
     try {
       const maxOrder = Math.max(...programs.map(p => p.display_order), 0);
-      const slug = input.slug || slugify(input.name);
 
-      const { data, error: createError } = await programsTable()
-        .insert([{
-          ...input,
-          slug,
-          display_order: maxOrder + 1,
-          is_active: input.is_active ?? true,
-          is_featured: input.is_featured ?? false,
-        }])
-        .select()
-        .single();
+      const raw: Record<string, any> = {
+        ...input,
+        display_order: maxOrder + 1,
+        is_active: input.is_active ?? true,
+        is_featured: input.is_featured ?? false,
+      };
 
-      if (createError) throw createError;
+      const payload = normalizePayload(raw, input.name);
+
+      const data = await tryWrite(
+        (p) => programsTable().insert([p]).select().single(),
+        payload,
+      );
 
       toast.success('Program created successfully!');
       fetchPrograms();
       return data;
     } catch (err) {
       const error = err as Error;
-      toast.error('Failed to create program: ' + error.message);
-      throw error;
+      const msg = buildErrorMessage(error);
+      toast.error(msg);
+      throw Object.assign(new Error(msg), { original: err });
     }
   };
 
   // Update program
   const updateProgram = async (id: string, input: Partial<ProgramInput>): Promise<Program> => {
-    // Normalize payload: generate slug, strip empty strings, leave only truthy arrays
-    const normalizeInput = (payload: Partial<ProgramInput>) => {
-      const normalized: Record<string, any> = { ...payload };
-
-      if (normalized.name && (!normalized.slug || normalized.slug.trim() === '')) {
-        normalized.slug = slugify(normalized.name);
-      }
-
-      Object.entries(normalized).forEach(([key, value]) => {
-        // Remove empty strings to avoid overwriting with ''
-        if (typeof value === 'string' && value.trim() === '') {
-          normalized[key] = null;
-        }
-        // Collapse empty arrays to null to avoid PostgREST errors on non-array columns
-        if (Array.isArray(value) && value.length === 0) {
-          normalized[key] = null;
-        }
-      });
-
-      return normalized;
-    };
-
-    // Attempt update, removing offending columns if backend schema is missing them
-    const tryUpdate = async (payload: Record<string, any>): Promise<Program> => {
-      const { data, error: updateError } = await programsTable()
-        .update(payload)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (!updateError) return data;
-
-      // If the error is "column does not exist", drop that column and retry
-      const columnMatch = updateError.message.match(/column \"?([^\"]+)\"? does not exist/i) ||
-        updateError.details?.match(/column \"?([^\"]+)\"? does not exist/i);
-
-      if (updateError.code === '42703' && columnMatch?.[1]) {
-        const missing = columnMatch[1];
-        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-        delete payload[missing];
-        return tryUpdate(payload);
-      }
-
-      throw updateError;
-    };
-
     try {
-      const normalized = normalizeInput(input);
-      const data = await tryUpdate(normalized);
+      const payload = normalizePayload(input as Record<string, any>, input.name);
+
+      const data = await tryWrite(
+        (p) => programsTable().update(p).eq('id', id).select().single(),
+        payload,
+      );
+
       toast.success('Program updated successfully!');
       fetchPrograms();
       return data;
     } catch (err) {
       const error = err as Error;
-      toast.error('Failed to update program: ' + error.message);
-      throw error;
+      const msg = buildErrorMessage(error);
+      toast.error(msg);
+      throw Object.assign(new Error(msg), { original: err });
     }
   };
 

@@ -47,9 +47,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         .single();
 
       if (error) {
-        // Profile doesn't exist - create default profile
+        // PGRST116 = no rows returned.
+        // This can mean either (a) the profile genuinely doesn't exist yet
+        // (first sign-up) or (b) an RLS policy is blocking the read.
+        // We try to INSERT; if that also fails with a unique-key violation
+        // (23505) then the row EXISTS but RLS is blocking reads — surface
+        // a clear error rather than silently downgrading to 'viewer'.
         if (error.code === 'PGRST116') {
-          console.log('Profile not found, creating default profile...');
+          console.log('[Auth] Profile row not found for user, attempting to create...');
           const insertData: Inserts<'profiles'> = {
             id: userId,
             role: 'viewer',
@@ -61,37 +66,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
             .insert(insertData)
             .select()
             .single();
-          
+
           if (createError) {
-            console.error('Error creating profile:', createError);
+            // 23505 = unique constraint violation — profile already exists but
+            // RLS is preventing its selection. Don't fall back to 'viewer'.
+            if (createError.code === '23505') {
+              console.error('[Auth] Profile exists but cannot be read — likely a missing RLS SELECT policy. Run migrations/fix-profiles-rls.sql in Supabase.');
+              toast.error('Permission error: could not load your profile. Contact the site administrator.');
+              setProfile(null);
+              return;
+            }
+            console.error('[Auth] Error creating profile:', createError);
             throw createError;
           }
-          
+
           setProfile(newProfile as UserProfile);
           return;
         }
         throw error;
       }
-      
+
       setProfile(data as UserProfile);
     } catch (err) {
-      console.error('Error fetching profile:', err);
-      // Allow access with minimal profile instead of blocking
-      const fallbackProfile: UserProfile = {
-        id: userId,
-        role: 'viewer',
-        email: emailFallback || user?.email || '',
-        full_name: null,
-        avatar_url: null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        is_active: true,
-        last_login_at: null,
-        last_login_ip: null,
-        phone_number: null,
-        organization: null,
-      };
-      setProfile(fallbackProfile);
+      console.error('[Auth] Error fetching profile:', err);
+      // Do NOT silently fall back to role='viewer' — that would give the
+      // impression of a successful login while stripping all admin access.
+      // Instead, leave profile null so the UI can show a proper error state.
+      toast.error('Could not load your account profile. Please try signing in again.');
+      setProfile(null);
     }
   };
 
