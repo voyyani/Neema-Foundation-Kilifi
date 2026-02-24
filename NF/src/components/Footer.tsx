@@ -266,7 +266,7 @@ const Footer: React.FC = () => {
               className="flex items-center gap-1.5"
               aria-label="Website crafted by Voyani"
             >
-              <span>Crafted with passion by</span>
+              <span>Crafted by</span>
               <a
                 href="https://voyani.tech"
                 target="_blank"
