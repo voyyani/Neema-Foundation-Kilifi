@@ -13,7 +13,7 @@ import {
   Twitter,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { usePublicFeaturedPrograms, usePublicSiteSettings } from '../hooks/public';
+import { usePublicPrograms, usePublicSiteSettings } from '../hooks/public';
 
 const easing = [0.22, 1, 0.36, 1] as const;
 
@@ -87,7 +87,7 @@ const SocialLinks: React.FC = () => {
 };
 
 const ProgramList: React.FC = () => {
-  const { data: programs = [], isLoading } = usePublicFeaturedPrograms();
+  const { data: programs = [], isLoading } = usePublicPrograms();
 
   if (isLoading) {
     return (
