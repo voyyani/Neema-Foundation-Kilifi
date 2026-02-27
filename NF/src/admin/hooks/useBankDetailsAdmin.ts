@@ -212,13 +212,13 @@ export function useBankDetailsAdmin(): UseBankDetailsAdminReturn {
     setError(null);
 
     try {
-      const data = await callEdge<BankDetail[]>(
+      const res = await callEdge<{ data: BankDetail[]; total: number }>(
         'GET',
         '',
         undefined,
         abortRef.current.signal,
       );
-      setRecords(data ?? []);
+      setRecords(res?.data ?? []);
     } catch (err) {
       if ((err as Error).name === 'AbortError') return;
       const message = (err as Error).message ?? 'Failed to load bank details';
@@ -284,7 +284,8 @@ export function useBankDetailsAdmin(): UseBankDetailsAdminReturn {
       setError(null);
 
       try {
-        const result = await callEdge<BankDetail>('POST', '', form);
+        const res = await callEdge<{ data: BankDetail; message: string }>('POST', '', form);
+        const result = res.data;
         toast.success('Payment method added', {
           description: `"${result.label}" has been created.`,
         });
@@ -312,7 +313,8 @@ export function useBankDetailsAdmin(): UseBankDetailsAdminReturn {
       setError(null);
 
       try {
-        const result = await callEdge<BankDetail>('PATCH', `/${id}`, form);
+        const res = await callEdge<{ data: BankDetail; message: string }>('PATCH', `/${id}`, form);
+        const result = res.data;
         toast.success('Payment method updated', {
           description: `"${result.label}" has been saved.`,
         });
@@ -373,7 +375,8 @@ export function useBankDetailsAdmin(): UseBankDetailsAdminReturn {
       );
 
       try {
-        const result = await callEdge<BankDetail>('PATCH', `/${id}/toggle-visibility`);
+        const res = await callEdge<{ data: BankDetail; message: string }>('PATCH', `/${id}/toggle`);
+        const result = res.data;
         const visibilityLabel = result.is_public ? 'visible' : 'hidden';
         toast.success('Visibility updated', {
           description: `"${result.label}" is now ${visibilityLabel} on the public site.`,

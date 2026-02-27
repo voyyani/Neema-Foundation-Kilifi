@@ -631,12 +631,12 @@ serve(async (req: Request) => {
   const ctx = ctxOrResponse;
 
   // Parse path segments after /bank-details
-  // Supabase routes the function at /functions/v1/bank-details
-  // so pathname could be /bank-details, /bank-details/uuid, /bank-details/uuid/toggle, etc.
+  // Supabase may route as /functions/v1/bank-details OR just /bank-details
+  // so we strip both possible prefixes to get the trailing segments only.
   const url       = new URL(req.url);
   const rawPath   = url.pathname;
   // Strip the function prefix so we work with just the trailing segments
-  const stripped  = rawPath.replace(/^\/functions\/v1\/bank-details\/?/, '');
+  const stripped  = rawPath.replace(/^(\/functions\/v1)?\/bank-details\/?/, '');
   const parts     = stripped.split('/').filter(Boolean); // e.g. [] | ['uuid'] | ['uuid','toggle'] | ['reorder']
 
   const method = req.method;
