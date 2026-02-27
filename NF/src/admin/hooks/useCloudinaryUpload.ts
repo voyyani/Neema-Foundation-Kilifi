@@ -25,6 +25,9 @@ export interface UploadResult {
   height: number;
   format: string;
   bytes: number;
+  resourceType?: 'image' | 'video' | 'raw';
+  duration?: number; // seconds, for video
+  playbackUrl?: string; // video streaming URL
 }
 
 export function useCloudinaryUpload() {
@@ -151,9 +154,98 @@ export function useCloudinaryUpload() {
     return results;
   };
 
+  const uploadVideo = async (
+    file: File,
+    options?: UploadOptions
+  ): Promise<UploadResult | null> => {
+    setIsUploading(true);
+    setError(null);
+    setProgress({ percentage: 0, loaded: 0, total: 0 });
+
+    try {
+      // Video size validation (default 200 MB)
+      const maxSize = (options?.maxFileSize || 200) * 1024 * 1024;
+      if (file.size > maxSize) {
+        const msg = `Video size exceeds ${options?.maxFileSize || 200}MB limit`;
+        setError(msg);
+        toast.error(msg);
+        return null;
+      }
+
+      // Video format validation
+      const allowedFormats = options?.allowedFormats || ['mp4', 'webm', 'mov', 'avi', 'mkv', 'ogv'];
+      const fileExtension = file.name.split('.').pop()?.toLowerCase() || '';
+      if (!allowedFormats.includes(fileExtension)) {
+        const msg = `Video format must be one of: ${allowedFormats.join(', ')}`;
+        setError(msg);
+        toast.error(msg);
+        return null;
+      }
+
+      // Check Cloudinary configuration
+      if (!cloudinaryConfig.cloudName || !cloudinaryConfig.uploadPreset) {
+        const configError =
+          'Cloudinary is not configured. Please set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET.';
+        setError(configError);
+        toast.error(configError);
+        return null;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', cloudinaryConfig.uploadPreset);
+
+      if (options?.folder) {
+        formData.append('folder', options.folder);
+      }
+      if (options?.tags && options.tags.length > 0) {
+        formData.append('tags', options.tags.join(','));
+      }
+
+      // Use the video-specific Cloudinary endpoint
+      const videoUploadUrl = `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/video/upload`;
+
+      const response = await axios.post(videoUploadUrl, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percentage = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setProgress({
+              percentage,
+              loaded: progressEvent.loaded,
+              total: progressEvent.total,
+            });
+          }
+        },
+      });
+
+      const result: UploadResult = {
+        url: response.data.url,
+        publicId: response.data.public_id,
+        secureUrl: response.data.secure_url,
+        width: response.data.width ?? 0,
+        height: response.data.height ?? 0,
+        format: response.data.format,
+        bytes: response.data.bytes,
+      };
+
+      toast.success('Video uploaded successfully');
+      return result;
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to upload video';
+      setError(errorMessage);
+      toast.error(errorMessage);
+      return null;
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return {
     uploadImage,
     uploadMultiple,
+    uploadVideo,
     isUploading,
     progress,
     error,

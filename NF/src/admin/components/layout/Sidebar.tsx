@@ -85,7 +85,7 @@ const navigationWithIcons: NavItem[] = [
   { name: 'Site Settings', href: '/admin/site-settings', icon: SettingsIcon, requiredPermission: 'view_settings' },
 ];
 
-function SidebarContent() {
+function SidebarContent({ onClose }: { onClose?: () => void }) {
   const location = useLocation();
   const { profile } = useAuth();
 
@@ -122,6 +122,7 @@ function SidebarContent() {
                   <li key={item.name}>
                     <Link
                       to={item.href}
+                      onClick={onClose}
                       className={clsx(
                         isActive
                           ? 'bg-[#8A1624] text-white'
@@ -224,7 +225,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     </button>
                   </div>
                 </Transition.Child>
-                <SidebarContent />
+                <SidebarContent onClose={onClose} />
               </Dialog.Panel>
             </Transition.Child>
           </div>

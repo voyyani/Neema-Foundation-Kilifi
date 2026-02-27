@@ -10,6 +10,7 @@
  */
 
 import React, { useState } from 'react';
+import { usePublicPartners } from '../hooks/public';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import {
@@ -126,32 +127,7 @@ const Partnership: React.FC = () => {
     },
   ];
 
-  const currentPartners = [
-    {
-      name: 'Dzarino CBO',
-      type: 'Community Partner',
-      logo: 'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760969357/Dzarnio-logo_y9trca.png',
-      impact: 'Health initiative collaboration',
-    },
-    {
-      name: 'KickStart International',
-      type: 'Agriculture Partner',
-      logo: 'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760969470/KickStart-Logo_Color_RGB_sg1t6p.svg',
-      impact: 'Water pumps and farming training',
-    },
-    {
-      name: 'ICC Mombasa',
-      type: 'Feeding Programme Partner',
-      logo: null as string | null,
-      impact: 'Daily porridge programme support',
-    },
-    {
-      name: 'CITAM Mombasa',
-      type: 'Faith Partner',
-      logo: 'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760969566/citam-logo-1_lg4qqi.png',
-      impact: 'Spiritual and outreach support',
-    },
-  ];
+  const { data: currentPartners = [], isLoading: partnersLoading } = usePublicPartners();
 
   const partnershipBenefits = [
     {
@@ -374,45 +350,66 @@ const Partnership: React.FC = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
-            {currentPartners.map((partner, index) => (
-              <motion.div
-                key={partner.name}
-                className="group bg-white rounded-2xl border border-gray-100 p-7 flex flex-col items-center text-center hover:border-[#D42A3F]/30 hover:shadow-md transition-all duration-300"
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.08, duration: 0.5, ease: easing }}
-              >
-                <div className="w-14 h-14 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden mb-4 group-hover:border-[#D42A3F]/20 transition-colors">
-                  {partner.logo ? (
-                    <img
-                      src={partner.logo}
-                      alt={`${partner.name} logo`}
-                      className="w-full h-full object-contain p-2"
-                    />
-                  ) : (
-                    <span className="text-xs font-bold text-[#B01C2E]">
-                      {partner.name
-                        .split(' ')
-                        .slice(0, 2)
-                        .map((w) => w[0])
-                        .join('')}
+          {partnersLoading ? (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="bg-white rounded-2xl border border-gray-100 p-7 animate-pulse">
+                  <div className="w-14 h-14 rounded-2xl bg-gray-100 mx-auto mb-4" />
+                  <div className="h-4 bg-gray-100 rounded mx-auto mb-2 w-3/4" />
+                  <div className="h-3 bg-gray-100 rounded mx-auto w-1/2" />
+                </div>
+              ))}
+            </div>
+          ) : currentPartners.length === 0 ? (
+            <div className="text-center py-12 text-gray-400 text-sm">
+              No partners to display at the moment.
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+              {currentPartners.map((partner, index) => (
+                <motion.div
+                  key={partner.id}
+                  className="group bg-white rounded-2xl border border-gray-100 p-7 flex flex-col items-center text-center hover:border-[#D42A3F]/30 hover:shadow-md transition-all duration-300"
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.08, duration: 0.5, ease: easing }}
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden mb-4 group-hover:border-[#D42A3F]/20 transition-colors">
+                    {partner.logo_url ? (
+                      <img
+                        src={partner.logo_url}
+                        alt={`${partner.name} logo`}
+                        className="w-full h-full object-contain p-2"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    ) : (
+                      <span className="text-xs font-bold text-[#B01C2E]">
+                        {partner.name
+                          .split(' ')
+                          .slice(0, 2)
+                          .map((w) => w[0])
+                          .join('')}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="font-bold text-gray-900 text-sm mb-1.5">
+                    {partner.name}
+                  </h3>
+                  {partner.type && (
+                    <span className="text-xs font-medium text-[#B01C2E] bg-red-50 border border-red-100 rounded-full px-2.5 py-0.5 mb-2.5">
+                      {partner.type}
                     </span>
                   )}
-                </div>
-                <h3 className="font-bold text-gray-900 text-sm mb-1.5">
-                  {partner.name}
-                </h3>
-                <span className="text-xs font-medium text-[#B01C2E] bg-red-50 border border-red-100 rounded-full px-2.5 py-0.5 mb-2.5">
-                  {partner.type}
-                </span>
-                <p className="text-xs text-gray-400 leading-relaxed">
-                  {partner.impact}
-                </p>
-              </motion.div>
-            ))}
-          </div>
+                  {partner.description && (
+                    <p className="text-xs text-gray-400 leading-relaxed">
+                      {partner.description}
+                    </p>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          )}
 
           <motion.p
             className="text-center text-sm text-gray-400 mt-10"

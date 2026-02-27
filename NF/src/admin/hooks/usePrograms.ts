@@ -37,9 +37,11 @@ function normalizePayload(payload: Record<string, any>, name?: string): Record<s
 }
 
 /**
- * Attempt a PostgREST write, automatically dropping any column that the
- * database doesn't know about yet (code === '42703') and retrying once.
- * This lets the app stay functional when a migration hasn't been applied.
+ * Attempt a PostgREST write, automatically dropping any columns that the
+ * database doesn't know about yet (code === '42703') and retrying.
+ * Handles multiple missing columns by iterating until the write succeeds
+ * or a non-column error is encountered.
+ * This lets the app stay functional when migrations haven't been applied.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function tryWrite(
@@ -48,35 +50,43 @@ async function tryWrite(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload: Record<string, any>,
 ): Promise<Program> {
-  const res = await buildQuery(payload);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let current: Record<string, any> = { ...payload };
+  const MAX_RETRIES = 20; // at most 20 unknown columns before giving up
 
-  if (!res.error) return res.data as Program;
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    const res = await buildQuery(current);
+    if (!res.error) return res.data as Program;
 
-  const { error } = res;
-  console.error('[Programs] DB error:', {
-    code: error.code,
-    message: error.message,
-    details: error.details,
-    hint: error.hint,
-    payload_keys: Object.keys(payload),
-  });
+    const { error } = res;
+    if (attempt === 0) {
+      console.error('[Programs] DB error:', {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        payload_keys: Object.keys(current),
+      });
+    }
 
-  // 42703 = undefined_column — drop the offending column and retry once
-  const colMatch =
-    (error.message as string | undefined)?.match(/column "?([^"]+)"? (of relation|does not exist)/i) ||
-    (error.details as string | undefined)?.match(/column "?([^"]+)"? (of relation|does not exist)/i);
+    // 42703 = undefined_column — drop the offending column and retry
+    const colMatch =
+      (error.message as string | undefined)?.match(/column "?([^"]+)"? (of relation|does not exist)/i) ||
+      (error.details as string | undefined)?.match(/column "?([^"]+)"? (of relation|does not exist)/i);
 
-  if (error.code === '42703' && colMatch?.[1]) {
-    const bad = colMatch[1];
-    console.warn(`[Programs] Column "${bad}" missing in DB — dropping and retrying`);
-    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-    delete payload[bad];
-    const retry = await buildQuery(payload);
-    if (!retry.error) return retry.data as Program;
-    throw retry.error;
+    if (error.code === '42703' && colMatch?.[1]) {
+      const bad = colMatch[1];
+      console.warn(`[Programs] Column "${bad}" missing in DB — dropping and retrying`);
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete current[bad];
+      continue; // retry with the offending column removed
+    }
+
+    // Any other error — stop and throw
+    throw error;
   }
 
-  throw error;
+  throw new Error('[Programs] Too many unknown columns — aborting write');
 }
 
 /**

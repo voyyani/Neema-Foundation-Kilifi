@@ -1,9 +1,13 @@
 // Programs.tsx
 import React, { useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
 
 // Components
 import ProgramsHero from './ProgramsHero';
-import ProgramGrid from './ProgramGrid';
+import ProgramPhotoCard, { ProgramPhotoCardSkeleton } from './ProgramPhotoCard';
+import ProgramAlbumTimeline from './ProgramAlbumTimeline';
 import ErrorBoundary from '../ui/ErrorBoundary';
 
 // Hooks
@@ -43,7 +47,7 @@ const Programs: React.FC = () => {
   return (
     <ErrorBoundary>
       <section id="programs" className="bg-white">
-        {/* Hero — full-bleed, outside container so it spans the full viewport width */}
+        {/* Hero — full-bleed */}
         <ProgramsHero
           programs={allPrograms}
           totalBeneficiaries={programsStats.totalBeneficiaries}
@@ -52,15 +56,60 @@ const Programs: React.FC = () => {
         />
 
         <div className="container max-w-7xl mx-auto px-4 sm:px-6 py-14 sm:py-16 md:py-20">
-          {/*
-           * Photo-first program cards (Phase 3) — mirrors AlbumCard / AlbumGrid
-           * in the Media section. Each card links to /programs/:slug instead
-           * of opening a modal, giving every program a deep-linkable detail page.
-           */}
-          <ProgramGrid
-            publicPrograms={allPrograms}
-            isLoading={isLoading}
-          />
+          {isLoading ? (
+            // Skeleton state
+            <div className="space-y-12">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="flex flex-col lg:flex-row gap-8 animate-pulse">
+                  <div className="lg:w-80 xl:w-96 flex-shrink-0">
+                    <ProgramPhotoCardSkeleton />
+                  </div>
+                  <div className="flex-1 space-y-4 pt-4">
+                    <div className="h-4 bg-gray-100 rounded w-40" />
+                    <div className="h-24 bg-gray-100 rounded-xl" />
+                    <div className="h-24 bg-gray-100 rounded-xl" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-16">
+              {allPrograms.map((program, index) => (
+                <motion.div
+                  key={program.id}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-80px' }}
+                  transition={{ delay: index * 0.05, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                  className="flex flex-col lg:flex-row gap-8 pb-16 border-b border-gray-100 last:border-0 last:pb-0"
+                >
+                  {/* Program card — fixed width on desktop */}
+                  <div className="lg:w-80 xl:w-96 flex-shrink-0">
+                    <ProgramPhotoCard program={program} />
+                    {program.slug && (
+                      <Link
+                        to={`/programs/${program.slug}`}
+                        className="mt-3 flex items-center justify-center gap-1.5 text-xs font-semibold text-[#B01C2E] hover:gap-3 transition-all duration-200 bg-[#B01C2E]/5 hover:bg-[#B01C2E]/10 rounded-xl py-2.5"
+                      >
+                        View full program <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    )}
+                  </div>
+
+                  {/* Album timeline — fills remaining space */}
+                  <div className="flex-1 min-w-0">
+                    {program.slug ? (
+                      <ProgramAlbumTimeline programSlug={program.slug} />
+                    ) : (
+                      <div className="h-full flex items-center justify-center text-gray-300 text-sm border border-dashed border-gray-200 rounded-2xl p-10">
+                        No gallery linked yet
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </ErrorBoundary>

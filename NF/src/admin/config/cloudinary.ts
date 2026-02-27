@@ -12,6 +12,7 @@ export const cloudinaryConfig = {
   uploadPreset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || '',
   apiKey: import.meta.env.VITE_CLOUDINARY_API_KEY || '',
   uploadUrl: `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/upload`,
+  videoUploadUrl: `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/video/upload`,
 };
 
 export const cloudinaryFolders = {

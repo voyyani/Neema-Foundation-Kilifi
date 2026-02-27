@@ -229,8 +229,9 @@ export default function SEOFieldsEditor({
 
             {/* URL input alternative */}
             <div className="mt-3 max-w-md">
+              {/* type="text" — avoids browser URL validation blocking the parent form */}
               <input
-                type="url"
+                type="text"
                 value={socialImage || ''}
                 onChange={(e) => onSocialImageChange(e.target.value)}
                 placeholder="Or paste image URL..."

@@ -39,6 +39,9 @@ import {
   Award,
   TrendingUp,
   BarChart3,
+  Play,
+  Video as VideoIcon,
+  X as XIcon,
 } from 'lucide-react';
 
 import OptimizedImage, { buildCloudinaryUrl } from '../components/media/OptimizedImage';
@@ -513,6 +516,146 @@ const ProgramDBMetrics: React.FC<{ programId: string }> = ({ programId }) => {
   );
 };
 
+// 4b. Program Video Section ─────────────────────────────────────────────────
+
+/** Parse a video URL into type + embeddable ID/URL */
+function parseProgramVideo(url: string): { type: 'youtube' | 'vimeo' | 'direct'; embedUrl: string; autoThumb: string } | null {
+  if (!url) return null;
+
+  // YouTube
+  const ytPatterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?/]+)/,
+    /youtube\.com\/shorts\/([^&?/]+)/,
+  ];
+  for (const pattern of ytPatterns) {
+    const m = url.match(pattern);
+    if (m) return {
+      type: 'youtube',
+      embedUrl: `https://www.youtube.com/embed/${m[1]}`,
+      autoThumb: `https://img.youtube.com/vi/${m[1]}/hqdefault.jpg`,
+    };
+  }
+
+  // Vimeo
+  const vm = url.match(/vimeo\.com\/(?:video\/)?([0-9]+)/);
+  if (vm) return { type: 'vimeo', embedUrl: `https://player.vimeo.com/video/${vm[1]}`, autoThumb: '' };
+
+  // Direct / Cloudinary / any other URL treated as a native video
+  return { type: 'direct', embedUrl: url, autoThumb: '' };
+}
+
+const ProgramVideoSection: React.FC<{
+  videoUrl: string;
+  thumbnailUrl?: string;
+  programName: string;
+}> = ({ videoUrl, thumbnailUrl, programName }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const parsed = parseProgramVideo(videoUrl);
+  if (!parsed) return null;
+
+  const displayThumb = thumbnailUrl || parsed.autoThumb;
+
+  return (
+    <section className="bg-gray-950 py-14 md:py-20">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section header */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mb-8 text-center"
+        >
+          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/10 rounded-full px-4 py-1.5 mb-4">
+            <VideoIcon className="w-3.5 h-3.5 text-[#EF4444]" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-white/70">Watch</span>
+          </div>
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-white">
+            {programName} in Action
+          </h2>
+        </motion.div>
+
+        {/* Video player */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="relative aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl ring-1 ring-white/10"
+        >
+          {isPlaying ? (
+            <>
+              {parsed.type === 'direct' ? (
+                <video
+                  src={parsed.embedUrl}
+                  controls
+                  autoPlay
+                  className="w-full h-full"
+                />
+              ) : (
+                <iframe
+                  src={`${parsed.embedUrl}?autoplay=1`}
+                  title={`${programName} video`}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              )}
+              {/* Stop overlay button */}
+              <button
+                type="button"
+                onClick={() => setIsPlaying(false)}
+                className="absolute top-3 right-3 p-2 bg-black/60 hover:bg-black/80 rounded-lg text-white transition-colors z-10"
+                aria-label="Stop video"
+              >
+                <XIcon className="w-4 h-4" />
+              </button>
+            </>
+          ) : (
+            <>
+              {/* Thumbnail */}
+              {displayThumb ? (
+                <img
+                  src={displayThumb}
+                  alt={`${programName} video thumbnail`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-900 flex items-center justify-center">
+                  <VideoIcon className="w-20 h-20 text-white/10" />
+                </div>
+              )}
+
+              {/* Dark gradient overlay */}
+              <div className="absolute inset-0 bg-black/30" />
+
+              {/* Play button */}
+              <button
+                type="button"
+                onClick={() => setIsPlaying(true)}
+                className="absolute inset-0 flex items-center justify-center group"
+                aria-label={`Play ${programName} video`}
+              >
+                <motion.div
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-2xl group-hover:bg-gray-50 transition-colors"
+                >
+                  <Play className="w-8 h-8 text-[#B01C2E] ml-1" fill="currentColor" />
+                </motion.div>
+              </button>
+            </>
+          )}
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
 // 4. Photo Gallery section wrapper ─────────────────────────────────────────────
 // (Uses ProgramPhotoGallery component)
 
@@ -839,6 +982,15 @@ const ProgramDetailPage: React.FC = () => {
           programName={program.name}
         />
       </section>
+
+      {/* 4b — Program Video (only when a video URL has been set) */}
+      {program.video_url && (
+        <ProgramVideoSection
+          videoUrl={program.video_url}
+          thumbnailUrl={program.video_thumbnail}
+          programName={program.name}
+        />
+      )}
 
       {/* 5 — Upcoming Events */}
       <ProgramUpcomingEvents programId={program.id} />

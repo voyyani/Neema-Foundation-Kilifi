@@ -1,8 +1,10 @@
 // Video URL Input with Preview
-// Supports YouTube, Vimeo, and direct video URLs
+// Supports YouTube, Vimeo, direct video URLs, and Cloudinary video uploads
 
-import { useState, useMemo } from 'react';
-import { Video, Play, X, Link, RefreshCw, AlertCircle, ExternalLink } from 'lucide-react';
+import { useState, useMemo, useRef } from 'react';
+import { Video, Play, X, Link, RefreshCw, AlertCircle, ExternalLink, Upload, Loader2 } from 'lucide-react';
+import { useCloudinaryUpload } from '../../hooks/useCloudinaryUpload';
+import { cloudinaryFolders } from '../../config/cloudinary';
 
 interface VideoUrlInputProps {
   videoUrl: string;
@@ -44,7 +46,8 @@ function getAutoThumbnail(type: 'youtube' | 'vimeo' | 'direct' | null, id: strin
   
   switch (type) {
     case 'youtube':
-      return `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
+      // hqdefault (480×360) is universally available; maxresdefault (1280×720) 404s on older uploads
+      return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
     case 'vimeo':
       // Vimeo requires API call for thumbnail, return placeholder
       return '';
@@ -77,6 +80,8 @@ export default function VideoUrlInput({
 }: VideoUrlInputProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [customThumbnail, setCustomThumbnail] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { uploadVideo, isUploading, progress } = useCloudinaryUpload();
   
   const videoInfo = useMemo(() => parseVideoUrl(videoUrl), [videoUrl]);
   const autoThumbnail = useMemo(
@@ -98,6 +103,23 @@ export default function VideoUrlInput({
     setCustomThumbnail(false);
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // Reset so the same file can be re-selected
+    e.target.value = '';
+
+    const result = await uploadVideo(file, {
+      folder: cloudinaryFolders.programs,
+      tags: ['program-video'],
+    });
+
+    if (result?.secureUrl) {
+      onVideoChange(result.secureUrl);
+      setIsPlaying(false);
+    }
+  };
+
   const handleAutoThumbnail = () => {
     if (autoThumbnail) {
       onThumbnailChange?.(autoThumbnail);
@@ -116,8 +138,9 @@ export default function VideoUrlInput({
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Video className="w-5 h-5 text-gray-400" />
           </div>
+          {/* Use type="text" so browser URL validation never blocks the parent form */}
           <input
-            type="url"
+            type="text"
             value={videoUrl}
             onChange={(e) => {
               onVideoChange(e.target.value);
@@ -140,6 +163,53 @@ export default function VideoUrlInput({
             </button>
           )}
         </div>
+
+        {/* Upload from device */}
+        <div className="mt-2 flex items-center gap-3">
+          <span className="text-xs text-gray-400">— or —</span>
+          <button
+            type="button"
+            disabled={isUploading}
+            onClick={() => fileInputRef.current?.click()}
+            className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+          >
+            {isUploading ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                Uploading {progress.percentage}%…
+              </>
+            ) : (
+              <>
+                <Upload className="w-3.5 h-3.5" />
+                Upload video file
+              </>
+            )}
+          </button>
+          <span className="text-xs text-gray-400">MP4, WebM, MOV (max 200 MB)</span>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="video/mp4,video/webm,video/quicktime,video/avi,video/x-matroska,.mp4,.webm,.mov,.avi,.mkv"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
+        </div>
+
+        {/* Upload progress bar */}
+        {isUploading && progress.total > 0 && (
+          <div className="mt-2">
+            <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-[#B01C2E] transition-all duration-200"
+                style={{ width: `${progress.percentage}%` }}
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-1 text-right">
+              {Math.round(progress.loaded / 1024 / 1024 * 10) / 10} MB /{' '}
+              {Math.round(progress.total / 1024 / 1024 * 10) / 10} MB
+            </p>
+          </div>
+        )}
         
         {/* Platform indicator */}
         {videoUrl && (
@@ -273,8 +343,9 @@ export default function VideoUrlInput({
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Link className="w-5 h-5 text-gray-400" />
             </div>
+            {/* type="text" — avoids browser URL validation blocking the parent form */}
             <input
-              type="url"
+              type="text"
               value={thumbnailUrl || ''}
               onChange={(e) => {
                 onThumbnailChange(e.target.value);

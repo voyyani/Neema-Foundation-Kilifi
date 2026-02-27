@@ -44,17 +44,18 @@ function badgeLabel(album: PublicMediaAlbum): string {
   return TYPE_LABEL[album.album_type];
 }
 
-function albumHref(album: PublicMediaAlbum): string {
+export function albumHref(album: PublicMediaAlbum): string {
+  // Event albums → event story page
   if (album.album_type === 'event' && album.event?.slug) {
     return `/media/events/${album.event.slug}`;
   }
-  if (album.album_type === 'program' && album.program?.slug) {
-    return `/media/programs/${album.program.slug}`;
-  }
+  // All other albums (including program albums) → the specific album page
+  // The program gallery (/media/programs/:slug) is linked from program-level CTAs,
+  // not from individual album cards.
   return `/media/albums/${album.slug}`;
 }
 
-function formatDate(iso: string | null): string {
+export function formatDate(iso: string | null): string {
   if (!iso) return '';
   const d = new Date(iso);
   return d.toLocaleDateString('en-KE', { month: 'long', year: 'numeric' });
@@ -183,4 +184,3 @@ const AlbumCardSkeleton: React.FC = () => (
 );
 
 export default AlbumCard;
-export { albumHref, formatDate };

@@ -1,5 +1,5 @@
 // src/pages/Volunteer.tsx - FIXED IMPORT STRUCTURE
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { 
   Users, Clock, Calendar, GraduationCap, Heart, Map, 
   FileText, Laptop, Star, Award, CheckCircle
@@ -10,7 +10,6 @@ import {
   VolunteerHero,
   VolunteerRoles,
   VolunteerJourney,
-  TestimonialsCarousel,
   VolunteerBenefits,
   ApplicationCTA,
   FAQSection,
@@ -20,17 +19,16 @@ import type {
   VolunteerStats,
   VolunteerRole,
   JourneyStep,
-  Testimonial,
   Benefit,
   FAQ
 } from '../components/volunteer';
+import Stories from '../components/Stories';
 
 const Volunteer: React.FC = () => {
   // State management
   const [activeFilter, setActiveFilter] = useState('all');
   const [currentStep, setCurrentStep] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [testimonialIndex, setTestimonialIndex] = useState(0);
 
   // Data constants
   const volunteerStats: VolunteerStats[] = [
@@ -112,27 +110,6 @@ const Volunteer: React.FC = () => {
     { step: 6, title: 'Impact Recognition', duration: 'Quarterly', description: 'Celebrate achievements and impact' }
   ];
 
-  const testimonials: Testimonial[] = [
-    {
-      name: 'Killian Kasena',
-      role: 'Media Volunteer',
-      quote: 'Volunteering with Neema Foundation transformed my perspective on media and communication. The impact we\'ve made in Ganze is incredible.',
-      stats: '2+ years volunteering'
-    },
-    {
-      name: 'Ngowa Karisa',
-      role: 'IT Specialist',
-      quote: 'Seeing children light up when they finally understand a concept - that\'s why I volunteer. The foundation\'s support makes it possible.',
-      stats: '1 year volunteering'
-    },
-    {
-      name: 'Grace Kamuche',
-      role: 'Community Outreach',
-      quote: 'The training and community we\'ve built here is amazing. I\'ve grown both personally and professionally while making a real difference.',
-      stats: '1.5 years volunteering'
-    }
-  ];
-
   const benefits: Benefit[] = [
     {
       icon: Award,
@@ -186,19 +163,6 @@ const Volunteer: React.FC = () => {
     setCurrentStep(1);
   }, []);
 
-  const nextTestimonial = useCallback(() => {
-    setTestimonialIndex((prev) => (prev + 1) % testimonials.length);
-  }, [testimonials.length]);
-
-  const prevTestimonial = useCallback(() => {
-    setTestimonialIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-  }, [testimonials.length]);
-
-  const handleAutoPlay = useCallback((interval: number) => {
-    const timer = setInterval(nextTestimonial, interval);
-    return () => clearInterval(timer);
-  }, [nextTestimonial]);
-
   // Downloadable story-sharing form (plain text via data URL)
   const storyFormHref = `data:text/plain;charset=utf-8,${encodeURIComponent(
     `Neema Foundation – Volunteer Story Share Form\n\nContact\n- Full name:\n- Email:\n- Phone:\n- Volunteer role/team:\n\nYour Story\n- Title:\n- Date or period of the story:\n- Location:\n- What happened? (5-10 sentences)\n- Who was impacted? (individuals/groups)\n- What was the outcome or change?\n- Key numbers (people reached, hours contributed, funds raised, etc.):\n\nMedia & Consent\n- Do you have photos/videos to share? (Y/N)\n- If yes, list filenames/links:\n- Do you grant permission to publish this story on NF channels? (Y/N)\n- If the story includes others, do you have their consent? (Y/N)\n\nFollow-up\n- Best time/method to contact you for clarification:\n\nSignature\n- I confirm this story is accurate to the best of my knowledge.\n- Signature & Date:\n`)}`;
@@ -210,12 +174,6 @@ const Volunteer: React.FC = () => {
   const previousStep = useCallback(() => {
     setCurrentStep(prev => Math.max(1, prev - 1));
   }, []);
-
-  // Auto-play testimonials
-  useEffect(() => {
-    const cleanup = handleAutoPlay(5000);
-    return cleanup;
-  }, [handleAutoPlay]);
 
   return (
     <div className="min-h-screen flex flex-col w-full overflow-x-hidden">
@@ -232,13 +190,7 @@ const Volunteer: React.FC = () => {
 
       <VolunteerJourney journey={volunteerJourney} />
 
-      <TestimonialsCarousel 
-        testimonials={testimonials}
-        currentIndex={testimonialIndex}
-        onNext={nextTestimonial}
-        onPrevious={prevTestimonial}
-        onAutoPlay={handleAutoPlay}
-      />
+      <Stories />
 
       <VolunteerBenefits benefits={benefits} />
 

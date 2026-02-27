@@ -337,10 +337,10 @@ const BankDetails: React.FC = () => {
                     <p className="text-sm text-gray-500 leading-relaxed">
                       After making your donation, please email us at{' '}
                       <a
-                        href="mailto:donations@neemafoundation.org"
+                        href="mailto:neemafoundation003@gmail.com"
                         className="text-[#B01C2E] font-medium hover:underline underline-offset-4"
                       >
-                        donations@neemafoundation.org
+                        neemafoundation003@gmail.com
                       </a>{' '}
                       with your donation details so we can properly acknowledge your contribution.
                       Thank you for your generosity!

@@ -130,6 +130,8 @@ export default function EnhancedProgramForm({
   };
 
   // Save handler
+  const SAVE_TIMEOUT_MS = 20_000; // 20 s — prevents infinite spinner on network hangs
+
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     setSubmitError(null);
@@ -141,7 +143,20 @@ export default function EnhancedProgramForm({
 
     setIsSaving(true);
     try {
-      await onSave(formData);
+      await Promise.race([
+        onSave(formData),
+        new Promise<never>((_, reject) =>
+          setTimeout(
+            () =>
+              reject(
+                new Error(
+                  'Save timed out after 20 seconds — please check your connection and try again.',
+                )
+              ),
+            SAVE_TIMEOUT_MS,
+          )
+        ),
+      ]);
       // onSave closes the modal on success — if we're still here something went wrong
     } catch (err: unknown) {
       const message =
@@ -286,7 +301,8 @@ export default function EnhancedProgramForm({
               </button>
             </div>
           )}
-          <form onSubmit={handleSubmit}>
+          {/* noValidate stops browser URL/email native validation from blocking our JS-driven save */}
+          <form onSubmit={handleSubmit} noValidate>
             {/* BASIC INFO SECTION */}
             {activeSection === 'basic' && (
               <div className="space-y-6 max-w-2xl">
@@ -765,61 +781,87 @@ export default function EnhancedProgramForm({
           </form>
         </div>
 
-        {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between bg-gray-50">
-          <div className="flex items-center gap-2">
+        {/* ── Footer ─────────────────────────────────────────────────────────── */}
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-200 bg-gray-50 space-y-2 sm:space-y-0">
+          {/* Primary row: Prev · step indicator (mobile) · Right actions */}
+          <div className="flex items-center justify-between gap-2">
+
+            {/* ── Previous ── */}
             <button
               type="button"
               onClick={goToPrev}
               disabled={!canGoBack}
-              className="flex items-center gap-1 px-4 py-2 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1 px-3 sm:px-4 py-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-sm font-medium"
             >
-              <ChevronLeft className="w-5 h-5" />
-              Previous
-            </button>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={isSaving}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-            >
-              Cancel
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+              <span>Previous</span>
             </button>
 
-            {/* Save is always visible — no need to reach the last tab */}
-            <button
-              type="button"
-              onClick={() => handleSubmit()}
-              disabled={isSaving}
-              className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSaving ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="w-5 h-5" />
-                  {program ? 'Update Program' : 'Create Program'}
-                </>
-              )}
-            </button>
+            {/* Step counter — visible on mobile only */}
+            <span className="text-xs text-gray-400 font-medium sm:hidden">
+              {currentIndex + 1} / {SECTIONS.length}
+            </span>
 
-            {canGoForward && (
+            {/* ── Right-side actions ── */}
+            <div className="flex items-center gap-2">
+              {/* Cancel — hidden on mobile (shown in second row below) */}
               <button
                 type="button"
-                onClick={goToNext}
-                className="flex items-center gap-1 px-4 py-2 bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624]"
+                onClick={onClose}
+                disabled={isSaving}
+                className="hidden sm:flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-white disabled:opacity-50 text-sm transition-colors"
               >
-                Next
-                <ChevronRight className="w-5 h-5" />
+                Cancel
               </button>
-            )}
+
+              {/* Save — icon-only on mobile, full label on sm+ */}
+              <button
+                type="button"
+                onClick={() => handleSubmit()}
+                disabled={isSaving}
+                className="flex items-center gap-1.5 px-3 sm:px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-semibold"
+                aria-label={program ? 'Update Program' : 'Create Program'}
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin shrink-0" />
+                    <span className="hidden sm:inline">Saving…</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 shrink-0" />
+                    <span className="hidden sm:inline">
+                      {program ? 'Update Program' : 'Create Program'}
+                    </span>
+                    {/* Short label on xs only */}
+                    <span className="sm:hidden">{program ? 'Update' : 'Save'}</span>
+                  </>
+                )}
+              </button>
+
+              {/* Next */}
+              {canGoForward && (
+                <button
+                  type="button"
+                  onClick={goToNext}
+                  className="flex items-center gap-1 px-3 sm:px-4 py-2 bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624] transition-colors text-sm font-semibold"
+                >
+                  <span>Next</span>
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />
+                </button>
+              )}
+            </div>
           </div>
+
+          {/* Mobile-only Cancel — full-width second row so it's never hidden */}
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isSaving}
+            className="sm:hidden w-full py-2 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-100 disabled:opacity-50 transition-colors"
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </div>

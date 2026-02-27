@@ -4,9 +4,6 @@ import { Link } from 'react-router-dom';
 import {
   Heart,
   ArrowRight,
-  Coins,
-  CalendarCheck,
-  Star,
   Phone,
   Building2,
   Globe,
@@ -16,15 +13,11 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNFContent } from '../content/useNFContent';
+import { useBankDetails, type PublicBankDetail } from '../hooks/public/useBankDetails';
 
 const easing = [0.22, 1, 0.36, 1] as const;
 
 // --- Types ---
-type DonateMethod =
-  | { type: 'mpesa'; paybill?: string; account?: string }
-  | { type: 'bank'; bankName?: string; accountName?: string; accountNumber?: string; swift?: string }
-  | { type: 'stripe'; link?: string };
-
 interface MethodCardData {
   icon: React.ElementType;
   title: string;
@@ -34,33 +27,57 @@ interface MethodCardData {
   external: boolean;
 }
 
-// --- Static data ---
-const FALLBACK_METHODS: MethodCardData[] = [
-  {
-    icon: Coins,
-    title: 'One-Time Gift',
-    body: 'Your one-time gift can help provide medical care, educational resources, or community development support in Ganze.',
-    ctaLabel: 'Donate Once',
-    ctaHref: '/bank-details',
-    external: false,
-  },
-  {
-    icon: CalendarCheck,
-    title: 'Monthly Partner',
-    body: 'Become a monthly donor to provide consistent support that helps us plan and sustain our long-term programs.',
-    ctaLabel: 'Give Monthly',
-    ctaHref: '/bank-details',
-    external: false,
-  },
-  {
-    icon: Star,
-    title: 'Legacy Giving',
-    body: 'Include Neema Foundation in your estate planning to create a lasting legacy of transformation in Ganze.',
-    ctaLabel: 'Learn More',
-    ctaHref: '/bank-details',
-    external: false,
-  },
-];
+// --- Helpers ---
+function publicBankDetailToCard(d: PublicBankDetail): MethodCardData {
+  switch (d.method_type) {
+    case 'bank_transfer':
+      return {
+        icon: Building2,
+        title: d.label || 'Bank Transfer',
+        body: [d.bank_name, d.account_name].filter(Boolean).join(' · ') || 'International or local bank wire transfer.',
+        ctaLabel: 'View Bank Details',
+        ctaHref: '/bank-details',
+        external: false,
+      };
+    case 'mpesa_paybill':
+      return {
+        icon: Phone,
+        title: d.label || 'M-Pesa Paybill',
+        body: `Paybill: ${d.paybill_number || 'See details'}${d.account_name ? ` · A/C: ${d.account_name}` : ''}`,
+        ctaLabel: 'View Details',
+        ctaHref: '/bank-details',
+        external: false,
+      };
+    case 'mpesa_till':
+      return {
+        icon: Phone,
+        title: d.label || 'M-Pesa Till',
+        body: `Till: ${d.till_number || 'See details'}${d.account_name ? ` · ${d.account_name}` : ''}`,
+        ctaLabel: 'View Details',
+        ctaHref: '/bank-details',
+        external: false,
+      };
+    case 'paypal':
+      return {
+        icon: Globe,
+        title: d.label || 'PayPal',
+        body: d.instructions || 'Donate securely via PayPal.',
+        ctaLabel: 'View Details',
+        ctaHref: '/bank-details',
+        external: false,
+      };
+    case 'stripe':
+    default:
+      return {
+        icon: Globe,
+        title: d.label || 'Online Donation',
+        body: d.instructions || 'Donate securely online from anywhere in the world.',
+        ctaLabel: 'Donate Online',
+        ctaHref: '/bank-details',
+        external: false,
+      };
+  }
+}
 
 const WHY_REASONS = [
   {
@@ -80,38 +97,7 @@ const WHY_REASONS = [
   },
 ];
 
-// --- Helpers ---
-function methodToCard(m: DonateMethod): MethodCardData {
-  if (m.type === 'mpesa') {
-    return {
-      icon: Phone,
-      title: 'M-Pesa',
-      body: `Paybill: ${m.paybill || 'TBD'}${m.account ? ` · Account: ${m.account}` : ''}`,
-      ctaLabel: 'View Details',
-      ctaHref: '/bank-details',
-      external: false,
-    };
-  }
-  if (m.type === 'bank') {
-    return {
-      icon: Building2,
-      title: 'Bank Transfer',
-      body: `${m.bankName || 'TBD'} · ${m.accountName || 'TBD'}`,
-      ctaLabel: 'View Bank Details',
-      ctaHref: '/bank-details',
-      external: false,
-    };
-  }
-  // stripe
-  return {
-    icon: Globe,
-    title: 'Online Donation',
-    body: 'Donate securely online from anywhere in the world.',
-    ctaLabel: 'Donate Online',
-    ctaHref: m.link ?? '#',
-    external: !!m.link,
-  };
-}
+
 
 // --- Sub-components ---
 const MethodCard: React.FC<MethodCardData> = ({ icon: Icon, title, body, ctaLabel, ctaHref, external }) => (
@@ -163,9 +149,8 @@ const Donate: React.FC = () => {
   const brand = content?.site?.brandName || 'Neema Foundation';
   const mission = content?.site?.mission;
 
-  const rawMethods = content?.donate?.methods ?? [];
-  const methodCards: MethodCardData[] =
-    rawMethods.length > 0 ? rawMethods.map(methodToCard) : FALLBACK_METHODS;
+  const { data: liveDetails = [], isLoading: detailsLoading } = useBankDetails();
+  const methodCards: MethodCardData[] = liveDetails.map(publicBankDetailToCard);
 
   return (
     <>
@@ -235,19 +220,32 @@ const Donate: React.FC = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-8">
-            {methodCards.map((card, index) => (
-              <motion.div
-                key={card.title}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.08, duration: 0.55, ease: easing }}
-              >
-                <MethodCard {...card} />
-              </motion.div>
-            ))}
-          </div>
+          {detailsLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-8">
+              {[1, 2, 3].map((n) => (
+                <div key={n} className="h-52 bg-gray-100 rounded-2xl animate-pulse" />
+              ))}
+            </div>
+          ) : methodCards.length === 0 ? (
+            <p className="text-center text-gray-400 text-sm py-12">
+              Payment methods are being set up — please check back soon or visit the{' '}
+              <Link to="/bank-details" className="text-[#B01C2E] underline underline-offset-4">bank details page</Link>.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-8">
+              {methodCards.map((card, index) => (
+                <motion.div
+                  key={card.title + index}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.08, duration: 0.55, ease: easing }}
+                >
+                  <MethodCard {...card} />
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
