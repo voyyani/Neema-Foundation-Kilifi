@@ -1,8 +1,9 @@
 // components/Contact.tsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Send, Clock } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Clock, Loader2, AlertCircle } from 'lucide-react';
 import { usePublicSiteSettings } from '../hooks/public';
+import { supabase } from '../lib/supabase/client';
 
 const easing = [0.22, 1, 0.36, 1] as const;
 
@@ -10,14 +11,34 @@ const Contact: React.FC = () => {
   const { data: siteSettings } = usePublicSiteSettings();
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Contact form:', form);
-    setSent(true);
+    setError(null);
+    setLoading(true);
+    try {
+      const { error: fnError } = await supabase.functions.invoke('send-notification', {
+        body: {
+          type: 'contact',
+          name: form.name,
+          email: form.email,
+          subject: form.subject,
+          message: form.message,
+        },
+      });
+      if (fnError) throw fnError;
+      setSent(true);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const contactItems = [
@@ -182,11 +203,23 @@ const Contact: React.FC = () => {
                   />
                 </div>
 
+                {error && (
+                  <div className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                    <span>{error}</span>
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full inline-flex items-center justify-center gap-2 bg-[#B01C2E] text-white px-6 py-3.5 rounded-xl font-semibold text-sm hover:bg-[#8A1624] transition-colors"
+                  disabled={loading}
+                  className="w-full inline-flex items-center justify-center gap-2 bg-[#B01C2E] text-white px-6 py-3.5 rounded-xl font-semibold text-sm hover:bg-[#8A1624] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Send Message <Send className="h-4 w-4" aria-hidden="true" />
+                  {loading ? (
+                    <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Sending…</>
+                  ) : (
+                    <>Send Message <Send className="h-4 w-4" aria-hidden="true" /></>
+                  )}
                 </button>
               </form>
             )}

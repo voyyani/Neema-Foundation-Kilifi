@@ -15,3 +15,7 @@ verify_jwt = true
 
 [functions.bank-details]
 verify_jwt = true
+
+[functions.send-notification]
+# Public endpoint — called by unauthenticated form submissions
+verify_jwt = false

@@ -27,7 +27,6 @@ import Stories from '../components/Stories';
 const Volunteer: React.FC = () => {
   // State management
   const [activeFilter, setActiveFilter] = useState('all');
-  const [currentStep, setCurrentStep] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Data constants
@@ -155,25 +154,15 @@ const Volunteer: React.FC = () => {
   // Event handlers
   const openApplicationModal = useCallback(() => {
     setIsModalOpen(true);
-    setCurrentStep(1);
   }, []);
 
   const closeApplicationModal = useCallback(() => {
     setIsModalOpen(false);
-    setCurrentStep(1);
   }, []);
 
   // Downloadable story-sharing form (plain text via data URL)
   const storyFormHref = `data:text/plain;charset=utf-8,${encodeURIComponent(
     `Neema Foundation – Volunteer Story Share Form\n\nContact\n- Full name:\n- Email:\n- Phone:\n- Volunteer role/team:\n\nYour Story\n- Title:\n- Date or period of the story:\n- Location:\n- What happened? (5-10 sentences)\n- Who was impacted? (individuals/groups)\n- What was the outcome or change?\n- Key numbers (people reached, hours contributed, funds raised, etc.):\n\nMedia & Consent\n- Do you have photos/videos to share? (Y/N)\n- If yes, list filenames/links:\n- Do you grant permission to publish this story on NF channels? (Y/N)\n- If the story includes others, do you have their consent? (Y/N)\n\nFollow-up\n- Best time/method to contact you for clarification:\n\nSignature\n- I confirm this story is accurate to the best of my knowledge.\n- Signature & Date:\n`)}`;
-
-  const nextStep = useCallback(() => {
-    setCurrentStep(prev => Math.min(5, prev + 1));
-  }, []);
-
-  const previousStep = useCallback(() => {
-    setCurrentStep(prev => Math.max(1, prev - 1));
-  }, []);
 
   return (
     <div className="min-h-screen flex flex-col w-full overflow-x-hidden">
@@ -230,11 +219,8 @@ const Volunteer: React.FC = () => {
 
       <ApplicationModal 
         isOpen={isModalOpen}
-        currentStep={currentStep}
         roles={volunteerRoles}
         onClose={closeApplicationModal}
-        onNextStep={nextStep}
-        onPreviousStep={previousStep}
       />
     </div>
   );

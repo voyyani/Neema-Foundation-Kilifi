@@ -10,7 +10,7 @@
  */
 
 import React, { useState } from 'react';
-import { usePublicPartners } from '../hooks/public';
+import { usePublicPartners, usePublicSiteSettings } from '../hooks/public';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import {
@@ -29,7 +29,11 @@ import {
   Star,
   Globe,
   MapPin,
+  Loader2,
+  AlertCircle,
+  CheckCircle,
 } from 'lucide-react';
+import { supabase } from '../lib/supabase/client';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -128,6 +132,11 @@ const Partnership: React.FC = () => {
   ];
 
   const { data: currentPartners = [], isLoading: partnersLoading } = usePublicPartners();
+  const { data: siteSettings } = usePublicSiteSettings();
+
+  const contactEmail = siteSettings?.contact_email || 'partnerships@neemafoundationkilifi.org';
+  const contactPhone = siteSettings?.contact_phone || '+254797484101';
+  const contactPhoneFormatted = contactPhone.replace(/[^+\d]/g, '');
 
   const partnershipBenefits = [
     {
@@ -163,11 +172,33 @@ const Partnership: React.FC = () => {
     partnershipType: 'corporate',
     message: '',
   });
+  const [formLoading, setFormLoading] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [formSent, setFormSent] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Partnership form submitted:', formData);
-    alert('Thank you for your interest! We will contact you within 24 hours.');
+    setFormError(null);
+    setFormLoading(true);
+    try {
+      const { error: fnError } = await supabase.functions.invoke('send-notification', {
+        body: {
+          type: 'partnership',
+          name: formData.name,
+          email: formData.email,
+          organization: formData.organization,
+          partnershipType: formData.partnershipType,
+          message: formData.message,
+        },
+      });
+      if (fnError) throw fnError;
+      setFormSent(true);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+      setFormError(msg);
+    } finally {
+      setFormLoading(false);
+    }
   };
 
   const handleChange = (
@@ -197,7 +228,7 @@ const Partnership: React.FC = () => {
       {/* ══════════════════════════════════════════════════════
           HERO — fullscreen image, mirrors ProgramsHero exactly
       ══════════════════════════════════════════════════════ */}
-      <section className="relative w-full h-[520px] md:h-[640px] overflow-hidden bg-gray-900">
+      <section className="relative w-full min-h-[580px] h-[580px] md:h-[640px] overflow-hidden bg-gray-900">
 
         {/* Background image */}
         <motion.div
@@ -226,7 +257,7 @@ const Partnership: React.FC = () => {
         />
 
         {/* Hero copy — centred */}
-        <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6 max-w-4xl mx-auto">
+        <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6 max-w-4xl mx-auto py-16 md:py-0">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
@@ -282,13 +313,13 @@ const Partnership: React.FC = () => {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.55, duration: 0.6 }}
-            className="mt-12 flex items-center gap-8"
+            className="mt-6 md:mt-12 flex items-center gap-6 md:gap-8"
             aria-label="Partnership statistics"
           >
             {[
-              { value: '4+', label: 'Active Partners' },
+              { value: '3', label: 'Active Partners' },
               { value: '62,000+', label: 'Lives Touched' },
-              { value: '10+', label: 'Years Serving' },
+              { value: '6+', label: 'Years Serving' },
             ].map(({ value, label }, i) => (
               <React.Fragment key={label}>
                 {i > 0 && (
@@ -310,7 +341,7 @@ const Partnership: React.FC = () => {
           initial={{ opacity: 0, x: -16 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.8, duration: 0.5 }}
-          className="absolute bottom-8 left-6 md:left-10 z-20"
+          className="hidden sm:block absolute bottom-8 left-6 md:left-10 z-20"
         >
           <p className="text-white/50 text-xs uppercase tracking-widest mb-0.5">
             Impact destination
@@ -658,6 +689,19 @@ const Partnership: React.FC = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, ease: easing }}
             >
+              {formSent ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <div className="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center mb-5">
+                    <CheckCircle className="h-7 w-7 text-green-600" aria-hidden="true" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Inquiry Received!</h3>
+                  <p className="text-sm text-gray-500 max-w-sm">
+                    Thank you, <strong>{formData.name}</strong>. We will review your inquiry and
+                    reach out within 24 hours.
+                  </p>
+                </div>
+              ) : (
+                <>
               <div className="mb-9">
                 <div className="inline-flex items-center gap-2 bg-red-50 border border-red-100 rounded-full px-3 py-1.5 mb-4">
                   <Handshake className="h-3.5 w-3.5 text-[#B01C2E]" aria-hidden="true" />
@@ -774,11 +818,23 @@ const Partnership: React.FC = () => {
                   />
                 </div>
 
+                {formError && (
+                  <div className="flex items-start gap-2.5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" aria-hidden="true" />
+                    <span>{formError}</span>
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full bg-[#B01C2E] text-white px-6 py-3.5 rounded-xl font-semibold text-sm hover:bg-[#8A1624] transition-colors"
+                  disabled={formLoading}
+                  className="w-full bg-[#B01C2E] text-white px-6 py-3.5 rounded-xl font-semibold text-sm hover:bg-[#8A1624] transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
                 >
-                  Submit Partnership Inquiry
+                  {formLoading ? (
+                    <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> Submitting…</>
+                  ) : (
+                    'Submit Partnership Inquiry'
+                  )}
                 </button>
               </form>
 
@@ -788,21 +844,23 @@ const Partnership: React.FC = () => {
                 </p>
                 <div className="flex flex-col sm:flex-row justify-center gap-6 text-sm">
                   <a
-                    href="mailto:partnerships@neemafoundationkilifi.org"
+                    href={`mailto:${contactEmail}`}
                     className="inline-flex items-center justify-center gap-2 text-gray-500 hover:text-[#B01C2E] transition-colors"
                   >
                     <Mail className="h-4 w-4 shrink-0" aria-hidden="true" />
-                    partnerships@neemafoundationkilifi.org
+                    {contactEmail}
                   </a>
                   <a
-                    href="tel:+254797484101"
+                    href={`tel:${contactPhoneFormatted}`}
                     className="inline-flex items-center justify-center gap-2 text-gray-500 hover:text-[#B01C2E] transition-colors"
                   >
                     <Phone className="h-4 w-4 shrink-0" aria-hidden="true" />
-                    +254 797 484 101
+                    {contactPhone}
                   </a>
                 </div>
               </div>
+              </>
+              )}
             </motion.div>
           </div>
         </div>
