@@ -58,6 +58,10 @@ export type {
   AlbumFilterType,
 } from './usePublicMedia';
 
+// ─── Bank Details (Phase 7) ───────────────────────────────────────────────────
+export { useBankDetails } from './useBankDetails';
+export type { PublicBankDetail, PaymentMethodType } from './useBankDetails';
+
 // ─── Program Gallery (Phase 1+) ───────────────────────────────────────────────
 export {
   usePublicProgramImages,

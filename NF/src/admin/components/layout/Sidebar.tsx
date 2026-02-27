@@ -68,6 +68,12 @@ const SettingsIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const BankIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" />
+  </svg>
+);
+
 const navigationWithIcons: NavItem[] = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: DashboardIcon, requiredPermission: 'view_dashboard' },
   { name: 'Events', href: '/admin/events', icon: EventsIcon, requiredPermission: 'view_events' },
@@ -75,6 +81,7 @@ const navigationWithIcons: NavItem[] = [
   { name: 'Content', href: '/admin/content', icon: ContentIcon, requiredPermission: 'view_content' },
   { name: 'Programs', href: '/admin/content/programs', icon: ProgramsIcon, requiredPermission: 'view_content' },
   { name: 'Users', href: '/admin/users', icon: UsersIcon, requiredPermission: 'view_users' },
+  { name: 'Bank Details', href: '/admin/bank-details', icon: BankIcon, requiredPermission: 'view_bank_details' },
   { name: 'Site Settings', href: '/admin/site-settings', icon: SettingsIcon, requiredPermission: 'view_settings' },
 ];
 

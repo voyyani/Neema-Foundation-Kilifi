@@ -8,3 +8,8 @@ export {
   useDeleteProgramImage,
   useReorderProgramImages,
 } from './useProgramImageAdmin';
+export { useBankDetailsAdmin } from './useBankDetailsAdmin';
+export type {
+  UseBankDetailsAdminReturn,
+  SavingState,
+} from './useBankDetailsAdmin';

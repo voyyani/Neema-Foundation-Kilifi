@@ -118,7 +118,11 @@ export type Permission =
   | 'manage_site_maintenance'
   // Reports
   | 'view_reports'
-  | 'export_reports';
+  | 'export_reports'
+  // Bank Details
+  | 'view_bank_details'     // View admin bank details page (masked sensitive data)
+  | 'edit_bank_details'     // Edit existing payment method records
+  | 'manage_bank_details';  // Create, delete, reorder, toggle visibility
 
 export type PermissionSet = {
   [K in Permission]?: boolean;
@@ -154,6 +158,10 @@ export const ROLE_PERMISSIONS: Record<UserRole, PermissionSet> = {
     manage_site_maintenance: true,
     view_reports: true,
     export_reports: true,
+    // Bank Details
+    view_bank_details: true,
+    edit_bank_details: true,
+    manage_bank_details: true,
   },
   owner: {
     // Everything except user management
@@ -174,6 +182,10 @@ export const ROLE_PERMISSIONS: Record<UserRole, PermissionSet> = {
     manage_site_maintenance: true,
     view_reports: true,
     export_reports: true,
+    // Bank Details
+    view_bank_details: true,
+    edit_bank_details: true,
+    manage_bank_details: true,
   },
   admin: {
     // All except Events, Content tabs, and Users
@@ -184,6 +196,10 @@ export const ROLE_PERMISSIONS: Record<UserRole, PermissionSet> = {
     manage_site_maintenance: true,
     view_reports: true,
     export_reports: true,
+    // Bank Details
+    view_bank_details: true,
+    edit_bank_details: true,
+    manage_bank_details: true,
   },
   events_manager: {
     // Events only
@@ -258,6 +274,14 @@ export const SIDEBAR_ITEMS: SidebarItem[] = [
     icon: 'settings',
     requiredPermission: 'view_settings',
     description: 'Configure site settings',
+  },
+  {
+    name: 'Bank Details',
+    href: '/admin/bank-details',
+    icon: 'bank',
+    requiredRoles: ['super_admin', 'owner', 'admin'],
+    requiredPermission: 'view_bank_details',
+    description: 'Manage donation payment methods',
   },
 ];
 

@@ -12,3 +12,6 @@ id = "your-project-ref"
 
 [functions.invite-user]
 verify_jwt = true
+
+[functions.bank-details]
+verify_jwt = true

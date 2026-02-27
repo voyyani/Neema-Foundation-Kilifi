@@ -53,6 +53,9 @@ const MediaLibraryPage = lazyWithRetry(() => import('./admin/pages/media/MediaLi
 const AlbumDetailPage  = lazyWithRetry(() => import('./admin/pages/media/AlbumDetailPage'));
 const BulkUploadPage   = lazyWithRetry(() => import('./admin/pages/media/BulkUploadPage'));
 
+// Bank Details Management (Phase 6)
+const BankDetailsAdminPage = lazyWithRetry(() => import('./admin/pages/BankDetailsAdminPage'));
+
 // Public Media Pages (Phase 2)
 const MediaPage          = lazyWithRetry(() => import('./pages/MediaPage'));
 const EventStoryPage     = lazyWithRetry(() => import('./pages/media/EventStoryPage'));
@@ -159,6 +162,8 @@ const App: React.FC = () => {
                     <Route path="media" element={<MediaLibraryPage />} />
                     <Route path="media/upload" element={<BulkUploadPage />} />
                     <Route path="media/albums/:id" element={<AlbumDetailPage />} />
+                    {/* Bank Details Management — Phase 6 */}
+                    <Route path="bank-details" element={<BankDetailsAdminPage />} />
                   </Route>
                 </Route>
 

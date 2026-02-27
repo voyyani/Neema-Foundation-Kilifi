@@ -1,62 +1,241 @@
 // src/pages/BankDetails.tsx
+// Phase 7 — live data from Supabase `bank_details_public` view.
+// Backwards-compatible: degrades cleanly when no records are published yet.
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Copy, Check, Building2, Smartphone, Heart, ArrowRight, ShieldCheck } from 'lucide-react';
+import {
+  Copy,
+  Check,
+  Building2,
+  Smartphone,
+  Globe,
+  CreditCard,
+  Heart,
+  ArrowRight,
+  ShieldCheck,
+  AlertCircle,
+  RefreshCw,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useBankDetails, type PublicBankDetail, type PaymentMethodType } from '../hooks/public/useBankDetails';
 import { useNFContent } from '../content/useNFContent';
 
 const easing = [0.22, 1, 0.36, 1] as const;
 
+// ---------------------------------------------------------------------------
+// Method-type metadata
+// ---------------------------------------------------------------------------
+
+interface MethodMeta {
+  icon:     React.ComponentType<{ className?: string }>;
+  iconBg:   string;
+  iconFg:   string;
+  subtitle: string;
+}
+
+const METHOD_META: Record<PaymentMethodType, MethodMeta> = {
+  bank_transfer: {
+    icon:     Building2,
+    iconBg:   'bg-red-50',
+    iconFg:   'text-[#B01C2E]',
+    subtitle: 'Direct bank transfer',
+  },
+  mpesa_paybill: {
+    icon:     Smartphone,
+    iconBg:   'bg-green-50',
+    iconFg:   'text-green-600',
+    subtitle: 'M-Pesa Paybill — Kenya',
+  },
+  mpesa_till: {
+    icon:     Smartphone,
+    iconBg:   'bg-green-50',
+    iconFg:   'text-green-600',
+    subtitle: 'M-Pesa Till — Kenya',
+  },
+  paypal: {
+    icon:     Globe,
+    iconBg:   'bg-blue-50',
+    iconFg:   'text-blue-600',
+    subtitle: 'PayPal online payment',
+  },
+  stripe: {
+    icon:     CreditCard,
+    iconBg:   'bg-purple-50',
+    iconFg:   'text-purple-600',
+    subtitle: 'Card payment via Stripe',
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Build copyable rows per method type
+// ---------------------------------------------------------------------------
+
+interface DetailRowData { label: string; value: string; key: string; }
+
+function buildRows(detail: PublicBankDetail): DetailRowData[] {
+  const rows: DetailRowData[] = [];
+  const push = (label: string, value: string | null | undefined, key: string) => {
+    if (value && value.trim()) rows.push({ label, value: value.trim(), key });
+  };
+  switch (detail.method_type) {
+    case 'bank_transfer':
+      push('Bank Name',      detail.bank_name,           `${detail.id}-bank_name`);
+      push('Account Name',   detail.account_name,        `${detail.id}-account_name`);
+      push('Account Number', detail.account_number_mask, `${detail.id}-account_number`);
+      push('SWIFT Code',     detail.swift_code_mask,     `${detail.id}-swift`);
+      push('IBAN',           detail.iban_mask,           `${detail.id}-iban`);
+      break;
+    case 'mpesa_paybill':
+      push('Paybill Number', detail.paybill_number, `${detail.id}-paybill`);
+      push('Account Number', detail.account_name,   `${detail.id}-account_name`);
+      break;
+    case 'mpesa_till':
+      push('Till Number',  detail.till_number,  `${detail.id}-till`);
+      push('Account Name', detail.account_name, `${detail.id}-account_name`);
+      break;
+    case 'paypal':
+      push('PayPal Email', detail.paypal_email, `${detail.id}-paypal_email`);
+      break;
+    case 'stripe':
+      // instruction-only — no copyable rows
+      break;
+  }
+  return rows;
+}
+
+// ---------------------------------------------------------------------------
+// DetailRow
+// ---------------------------------------------------------------------------
+
+interface DetailRowProps {
+  label: string; value: string; rowKey: string;
+  copiedKey: string | null;
+  onCopy: (value: string, key: string) => void;
+}
+
+const DetailRow: React.FC<DetailRowProps> = ({ label, value, rowKey, copiedKey, onCopy }) => (
+  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-4 border-b border-gray-50 last:border-0">
+    <div>
+      <p className="text-xs text-gray-400 uppercase tracking-wider font-medium mb-0.5">{label}</p>
+      <p className="text-sm font-semibold text-gray-900">{value}</p>
+    </div>
+    <button
+      onClick={() => onCopy(value, rowKey)}
+      aria-label={`Copy ${label}`}
+      className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg
+                  transition-all duration-200 shrink-0 ${
+        copiedKey === rowKey
+          ? 'bg-green-50 text-green-700 border border-green-200'
+          : 'bg-gray-50 text-gray-500 border border-gray-100 hover:bg-red-50 hover:text-[#B01C2E] hover:border-red-200'
+      }`}
+    >
+      {copiedKey === rowKey
+        ? <><Check className="h-3.5 w-3.5" /> Copied</>
+        : <><Copy  className="h-3.5 w-3.5" /> Copy</>}
+    </button>
+  </div>
+);
+
+// ---------------------------------------------------------------------------
+// PaymentMethodCard
+// ---------------------------------------------------------------------------
+
+interface PaymentMethodCardProps {
+  detail: PublicBankDetail;
+  delay: number;
+  copiedKey: string | null;
+  onCopy: (value: string, key: string) => void;
+}
+
+const PaymentMethodCard: React.FC<PaymentMethodCardProps> = ({ detail, delay, copiedKey, onCopy }) => {
+  const meta = METHOD_META[detail.method_type] ?? METHOD_META.bank_transfer;
+  const Icon = meta.icon;
+  const rows = buildRows(detail);
+  return (
+    <motion.div
+      className="bg-white rounded-2xl border border-gray-100 overflow-hidden
+                 hover:border-[#B01C2E]/20 hover:shadow-sm transition-all duration-300"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.55, delay, ease: easing }}
+    >
+      <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-50">
+        <div className={`w-9 h-9 ${meta.iconBg} rounded-xl flex items-center justify-center shrink-0`}>
+          <Icon className={`h-4 w-4 ${meta.iconFg}`} />
+        </div>
+        <div>
+          <h2 className="font-bold text-gray-900 text-sm">{detail.label}</h2>
+          <p className="text-xs text-gray-400">{meta.subtitle}</p>
+        </div>
+      </div>
+      {rows.length > 0 && (
+        <div className="px-6 pb-2">
+          {rows.map((row) => (
+            <DetailRow key={row.key} label={row.label} value={row.value}
+              rowKey={row.key} copiedKey={copiedKey} onCopy={onCopy} />
+          ))}
+        </div>
+      )}
+      {detail.instructions && (
+        <div className="px-6 pb-5 pt-2">
+          <p className="text-xs text-gray-500 leading-relaxed bg-gray-50 rounded-xl px-4 py-3 border border-gray-100">
+            {detail.instructions}
+          </p>
+        </div>
+      )}
+    </motion.div>
+  );
+};
+
+// ---------------------------------------------------------------------------
+// Loading skeleton
+// ---------------------------------------------------------------------------
+
+const CardSkeleton: React.FC<{ delay?: number }> = ({ delay = 0 }) => (
+  <motion.div
+    className="bg-white rounded-2xl border border-gray-100 overflow-hidden"
+    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay }}
+  >
+    <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-50">
+      <div className="w-9 h-9 bg-gray-100 rounded-xl animate-pulse" />
+      <div className="space-y-1.5 flex-1">
+        <div className="h-3.5 bg-gray-100 rounded w-2/5 animate-pulse" />
+        <div className="h-2.5 bg-gray-100 rounded w-1/3 animate-pulse" />
+      </div>
+    </div>
+    <div className="px-6 pb-2">
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="flex justify-between items-center py-4 border-b border-gray-50 last:border-0">
+          <div className="space-y-1">
+            <div className="h-2 bg-gray-100 rounded w-20 animate-pulse" />
+            <div className="h-3.5 bg-gray-100 rounded w-32 animate-pulse" />
+          </div>
+          <div className="h-7 w-16 bg-gray-100 rounded-lg animate-pulse" />
+        </div>
+      ))}
+    </div>
+  </motion.div>
+);
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
+
 const BankDetails: React.FC = () => {
   const { content } = useNFContent();
+  const { data: details, isLoading, isError, refetch } = useBankDetails();
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
+  const brand = content?.site?.brandName || 'Neema Foundation';
+
   const copyToClipboard = (text: string, key: string) => {
-    if (text === 'TBD' || !text) return;
-    navigator.clipboard.writeText(text);
+    navigator.clipboard.writeText(text).catch(() => {});
     setCopiedKey(key);
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
-  const bank = content?.bankDetails;
-  const brand = content?.site?.brandName || 'Neema Foundation';
 
-  const bankRows = [
-    { label: 'Bank Name', value: bank?.bankName || 'TBD', key: 'bankName' },
-    { label: 'Account Name', value: bank?.accountName || 'TBD', key: 'accountName' },
-    { label: 'Account Number', value: bank?.accountNumber || 'TBD', key: 'accountNumber' },
-    { label: 'Swift Code', value: bank?.swift || 'TBD', key: 'swift' },
-    { label: 'IBAN', value: bank?.iban || 'TBD', key: 'iban' },
-  ].filter((r) => r.value && r.value !== '');
-
-  const mpesaRows = [
-    { label: 'M-Pesa Paybill', value: bank?.mpesa?.paybill || 'TBD', key: 'paybill' },
-    { label: 'Till Number', value: bank?.mpesa?.till || 'TBD', key: 'till' },
-  ].filter((r) => r.value && r.value !== '');
-
-  const DetailRow: React.FC<{ label: string; value: string; rowKey: string }> = ({ label, value, rowKey }) => (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-4 border-b border-gray-50 last:border-0">
-      <div>
-        <p className="text-xs text-gray-400 uppercase tracking-wider font-medium mb-0.5">{label}</p>
-        <p className="text-sm font-semibold text-gray-900">{value}</p>
-      </div>
-      <button
-        onClick={() => copyToClipboard(value, rowKey)}
-        disabled={value === 'TBD'}
-        className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-200 shrink-0 ${
-          copiedKey === rowKey
-            ? 'bg-green-50 text-green-700 border border-green-200'
-            : 'bg-gray-50 text-gray-500 border border-gray-100 hover:bg-red-50 hover:text-[#B01C2E] hover:border-red-200 disabled:opacity-40 disabled:cursor-not-allowed'
-        }`}
-      >
-        {copiedKey === rowKey ? (
-          <><Check className="h-3.5 w-3.5" /> Copied</>
-        ) : (
-          <><Copy className="h-3.5 w-3.5" /> Copy</>
-        )}
-      </button>
-    </div>
-  );
 
   return (
     <>
@@ -94,85 +273,82 @@ const BankDetails: React.FC = () => {
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto space-y-6">
 
-            {/* Bank Transfer */}
-            {bankRows.length > 0 && (
-              <motion.div
-                className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-[#B01C2E]/20 transition-all duration-300"
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.55, ease: easing }}
-              >
-                <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-50">
-                  <div className="w-9 h-9 bg-red-50 rounded-xl flex items-center justify-center shrink-0">
-                    <Building2 className="h-4 w-4 text-[#B01C2E]" />
-                  </div>
-                  <div>
-                    <h2 className="font-bold text-gray-900 text-sm">Bank Transfer</h2>
-                    <p className="text-xs text-gray-400">{brand} — Bank Account Details</p>
-                  </div>
-                </div>
-                <div className="px-6 pb-2">
-                  {bankRows.map((row) => (
-                    <DetailRow key={row.key} label={row.label} value={row.value} rowKey={row.key} />
-                  ))}
-                </div>
-              </motion.div>
+            {/* Loading skeleton */}
+            {isLoading && (
+              <>
+                <CardSkeleton delay={0} />
+                <CardSkeleton delay={0.08} />
+              </>
             )}
 
-            {/* M-Pesa */}
-            {mpesaRows.length > 0 && (
+            {/* Error state */}
+            {isError && !isLoading && (
               <motion.div
-                className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-[#B01C2E]/20 transition-all duration-300"
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.55, delay: 0.08, ease: easing }}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex flex-col items-center gap-4 py-16 text-center"
               >
-                <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-50">
-                  <div className="w-9 h-9 bg-green-50 rounded-xl flex items-center justify-center shrink-0">
-                    <Smartphone className="h-4 w-4 text-green-600" />
-                  </div>
-                  <div>
-                    <h2 className="font-bold text-gray-900 text-sm">M-Pesa</h2>
-                    <p className="text-xs text-gray-400">Mobile money — Kenya</p>
-                  </div>
-                </div>
-                <div className="px-6 pb-2">
-                  {mpesaRows.map((row) => (
-                    <DetailRow key={row.key} label={row.label} value={row.value} rowKey={row.key} />
-                  ))}
-                </div>
-              </motion.div>
-            )}
-
-            {/* Confirmation note */}
-            <motion.div
-              className="bg-white rounded-2xl border border-gray-100 p-6"
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.55, delay: 0.14, ease: easing }}
-            >
-              <div className="flex items-start gap-4">
-                <div className="w-9 h-9 bg-green-50 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
-                  <ShieldCheck className="h-4 w-4 text-green-600" />
+                <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center">
+                  <AlertCircle className="h-6 w-6 text-[#B01C2E]" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 text-sm mb-1">Confirm Your Donation</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">
-                    After making your donation, please email us at{' '}
-                    <a
-                      href="mailto:donations@neemafoundation.org"
-                      className="text-[#B01C2E] font-medium hover:underline underline-offset-4"
-                    >
-                      donations@neemafoundation.org
-                    </a>{' '}
-                    with your donation details so we can properly acknowledge your contribution. Thank you for your generosity!
-                  </p>
+                  <p className="font-semibold text-gray-900 text-sm">Could not load payment details</p>
+                  <p className="text-xs text-gray-500 mt-1">Please check your connection and try again.</p>
                 </div>
-              </div>
-            </motion.div>
+                <button
+                  onClick={() => refetch()}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-200
+                             text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  <RefreshCw className="h-3.5 w-3.5" />
+                  Retry
+                </button>
+              </motion.div>
+            )}
+
+            {/* Live payment method cards */}
+            {!isLoading && !isError && details && details.length > 0 && (
+              details.map((detail, i) => (
+                <PaymentMethodCard
+                  key={detail.id}
+                  detail={detail}
+                  delay={i * 0.08}
+                  copiedKey={copiedKey}
+                  onCopy={copyToClipboard}
+                />
+              ))
+            )}
+
+            {/* Confirm your donation — always visible after load */}
+            {!isLoading && (
+              <motion.div
+                className="bg-white rounded-2xl border border-gray-100 p-6"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.55, delay: 0.14, ease: easing }}
+              >
+                <div className="flex items-start gap-4">
+                  <div className="w-9 h-9 bg-green-50 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                    <ShieldCheck className="h-4 w-4 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 text-sm mb-1">Confirm Your Donation</h3>
+                    <p className="text-sm text-gray-500 leading-relaxed">
+                      After making your donation, please email us at{' '}
+                      <a
+                        href="mailto:donations@neemafoundation.org"
+                        className="text-[#B01C2E] font-medium hover:underline underline-offset-4"
+                      >
+                        donations@neemafoundation.org
+                      </a>{' '}
+                      with your donation details so we can properly acknowledge your contribution.
+                      Thank you for your generosity!
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </div>
         </div>
       </section>
