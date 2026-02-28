@@ -58,7 +58,11 @@ async function sendEmail(opts: {
     return;
   }
 
-  const from = Deno.env.get('EMAIL_FROM') ?? 'Neema Foundation <notifications@neemafoundationkilifi.org>';
+  // EMAIL_FROM must be a domain verified in your Resend account.
+  // For testing without domain verification, use: onboarding@resend.dev
+  // For production, verify neemafoundationkilifi.org in Resend and set:
+  //   EMAIL_FROM = Neema Foundation <notifications@neemafoundationkilifi.org>
+  const from = Deno.env.get('EMAIL_FROM') ?? 'Neema Foundation <onboarding@resend.dev>';
 
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -85,39 +89,120 @@ async function sendEmail(opts: {
 // ─── Email Templates ──────────────────────────────────────────────────────────
 
 function baseEmailWrapper(content: string): string {
+  // Inline SVG logo — circular NF badge, renders in Gmail/Apple Mail/Outlook web
+  const svgLogo = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Neema Foundation Kilifi">
+    <!-- Outer ring -->
+    <circle cx="32" cy="32" r="30" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+    <!-- Mid fill -->
+    <circle cx="32" cy="32" r="26" fill="rgba(255,255,255,0.10)"/>
+    <!-- Inner ring -->
+    <circle cx="32" cy="32" r="22" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
+    <!-- NF letters -->
+    <text x="32" y="38" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-size="19" font-weight="700" fill="#ffffff" letter-spacing="2">NF</text>
+  </svg>`.replace(/\n\s*/g, '');
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Neema Foundation Notification</title>
+  <title>Neema Foundation Kilifi</title>
 </head>
-<body style="margin:0;padding:0;background:#f4f4f5;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f5;padding:40px 20px;">
+<body style="margin:0;padding:0;background:#f0f0f0;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f0f0;padding:36px 16px;">
     <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-        <!-- Header -->
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
+
+        <!-- ── HEADER ─────────────────────────────────────────── -->
         <tr>
-          <td style="background:#B01C2E;padding:28px 36px;">
-            <p style="margin:0;color:#ffffff;font-size:11px;text-transform:uppercase;letter-spacing:3px;font-weight:600;">Neema Foundation Kilifi</p>
-            <p style="margin:6px 0 0;color:rgba(255,255,255,0.75);font-size:12px;">Ganze, Kilifi County, Kenya</p>
+          <td style="background:#8B1420;background:linear-gradient(135deg,#700F1A 0%,#9E1826 45%,#B01C2E 100%);padding:0;">
+            <table width="100%" cellpadding="0" cellspacing="0">
+
+              <!-- Top accent stripe -->
+              <tr>
+                <td style="height:4px;background:linear-gradient(90deg,rgba(255,255,255,0.08) 0%,rgba(255,255,255,0.22) 50%,rgba(255,255,255,0.08) 100%);"></td>
+              </tr>
+
+              <!-- Logo + name row -->
+              <tr>
+                <td style="padding:28px 36px 24px;">
+                  <table cellpadding="0" cellspacing="0">
+                    <tr>
+                      <!-- SVG badge -->
+                      <td style="vertical-align:middle;padding-right:18px;">${svgLogo}</td>
+                      <!-- Name + location -->
+                      <td style="vertical-align:middle;">
+                        <p style="margin:0;color:#ffffff;font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;letter-spacing:0.5px;line-height:1.2;">Neema Foundation Kilifi</p>
+                        <p style="margin:5px 0 0;color:rgba(255,255,255,0.60);font-size:11px;text-transform:uppercase;letter-spacing:2.5px;font-weight:500;">Transforming Communities · Kenya</p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Divider with dot ornament -->
+              <tr>
+                <td style="padding:0 36px;">
+                  <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td style="border-top:1px solid rgba(255,255,255,0.15);"></td>
+                      <td style="width:24px;text-align:center;padding:0 8px;">
+                        <span style="color:rgba(255,255,255,0.30);font-size:16px;line-height:0;">&#9670;</span>
+                      </td>
+                      <td style="border-top:1px solid rgba(255,255,255,0.15);"></td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Tagline bar -->
+              <tr>
+                <td style="padding:12px 36px 22px;">
+                  <p style="margin:0;color:rgba(255,255,255,0.45);font-size:10.5px;text-transform:uppercase;letter-spacing:3px;font-weight:500;">
+                    Healthcare &nbsp;·&nbsp; Education &nbsp;·&nbsp; Empowerment
+                  </p>
+                </td>
+              </tr>
+
+            </table>
           </td>
         </tr>
-        <!-- Body -->
+
+        <!-- ── BODY ───────────────────────────────────────────── -->
         <tr>
-          <td style="padding:36px;">
+          <td style="padding:40px 36px 32px;">
             ${content}
           </td>
         </tr>
-        <!-- Footer -->
+
+        <!-- ── FOOTER ─────────────────────────────────────────── -->
         <tr>
           <td style="background:#f9fafb;padding:20px 36px;border-top:1px solid #e5e7eb;">
-            <p style="margin:0;color:#9ca3af;font-size:11px;text-align:center;">
-              This is an automated notification from neemafoundationkilifi.org<br/>
-              Do not reply to this email directly — use the reply-to address above.
-            </p>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td align="center" style="padding-bottom:10px;">
+                  <a href="https://neemafoundationkilifi.org" style="color:#B01C2E;font-size:11px;font-weight:600;text-decoration:none;letter-spacing:0.5px;">neemafoundationkilifi.org</a>
+                  &nbsp;&nbsp;·&nbsp;&nbsp;
+                  <span style="color:#9ca3af;font-size:11px;">Ganze, Kilifi County, Kenya</span>
+                </td>
+              </tr>
+              <tr>
+                <td align="center">
+                  <p style="margin:0;color:#c4c9d0;font-size:10.5px;line-height:1.6;">
+                    Automated notification — do not reply to this email directly.<br/>
+                    Use the reply button above to respond to the sender.
+                  </p>
+                </td>
+              </tr>
+            </table>
           </td>
         </tr>
+
+        <!-- ── BOTTOM ACCENT ──────────────────────────────────── -->
+        <tr>
+          <td style="height:5px;background:linear-gradient(90deg,#700F1A,#B01C2E,#700F1A);border-radius:0 0 16px 16px;"></td>
+        </tr>
+
       </table>
     </td></tr>
   </table>
