@@ -72,6 +72,117 @@ button:focus-visible {
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+  /* iOS rubber-band / momentum scrolling */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* =========================================================
+   Admin Panel — iOS-class mobile experience
+   ========================================================= */
+
+/* Momentum scrolling on every scrollable container */
+.admin-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  scroll-behavior: smooth;
+}
+
+/* Horizontal scroll strip (stats, filters, tab bars) */
+.admin-scroll-x {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  /* Hide scrollbar visually but keep scrollable */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.admin-scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
+/* Safe-area padding helpers */
+.safe-top    { padding-top:    env(safe-area-inset-top,    0px); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.safe-left   { padding-left:   env(safe-area-inset-left,   0px); }
+.safe-right  { padding-right:  env(safe-area-inset-right,  0px); }
+
+/* Prevent double-tap-to-zoom on all interactive elements */
+button,
+a,
+[role="button"],
+input,
+select,
+textarea,
+label {
+  touch-action: manipulation;
+}
+
+/* Remove tap highlight on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* iOS-style press scale — add class "tap-scale" to any element */
+.tap-scale {
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.tap-scale:active {
+  transform: scale(0.95);
+}
+
+/* Smooth spring for cards / drawers */
+@keyframes admin-slide-up {
+  from { transform: translateY(8px); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
+}
+.admin-card-enter {
+  animation: admin-slide-up 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* iOS-style frosted glass header */
+.admin-header-blur {
+  backdrop-filter: saturate(180%) blur(16px);
+  -webkit-backdrop-filter: saturate(180%) blur(16px);
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+/* Minimum 44 × 44 pt touch target (Apple HIG) */
+.touch-target {
+  min-height: 44px;
+  min-width:  44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* iOS inset group (settings-style section) */
+.ios-group {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.06);
+}
+.ios-group-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  min-height: 44px;
+}
+.ios-group-row:last-child {
+  border-bottom: none;
+}
+.ios-group-row:active {
+  background: rgba(0,0,0,0.04);
+}
+
+/* Snap scroll for stat cards */
+.snap-x-mandatory {
+  scroll-snap-type: x mandatory;
+}
+.snap-start {
+  scroll-snap-align: start;
 }
 
 /* Custom scrollbar */

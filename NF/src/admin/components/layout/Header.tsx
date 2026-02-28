@@ -25,14 +25,19 @@ export default function Header({ onMenuClick }: HeaderProps) {
   };
 
   return (
-    <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
-      {/* Mobile menu button */}
+    /*
+     * admin-header-blur: iOS-style frosted glass (saturate + blur).
+     * sticky top-0 keeps it pinned while the page scrolls beneath it.
+     * safe-top:  respect the status-bar notch on iPhone X+.
+     */
+    <div className="admin-header-blur sticky top-0 z-40 flex h-14 shrink-0 items-center gap-x-2 border-b border-gray-200/60 px-3 shadow-sm safe-top sm:h-16 sm:gap-x-4 sm:px-4 lg:px-8">
+      {/* Mobile menu button — 44×44 touch target */}
       <button
         type="button"
-        className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
+        aria-label="Open navigation"
+        className="touch-target tap-scale -ml-1 rounded-xl text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors lg:hidden"
         onClick={onMenuClick}
       >
-        <span className="sr-only">Open sidebar</span>
         <svg
           className="h-6 w-6"
           fill="none"
@@ -51,23 +56,23 @@ export default function Header({ onMenuClick }: HeaderProps) {
       {/* Separator */}
       <div className="h-6 w-px bg-gray-200 lg:hidden" aria-hidden="true" />
 
-      <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-        {/* Breadcrumb or page title could go here */}
+      <div className="flex flex-1 gap-x-3 self-stretch lg:gap-x-6">
+        {/* Page title */}
         <div className="flex flex-1 items-center">
-          <h1 className="text-xl font-semibold text-gray-900">
+          <h1 className="text-base font-semibold text-gray-900 sm:text-lg truncate">
             Welcome back, {profile?.full_name?.split(' ')[0]}
           </h1>
         </div>
 
-        <div className="flex items-center gap-x-4 lg:gap-x-6">
-          {/* Notifications button */}
+        <div className="flex items-center gap-x-1 sm:gap-x-3 lg:gap-x-4">
+          {/* Notifications button — 44×44 touch target */}
           <button
             type="button"
-            className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
+            aria-label="View notifications"
+            className="touch-target tap-scale rounded-xl text-gray-500 hover:bg-gray-100 active:bg-gray-200 transition-colors"
           >
-            <span className="sr-only">View notifications</span>
             <svg
-              className="h-6 w-6"
+              className="h-5 w-5 sm:h-6 sm:w-6"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth="1.5"
@@ -86,15 +91,15 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
           {/* Profile dropdown */}
           <Menu as="div" className="relative">
-            <Menu.Button className="-m-1.5 flex items-center p-1.5">
+            <Menu.Button className="touch-target tap-scale -m-1 rounded-xl hover:bg-gray-100 active:bg-gray-200 transition-colors">
               <span className="sr-only">Open user menu</span>
-              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#B01C2E] to-[#8A1624] flex items-center justify-center">
+              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#B01C2E] to-[#8A1624] flex items-center justify-center ring-2 ring-white shadow-sm">
                 <span className="text-sm font-semibold text-white">
                   {profile?.full_name?.charAt(0).toUpperCase() || 'A'}
                 </span>
               </div>
               <span className="hidden lg:flex lg:items-center">
-                <span className="ml-4 text-sm font-semibold leading-6 text-gray-900" aria-hidden="true">
+                <span className="ml-3 text-sm font-semibold leading-6 text-gray-900" aria-hidden="true">
                   {profile?.full_name}
                 </span>
                 <svg
@@ -113,68 +118,61 @@ export default function Header({ onMenuClick }: HeaderProps) {
             </Menu.Button>
             <Transition
               as={Fragment}
-              enter="transition ease-out duration-100"
-              enterFrom="transform opacity-0 scale-95"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-75"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95"
+              enter="transition ease-out duration-150"
+              enterFrom="transform opacity-0 scale-95 translate-y-1"
+              enterTo="transform opacity-100 scale-100 translate-y-0"
+              leave="transition ease-in duration-100"
+              leaveFrom="transform opacity-100 scale-100 translate-y-0"
+              leaveTo="transform opacity-0 scale-95 translate-y-1"
             >
-              <Menu.Items className="absolute right-0 z-10 mt-2.5 w-56 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+              {/* Dropdown: wider on mobile, frosted + rounded for iOS feel */}
+              <Menu.Items className="absolute right-0 z-10 mt-2 w-64 origin-top-right rounded-2xl bg-white/95 backdrop-blur-md py-1.5 shadow-xl ring-1 ring-black/5 focus:outline-none">
                 {/* Profile info */}
-                <div className="px-4 py-3 border-b border-gray-100">
-                  <p className="text-sm font-medium text-gray-900">{profile?.full_name}</p>
-                  <p className="text-xs text-gray-500 truncate">{profile?.email}</p>
-                  <p className="text-xs text-blue-600 font-medium mt-1 capitalize">
-                    {profile?.role?.replace('_', ' ')}
-                  </p>
+                <div className="px-4 py-3.5 border-b border-gray-100">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#B01C2E] to-[#8A1624] flex items-center justify-center flex-shrink-0">
+                      <span className="text-sm font-bold text-white">
+                        {profile?.full_name?.charAt(0).toUpperCase() || 'A'}
+                      </span>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{profile?.full_name}</p>
+                      <p className="text-xs text-gray-500 truncate">{profile?.email}</p>
+                      <p className="text-xs text-[#B01C2E] font-medium mt-0.5 capitalize">
+                        {profile?.role?.replace('_', ' ')}
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Menu items */}
-                <Menu.Item>
-                  {({ active }) => (
-                    <Link
-                      to="/admin/profile"
-                      className={`${
-                        active ? 'bg-gray-50' : ''
-                      } block px-4 py-2 text-sm text-gray-700`}
-                    >
-                      Your Profile
-                    </Link>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <Link
-                      to="/admin/settings"
-                      className={`${
-                        active ? 'bg-gray-50' : ''
-                      } block px-4 py-2 text-sm text-gray-700`}
-                    >
-                      Settings
-                    </Link>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <Link
-                      to="/"
-                      className={`${
-                        active ? 'bg-gray-50' : ''
-                      } block px-4 py-2 text-sm text-gray-700`}
-                    >
-                      View Website
-                    </Link>
-                  )}
-                </Menu.Item>
+                {/* Menu items with 44px tap targets */}
+                {[
+                  { to: '/admin/profile', label: 'Your Profile' },
+                  { to: '/admin/settings', label: 'Settings' },
+                  { to: '/', label: 'View Website' },
+                ].map((item) => (
+                  <Menu.Item key={item.to}>
+                    {({ active }) => (
+                      <Link
+                        to={item.to}
+                        className={`${
+                          active ? 'bg-gray-50' : ''
+                        } flex items-center px-4 py-3 text-sm text-gray-700 min-h-[44px] transition-colors`}
+                      >
+                        {item.label}
+                      </Link>
+                    )}
+                  </Menu.Item>
+                ))}
+
                 <div className="border-t border-gray-100 my-1" />
                 <Menu.Item>
                   {({ active }) => (
                     <button
                       onClick={handleSignOut}
                       className={`${
-                        active ? 'bg-gray-50' : ''
-                      } block w-full text-left px-4 py-2 text-sm text-red-600`}
+                        active ? 'bg-red-50' : ''
+                      } flex w-full items-center px-4 py-3 text-sm text-red-600 min-h-[44px] transition-colors`}
                     >
                       Sign out
                     </button>

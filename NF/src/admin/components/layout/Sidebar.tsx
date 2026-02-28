@@ -95,13 +95,17 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
   });
 
   return (
-    <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gradient-to-b from-[#B01C2E] to-[#8A1624] px-6 pb-4">
+    /*
+     * admin-scroll: momentum scrolling so long nav lists feel silky on iOS.
+     * safe-bottom: respect home-indicator on iPhone X+.
+     */
+    <div className="flex grow flex-col gap-y-5 overflow-y-auto admin-scroll bg-gradient-to-b from-[#B01C2E] to-[#8A1624] px-6 pb-4 safe-bottom">
       {/* Logo */}
       <div className="flex h-16 shrink-0 items-center">
         <div className="flex items-center space-x-3">
-          <img 
-            src="https://res.cloudinary.com/dzqdxosk2/image/upload/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png" 
-            alt="Neema Foundation Logo" 
+          <img
+            src="https://res.cloudinary.com/dzqdxosk2/image/upload/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png"
+            alt="Neema Foundation Logo"
             className="h-10 w-10 rounded-lg shadow-md bg-white p-0.5"
           />
           <div className="text-white">
@@ -125,9 +129,12 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
                       onClick={onClose}
                       className={clsx(
                         isActive
-                          ? 'bg-[#8A1624] text-white'
-                          : 'text-red-100 hover:text-white hover:bg-[#8A1624]',
-                        'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors'
+                          ? 'bg-white/20 text-white shadow-sm'
+                          : 'text-red-100 hover:text-white hover:bg-white/10',
+                        /* Mobile: larger tap target + press scale feedback */
+                        'tap-scale group flex gap-x-3 rounded-xl p-3 text-sm leading-6 font-semibold transition-colors',
+                        /* Ensures 44 px touch target height (Apple HIG) */
+                        'min-h-[44px]'
                       )}
                     >
                       <item.icon
@@ -146,11 +153,11 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
 
           {/* User Info */}
           <li className="mt-auto">
-            <div className="bg-[#8A1624]/50 rounded-lg p-3">
+            <div className="bg-white/10 rounded-2xl p-3 backdrop-blur-sm">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <div className="h-10 w-10 rounded-full bg-[#D42A3F] flex items-center justify-center">
-                    <span className="text-white font-medium">
+                  <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center ring-2 ring-white/30">
+                    <span className="text-white font-semibold">
                       {profile?.full_name?.charAt(0).toUpperCase() || 'A'}
                     </span>
                   </div>
@@ -175,49 +182,57 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
     <>
-      {/* Mobile sidebar */}
+      {/* Mobile sidebar — iOS-style slide-in drawer */}
       <Transition.Root show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50 lg:hidden" onClose={onClose}>
+          {/* Backdrop: frosted glass dimmer */}
           <Transition.Child
             as={Fragment}
-            enter="transition-opacity ease-linear duration-300"
+            enter="transition-opacity ease-out duration-250"
             enterFrom="opacity-0"
             enterTo="opacity-100"
-            leave="transition-opacity ease-linear duration-300"
+            leave="transition-opacity ease-in duration-200"
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-gray-900/80" />
+            <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-sm" />
           </Transition.Child>
 
           <div className="fixed inset-0 flex">
+            {/* Drawer panel: spring-style cubic-bezier for iPhone feel */}
             <Transition.Child
               as={Fragment}
-              enter="transition ease-in-out duration-300 transform"
+              enter="transition ease-[cubic-bezier(0.32,0.72,0,1)] duration-350"
               enterFrom="-translate-x-full"
               enterTo="translate-x-0"
-              leave="transition ease-in-out duration-300 transform"
+              leave="transition ease-[cubic-bezier(0.32,0.72,0,1)] duration-300"
               leaveFrom="translate-x-0"
               leaveTo="-translate-x-full"
             >
-              <Dialog.Panel className="relative mr-16 flex w-full max-w-xs flex-1">
+              <Dialog.Panel className="relative mr-16 flex w-full max-w-xs flex-1 shadow-2xl">
+                {/* Close button */}
                 <Transition.Child
                   as={Fragment}
-                  enter="ease-in-out duration-300"
+                  enter="ease-out duration-300"
                   enterFrom="opacity-0"
                   enterTo="opacity-100"
-                  leave="ease-in-out duration-300"
+                  leave="ease-in duration-200"
                   leaveFrom="opacity-100"
                   leaveTo="opacity-0"
                 >
                   <div className="absolute left-full top-0 flex w-16 justify-center pt-5">
-                    <button type="button" className="-m-2.5 p-2.5" onClick={onClose}>
+                    {/* 44×44 touch target for close button */}
+                    <button
+                      type="button"
+                      className="touch-target rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 transition-colors tap-scale"
+                      onClick={onClose}
+                    >
                       <span className="sr-only">Close sidebar</span>
                       <svg
                         className="h-6 w-6 text-white"
                         fill="none"
                         viewBox="0 0 24 24"
-                        strokeWidth="1.5"
+                        strokeWidth="2"
                         stroke="currentColor"
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -232,7 +247,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </Dialog>
       </Transition.Root>
 
-      {/* Desktop sidebar */}
+      {/* Desktop sidebar — always visible */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
         <SidebarContent />
       </div>

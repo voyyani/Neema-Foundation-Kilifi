@@ -117,30 +117,35 @@ function StatCard({
   loading: boolean;
 }) {
   return (
-    <div className="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow">
-      <div className="p-5">
+    /*
+     * admin-card-enter: slide-up spring entrance animation.
+     * tap-scale: press feedback like iOS app cards.
+     * On mobile we fix the card width so the parent can snap-scroll.
+     */
+    <div className="admin-card-enter tap-scale bg-white overflow-hidden shadow-sm rounded-2xl hover:shadow-md transition-shadow">
+      <div className="p-4 sm:p-5">
         <div className="flex items-center">
           <div className="flex-shrink-0">
-            <div className="p-3 bg-[#B01C2E]/10 rounded-lg text-[#B01C2E]">
+            <div className="p-2.5 sm:p-3 bg-[#B01C2E]/10 rounded-xl text-[#B01C2E]">
               {icon}
             </div>
           </div>
-          <div className="ml-5 w-0 flex-1">
+          <div className="ml-4 w-0 flex-1">
             <dl>
-              <dt className="text-sm font-medium text-gray-500 truncate">{name}</dt>
-              <dd className="flex items-baseline">
+              <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">{name}</dt>
+              <dd className="flex items-baseline mt-0.5">
                 {loading ? (
                   <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
                 ) : (
-                  <div className="text-2xl font-semibold text-gray-900">{value}</div>
+                  <div className="text-2xl sm:text-3xl font-bold text-gray-900 tabular-nums">{value}</div>
                 )}
               </dd>
             </dl>
           </div>
         </div>
         {subValue && !loading && (
-          <div className="mt-3">
-            <span className="text-sm font-medium text-green-600">{subValue}</span>
+          <div className="mt-2.5">
+            <span className="text-xs sm:text-sm font-medium text-green-600">{subValue}</span>
           </div>
         )}
       </div>
@@ -512,20 +517,20 @@ export default function AdminDashboard() {
   }, [userRole, stats]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 sm:space-y-6">
       {/* Welcome Header */}
-      <div className="bg-gradient-to-r from-[#B01C2E] to-[#8A1624] rounded-lg shadow-lg p-6 text-white">
-        <h1 className="text-3xl font-bold mb-2">
+      <div className="bg-gradient-to-r from-[#B01C2E] to-[#8A1624] rounded-2xl shadow-lg p-5 sm:p-6 text-white">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-1 tracking-tight">
           Welcome back, {profile?.full_name?.split(' ')[0] || profile?.email?.split('@')[0] || 'there'}!
         </h1>
-        <p className="text-red-100">
+        <p className="text-red-100 text-sm sm:text-base">
           You're signed in as <span className="font-semibold">{getRoleDisplayName(profile?.role || '')}</span>
         </p>
       </div>
 
       {/* Story Archive Banner — completed events with no published album */}
       {!storyBannerDismissed && completedWithoutStory.length > 0 && (
-        <div className="relative flex items-start gap-4 rounded-lg border border-amber-200 bg-amber-50 p-5 shadow-sm">
+        <div className="relative flex items-start gap-3 sm:gap-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 sm:p-5 shadow-sm">
           <div className="shrink-0 mt-0.5">
             <Images className="h-5 w-5 text-amber-600" />
           </div>
@@ -535,7 +540,7 @@ export default function AdminDashboard() {
                 ? '1 completed event has no story album'
                 : `${completedWithoutStory.length} completed events have no story album`}
             </p>
-            <p className="text-xs text-amber-700 mt-1">
+            <p className="text-xs text-amber-700 mt-1 leading-relaxed">
               Turn past events into visual stories. Create a gallery album and publish it to make the
               event live at{' '}
               <code className="font-mono">/media/events/:slug</code>.
@@ -545,7 +550,7 @@ export default function AdminDashboard() {
                 <Link
                   key={evt.id}
                   to="/admin/media"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium transition-colors"
+                  className="tap-scale inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-100 hover:bg-amber-200 active:bg-amber-300 text-amber-800 text-xs font-medium transition-colors min-h-[32px]"
                 >
                   <Images className="w-3 h-3" />
                   Create album — {evt.name}
@@ -554,17 +559,18 @@ export default function AdminDashboard() {
               {completedWithoutStory.length > 3 && (
                 <Link
                   to="/admin/media"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-medium transition-colors"
+                  className="tap-scale inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-100 hover:bg-amber-200 active:bg-amber-300 text-amber-800 text-xs font-medium transition-colors min-h-[32px]"
                 >
                   +{completedWithoutStory.length - 3} more →
                 </Link>
               )}
             </div>
           </div>
+          {/* 44×44 dismiss button */}
           <button
             onClick={() => setStoryBannerDismissed(true)}
             aria-label="Dismiss"
-            className="shrink-0 text-amber-500 hover:text-amber-700 transition-colors mt-0.5"
+            className="touch-target tap-scale shrink-0 text-amber-500 hover:text-amber-700 active:text-amber-900 transition-colors rounded-xl"
           >
             <X className="w-4 h-4" />
           </button>
@@ -579,9 +585,9 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Stats Grid */}
+      {/* Stats — responsive grid on all screen sizes */}
       {displayStats.length > 0 && (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
           {displayStats.map((stat) => (
             <StatCard
               key={stat.name}
@@ -595,34 +601,34 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         {/* Quick Actions */}
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
+        <div className="bg-white shadow-sm rounded-2xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">Quick Actions</h2>
           </div>
-          <div className="p-6">
+          <div className="p-4 sm:p-5">
             {quickActions.length === 0 ? (
               <p className="text-gray-500 text-sm text-center py-4">
                 No actions available for your role.
               </p>
             ) : (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {quickActions.map((action) => (
                   <Link
                     key={action.name}
                     to={action.href}
-                    className="relative group bg-gray-50 p-4 rounded-lg border-2 border-gray-200 hover:border-[#B01C2E] hover:bg-red-50 transition-all text-left"
+                    className="tap-scale relative group bg-gray-50 p-4 rounded-xl border-2 border-gray-100 hover:border-[#B01C2E] hover:bg-red-50 active:bg-red-100 transition-all text-left min-h-[60px]"
                   >
                     <div className="flex items-start space-x-3">
-                      <div className={`${action.color} p-2 rounded-lg text-white`}>
+                      <div className={`${action.color} p-2 rounded-lg text-white flex-shrink-0`}>
                         {action.icon}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-gray-900 group-hover:text-[#B01C2E]">
                           {action.name}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">{action.description}</p>
+                        <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{action.description}</p>
                       </div>
                     </div>
                   </Link>
@@ -633,11 +639,11 @@ export default function AdminDashboard() {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
+        <div className="bg-white shadow-sm rounded-2xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-100">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">Recent Activity</h2>
           </div>
-          <div className="p-6">
+          <div className="p-4 sm:p-5">
             {recentActivity.length === 0 ? (
               <div className="text-center py-8">
                 {loading ? (
@@ -657,7 +663,7 @@ export default function AdminDashboard() {
                       <div className="relative pb-8">
                         {activityIdx !== recentActivity.length - 1 ? (
                           <span
-                            className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200"
+                            className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-100"
                             aria-hidden="true"
                           />
                         ) : null}
@@ -667,15 +673,15 @@ export default function AdminDashboard() {
                               {getActivityIcon(activity.icon)}
                             </span>
                           </div>
-                          <div className="flex min-w-0 flex-1 justify-between space-x-4">
-                            <Link to={activity.href} className="flex-1 hover:bg-gray-50 -m-1 p-1 rounded">
+                          <div className="flex min-w-0 flex-1 justify-between space-x-3 pt-0.5">
+                            <Link to={activity.href} className="flex-1 hover:bg-gray-50 -m-1 p-1 rounded-lg transition-colors">
                               <p className="text-sm text-gray-900 hover:text-[#B01C2E]">
                                 <span className="font-medium">{activity.action}</span>
                                 {': '}
                                 <span className="text-gray-600">{activity.item}</span>
                               </p>
                             </Link>
-                            <div className="whitespace-nowrap text-right text-xs text-gray-500">
+                            <div className="whitespace-nowrap text-right text-xs text-gray-400 pt-0.5">
                               {formatTimeAgo(activity.time)}
                             </div>
                           </div>

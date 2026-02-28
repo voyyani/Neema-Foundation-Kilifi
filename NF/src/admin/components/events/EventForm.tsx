@@ -117,14 +117,14 @@ const form = useForm({
   const hasErrors = submitCount > 0 && Object.keys(errors).length > 0;
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit, handleInvalid)} className="space-y-8">
+    <form onSubmit={handleSubmit(handleFormSubmit, handleInvalid)} className="space-y-5 sm:space-y-8">
       {/* Basic Information */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-xl border border-gray-200 p-6"
+        className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 shadow-sm"
       >
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
+        <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
 
         <div className="space-y-4">
           {/* Event Name */}
@@ -135,8 +135,8 @@ const form = useForm({
             <input
               {...register('name')}
               type="text"
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] ${
-                errors.name ? 'border-red-300' : 'border-gray-300'
+              className={`w-full px-4 py-3 sm:py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px] ${
+                errors.name ? 'border-red-300' : 'border-gray-200'
               }`}
               placeholder="e.g., Community Health Outreach"
             />
@@ -155,8 +155,8 @@ const form = useForm({
                 {...register('slug')}
                 type="text"
                 onFocus={() => setIsGeneratingSlug(false)}
-                className={`flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] ${
-                  errors.slug ? 'border-red-300' : 'border-gray-300'
+                className={`flex-1 px-4 py-3 sm:py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px] ${
+                  errors.slug ? 'border-red-300' : 'border-gray-200'
                 }`}
                 placeholder="community-health-outreach"
               />
@@ -175,7 +175,7 @@ const form = useForm({
             <input
               {...register('purpose')}
               type="text"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
               placeholder="Short description of the event purpose"
             />
           </div>
@@ -187,7 +187,7 @@ const form = useForm({
             </label>
             <select
               {...register('program_id')}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
             >
               <option value="">Select a program</option>
               {programs.map((p) => (
@@ -207,7 +207,7 @@ const form = useForm({
               {...register('description')}
               rows={4}
               maxLength={10000}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base"
               placeholder="Detailed event description..."
             />
             {errors.description && (
@@ -222,14 +222,14 @@ const form = useForm({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-white rounded-xl border border-gray-200 p-6"
+        className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 shadow-sm"
       >
         <div className="flex items-center gap-2 mb-4">
           <Calendar className="w-5 h-5 text-[#B01C2E]" />
           <h2 className="text-lg font-semibold text-gray-900">Date & Time</h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Start Date */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -245,8 +245,8 @@ const form = useForm({
                   onChange={(e) =>
                     field.onChange(e.target.value ? new Date(e.target.value) : undefined)
                   }
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] ${
-                    errors.start_date ? 'border-red-300' : 'border-gray-300'
+                  className={`w-full px-4 py-3 sm:py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px] ${
+                    errors.start_date ? 'border-red-300' : 'border-gray-200'
                   }`}
                 />
               )}
@@ -269,7 +269,7 @@ const form = useForm({
                   onChange={(e) =>
                     field.onChange(e.target.value ? new Date(e.target.value) : undefined)
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                  className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
                 />
               )}
             />
@@ -284,7 +284,7 @@ const form = useForm({
             <input
               {...register('start_time')}
               type="time"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
             />
           </div>
 
@@ -294,7 +294,7 @@ const form = useForm({
             <input
               {...register('end_time')}
               type="time"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
             />
           </div>
         </div>
@@ -305,7 +305,7 @@ const form = useForm({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="bg-white rounded-xl border border-gray-200 p-6"
+        className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 shadow-sm"
       >
         <div className="flex items-center gap-2 mb-4">
           {watchIsVirtual ? (
@@ -337,8 +337,8 @@ const form = useForm({
             <input
               {...register('virtual_link')}
               type="url"
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] ${
-                errors.virtual_link ? 'border-red-300' : 'border-gray-300'
+              className={`w-full px-4 py-3 sm:py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px] ${
+                errors.virtual_link ? 'border-red-300' : 'border-gray-200'
               }`}
               placeholder="https://zoom.us/j/123456789"
             />
@@ -356,8 +356,8 @@ const form = useForm({
               <input
                 {...register('venue_name')}
                 type="text"
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] ${
-                  errors.venue_name ? 'border-red-300' : 'border-gray-300'
+                className={`w-full px-4 py-3 sm:py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px] ${
+                  errors.venue_name ? 'border-red-300' : 'border-gray-200'
                 }`}
                 placeholder="e.g., Ganze Community Center"
               />
@@ -373,7 +373,7 @@ const form = useForm({
                 {...register('venue_address')}
                 rows={2}
                 maxLength={1000}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base"
                 placeholder="Full address..."
               />
             </div>
@@ -386,7 +386,7 @@ const form = useForm({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="bg-white rounded-xl border border-gray-200 p-6"
+        className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 shadow-sm"
       >
         <div className="flex items-center gap-2 mb-4">
           <Users className="w-5 h-5 text-[#B01C2E]" />
@@ -414,12 +414,12 @@ const form = useForm({
             <input
               {...register('registration_link')}
               type="url"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
               placeholder="https://..."
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Registration Deadline */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -435,7 +435,7 @@ const form = useForm({
                     onChange={(e) =>
                       field.onChange(e.target.value ? new Date(e.target.value) : undefined)
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                    className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
                   />
                 )}
               />
@@ -450,7 +450,7 @@ const form = useForm({
                 {...register('max_attendees', { valueAsNumber: true })}
                 type="number"
                 min={1}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
                 placeholder="Leave empty for unlimited"
               />
               {errors.max_attendees && (
@@ -466,7 +466,7 @@ const form = useForm({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="bg-white rounded-xl border border-gray-200 p-6"
+        className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 shadow-sm"
       >
         <div className="flex items-center gap-2 mb-4">
           <Tag className="w-5 h-5 text-[#B01C2E]" />
@@ -479,7 +479,7 @@ const form = useForm({
             <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
             <select
               {...register('status')}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
             >
               <option value="draft">Draft</option>
               <option value="published">Published</option>
@@ -502,13 +502,13 @@ const form = useForm({
           </div>
 
           {/* Donation / Volunteer Links */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Donation Link</label>
               <input
                 {...register('donation_link' as const)}
                 type="url"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
                 placeholder="https://donate.example.com/event"
               />
             </div>
@@ -517,7 +517,7 @@ const form = useForm({
               <input
                 {...register('volunteer_link' as const)}
                 type="url"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
                 placeholder="https://volunteer.example.com/event"
               />
             </div>
@@ -541,12 +541,12 @@ const form = useForm({
         </div>
       )}
 
-      {/* Form Actions */}
-      <div className="flex gap-4">
+      {/* Form Actions — stacked on mobile, row on sm+ */}
+      <div className="flex flex-col-reverse sm:flex-row gap-3">
         <button
           type="button"
           onClick={() => navigate('/admin/events')}
-          className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+          className="tap-scale w-full sm:w-auto px-6 py-3 sm:py-2.5 border border-gray-200 rounded-xl text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors font-medium text-sm min-h-[44px]"
           disabled={isBusy}
         >
           Cancel
@@ -554,9 +554,9 @@ const form = useForm({
         <button
           type="submit"
           disabled={isBusy}
-          className="flex-1 px-6 py-2 bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="tap-scale flex-1 px-6 py-3 sm:py-2.5 bg-[#B01C2E] text-white rounded-xl hover:bg-[#8A1624] active:bg-[#6B111C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm min-h-[44px] shadow-sm"
         >
-          {isBusy ? 'Saving...' : event ? 'Update Event' : 'Create Event'}
+          {isBusy ? 'Saving…' : event ? 'Update Event' : 'Create Event'}
         </button>
       </div>
     </form>

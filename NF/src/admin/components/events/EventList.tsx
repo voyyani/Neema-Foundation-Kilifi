@@ -55,17 +55,17 @@ export default function EventList() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Events</h1>
-          <p className="text-sm text-gray-600 mt-1">Manage your foundation's events</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Events</h1>
+          <p className="text-sm text-gray-500 mt-0.5">Manage your foundation's events</p>
         </div>
-
+        {/* Full-width on mobile, auto on sm+ */}
         <button
           onClick={() => navigate('/admin/events/new')}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="tap-scale w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 active:bg-blue-800 transition-colors font-medium text-sm shadow-sm min-h-[44px]"
         >
           <Plus className="w-5 h-5" />
           Create Event
@@ -73,59 +73,57 @@ export default function EventList() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col lg:flex-row gap-4">
-        {/* Search */}
-        <div className="flex-1">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search events..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                handleSearch(e.target.value);
-              }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+      <div className="flex flex-col gap-3">
+        {/* Search — full width, large touch area */}
+        <div className="relative">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+          <input
+            type="text"
+            placeholder="Search events…"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              handleSearch(e.target.value);
+            }}
+            className="w-full pl-11 pr-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white shadow-sm min-h-[44px]"
+          />
         </div>
 
-        {/* Status Filters */}
-        <div className="flex gap-2 flex-wrap">
+        {/* Status Filters — horizontal scroll strip on mobile */}
+        <div className="flex items-center gap-2 admin-scroll-x pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
           {statusFilters.map((filter) => (
             <button
               key={filter.value}
               onClick={() => handleStatusFilter(filter.value)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`tap-scale flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors min-h-[36px] ${
                 filters.status === filter.value
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 active:bg-gray-300'
               }`}
             >
               {filter.label}
             </button>
           ))}
-        </div>
 
-        {/* View Toggle */}
-        <div className="flex gap-2 border border-gray-300 rounded-lg p-1">
-          <button
-            onClick={() => setViewMode('grid')}
-            className={`p-2 rounded ${
-              viewMode === 'grid' ? 'bg-gray-100' : 'hover:bg-gray-50'
-            }`}
-          >
-            <Grid className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => setViewMode('table')}
-            className={`p-2 rounded ${
-              viewMode === 'table' ? 'bg-gray-100' : 'hover:bg-gray-50'
-            }`}
-          >
-            <ListIcon className="w-5 h-5" />
-          </button>
+          {/* View Toggle — pushed right on non-mobile */}
+          <div className="hidden sm:flex ml-auto gap-1 border border-gray-200 rounded-xl p-1 bg-white shadow-sm">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`tap-scale p-2 rounded-lg transition-colors min-h-[36px] min-w-[36px] ${
+                viewMode === 'grid' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:bg-gray-50'
+              }`}
+            >
+              <Grid className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('table')}
+              className={`tap-scale p-2 rounded-lg transition-colors min-h-[36px] min-w-[36px] ${
+                viewMode === 'table' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:bg-gray-50'
+              }`}
+            >
+              <ListIcon className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -141,7 +139,7 @@ export default function EventList() {
           }}
         />
       ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {events.map((event) => (
             <EventCard
               key={event.id}
@@ -153,73 +151,79 @@ export default function EventList() {
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Event Name
-                </th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Date
-                </th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Location
-                </th>
-                <th className="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Status
-                </th>
-                <th className="text-right px-6 py-3 text-xs font-medium text-gray-500 uppercase">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {events.map((event) => (
-                <motion.tr
-                  key={event.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="hover:bg-gray-50"
-                >
-                  <td className="px-6 py-4">
-                    <div>
-                      <div className="font-medium text-gray-900">{event.name}</div>
-                      {event.program_name && (
-                        <div className="text-xs text-gray-500">{event.program_name}</div>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {formatDate(event.start_date, 'short')}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {event.is_virtual ? 'Virtual' : event.venue_name || '-'}
-                  </td>
-                  <td className="px-6 py-4">
-                    <EventStatusBadge status={event.status} />
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex justify-end gap-2">
-                      <button
-                        onClick={() => navigate(`/admin/events/${event.id}`)}
-                        className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => setDeleteId(event.id)}
-                        className="text-red-600 hover:text-red-700 text-sm font-medium"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        /* Table — hidden on mobile, shown as cards instead */
+        <>
+          {/* Mobile card list (visible on xs/sm) */}
+          <div className="flex flex-col gap-3 sm:hidden">
+            {events.map((event) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                onEdit={(id) => navigate(`/admin/events/${id}`)}
+                onDelete={(id) => setDeleteId(id)}
+                onDuplicate={handleDuplicate}
+              />
+            ))}
+          </div>
+          {/* Desktop table (hidden on mobile) */}
+          <div className="hidden sm:block bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-100">
+                <tr>
+                  <th className="text-left px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Event Name</th>
+                  <th className="text-left px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Date</th>
+                  <th className="text-left px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">Location</th>
+                  <th className="text-left px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+                  <th className="text-right px-5 py-3.5 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {events.map((event) => (
+                  <motion.tr
+                    key={event.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-5 py-4">
+                      <div>
+                        <div className="font-medium text-gray-900 text-sm">{event.name}</div>
+                        {event.program_name && (
+                          <div className="text-xs text-gray-500 mt-0.5">{event.program_name}</div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-5 py-4 text-sm text-gray-600 whitespace-nowrap">
+                      {formatDate(event.start_date, 'short')}
+                    </td>
+                    <td className="px-5 py-4 text-sm text-gray-600 hidden lg:table-cell">
+                      {event.is_virtual ? 'Virtual' : event.venue_name || '—'}
+                    </td>
+                    <td className="px-5 py-4">
+                      <EventStatusBadge status={event.status} />
+                    </td>
+                    <td className="px-5 py-4">
+                      <div className="flex justify-end gap-3">
+                        <button
+                          onClick={() => navigate(`/admin/events/${event.id}`)}
+                          className="tap-scale text-blue-600 hover:text-blue-700 text-sm font-medium min-h-[44px] flex items-center"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => setDeleteId(event.id)}
+                          className="tap-scale text-red-600 hover:text-red-700 text-sm font-medium min-h-[44px] flex items-center"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {/* Delete Confirmation */}

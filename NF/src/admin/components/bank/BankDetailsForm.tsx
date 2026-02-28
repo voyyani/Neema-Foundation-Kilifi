@@ -120,10 +120,10 @@ function InputField({
       id={id}
       {...props}
       className={[
-        'w-full px-3 py-2 border rounded-lg text-sm',
+        'w-full px-4 py-3 sm:py-2.5 border rounded-xl text-base sm:text-sm min-h-[44px]',
         'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
         'disabled:bg-gray-50 disabled:text-gray-500',
-        error ? 'border-red-300 focus:ring-red-500' : 'border-gray-300',
+        error ? 'border-red-300 focus:ring-red-500' : 'border-gray-200',
         props.className ?? '',
       ].join(' ')}
     />
@@ -141,7 +141,7 @@ function TextareaField({
       rows={3}
       {...props}
       className={[
-        'w-full px-3 py-2 border rounded-lg text-sm resize-none',
+        'w-full px-4 py-3 sm:py-2.5 border rounded-xl text-base sm:text-sm resize-none',
         'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
         'disabled:bg-gray-50 disabled:text-gray-500',
         error ? 'border-red-300 focus:ring-red-500' : 'border-gray-300',
@@ -208,7 +208,7 @@ export function BankDetailsForm({
   const isSaving = isSubmitting || isLoading;
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6" noValidate>
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5" noValidate>
 
       {/* ── Method type selector ────────────────────────────────────────── */}
       <div>
@@ -227,8 +227,8 @@ export function BankDetailsForm({
                   onClick={() => field.onChange(method)}
                   disabled={isEditing}   // method_type is immutable after creation
                   className={[
-                    'flex items-center justify-center p-3 rounded-lg border-2',
-                    'text-sm font-medium transition-all',
+                    'flex items-center justify-center p-3 rounded-xl border-2 min-h-[52px]',
+                    'text-sm font-medium transition-all tap-scale',
                     'disabled:opacity-50 disabled:cursor-not-allowed',
                     field.value === method
                       ? 'border-blue-500 bg-blue-50'
@@ -617,14 +617,14 @@ export function BankDetailsForm({
       </div>
 
       {/* ── Actions ──────────────────────────────────────────────────────── */}
-      <div className="flex gap-3 pt-2 border-t border-gray-100">
+      <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2 border-t border-gray-100">
         <button
           type="button"
           onClick={onCancel}
           disabled={isSaving}
-          className="flex-1 sm:flex-none px-5 py-2.5 border border-gray-300 rounded-lg
-                     text-sm font-medium text-gray-700 hover:bg-gray-50
-                     disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="tap-scale w-full sm:w-auto px-5 py-3 sm:py-2.5 border border-gray-200 rounded-xl
+                     text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100
+                     disabled:opacity-50 disabled:cursor-not-allowed transition-colors min-h-[44px]"
         >
           Cancel
         </button>
@@ -632,10 +632,10 @@ export function BankDetailsForm({
         <button
           type="submit"
           disabled={isSaving}
-          className="flex-1 sm:flex-none px-5 py-2.5 bg-blue-600 text-white rounded-lg
-                     text-sm font-medium hover:bg-blue-700
+          className="tap-scale flex-1 px-5 py-3 sm:py-2.5 bg-blue-600 text-white rounded-xl
+                     text-sm font-semibold hover:bg-blue-700 active:bg-blue-800
                      disabled:opacity-50 disabled:cursor-not-allowed transition-colors
-                     inline-flex items-center justify-center gap-2"
+                     inline-flex items-center justify-center gap-2 min-h-[44px] shadow-sm"
         >
           {isSaving ? (
             <>

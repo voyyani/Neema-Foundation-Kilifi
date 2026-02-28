@@ -20,14 +20,19 @@ export function lazyWithRetry<T extends React.ComponentType<any>>(
         message.includes('ChunkLoadError');
 
       if (isChunkError && typeof window !== 'undefined') {
-        console.error('[lazyWithRetry] Stale chunk detected, forcing reload.', err);
+        console.error('[lazyWithRetry] Stale chunk detected, forcing hard reload.', err);
         // Avoid infinite loops: only reload once per session for this error
         const flag = 'nf-last-chunk-reload';
         const lastReload = sessionStorage.getItem(flag);
         const now = Date.now();
-        if (!lastReload || now - Number(lastReload) > 10_000) {
+        if (!lastReload || now - Number(lastReload) > 15_000) {
           sessionStorage.setItem(flag, String(now));
-          window.location.reload();
+          // Use a cache-busting URL parameter so the browser requests a
+          // fresh HTML page (and therefore fresh asset hashes) instead of
+          // serving the old cached entry which still carries stale chunk URLs.
+          const url = new URL(window.location.href);
+          url.searchParams.set('_cb', String(now));
+          window.location.replace(url.toString());
         }
       }
       throw err;

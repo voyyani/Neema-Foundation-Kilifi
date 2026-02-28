@@ -136,6 +136,19 @@ See [Admin Guide](ADMIN-GUIDE.md) for each page's content fields.
 
 Fully implemented. See [Admin Guide](ADMIN-GUIDE.md) for complete feature documentation and [RBAC.md](RBAC.md) for access control.
 
+#### Bank Details Management (`/admin/bank-details` — Admin+)
+- Full CRUD for payment method records: Bank Transfer, M-Pesa Paybill/Till, PayPal, Stripe
+- Sensitive fields (account number, IBAN, SWIFT code) encrypted at rest via `pgcrypto` through a Supabase Edge Function—only masked values are ever returned to the browser
+- Drag-and-drop reordering; per-record `is_public` visibility toggle
+- Append-only audit log with actor identity, role, field-level diff, and timestamp on every change
+- Public `bank_details_public` view strips all encrypted columns—safe for the anonymous `/bank-details` page
+
+#### Form Submissions & Email (`/admin/submissions` — Admin+ · Content Manager)
+- Contact form, partnership inquiry, and volunteer application all save to Supabase on submit
+- `send-notification` Edge Function dispatches structured HTML emails to the admin inbox via **Resend** on every submission
+- Volunteer applicants receive an automatic confirmation email
+- Submission status tracking: `new → under_review → accepted / rejected` (volunteer applications)
+
 ---
 
 ## 7. Non-Functional Requirements
@@ -173,7 +186,9 @@ Implementation: route-based code splitting (`React.lazy`), TanStack Query cachin
 
 - Supabase JWT authentication for all admin routes
 - Row Level Security on all database tables
-- Secrets in `.env.local` only (gitignored — never committed)
+- Secrets in `.env.local` and Supabase Edge Function Secrets only (never committed to version control)
+- Sensitive bank-detail fields (account number, IBAN, SWIFT) encrypted at rest with `pgcrypto`; masked values only are served to clients
+- Bank detail writes are proxied through an Edge Function using the service-role key; the browser never has service-role access
 - Zod schema validation on all form inputs
 - XSS protection via React JSX escaping and Tiptap content sanitisation
 
@@ -211,6 +226,7 @@ Recommended custom events:
 | M-Pesa STK Push / Stripe for online donations | High |
 | Animated impact dashboard with filters | Medium |
 | Search across all site content | Medium |
+| Admin inbox / submission management UI with reply-by-email | Medium |
 | English → Swahili internationalisation | Medium |
 | PWA / offline support | Low |
 | JSON-LD Article schema for stories | Low |

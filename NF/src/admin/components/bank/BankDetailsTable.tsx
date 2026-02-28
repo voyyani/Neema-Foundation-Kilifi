@@ -391,7 +391,117 @@ export function BankDetailsTable({
 
   return (
     <>
-      <div className="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+      {/*
+       * Mobile: card list — one card per payment method.
+       * Each card is visible only on xs/sm screens (sm:hidden).
+       */}
+      <div className="flex flex-col gap-3 sm:hidden">
+        <AnimatePresence>
+          {records.map((record) => {
+            const status       = BANK_DETAIL_STATUS_COLORS[record.status];
+            const isUpdating   = savingState.type === 'updating' && savingState.id === record.id;
+            const isToggling   = savingState.type === 'toggling' && savingState.id === record.id;
+            const isDeleting   = savingState.type === 'deleting' && savingState.id === record.id;
+            const isBusy       = isUpdating || isToggling || isDeleting;
+            return (
+              <motion.div
+                key={record.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                className="ios-group admin-card-enter"
+              >
+                {/* Top row: method + label */}
+                <div className="ios-group-row">
+                  <PaymentMethodBadge type={record.method_type} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-900 truncate">{record.label}</p>
+                    {record.bank_name && (
+                      <p className="text-xs text-gray-500 truncate mt-0.5">{record.bank_name}</p>
+                    )}
+                  </div>
+                  {isBusy && <Loader2 className="w-4 h-4 text-blue-500 animate-spin flex-shrink-0" />}
+                </div>
+
+                {/* Bottom row: status + visibility + actions */}
+                <div className="ios-group-row bg-gray-50/60">
+                  {/* Status */}
+                  <span
+                    className={[
+                      'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium',
+                      status.bg,
+                      status.text,
+                    ].join(' ')}
+                  >
+                    <span className={['w-1.5 h-1.5 rounded-full', status.dot].join(' ')} />
+                    {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                  </span>
+
+                  {/* Visibility */}
+                  <span
+                    className={[
+                      'inline-flex items-center gap-1 text-xs font-medium',
+                      record.is_public ? 'text-green-600' : 'text-gray-400',
+                    ].join(' ')}
+                  >
+                    {record.is_public
+                      ? <><Eye className="w-3.5 h-3.5" />Public</>
+                      : <><EyeOff className="w-3.5 h-3.5" />Hidden</>
+                    }
+                  </span>
+
+                  <div className="flex-1" />
+
+                  {/* Action buttons - 44×44 touch targets */}
+                  <div className="flex items-center gap-0.5">
+                    {canEdit && (
+                      <button
+                        type="button"
+                        onClick={() => onEdit(record)}
+                        disabled={isBusy}
+                        title="Edit"
+                        className="touch-target tap-scale rounded-xl text-gray-400 hover:text-blue-600 hover:bg-blue-50 active:bg-blue-100 disabled:opacity-40 transition-colors"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                    )}
+                    {canManage && (
+                      <button
+                        type="button"
+                        onClick={() => onToggle(record.id)}
+                        disabled={isBusy}
+                        title={record.is_public ? 'Hide' : 'Show'}
+                        className="touch-target tap-scale rounded-xl text-gray-400 hover:text-amber-600 hover:bg-amber-50 active:bg-amber-100 disabled:opacity-40 transition-colors"
+                      >
+                        {record.is_public ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    )}
+                    {canDelete && (
+                      <button
+                        type="button"
+                        onClick={() => setDeleteTarget(record)}
+                        disabled={isBusy}
+                        title="Delete"
+                        className="touch-target tap-scale rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 active:bg-red-100 disabled:opacity-40 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+
+        {/* Mobile footer */}
+        <p className="text-center text-xs text-gray-400 py-1">
+          {records.length} method{records.length !== 1 ? 's' : ''} · {records.filter((r) => r.is_public).length} public
+        </p>
+      </div>
+
+      {/* Desktop: existing drag-and-drop table (unchanged) */}
+      <div className="hidden sm:block overflow-x-auto rounded-2xl border border-gray-100 shadow-sm">
         {isReordering && (
           <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border-b border-blue-200 text-xs text-blue-700">
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -406,7 +516,7 @@ export function BankDetailsTable({
         >
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-200">
+              <tr className="bg-gray-50 border-b border-gray-100">
                 <th className="w-10 pl-4 py-3" />
                 <th className="w-12 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wide">
                   #
@@ -458,7 +568,7 @@ export function BankDetailsTable({
         </DndContext>
 
         {/* Footer summary */}
-        <div className="px-4 py-2.5 bg-gray-50 border-t border-gray-200 flex items-center justify-between text-xs text-gray-500">
+        <div className="px-4 py-2.5 bg-gray-50 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
           <span>{records.length} payment method{records.length !== 1 ? 's' : ''}</span>
           <span>{records.filter((r) => r.is_public).length} public</span>
         </div>
