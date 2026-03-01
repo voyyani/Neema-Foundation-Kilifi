@@ -13,6 +13,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { ensureExtension } from '../media/OptimizedImage';
 import { Camera, ArrowRight } from 'lucide-react';
 import { usePublicProgramAlbums } from '../../hooks/public/usePublicMedia';
 import type { PublicMediaAlbum } from '../../hooks/public/usePublicMedia';
@@ -131,8 +132,9 @@ const ProgramAlbumTimeline: React.FC<ProgramAlbumTimelineProps> = ({ programSlug
                       <div className="relative w-20 flex-shrink-0 aspect-square overflow-hidden bg-gray-100">
                         {album.cover_image ? (
                           <img
-                            src={album.cover_image}
+                            src={ensureExtension(album.cover_image)}
                             alt={album.title}
+                            crossOrigin="anonymous"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-400"
                             loading="lazy"
                           />

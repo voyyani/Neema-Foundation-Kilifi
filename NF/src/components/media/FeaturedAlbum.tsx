@@ -1,14 +1,18 @@
 /**
  * FeaturedAlbum — Full-width featured album section with photo mosaic
- * Neema Foundation Kilifi — Media Section Phase 2
+ * Neema Foundation Kilifi — Media Section Phase 2 + Phase 3
  *
  * Shows the most prominently featured album: large mosaic, title, description, CTA.
  * Left: 3-image mosaic (1 tall + 2 stacked). Right: text + meta.
+ *
+ * Phase 3: Works with auto-synced program albums — the usePublicFeaturedAlbums
+ * hook now returns preview items inline, so the mosaic shows real photos
+ * instead of repeating the cover image.
  */
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Camera, Calendar } from 'lucide-react';
+import { ArrowRight, Camera, Calendar, RefreshCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import type { PublicMediaAlbum } from '../../hooks/public/usePublicMedia';
 import { albumHref, formatDate } from './AlbumCard';
@@ -18,15 +22,28 @@ export interface FeaturedAlbumProps {
   album: PublicMediaAlbum;
 }
 
-// Build 2-3 preview image URLs from the album cover
-// If the album has preview items in `items`, use those; otherwise derive from cover
+/**
+ * Build 3 preview image URLs for the mosaic grid.
+ * Priority: album.items (populated by usePublicFeaturedAlbums) → cover_image fallback.
+ * Gracefully handles 1-2 items by repeating from available pool.
+ */
 function getPreviewUrls(album: PublicMediaAlbum): string[] {
-  const items = (album as PublicMediaAlbum & { items?: { url: string }[] }).items;
-  if (items && items.length >= 3) {
-    return items.slice(0, 3).map((i) => i.url);
+  const items = album.items;
+  const urls: string[] = [];
+
+  if (items && items.length > 0) {
+    for (const item of items.slice(0, 3)) {
+      urls.push(item.url || '');
+    }
   }
-  // fallback: use cover image for all slots (better than blank)
-  return [album.cover_image ?? '', album.cover_image ?? '', album.cover_image ?? ''];
+
+  // Pad to 3 using cover_image or repeating the first available URL
+  const fallback = album.cover_image ?? urls[0] ?? '';
+  while (urls.length < 3) {
+    urls.push(fallback);
+  }
+
+  return urls;
 }
 
 const FeaturedAlbum: React.FC<FeaturedAlbumProps> = ({ album }) => {
@@ -108,11 +125,19 @@ const FeaturedAlbum: React.FC<FeaturedAlbumProps> = ({ album }) => {
 
           {/* Text content — 2 of 5 columns */}
           <div className="md:col-span-2 flex flex-col justify-center p-8 lg:p-10">
-            {/* Badge */}
+            {/* Badge — program/event name + auto-synced indicator */}
             {(album.program?.name || album.event?.name) && (
-              <span className="inline-block px-3 py-1 rounded-full bg-[#B01C2E]/10 text-[#B01C2E] text-xs font-semibold mb-4 self-start">
-                {album.program?.name ?? album.event?.name}
-              </span>
+              <div className="flex items-center gap-2 mb-4 flex-wrap">
+                <span className="inline-block px-3 py-1 rounded-full bg-[#B01C2E]/10 text-[#B01C2E] text-xs font-semibold">
+                  {album.program?.name ?? album.event?.name}
+                </span>
+                {album.auto_synced && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-medium">
+                    <RefreshCw className="w-3 h-3" />
+                    Auto-synced
+                  </span>
+                )}
+              </div>
             )}
 
             <h2

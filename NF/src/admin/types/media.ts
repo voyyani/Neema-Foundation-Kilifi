@@ -24,6 +24,8 @@ export interface MediaAlbum {
   created_by: string | null;
   created_at: string;
   updated_at: string;
+  // Phase 2 — sync-tracking: true = auto-created from program_images sync
+  auto_synced: boolean;
   // Joined fields (optional — populated via joins)
   event?: { id: string; name: string; slug: string } | null;
   program?: { id: string; name: string; slug: string } | null;
@@ -45,6 +47,9 @@ export interface MediaItem {
   taken_at: string | null;
   uploaded_by: string | null;
   created_at: string;
+  // Phase 2 — sync-tracking fields (populated for items synced from program_images)
+  source_table?: string | null;
+  source_id?: string | null;
 }
 
 // ─── Form / input shapes ─────────────────────────────────────────────────────

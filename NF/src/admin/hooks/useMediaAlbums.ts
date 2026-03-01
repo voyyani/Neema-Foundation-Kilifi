@@ -17,9 +17,8 @@ import type {
 } from '../types/media';
 
 // ─── Type escape hatch (matches pattern used across this codebase) ────────────
-// These target the public-schema views (public.media_albums / public.media_items)
-// which proxy to media.media_albums / media.media_items. See migration:
-// migrations/create-public-media-views.sql
+// Auto-updatable views in `public` schema proxy to `media.media_albums` /
+// `media.media_items`. See: migrations/create-public-media-views.sql
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const albumsTable = () => supabase.from('media_albums') as any;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -173,15 +172,38 @@ export async function createMediaAlbum(data: MediaAlbumFormData): Promise<MediaA
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// updateMediaAlbum
+// updateMediaAlbum — Phase 4: restricts editable fields for auto-synced albums
 // ─────────────────────────────────────────────────────────────────────────────
+
+/** Fields that admins may edit on auto-synced albums */
+const AUTO_SYNCED_EDITABLE_FIELDS = new Set<keyof MediaAlbumFormData>([
+  'title', 'description', 'is_published', 'is_featured', 'taken_at', 'cover_image',
+]);
 
 export async function updateMediaAlbum(
   albumId: string,
   data: Partial<MediaAlbumFormData>
 ): Promise<MediaAlbum> {
+  // Guard: for auto-synced albums, strip fields the admin shouldn't change
+  const { data: album } = await albumsTable()
+    .select('auto_synced')
+    .eq('id', albumId)
+    .single();
+
+  let payload = { ...data };
+  if (album?.auto_synced) {
+    const filtered: Partial<MediaAlbumFormData> = {};
+    for (const key of Object.keys(payload) as Array<keyof MediaAlbumFormData>) {
+      if (AUTO_SYNCED_EDITABLE_FIELDS.has(key)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (filtered as any)[key] = (payload as any)[key];
+      }
+    }
+    payload = filtered;
+  }
+
   const { data: updated, error } = await albumsTable()
-    .update({ ...data, updated_at: new Date().toISOString() })
+    .update({ ...payload, updated_at: new Date().toISOString() })
     .eq('id', albumId)
     .select()
     .single();
@@ -192,10 +214,21 @@ export async function updateMediaAlbum(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// deleteMediaAlbum
+// deleteMediaAlbum — Phase 4: rejects auto-synced albums
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function deleteMediaAlbum(albumId: string): Promise<void> {
+  // Guard: prevent deletion of auto-synced albums (managed by DB trigger)
+  const { data: album } = await albumsTable()
+    .select('auto_synced')
+    .eq('id', albumId)
+    .single();
+
+  if (album?.auto_synced) {
+    toast.error('This album is auto-synced from a program and cannot be deleted. Remove images via the Program editor instead.');
+    throw new Error('Cannot delete auto-synced album');
+  }
+
   const { error } = await albumsTable().delete().eq('id', albumId);
   if (error) throw error;
   toast.success('Album deleted');
@@ -276,10 +309,21 @@ export async function updateMediaItem(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// deleteMediaItem
+// deleteMediaItem — Phase 4: rejects synced items (source_table IS NOT NULL)
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function deleteMediaItem(itemId: string, albumId: string): Promise<void> {
+  // Guard: prevent deletion of synced items (managed by program_images)
+  const { data: item } = await itemsTable()
+    .select('source_table')
+    .eq('id', itemId)
+    .single();
+
+  if (item?.source_table) {
+    toast.error('This image is synced from the Program editor and cannot be removed here. Delete it from the Program editor instead.');
+    throw new Error('Cannot delete synced media item');
+  }
+
   const { error } = await itemsTable().delete().eq('id', itemId);
   if (error) throw error;
   await syncPhotoCount(albumId);

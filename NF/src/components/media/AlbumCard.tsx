@@ -1,11 +1,11 @@
 /**
  * AlbumCard — Individual album card with hover previews
- * Neema Foundation Kilifi — Media Section Phase 2
+ * Neema Foundation Kilifi — Media Section Phase 2 + Phase 3
  */
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Calendar, ArrowRight } from 'lucide-react';
+import { Camera, Calendar, ArrowRight, RefreshCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { type PublicMediaAlbum, type AlbumType } from '../../hooks/public/usePublicMedia';
 import OptimizedImage from './OptimizedImage';
@@ -112,6 +112,25 @@ const AlbumCard: React.FC<AlbumCardProps> = ({ album, skeleton = false }) => {
           >
             {badge}
           </span>
+
+          {/* Auto-synced indicator — top-left (Phase 3) */}
+          {album.auto_synced && (
+            <span
+              className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium bg-white/90 text-gray-600 shadow-sm backdrop-blur-sm"
+              title="Auto-synced from program images"
+            >
+              <RefreshCw className="w-3 h-3" />
+              Synced
+            </span>
+          )}
+
+          {/* Photo count pill — bottom-left (always visible) */}
+          {album.photo_count > 0 && (
+            <span className="absolute bottom-3 left-3 flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-semibold bg-black/60 text-white backdrop-blur-sm">
+              <Camera className="w-3 h-3" />
+              {album.photo_count}
+            </span>
+          )}
 
           {/* Hover overlay — mini previews + photo count */}
           <AnimatePresence>

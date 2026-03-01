@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
-  ArrowLeft, Loader2, Eye, EyeOff, Pencil, Check, Images
+  ArrowLeft, Loader2, Eye, EyeOff, Pencil, Check, Images, RefreshCw, Info, ExternalLink
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMediaAlbum, updateMediaAlbum } from '../../hooks/useMediaAlbums';
@@ -88,6 +88,12 @@ export default function AlbumDetailPage() {
               <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${ALBUM_TYPE_COLORS[album.album_type]}`}>
                 {ALBUM_TYPE_LABELS[album.album_type]}
               </span>
+              {album.auto_synced && (
+                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 flex items-center gap-1">
+                  <RefreshCw className="h-3 w-3" />
+                  Auto-synced from Program
+                </span>
+              )}
               {album.is_featured && (
                 <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800">
                   Featured
@@ -156,9 +162,41 @@ export default function AlbumDetailPage() {
         )}
       </AnimatePresence>
 
+      {/* Auto-synced album info banner */}
+      {album.auto_synced && (
+        <div className="flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+          <Info className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-blue-900">
+              This album is automatically synced from program images.
+            </p>
+            <p className="text-sm text-blue-700 mt-1">
+              Synced photos (marked with a <RefreshCw className="inline h-3 w-3" /> badge) are managed
+              via the Program editor. You can still upload additional photos manually below.
+            </p>
+            {album.program && (
+              <Link
+                to="/admin/content/programs"
+                className="inline-flex items-center gap-1.5 mt-2 text-sm font-medium text-blue-700 hover:text-blue-900 transition-colors"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+                Open Program Editor
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Upload Section */}
       <div className="bg-white border border-gray-200 rounded-xl p-6">
-        <h2 className="text-sm font-semibold text-gray-900 mb-4">Upload Photos</h2>
+        <h2 className="text-sm font-semibold text-gray-900 mb-4">
+          {album.auto_synced ? 'Upload Additional Photos' : 'Upload Photos'}
+        </h2>
+        {album.auto_synced && (
+          <p className="text-xs text-gray-500 mb-3">
+            These manually-uploaded photos will appear alongside synced program images.
+          </p>
+        )}
         <UploadWidget
           albumId={album.id}
           existingCount={displayItems.length}
@@ -172,7 +210,10 @@ export default function AlbumDetailPage() {
           <h2 className="text-sm font-semibold text-gray-900">
             Photo Gallery
             <span className="ml-2 text-xs font-normal text-gray-400">
-              Drag to reorder · Click alt text to edit · ☆ to feature
+              {album.auto_synced
+                ? 'Synced photos have a lock indicator · Click alt text to edit · ☆ to feature'
+                : 'Drag to reorder · Click alt text to edit · ☆ to feature'
+              }
             </span>
           </h2>
         </div>

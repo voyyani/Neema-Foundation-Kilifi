@@ -17,9 +17,10 @@ import {
   usePublicAlbumMeta,
   usePublicAlbumItemsInfinite,
 } from '../../hooks/public/usePublicMedia';
-import OptimizedImage, { buildCloudinaryUrl } from '../../components/media/OptimizedImage';
+import OptimizedImage, { buildCloudinaryUrl, ensureExtension } from '../../components/media/OptimizedImage';
 import MediaLightbox from '../../components/media/MediaLightbox';
 import MediaCTA from '../../components/media/MediaCTA';
+import ImageGalleryJsonLd from '../../components/media/ImageGalleryJsonLd';
 
 const PAGE_SIZE = 24;
 
@@ -116,12 +117,34 @@ const AlbumPage: React.FC = () => {
         <link rel="canonical" href={canonicalUrl} />
       </Helmet>
 
+      {/* Phase 6: JSON-LD structured data for image gallery */}
+      {sortedItems.length > 0 && (
+        <ImageGalleryJsonLd
+          name={album.title}
+          description={album.description}
+          url={canonicalUrl}
+          datePublished={album.taken_at ?? album.created_at}
+          thumbnailUrl={coverImage}
+          programName={album.program?.name}
+          images={sortedItems.map((item) => ({
+            url: item.url,
+            caption: item.caption,
+            alt: item.alt,
+            width: item.width,
+            height: item.height,
+            dateCreated: item.taken_at,
+            cloudinaryId: item.cloudinary_id,
+          }))}
+        />
+      )}
+
       {/* Hero */}
       <div className="relative h-[400px] md:h-[480px] overflow-hidden bg-gray-900">
         {coverImage && (
           <img
-            src={coverImage}
+            src={ensureExtension(coverImage)}
             alt={album.title}
+            crossOrigin="anonymous"
             className="w-full h-full object-cover opacity-60"
             loading="eager"
           />
@@ -192,8 +215,9 @@ const AlbumPage: React.FC = () => {
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setLightboxIndex(i); setLightboxOpen(true); } }}
                 >
                   <OptimizedImage
-                    src={item.url}
-                    alt={item.alt ?? item.caption ?? `Photo ${i + 1}`}
+                    src={item.cloudinary_id || item.url}
+                    fallbackUrl={item.url}
+                    alt={item.alt ?? item.caption ?? album.title ?? `Photo ${i + 1}`}
                     aspectRatio={item.is_featured ? '16:9' : '4:3'}
                     className="group-hover:scale-105 transition-transform duration-500"
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"

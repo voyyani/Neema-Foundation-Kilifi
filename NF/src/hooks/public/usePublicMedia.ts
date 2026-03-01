@@ -27,6 +27,9 @@ export interface PublicMediaItem {
   display_order: number;
   tags: string[] | null;
   taken_at: string | null;
+  // Phase 2 — sync-tracking fields (populated for items synced from program_images)
+  source_table?: string | null;
+  source_id?: string | null;
 }
 
 export interface PublicMediaAlbum {
@@ -43,6 +46,8 @@ export interface PublicMediaAlbum {
   photo_count: number;
   taken_at: string | null;
   created_at: string;
+  // Phase 2 — distinguishes auto-synced albums from manually created ones
+  auto_synced: boolean;
   // Joined
   event?: { id: string; name: string; slug: string } | null;
   program?: { id: string; name: string; slug: string } | null;
@@ -69,6 +74,10 @@ const ALBUM_LIST_QUERY_CONFIG = {
 } as const;
 
 // ─── Supabase Table Helpers ───────────────────────────────────────────────────
+// Actual tables live in the `media` schema. Auto-updatable views in the
+// `public` schema proxy reads and writes, allowing PostgREST to resolve
+// cross-schema embedded resources (event, program joins).
+// See: migrations/create-public-media-views.sql
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const albumsTable = () => (supabase as any).from('media_albums');
@@ -78,6 +87,7 @@ const itemsTable  = () => (supabase as any).from('media_items');
 const ALBUM_SELECT = `
   id, slug, title, description, cover_image, album_type,
   event_id, program_id, is_featured, display_order, photo_count, taken_at, created_at,
+  auto_synced,
   event:event_id ( id, name, slug ),
   program:program_id ( id, name, slug )
 `;
@@ -112,21 +122,44 @@ export function usePublicAlbums(filter: AlbumFilterType = 'all') {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // usePublicFeaturedAlbums — featured albums for hero rotation (limit 6)
+// Fetches top 3 items per album for the FeaturedAlbum mosaic component.
 // ─────────────────────────────────────────────────────────────────────────────
+
+const FEATURED_ALBUM_SELECT = `
+  id, slug, title, description, cover_image, album_type,
+  event_id, program_id, is_featured, display_order, photo_count, taken_at, created_at,
+  auto_synced,
+  event:event_id ( id, name, slug ),
+  program:program_id ( id, name, slug ),
+  items:media_items (
+    id, url, cloudinary_id, alt, caption, is_featured, display_order
+  )
+`;
 
 export function usePublicFeaturedAlbums(limit = 6) {
   return useQuery({
     queryKey: ['public', 'media', 'featured', limit],
     queryFn: async (): Promise<PublicMediaAlbum[]> => {
       const { data, error } = await albumsTable()
-        .select(ALBUM_SELECT)
+        .select(FEATURED_ALBUM_SELECT)
         .eq('is_published', true)
         .eq('is_featured', true)
         .order('display_order', { ascending: true })
         .limit(limit);
 
       if (error) throw new Error(error.message);
-      return (data ?? []) as PublicMediaAlbum[];
+
+      // Sort items within each album and limit to top 3 for mosaic preview
+      return ((data ?? []) as PublicMediaAlbum[]).map((album) => ({
+        ...album,
+        items: (album.items ?? [])
+          .sort((a, b) => {
+            // Featured items first, then by display_order
+            if (a.is_featured !== b.is_featured) return a.is_featured ? -1 : 1;
+            return (a.display_order ?? 0) - (b.display_order ?? 0);
+          })
+          .slice(0, 3),
+      }));
     },
     ...ALBUM_LIST_QUERY_CONFIG,
   });
@@ -449,15 +482,44 @@ const NAMED_TRANSFORMS: Record<string, string> = {
 };
 
 /**
+ * Ensure a Cloudinary URL has a file extension — prevents
+ * OpaqueResponseBlocking. Cloudinary f_auto still serves optimal format.
+ */
+function ensureExtension(url: string): string {
+  if (!url) return url;
+  if (!url.includes('res.cloudinary.com')) return url;
+  const clean = url.split(/[?#]/)[0];
+  const lastSegment = clean.slice(clean.lastIndexOf('/') + 1);
+  if (/\.[a-zA-Z0-9]{2,5}$/.test(lastSegment)) return url;
+  const qIdx = url.indexOf('?');
+  return qIdx === -1 ? `${url}.jpg` : `${url.slice(0, qIdx)}.jpg${url.slice(qIdx)}`;
+}
+
+/**
  * Build a Cloudinary URL from a public_id with a named transform.
- * If the input is already a fully-qualified https:// URL, return it directly.
+ * If the input is already a fully-qualified https:// URL, inject the
+ * transform and ensure a file extension is present.
  */
 export function buildCloudinaryUrl(
   idOrUrl: string,
   size: keyof typeof NAMED_TRANSFORMS = 'card',
 ): string {
   if (!idOrUrl) return '';
-  if (idOrUrl.startsWith('http')) return idOrUrl; // already a full URL
+  if (idOrUrl.startsWith('http')) {
+    // Full URL — inject transform if possible, always ensure extension
+    const marker = '/upload/';
+    const pos = idOrUrl.indexOf(marker);
+    if (pos !== -1) {
+      const transform = NAMED_TRANSFORMS[size] ?? NAMED_TRANSFORMS.card;
+      return ensureExtension(
+        `${idOrUrl.slice(0, pos + marker.length)}${transform}/${idOrUrl.slice(pos + marker.length)}`,
+      );
+    }
+    return ensureExtension(idOrUrl);
+  }
   const transform = NAMED_TRANSFORMS[size] ?? NAMED_TRANSFORMS.card;
-  return `${CLOUDINARY_BASE}/${transform}/${idOrUrl}`;
+  // Append .jpg when public_id has no extension — prevents browser
+  // OpaqueResponseBlocking. Cloudinary f_auto still serves optimal format.
+  const ext = /\.[a-zA-Z0-9]{2,5}$/.test(idOrUrl) ? '' : '.jpg';
+  return `${CLOUDINARY_BASE}/${transform}/${idOrUrl}${ext}`;
 }

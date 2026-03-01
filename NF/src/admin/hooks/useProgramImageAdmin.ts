@@ -117,6 +117,8 @@ export function useUploadProgramImage() {
       // Also refresh public cache so the live site reflects the new image
       queryClient.invalidateQueries({ queryKey: ['program-images', programId] });
       queryClient.invalidateQueries({ queryKey: ['programs'] });
+      // Phase 6: invalidate media album caches so /media gallery updates
+      queryClient.invalidateQueries({ queryKey: ['public', 'media'] });
     },
 
     onError: (err: Error) => {
@@ -168,6 +170,8 @@ export function useUpdateProgramImage() {
 
     onSettled: (_, __, { programId }) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY(programId) });
+      // Phase 6: invalidate media album caches so /media gallery updates
+      queryClient.invalidateQueries({ queryKey: ['public', 'media'] });
     },
   });
 }
@@ -234,6 +238,8 @@ export function useSetProgramCover() {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY(programId) });
       queryClient.invalidateQueries({ queryKey: ['program-images', programId] });
       queryClient.invalidateQueries({ queryKey: ['programs'] });
+      // Phase 6: invalidate media album caches so /media gallery updates
+      queryClient.invalidateQueries({ queryKey: ['public', 'media'] });
       toast.success('Cover image updated.');
     },
   });
@@ -277,6 +283,8 @@ export function useDeleteProgramImage() {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY(programId) });
       queryClient.invalidateQueries({ queryKey: ['program-images', programId] });
       queryClient.invalidateQueries({ queryKey: ['programs'] });
+      // Phase 6: invalidate media album caches so /media gallery updates
+      queryClient.invalidateQueries({ queryKey: ['public', 'media'] });
     },
   });
 }
@@ -322,6 +330,8 @@ export function useReorderProgramImages() {
 
     onSettled: (_, __, { programId }) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY(programId) });
+      // Phase 6: invalidate media album caches so /media gallery updates
+      queryClient.invalidateQueries({ queryKey: ['public', 'media'] });
     },
   });
 }

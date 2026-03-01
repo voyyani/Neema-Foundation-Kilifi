@@ -10,6 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera } from 'lucide-react';
 import type { PublicMediaAlbum } from '../../hooks/public/usePublicMedia';
+import { ensureExtension } from './OptimizedImage';
 
 export interface MediaHeroProps {
   albums: PublicMediaAlbum[];
@@ -48,8 +49,9 @@ const MediaHero: React.FC<MediaHeroProps> = ({ albums, totalAlbums = 0 }) => {
             className="absolute inset-0"
           >
             <img
-              src={current.cover_image}
+              src={ensureExtension(current.cover_image)}
               alt={current.title}
+              crossOrigin="anonymous"
               className="w-full h-full object-cover"
               loading="eager"
             />

@@ -966,14 +966,23 @@ const ProgramDetailPage: React.FC = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-8"
+          className="mb-8 flex items-end justify-between gap-4"
         >
-          <p className="text-xs font-semibold uppercase tracking-widest text-[#B01C2E] mb-2">
-            Gallery
-          </p>
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-900">
-            Photos from {program.name}
-          </h2>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#B01C2E] mb-2">
+              Gallery
+            </p>
+            <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-900">
+              Photos from {program.name}
+            </h2>
+          </div>
+          <Link
+            to={`/media/programs/${program.slug}`}
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#B01C2E] hover:gap-2.5 transition-all duration-200 shrink-0"
+          >
+            View Full Gallery
+            <ArrowLeft className="w-4 h-4 rotate-180" />
+          </Link>
         </motion.div>
 
         <ProgramPhotoGallery

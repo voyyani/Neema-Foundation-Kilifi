@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, MapPin, Camera } from 'lucide-react';
 import type { PublicEventData } from '../../../hooks/public/usePublicMedia';
+import { ensureExtension } from '../OptimizedImage';
 
 // Program badge colour lookup — matches design system
 const PROGRAM_COLORS: Record<string, string> = {
@@ -49,8 +50,9 @@ const StoryHero: React.FC<StoryHeroProps> = ({ coverImage, event, photoCount }) 
       {/* Cover image */}
       {coverImage ? (
         <img
-          src={coverImage}
+          src={ensureExtension(coverImage)}
           alt={event.name}
+          crossOrigin="anonymous"
           className="absolute inset-0 w-full h-full object-cover opacity-55"
           loading="eager"
         />

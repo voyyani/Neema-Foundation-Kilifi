@@ -212,7 +212,7 @@ const ProgramsHero: React.FC<ProgramsHeroProps> = ({
         </div>
       )}
 
-      {/* ── "Now showing" label + Explore CTA — bottom-left ─────────────── */}
+      {/* ── "Now showing" label + profile pic + Explore CTA — bottom-left ── */}
       <AnimatePresence mode="wait">
         {current && (
           <motion.div
@@ -225,24 +225,37 @@ const ProgramsHero: React.FC<ProgramsHeroProps> = ({
             aria-live="polite"
             aria-atomic="true"
           >
-            <p className="text-white/50 text-xs uppercase tracking-widest mb-0.5">Now showing</p>
+            <p className="text-white/50 text-xs uppercase tracking-widest mb-1">Now showing</p>
             <div className="flex items-center gap-3 flex-wrap">
-              <p className="text-white font-semibold text-sm">{current.name}</p>
-              <Link
-                to={`/programs/${current.slug}`}
-                className="group/explore inline-flex items-center gap-1.5 px-3 py-1 rounded-full
-                           bg-white/15 backdrop-blur-sm border border-white/25
-                           text-white/85 hover:text-white hover:bg-white/25
-                           text-xs font-medium transition-all duration-200 focus:outline-none
-                           focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-1"
-                aria-label={`Explore the ${current.name} program`}
-              >
-                Explore
-                <ArrowRight
-                  className="w-3 h-3 group-hover/explore:translate-x-0.5 transition-transform"
-                  aria-hidden="true"
-                />
-              </Link>
+              {/* Program profile pic */}
+              {current.cover_image && (
+                <div className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/30 flex-shrink-0">
+                  <OptimizedImage
+                    src={current.cover_image}
+                    alt={current.name}
+                    aspectRatio="1:1"
+                    className="w-full h-full object-cover"
+                    sizes="40px"
+                  />
+                </div>
+              )}
+              <div className="flex flex-col">
+                <p className="text-white font-semibold text-sm leading-tight">{current.name}</p>
+                <Link
+                  to={`/programs/${current.slug}`}
+                  className="group/explore inline-flex items-center gap-1 mt-0.5
+                             text-white/70 hover:text-white
+                             text-xs font-medium transition-colors duration-200 focus:outline-none
+                             focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-1"
+                  aria-label={`Explore the ${current.name} program`}
+                >
+                  Explore
+                  <ArrowRight
+                    className="w-3 h-3 group-hover/explore:translate-x-0.5 transition-transform"
+                    aria-hidden="true"
+                  />
+                </Link>
+              </div>
             </div>
           </motion.div>
         )}

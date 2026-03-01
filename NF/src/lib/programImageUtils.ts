@@ -179,21 +179,27 @@ export function toLightboxItems(images: ProgramImage[]): MediaLightboxReadyItem[
   return images
     .slice()
     .sort((a, b) => a.display_order - b.display_order)
-    .map((img) => ({
-      id: img.id,
-      album_id: '',
-      cloudinary_id: img.cloudinary_id ?? '',
-      url: resolveImageUrl(img),
-      thumbnail_url: null,
-      width: null,
-      height: null,
-      alt: img.alt_text ?? null,
-      caption: img.caption ?? null,
-      is_featured: img.is_cover || img.is_primary,
-      display_order: img.display_order,
-      tags: null,
-      taken_at: img.taken_at ?? null,
-    }));
+    .map((img) => {
+      const cid = img.cloudinary_id ?? '';
+      return {
+        id: img.id,
+        album_id: '',
+        cloudinary_id: cid,
+        url: resolveImageUrl(img),
+        // Phase 6: generate thumbnail for fast lightbox strip rendering
+        thumbnail_url: cid
+          ? `https://res.cloudinary.com/dzqdxosk2/image/upload/c_fill,w_128,h_128,q_auto,f_auto/${cid}${/\.\w{2,5}$/.test(cid) ? '' : '.jpg'}`
+          : null,
+        width: null,
+        height: null,
+        alt: img.alt_text ?? img.caption ?? null,
+        caption: img.caption ?? null,
+        is_featured: img.is_cover || img.is_primary,
+        display_order: img.display_order,
+        tags: null,
+        taken_at: img.taken_at ?? null,
+      };
+    });
 }
 
 // ─── Cloudinary helpers ───────────────────────────────────────────────────────

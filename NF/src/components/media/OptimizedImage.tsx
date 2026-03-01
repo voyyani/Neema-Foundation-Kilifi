@@ -39,6 +39,24 @@ const SRCSET_WIDTHS = [400, 800, 1200, 1600] as const;
 // ─── Exported utilities ───────────────────────────────────────────────────────
 
 /**
+ * Ensure a Cloudinary URL has a file extension to prevent
+ * OpaqueResponseBlocking. Cloudinary's f_auto still serves the optimal
+ * format (webp/avif) regardless of the appended extension.
+ */
+export function ensureExtension(url: string): string {
+  if (!url) return url;
+  // Only touch Cloudinary URLs
+  if (!url.includes('res.cloudinary.com')) return url;
+  // Strip query / fragment for check, then inspect the last path segment
+  const clean = url.split(/[?#]/)[0];
+  const lastSegment = clean.slice(clean.lastIndexOf('/') + 1);
+  if (/\.[a-zA-Z0-9]{2,5}$/.test(lastSegment)) return url;
+  // Append .jpg before any query string
+  const qIdx = url.indexOf('?');
+  return qIdx === -1 ? `${url}.jpg` : `${url.slice(0, qIdx)}.jpg${url.slice(qIdx)}`;
+}
+
+/**
  * Inject a Cloudinary transformation into a public_id or full https:// URL.
  * `size` can be a preset key ('thumb'|'card'|'hero'|'blur') or a raw transform
  * string like 'w_1200,c_fill,q_auto,f_auto'.
@@ -53,11 +71,16 @@ export function buildCloudinaryUrl(
     const marker = '/upload/';
     const pos = idOrUrl.indexOf(marker);
     if (pos !== -1) {
-      return `${idOrUrl.slice(0, pos + marker.length)}${transform}/${idOrUrl.slice(pos + marker.length)}`;
+      const result = `${idOrUrl.slice(0, pos + marker.length)}${transform}/${idOrUrl.slice(pos + marker.length)}`;
+      return ensureExtension(result);
     }
-    return idOrUrl; // unknown URL structure — return unchanged
+    return ensureExtension(idOrUrl); // unknown URL structure — at least fix extension
   }
-  return `${CLOUDINARY_BASE}/${transform}/${idOrUrl}`;
+  // Bare public_id — append .jpg extension so browsers don't trigger
+  // OpaqueResponseBlocking. Cloudinary's f_auto still serves the optimal
+  // format (webp/avif) regardless of the extension.
+  const ext = /\.[a-zA-Z0-9]{2,5}$/.test(idOrUrl) ? '' : '.jpg';
+  return `${CLOUDINARY_BASE}/${transform}/${idOrUrl}${ext}`;
 }
 
 /** Generate a srcSet string covering the four standard NF widths */
@@ -121,6 +144,8 @@ export interface OptimizedImageProps {
   src?: string;
   /** Alias for `src` */
   cloudinaryId?: string;
+  /** Fallback URL when cloudinary_id asset is missing (404) */
+  fallbackUrl?: string;
   alt: string;
   /** Aspect ratio — drives intrinsic sizing via padding-top trick */
   aspectRatio?: '4:3' | '16:9' | '1:1' | '3:2' | '3:4' | '2:3' | 'free';
@@ -148,6 +173,7 @@ export interface OptimizedImageProps {
 const OptimizedImage: React.FC<OptimizedImageProps> = ({
   src,
   cloudinaryId,
+  fallbackUrl,
   alt,
   aspectRatio = '4:3',
   size = 'card',
@@ -160,15 +186,28 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 }) => {
   const [loaded,     setLoaded]     = useState(false);
   const [blurLoaded, setBlurLoaded] = useState(false);
+  const [errored,    setErrored]    = useState(false);
 
   const idOrUrl  = (cloudinaryId ?? src) ?? '';
   const blurUrl  = buildBlurUrl(idOrUrl);
   const srcSet   = buildOptimizedSrcSet(idOrUrl);
   const fallback = buildCloudinaryUrl(idOrUrl, size);
 
+  // On 404 / error: try the raw fallbackUrl, then show placeholder
+  const activeSrc    = errored && fallbackUrl ? ensureExtension(fallbackUrl) : fallback;
+  const activeSrcSet = errored ? undefined : srcSet;
+
   const handleLoad = () => {
     setLoaded(true);
     onLoad?.();
+  };
+
+  const handleError = () => {
+    if (!errored && fallbackUrl && fallbackUrl !== idOrUrl) {
+      setErrored(true);            // will re-render with fallbackUrl
+    } else {
+      setLoaded(true);             // give up — hide blur, show broken placeholder
+    }
   };
 
   // ── Shared <img> pair ─────────────────────────────────────────────────────
@@ -178,6 +217,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       src={blurUrl}
       aria-hidden="true"
       alt=""
+      crossOrigin="anonymous"
       onLoad={() => setBlurLoaded(true)}
       className={[
         'absolute inset-0 w-full h-full object-cover scale-110 blur-sm pointer-events-none',
@@ -190,14 +230,16 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   const finalImg = (
     <img
-      src={fallback}
-      srcSet={srcSet}
-      sizes={sizes}
+      src={activeSrc}
+      srcSet={activeSrcSet}
+      sizes={activeSrcSet ? sizes : undefined}
       alt={alt}
+      crossOrigin="anonymous"
       loading={priority ? 'eager' : 'lazy'}
       fetchPriority={priority ? 'high' : 'auto'}
       decoding={priority ? 'sync' : 'async'}
       onLoad={handleLoad}
+      onError={handleError}
       className={[
         'absolute inset-0 w-full h-full object-cover transition-opacity duration-500',
         loaded ? 'opacity-100' : 'opacity-0',
@@ -216,14 +258,16 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       >
         {blurImg}
         <img
-          src={fallback}
-          srcSet={srcSet}
-          sizes={sizes}
+          src={activeSrc}
+          srcSet={activeSrcSet}
+          sizes={activeSrcSet ? sizes : undefined}
           alt={alt}
+          crossOrigin="anonymous"
           loading={priority ? 'eager' : 'lazy'}
           fetchPriority={priority ? 'high' : 'auto'}
           decoding={priority ? 'sync' : 'async'}
           onLoad={handleLoad}
+          onError={handleError}
           className={[
             'w-full h-full object-cover transition-opacity duration-500',
             loaded ? 'opacity-100' : 'opacity-0',

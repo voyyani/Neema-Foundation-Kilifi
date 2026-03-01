@@ -70,3 +70,10 @@ export {
   usePublicPrimaryProgramImage,
 } from './useProgramImages';
 export type { ProgramImage, ProgramImageInput } from './useProgramImages';
+
+// ─── Program Media Albums (Phase 2 — bridge sync) ────────────────────────────
+export {
+  usePublicProgramMediaAlbums,
+  usePublicProgramMediaAlbumsBySlug,
+} from './usePublicProgramMediaAlbums';
+export type { ProgramMediaAlbum } from './usePublicProgramMediaAlbums';

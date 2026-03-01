@@ -4,7 +4,7 @@
  */
 
 import { useState, useRef } from 'react';
-import { Star, StarOff, Trash2, Check, X, ImageIcon } from 'lucide-react';
+import { Star, StarOff, Trash2, Check, X, ImageIcon, RefreshCw } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { updateMediaItem, deleteMediaItem, setAlbumCover } from '../../hooks/useMediaAlbums';
 import type { MediaItem } from '../../types/media';
@@ -18,6 +18,7 @@ interface ImageItemProps {
 }
 
 export default function ImageItem({ item, albumId, onUpdate, onDelete }: ImageItemProps) {
+  const isSynced = !!item.source_table;
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [alt, setAlt] = useState(item.alt ?? '');
@@ -45,6 +46,10 @@ export default function ImageItem({ item, albumId, onUpdate, onDelete }: ImageIt
   }
 
   async function handleDelete() {
+    if (isSynced) {
+      toast.error('This image is synced from the Program editor and cannot be removed here.');
+      return;
+    }
     if (!confirm('Remove this image from the album?')) return;
     try {
       setIsDeleting(true);
@@ -110,9 +115,13 @@ export default function ImageItem({ item, albumId, onUpdate, onDelete }: ImageIt
           </button>
           <button
             onClick={handleDelete}
-            disabled={isDeleting}
-            title="Remove from album"
-            className="p-1.5 rounded-lg bg-white/80 text-gray-700 hover:bg-red-500 hover:text-white transition-colors disabled:opacity-50"
+            disabled={isDeleting || isSynced}
+            title={isSynced ? 'Synced image — remove via Program editor' : 'Remove from album'}
+            className={`p-1.5 rounded-lg transition-colors disabled:opacity-50 ${
+              isSynced
+                ? 'bg-white/40 text-gray-400 cursor-not-allowed'
+                : 'bg-white/80 text-gray-700 hover:bg-red-500 hover:text-white'
+            }`}
           >
             <Trash2 className="h-3.5 w-3.5" />
           </button>
@@ -123,6 +132,19 @@ export default function ImageItem({ item, albumId, onUpdate, onDelete }: ImageIt
       {item.is_featured && (
         <div className="absolute top-1 left-1 bg-yellow-400 rounded-md px-1.5 py-0.5 text-[10px] font-semibold text-white shadow-sm pointer-events-none">
           Featured
+        </div>
+      )}
+
+      {/* Synced indicator */}
+      {isSynced && (
+        <div className="absolute bottom-[calc(100%-theme(spacing.1))] right-1 -translate-y-full">
+          <span
+            title="Synced from Program editor — delete via Program editor"
+            className="inline-flex items-center gap-0.5 bg-blue-500/90 backdrop-blur-sm text-white rounded-md px-1.5 py-0.5 text-[10px] font-medium shadow-sm pointer-events-none"
+          >
+            <RefreshCw className="h-2.5 w-2.5" />
+            Synced
+          </span>
         </div>
       )}
 

@@ -1,6 +1,6 @@
 /**
  * MediaPage — Public media gallery landing (/media)
- * Neema Foundation Kilifi — Phase 2
+ * Neema Foundation Kilifi — Phase 2 + Phase 3
  *
  * Layout:
  *   MediaHero       ← rotating featured album covers
@@ -8,6 +8,11 @@
  *   FeaturedAlbum   ← full-width first featured album
  *   AlbumGrid       ← masonry grid of all published albums
  *   MediaCTA        ← "Share your moment"
+ *
+ * Phase 3 additions:
+ *   - Filters out zero-photo albums (edge case: synced album with no items)
+ *   - Programs filter empty state with Instagram CTA
+ *   - Filter counts reflect visible albums only
  */
 
 import React, { useMemo, useState } from 'react';
@@ -22,7 +27,9 @@ import FilterBar from '../components/media/FilterBar';
 import FeaturedAlbum, { FeaturedAlbumSkeleton } from '../components/media/FeaturedAlbum';
 import AlbumGrid from '../components/media/AlbumGrid';
 import MediaCTA from '../components/media/MediaCTA';
+import ProgramsEmptyCTA from '../components/media/ProgramsEmptyCTA';
 import { buildCloudinaryUrl } from '../components/media/OptimizedImage';
+import ImageGalleryJsonLd from '../components/media/ImageGalleryJsonLd';
 
 // ─── SEO defaults ──────────────────────────────────────────────────────────────
 const SEO_TITLE       = 'Media Gallery — Neema Foundation Kilifi';
@@ -53,12 +60,20 @@ const MediaPage: React.FC = () => {
 
   const filterCounts = useMemo((): Partial<Record<AlbumFilterType, number>> => {
     if (!allAlbums.length) return {};
-    const counts: Record<string, number> = { all: allAlbums.length };
-    allAlbums.forEach((a) => {
+    // Phase 3: exclude zero-photo albums from counts (edge case: empty synced album)
+    const visible = allAlbums.filter((a) => a.photo_count > 0);
+    const counts: Record<string, number> = { all: visible.length };
+    visible.forEach((a) => {
       counts[a.album_type] = (counts[a.album_type] ?? 0) + 1;
     });
     return counts as Partial<Record<AlbumFilterType, number>>;
   }, [allAlbums]);
+
+  // Phase 3: filter out zero-photo albums from the grid
+  const visibleAlbums = useMemo(
+    () => albums.filter((a) => a.photo_count > 0),
+    [albums],
+  );
 
   // First featured album to show in FeaturedAlbum section
   const featuredAlbum = featuredAlbums[0] ?? null;
@@ -86,6 +101,23 @@ const MediaPage: React.FC = () => {
         {ogImage && <meta name="twitter:image" content={ogImage} />}
         <link rel="canonical" href="https://neemafoundationkilifi.org/media" />
       </Helmet>
+
+      {/* Phase 6: JSON-LD structured data for the media gallery index */}
+      {visibleAlbums.length > 0 && (
+        <ImageGalleryJsonLd
+          name="Media Gallery"
+          description={SEO_DESCRIPTION}
+          url="https://neemafoundationkilifi.org/media"
+          images={visibleAlbums
+            .filter((a) => a.cover_image)
+            .slice(0, 20)
+            .map((a) => ({
+              url: a.cover_image!,
+              caption: a.description,
+              alt: a.title,
+            }))}
+        />
+      )}
 
       {/* Hero */}
       {featuredLoading && featuredAlbums.length === 0 ? (
@@ -129,21 +161,26 @@ const MediaPage: React.FC = () => {
                 {activeFilter === 'misc'              && 'More Galleries'}
               </h2>
               <p className="text-gray-500 text-sm mt-1">
-                {albums.length} album{albums.length !== 1 ? 's' : ''}
+                {visibleAlbums.length} album{visibleAlbums.length !== 1 ? 's' : ''}
               </p>
             </div>
           )}
 
-          <AlbumGrid
-            albums={albums}
-            isLoading={albumsLoading}
-            error={albumsError as Error | null}
-            emptyMessage={
-              activeFilter === 'all'
-                ? 'No albums published yet. Check back soon!'
-                : `No ${activeFilter.replace('_', ' ')} albums yet.`
-            }
-          />
+          {/* Phase 3.5: Programs-specific empty state with Instagram CTA */}
+          {!albumsLoading && activeFilter === 'program' && visibleAlbums.length === 0 ? (
+            <ProgramsEmptyCTA />
+          ) : (
+            <AlbumGrid
+              albums={visibleAlbums}
+              isLoading={albumsLoading}
+              error={albumsError as Error | null}
+              emptyMessage={
+                activeFilter === 'all'
+                  ? 'No albums published yet. Check back soon!'
+                  : `No ${activeFilter.replace('_', ' ')} albums yet.`
+              }
+            />
+          )}
         </section>
 
         {/* CTA */}

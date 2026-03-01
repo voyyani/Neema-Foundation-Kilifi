@@ -4,7 +4,8 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Loader2, Info, ExternalLink } from 'lucide-react';
 import { slugify } from '../../lib/utils';
 import { createMediaAlbum, updateMediaAlbum } from '../../hooks/useMediaAlbums';
 import { usePrograms } from '../../hooks/usePrograms';
@@ -52,6 +53,8 @@ export default function AlbumForm({
   const [isSaving, setIsSaving] = useState(false);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(!!album?.slug);
 
+  const isAutoSynced = album?.auto_synced === true;
+
   // Auto-generate slug from title if user hasn't manually set it
   useEffect(() => {
     if (!slugManuallyEdited && form.title) {
@@ -85,8 +88,36 @@ export default function AlbumForm({
     }
   }
 
+  // Resolve linked program for the "Edit in Program Editor" link
+  const linkedProgram = album?.program ?? programs.find(p => p.id === form.program_id);
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      {/* Auto-synced album banner */}
+      {isAutoSynced && (
+        <div className="flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+          <Info className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-blue-900">
+              This album is automatically synced from program images.
+            </p>
+            <p className="text-sm text-blue-700 mt-1">
+              Upload photos via the Program editor to add new images.
+              Album type and program link are managed by the sync trigger.
+            </p>
+            {linkedProgram && (
+              <Link
+                to={`/admin/content/programs`}
+                className="inline-flex items-center gap-1.5 mt-2 text-sm font-medium text-blue-700 hover:text-blue-900 transition-colors"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+                Open Program Editor
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Title */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -133,12 +164,18 @@ export default function AlbumForm({
         <select
           value={form.album_type}
           onChange={e => set('album_type', e.target.value as AlbumType)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent outline-none"
+          disabled={isAutoSynced}
+          className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent outline-none ${
+            isAutoSynced ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''
+          }`}
         >
           {ALBUM_TYPES.map(t => (
             <option key={t} value={t}>{ALBUM_TYPE_LABELS[t]}</option>
           ))}
         </select>
+        {isAutoSynced && (
+          <p className="text-xs text-gray-400 mt-1">Locked — managed by the program sync trigger.</p>
+        )}
       </div>
 
       {/* Event link */}
@@ -165,13 +202,19 @@ export default function AlbumForm({
           <select
             value={form.program_id ?? ''}
             onChange={e => set('program_id', e.target.value || null)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent outline-none"
+            disabled={isAutoSynced}
+            className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent outline-none ${
+              isAutoSynced ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''
+            }`}
           >
             <option value="">— None —</option>
             {programs.map(pr => (
               <option key={pr.id} value={pr.id}>{pr.name}</option>
             ))}
           </select>
+          {isAutoSynced && (
+            <p className="text-xs text-gray-400 mt-1">Locked — managed by the program sync trigger.</p>
+          )}
         </div>
       )}
 

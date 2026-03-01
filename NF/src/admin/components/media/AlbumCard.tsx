@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Images, Calendar, Pencil, Trash2, Star } from 'lucide-react';
+import { Eye, EyeOff, Images, Calendar, Pencil, Trash2, Star, RefreshCw } from 'lucide-react';
 import { formatDate } from '../../lib/utils';
 import { updateMediaAlbum, deleteMediaAlbum } from '../../hooks/useMediaAlbums';
 import { ALBUM_TYPE_LABELS, ALBUM_TYPE_COLORS } from '../../types/media';
@@ -34,6 +34,11 @@ export default function AlbumCard({ album, onRefetch }: AlbumCardProps) {
   }
 
   async function handleDelete() {
+    // Guard: prevent deletion of auto-synced albums
+    if (album.auto_synced) {
+      toast.error('This album is auto-synced from a program and cannot be deleted. Remove images via the Program editor.');
+      return;
+    }
     if (!confirm(`Delete album "${album.title}"? This will remove all ${album.photo_count} photos.`)) return;
     try {
       setIsDeleting(true);
@@ -72,6 +77,12 @@ export default function AlbumCard({ album, onRefetch }: AlbumCardProps) {
           <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${ALBUM_TYPE_COLORS[album.album_type]}`}>
             {ALBUM_TYPE_LABELS[album.album_type]}
           </span>
+          {album.auto_synced && (
+            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 flex items-center gap-1">
+              <RefreshCw className="h-3 w-3" />
+              Auto-synced
+            </span>
+          )}
           {album.is_featured && (
             <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800">
               Featured
@@ -135,9 +146,13 @@ export default function AlbumCard({ album, onRefetch }: AlbumCardProps) {
 
           <button
             onClick={handleDelete}
-            disabled={isDeleting}
-            title="Delete album"
-            className="p-1.5 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+            disabled={isDeleting || album.auto_synced}
+            title={album.auto_synced ? 'Auto-synced albums cannot be deleted' : 'Delete album'}
+            className={`p-1.5 rounded-lg transition-colors disabled:opacity-50 ${
+              album.auto_synced
+                ? 'text-gray-300 cursor-not-allowed'
+                : 'text-gray-500 hover:text-red-600 hover:bg-red-50'
+            }`}
           >
             <Trash2 className="h-4 w-4" />
           </button>

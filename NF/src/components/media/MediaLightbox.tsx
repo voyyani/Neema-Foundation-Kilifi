@@ -37,6 +37,7 @@ import {
   Check,
 } from 'lucide-react';
 import type { PublicMediaItem } from '../../hooks/public/usePublicMedia';
+import { ensureExtension } from './OptimizedImage';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -55,9 +56,11 @@ function injectTransform(url: string, transform: string): string {
   const marker = '/upload/';
   const idx = url.indexOf(marker);
   if (idx !== -1) {
-    return `${url.slice(0, idx + marker.length)}${transform}/${url.slice(idx + marker.length)}`;
+    return ensureExtension(
+      `${url.slice(0, idx + marker.length)}${transform}/${url.slice(idx + marker.length)}`,
+    );
   }
-  return url;
+  return ensureExtension(url);
 }
 
 /** Build a download-forced URL via Cloudinary fl_attachment */
@@ -450,11 +453,22 @@ const MediaLightbox: React.FC<MediaLightboxProps> = ({
             style={{ cursor: pinchScale > 1 ? 'grab' : 'default' }}
           >
             <img
-              src={item.url}
+              src={ensureExtension(item.url)}
               alt={item.alt ?? item.caption ?? `Photo ${idx + 1}`}
+              crossOrigin="anonymous"
               loading="eager"
               decoding="async"
               draggable={false}
+              onError={(e) => {
+                const img = e.currentTarget;
+                // Prevent infinite loop — only retry once with a different src
+                if (!img.dataset.retried && item.cloudinary_id && item.cloudinary_id !== item.url) {
+                  img.dataset.retried = '1';
+                  img.src = ensureExtension(
+                    `https://res.cloudinary.com/dzqdxosk2/image/upload/${item.cloudinary_id}`,
+                  );
+                }
+              }}
               style={{
                 transform: `scale(${pinchScale})`,
                 transformOrigin: 'center',
@@ -554,6 +568,7 @@ const MediaLightbox: React.FC<MediaLightboxProps> = ({
                   injectTransform(thumb.url, 'w_128,h_128,c_fill,q_auto,f_auto')
                 }
                 alt=""
+                crossOrigin="anonymous"
                 loading="lazy"
                 decoding="async"
                 className="w-full h-full object-cover"
