@@ -77,3 +77,14 @@ export {
   usePublicProgramMediaAlbumsBySlug,
 } from './usePublicProgramMediaAlbums';
 export type { ProgramMediaAlbum } from './usePublicProgramMediaAlbums';
+
+// ─── Maintenance Status (Phase 1) ────────────────────────────────────────────
+export {
+  useMaintenanceStatus,
+  usePageMaintenance,
+  useSectionMaintenance,
+} from './useMaintenanceStatus';
+export type {
+  ActiveMaintenanceRule,
+  MaintenanceStatus,
+} from './useMaintenanceStatus';

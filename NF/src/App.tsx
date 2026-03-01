@@ -19,6 +19,7 @@ import NotFound from './pages/NotFound';
 import Maintenance from './pages/Maintenance';
 // Use the barrel export to improve resolver compatibility on case-sensitive filesystems
 import { Programs } from './components/programs';
+import { MaintenanceProvider, MaintenanceBanner, MaintenanceGate, MaintenanceErrorBoundary } from './components/maintenance';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 import { AuthProvider } from './admin/hooks/useAuth';
 import { queryClient } from './admin/config/queryClient';
@@ -55,6 +56,12 @@ const BulkUploadPage   = lazyWithRetry(() => import('./admin/pages/media/BulkUpl
 
 // Bank Details Management (Phase 6)
 const BankDetailsAdminPage = lazyWithRetry(() => import('./admin/pages/BankDetailsAdminPage'));
+
+// Maintenance Management (Phase 1 — Maintenance System)
+const MaintenanceDashboard = lazyWithRetry(() => import('./admin/pages/maintenance/MaintenanceDashboard'));
+const NewRulePage          = lazyWithRetry(() => import('./admin/pages/maintenance/NewRulePage'));
+const EditRulePage         = lazyWithRetry(() => import('./admin/pages/maintenance/EditRulePage'));
+const MaintenanceHistory   = lazyWithRetry(() => import('./admin/pages/maintenance/MaintenanceHistory'));
 
 // Public Media Pages (Phase 2)
 const MediaPage          = lazyWithRetry(() => import('./pages/MediaPage'));
@@ -115,8 +122,6 @@ const AdminShell = () => (
 );
 
 const App: React.FC = () => {
-  const isUnderMaintenance = import.meta.env.VITE_UNDER_MAINTENANCE === 'true';
-
   return (
     <HelmetProvider>
     <GlobalErrorBoundary>
@@ -164,6 +169,11 @@ const App: React.FC = () => {
                     <Route path="media/albums/:id" element={<AlbumDetailPage />} />
                     {/* Bank Details Management — Phase 6 */}
                     <Route path="bank-details" element={<BankDetailsAdminPage />} />
+                    {/* Maintenance Management — Maintenance System Phase 1 + Phase 3 */}
+                    <Route path="maintenance" element={<MaintenanceDashboard />} />
+                    <Route path="maintenance/new" element={<NewRulePage />} />
+                    <Route path="maintenance/:id/edit" element={<EditRulePage />} />
+                    <Route path="maintenance/history" element={<MaintenanceHistory />} />
                   </Route>
                 </Route>
 
@@ -171,42 +181,36 @@ const App: React.FC = () => {
                 <Route
                   path="/*"
                   element={
-                    <>
+                    <MaintenanceErrorBoundary>
+                    <MaintenanceProvider>
                       <Navbar />
+                      <MaintenanceBanner />
                       <main className="flex-1">
                         <Routes>
-                          {isUnderMaintenance ? (
-                            // Maintenance mode routes
-                            <>
-                              <Route path="/volunteer" element={<Volunteer />} />
-                              <Route path="*" element={<Maintenance />} />
-                            </>
-                          ) : (
-                            // Normal mode - all routes accessible
-                            <>
-                              <Route path="/" element={<Landing />} />
-                              <Route path="/donate" element={<Donate />} />
-                              <Route path="/bank-details" element={<BankDetails />} />
-                              <Route path="/legacy-giving" element={<LegacyGiving />} />
-                              <Route path="/volunteer" element={<Volunteer />} />
-                              <Route path="/partner" element={<Partnership />} />
-                              <Route path="/sponsorship" element={<Sponsorship />} />
-                              <Route path="/board" element={<Board />} />
-                              <Route path="/programs" element={<Programs />} />
-                              {/* Program Detail — Phase 7 */}
-                              <Route path="/programs/:slug" element={<ProgramDetailPage />} />
-                              {/* Media Gallery — Phase 2 */}
-                              <Route path="/media" element={<MediaPage />} />
-                              <Route path="/media/events/:slug" element={<EventStoryPage />} />
-                              <Route path="/media/programs/:slug" element={<ProgramGalleryPage />} />
-                              <Route path="/media/albums/:slug" element={<AlbumPage />} />
-                              <Route path="*" element={<NotFound />} />
-                            </>
-                          )}
+                          <Route path="/" element={<MaintenanceGate page="landing"><Landing /></MaintenanceGate>} />
+                          <Route path="/donate" element={<MaintenanceGate page="donate"><Donate /></MaintenanceGate>} />
+                          <Route path="/bank-details" element={<MaintenanceGate page="bank_details"><BankDetails /></MaintenanceGate>} />
+                          <Route path="/legacy-giving" element={<MaintenanceGate page="legacy_giving"><LegacyGiving /></MaintenanceGate>} />
+                          <Route path="/volunteer" element={<MaintenanceGate page="volunteer"><Volunteer /></MaintenanceGate>} />
+                          <Route path="/partner" element={<MaintenanceGate page="partnership"><Partnership /></MaintenanceGate>} />
+                          <Route path="/sponsorship" element={<MaintenanceGate page="sponsorship"><Sponsorship /></MaintenanceGate>} />
+                          <Route path="/board" element={<MaintenanceGate page="board"><Board /></MaintenanceGate>} />
+                          <Route path="/programs" element={<MaintenanceGate page="programs"><Programs /></MaintenanceGate>} />
+                          {/* Program Detail — Phase 7 */}
+                          <Route path="/programs/:slug" element={<MaintenanceGate page="program_detail"><ProgramDetailPage /></MaintenanceGate>} />
+                          {/* Media Gallery — Phase 2 */}
+                          <Route path="/media" element={<MaintenanceGate page="media"><MediaPage /></MaintenanceGate>} />
+                          <Route path="/media/events/:slug" element={<MaintenanceGate page="media"><EventStoryPage /></MaintenanceGate>} />
+                          <Route path="/media/programs/:slug" element={<MaintenanceGate page="media"><ProgramGalleryPage /></MaintenanceGate>} />
+                          <Route path="/media/albums/:slug" element={<MaintenanceGate page="media"><AlbumPage /></MaintenanceGate>} />
+                          {/* Legacy full-site maintenance page (direct access) */}
+                          <Route path="/maintenance" element={<Maintenance />} />
+                          <Route path="*" element={<NotFound />} />
                         </Routes>
                       </main>
                       <Footer />
-                    </>
+                    </MaintenanceProvider>
+                    </MaintenanceErrorBoundary>
                   }
                 />
               </Routes>

@@ -54,4 +54,14 @@ export const queryKeys = {
   
   // Site Settings
   siteSettings: ['site', 'settings'],
+
+  // Maintenance System
+  maintenanceRules: ['maintenance', 'rules'],
+  maintenanceRule: (id: string) => ['maintenance', 'rule', id],
+  maintenanceSchedules: ['maintenance', 'schedules'],
+  maintenanceAudit: ['maintenance', 'audit'],
+  maintenanceStatusFeed: (ruleId: string) => ['public', 'maintenance', 'status-feed', ruleId],
+  maintenanceLatestStatuses: ['public', 'maintenance', 'latest-statuses'],
+  maintenanceTemplates: ['maintenance', 'templates'],
+  maintenanceHistory: ['maintenance', 'history'],
 };

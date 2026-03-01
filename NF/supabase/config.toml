@@ -19,3 +19,11 @@ verify_jwt = true
 [functions.send-notification]
 # Public endpoint — called by unauthenticated form submissions
 verify_jwt = false
+
+[functions.check-maintenance-schedule]
+# Called by pg_cron — no JWT needed (uses service role key directly)
+verify_jwt = false
+
+[functions.maintenance-notify]
+# Called by database webhook on maintenance_status_updates INSERT — no JWT needed
+verify_jwt = false

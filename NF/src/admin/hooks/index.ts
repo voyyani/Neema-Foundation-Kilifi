@@ -13,3 +13,16 @@ export type {
   UseBankDetailsAdminReturn,
   SavingState,
 } from './useBankDetailsAdmin';
+
+// ─── Maintenance System ───────────────────────────────────────────────────────
+export {
+  useMaintenanceRules,
+  useMaintenanceRule,
+  useCreateMaintenanceRule,
+  useUpdateMaintenanceRule,
+  useToggleMaintenanceRule,
+  useDeleteMaintenanceRule,
+  useCreateStatusUpdate,
+  useMaintenanceAuditLog,
+  useMaintenanceStats,
+} from './useMaintenanceRules';
