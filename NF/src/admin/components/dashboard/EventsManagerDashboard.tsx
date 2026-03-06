@@ -155,11 +155,12 @@ export default function EventsManagerDashboard({ data, loading, error, userName,
         <SectionCard
           title="Upcoming Events"
           action={{ label: 'View all', href: '/admin/events' }}
+          dataTour="upcoming-events"
         >
           <UpcomingEventsTimeline events={data?.upcomingEvents || []} loading={loading} />
         </SectionCard>
 
-        <SectionCard title="Quick Actions">
+        <SectionCard title="Quick Actions" dataTour="quick-actions">
           <QuickActionGrid actions={quickActions} />
         </SectionCard>
       </div>

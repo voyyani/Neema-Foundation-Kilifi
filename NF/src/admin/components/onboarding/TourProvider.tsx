@@ -48,6 +48,17 @@ function toDriveSteps(tour: RoleTour): DriveStep[] {
 }
 
 // ---------------------------------------------------------------------------
+// Helper: filter steps marked skipIfMissing where their DOM element is absent
+// ---------------------------------------------------------------------------
+
+function filterAvailableSteps(steps: RoleTour['steps']): RoleTour['steps'] {
+  return steps.filter((step) => {
+    if (!step.skipIfMissing) return true;
+    return !!document.querySelector(step.target);
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Provider
 // ---------------------------------------------------------------------------
 
@@ -118,6 +129,7 @@ export function TourProvider({ children }: TourProviderProps) {
         availableTours.length > 0 &&
         availableTours.every((t) => updated.includes(t.id));
 
+      // ── 1. Update profiles.tours_completed ───────────────────────────────
       try {
         await supabase
           .from('profiles')
@@ -131,8 +143,56 @@ export function TourProvider({ children }: TourProviderProps) {
       } catch (err) {
         console.warn('[Onboarding] Could not persist tour completion:', err);
       }
+
+      // ── 2. Mark each tour breadcrumb as completed in onboarding_progress ─
+      // The onboarding page reads from onboarding_progress, not from profiles.
+      // Without this, the checklist never updates even though the tour marker
+      // is persisted above.
+      const tourDef = getTourById(tourId);
+      if (tourDef && user?.id) {
+        // Collect unique breadcrumbs from this tour's steps (steps can share
+        // a breadcrumb ID when multiple tour steps cover the same breadcrumb).
+        const uniqueBreadcrumbs = new Map<string, number>();
+        for (const step of tourDef.steps) {
+          if (step.breadcrumbId && !uniqueBreadcrumbs.has(step.breadcrumbId)) {
+            uniqueBreadcrumbs.set(step.breadcrumbId, step.trailNumber);
+          }
+        }
+
+        const progressRows = Array.from(uniqueBreadcrumbs.entries()).map(([id, trail]) => ({
+          user_id: user.id,
+          breadcrumb_id: id,
+          trail_number: trail,
+          auto_detected: true,
+        }));
+
+        if (progressRows.length > 0) {
+          try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { error } = await (supabase.from('onboarding_progress') as any).upsert(
+              progressRows,
+              { onConflict: 'user_id,breadcrumb_id' },
+            );
+            if (error) console.warn('[Onboarding] onboarding_progress upsert error:', error);
+          } catch (err) {
+            console.warn('[Onboarding] Could not mark tour breadcrumbs:', err);
+          }
+        }
+      }
+
+      // ── 3.  Invalidate the progress query AFTER all writes complete ──────
+      // Include user.id in the key so the invalidation precisely targets the
+      // ['onboarding-progress', userId] entry used by useOnboardingProgress,
+      // then fall back to a prefix-match invalidation for safety.
+      queryClient.invalidateQueries({ queryKey: ['onboarding-progress', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['onboarding-progress'] });
+      // Also invalidate the profile cache so the synthesized tour-completion
+      // path in useOnboardingProgress picks up the freshly written
+      // tours_completed array.
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['auth-profile'] });
     },
-    [user?.id, completedTourIds, availableTours],
+    [user?.id, completedTourIds, availableTours, queryClient],
   );
 
   // ── Start a tour ───────────────────────────────────────────────────────
@@ -154,12 +214,17 @@ export function TourProvider({ children }: TourProviderProps) {
 
       // Small delay to ensure DOM has settled after navigation
       setTimeout(() => {
-        const driveSteps = toDriveSteps(tour);
+        // Filter out skipIfMissing steps where target element is absent.
+        // Since all dashboard steps share route '/admin/dashboard', the DOM
+        // is fully rendered at this point and the check is reliable.
+        const availableSteps = filterAvailableSteps(tour.steps);
+        const activeTourDef: RoleTour = { ...tour, steps: availableSteps };
+        const driveSteps = toDriveSteps(activeTourDef);
 
         // Helper: check if a tour step targets a sidebar element and
         // dispatch a custom event so AdminLayout can open the mobile drawer.
         const ensureSidebarOpen = (stepIndex: number) => {
-          const tourStep = tour.steps[stepIndex];
+          const tourStep = activeTourDef.steps[stepIndex];
           if (!tourStep) return;
           const target = tourStep.target;
           if (
@@ -175,7 +240,7 @@ export function TourProvider({ children }: TourProviderProps) {
         // wait for the DOM to settle before resolving. Returns true if
         // navigation occurred (i.e. caller should wait).
         const navigateForStep = (stepIndex: number): Promise<void> => {
-          const tourStep = tour.steps[stepIndex];
+          const tourStep = activeTourDef.steps[stepIndex];
           if (!tourStep?.route) return Promise.resolve();
 
           // Use window.location.pathname (always current) to avoid the
@@ -197,7 +262,7 @@ export function TourProvider({ children }: TourProviderProps) {
           const newState: TourState = {
             tourId,
             currentStep: stepIndex,
-            totalSteps: tour.steps.length,
+            totalSteps: activeTourDef.steps.length,
             status: 'in_progress',
           };
           activeTourRef.current = newState;
@@ -229,7 +294,7 @@ export function TourProvider({ children }: TourProviderProps) {
           onNextClick: () => {
             const cur = activeTourRef.current?.currentStep ?? 0;
             const next = cur + 1;
-            if (next >= tour.steps.length) {
+            if (next >= activeTourDef.steps.length) {
               // Last step — use moveNext() so driver.js calls g() → onDestroyStarted
               // naturally. Calling destroy() directly calls g(false) which SKIPS
               // onDestroyStarted, preventing tour completion and modal cleanup.
@@ -239,7 +304,7 @@ export function TourProvider({ children }: TourProviderProps) {
 
             // Close the mobile sidebar when leaving a step that targetted the
             // sidebar or a nav link — before showing the next step.
-            const currentTourStep = tour.steps[cur];
+            const currentTourStep = activeTourDef.steps[cur];
             if (
               typeof currentTourStep?.target === 'string' &&
               (currentTourStep.target.includes('data-tour="nav-') ||
@@ -250,7 +315,7 @@ export function TourProvider({ children }: TourProviderProps) {
 
             // If the next step targets the create-event modal, click the
             // Create Event button to open it, then wait for the animation.
-            const nextTourStep = tour.steps[next];
+            const nextTourStep = activeTourDef.steps[next];
             if (nextTourStep?.target === '[data-tour="new-event-modal"]') {
               const createBtn = document.querySelector(
                 '[data-tour="events-create-btn"]',
@@ -279,27 +344,27 @@ export function TourProvider({ children }: TourProviderProps) {
             const currentState = activeTourRef.current;
             const wasLastStep =
               currentState &&
-              currentState.currentStep >= tour.steps.length - 1;
+              currentState.currentStep >= activeTourDef.steps.length - 1;
 
             if (wasLastStep) {
               // If the finishing step was the create-event modal, dismiss it
               // cleanly so the UI is left in a tidy state.
-              const lastStep = tour.steps[tour.steps.length - 1];
+              const lastStep = activeTourDef.steps[activeTourDef.steps.length - 1];
               if (lastStep?.target === '[data-tour="new-event-modal"]') {
                 window.dispatchEvent(new CustomEvent('nf:close-create-modal'));
               }
 
+              // persistCompletion is async — it upserts rows then invalidates
+              // the progress query itself. Do NOT invalidate here (race condition).
               persistCompletion(tourId);
               const completedState: TourState = {
                 tourId,
-                currentStep: tour.steps.length - 1,
-                totalSteps: tour.steps.length,
+                currentStep: activeTourDef.steps.length - 1,
+                totalSteps: activeTourDef.steps.length,
                 status: 'completed',
               };
               activeTourRef.current = completedState;
               setActiveTour(completedState);
-              // Refresh breadcrumb progress so the journey updates immediately
-              queryClient.invalidateQueries({ queryKey: ['onboarding-progress'] });
               toast.success(`🎉 "${tour.name}" tour completed!`);
             } else {
               activeTourRef.current = null;
@@ -323,7 +388,7 @@ export function TourProvider({ children }: TourProviderProps) {
         const initialState: TourState = {
           tourId,
           currentStep: 0,
-          totalSteps: tour.steps.length,
+          totalSteps: activeTourDef.steps.length,
           status: 'in_progress',
         };
         activeTourRef.current = initialState;

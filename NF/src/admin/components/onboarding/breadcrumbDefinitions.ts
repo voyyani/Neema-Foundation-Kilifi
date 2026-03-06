@@ -1,5 +1,5 @@
 /**
- * Breadcrumb Definitions — Phase 4
+ * Breadcrumb Definitions — Phase 4 (updated Trail 1 for 17-step Dashboard tour)
  *
  * The canonical list of every breadcrumb trail and breadcrumb, derived
  * directly from the Breadcrumbs Roadmap. This file is the single source
@@ -16,6 +16,13 @@ import type { BreadcrumbTrail } from '../../types/onboarding';
 // dashboard widget section, activity monitoring, and auth mastery.
 // Organised into 5 progressive sections (A–E) so the user builds competence
 // layer by layer — from first login to full dashboard fluency.
+//
+// Tour step → breadcrumb mapping:
+//   ① Sidebar          → 1.5   ② Mobile hamburger → 1.7
+//   ③ Stats bar        → 1.11  ④–⑪ Quick Actions → 1.13, 1.14
+//   ⑫ System Status   → 1.17  ⑬ User Distribution → 1.17
+//   ⑭ Recent Activity → 1.15  ⑮ Upcoming Events   → 1.16
+//   ⑯ Submissions     → 1.18  ⑰ Content Pipeline  → 1.19
 
 const trail1: BreadcrumbTrail = {
   number: 1,
@@ -50,31 +57,31 @@ const trail1: BreadcrumbTrail = {
     {
       id: '1.4', trail: 1,
       title: 'Understand the admin layout',
-      description: 'Identify the four layout zones: sidebar navigation, top header bar, breadcrumb trail, and main content area.',
+      description: 'Identify the four zones visible on every admin page: sidebar navigation, top header bar, breadcrumb trail, and main content area.',
       route: '/admin/dashboard', level: 'beginner', estimatedMinutes: 3,
     },
     {
       id: '1.5', trail: 1,
-      title: 'Explore the sidebar navigation',
-      description: 'Hover over each sidebar link — Dashboard, Events, Media, Content, Programs, and more — to preview where they lead.',
+      title: '① Explore the sidebar navigation',
+      description: 'Tour step 1 — Hover over each sidebar link (Dashboard, Events, Media, Content, Programs, Submissions, Users, Bank Details, Maintenance, Onboarding) to preview where it leads. Notice that only links permitted for your role appear.',
       route: '/admin/dashboard', level: 'beginner', estimatedMinutes: 3,
     },
     {
       id: '1.6', trail: 1,
       title: 'Identify your role-specific menu items',
-      description: 'Notice which sidebar items are visible for your role. Viewers see fewer items than Admins or Super Admins.',
+      description: 'Notice which sidebar items are visible for your role. Viewers see fewer items than Admins or Super Admins — this enforces the principle of least privilege.',
       route: '/admin/dashboard', level: 'beginner', estimatedMinutes: 3,
     },
     {
       id: '1.7', trail: 1,
-      title: 'Use the mobile hamburger menu',
-      description: 'On a phone or narrow browser, tap the ☰ hamburger icon to open the slide-out sidebar, then close it.',
+      title: '② Use the mobile hamburger menu',
+      description: 'Tour step 2 — On a phone or narrow browser, tap the ☰ hamburger icon in the header to slide the sidebar open. Tap ✕ or tap the backdrop to collapse it. The sidebar uses a spring animation to feel native on iOS.',
       route: '/admin/dashboard', level: 'beginner', estimatedMinutes: 2,
     },
     {
       id: '1.8', trail: 1,
       title: 'Navigate using the breadcrumb bar',
-      description: 'Click any breadcrumb segment to jump back to a parent page. Try keyboard arrows (← →) between crumbs.',
+      description: 'Click any breadcrumb segment to jump back to a parent page (e.g. Dashboard › Events › Edit → click Events to return to the events list).',
       route: '/admin/dashboard', level: 'beginner', estimatedMinutes: 2,
     },
 
@@ -93,26 +100,26 @@ const trail1: BreadcrumbTrail = {
     },
     {
       id: '1.11', trail: 1,
-      title: 'Read each dashboard stat card',
-      description: 'Examine every stat card: Total Events, Active Programs, Published Stories, Impact Metrics (and Total Users for Super Admins).',
+      title: '③ Read each dashboard stat card',
+      description: 'Tour step 3 — Examine every stat card in the Stats Bar: Total Events, Active Programs, Published Stories, Impact Metrics (and Total Users for Super Admins). Each card also shows a contextual sub-value. All cards are clickable links.',
       route: '/admin/dashboard', level: 'beginner', estimatedMinutes: 5,
     },
     {
       id: '1.12', trail: 1,
       title: 'Understand stat card sub-values',
-      description: 'Each stat card has a secondary value — e.g. "3 upcoming" under Total Events or "+2 this month" under Published Stories. Understand what they track.',
+      description: 'Each stat card has a secondary value — e.g. "3 upcoming" under Total Events or "+2 this month" under Published Stories. These give context to the headline number at a glance.',
       route: '/admin/dashboard', level: 'beginner', estimatedMinutes: 3,
     },
     {
       id: '1.13', trail: 1,
-      title: 'Explore the Quick Actions grid',
-      description: 'Find the Quick Actions section and read each shortcut: Create Event, New Program, Write Story, Update Hero, Bank Details, Site Settings, Maintenance.',
-      route: '/admin/dashboard', level: 'beginner', estimatedMinutes: 3,
+      title: '④–⑪ Explore the Quick Actions grid',
+      description: 'Tour steps 4–11 — Find the Quick Actions section and study each shortcut: Create Event, New Program, Write Story, Update Hero, Bank Details, Site Settings, Maintenance (and Manage Users for Super Admins). Each button is explained individually in the tour.',
+      route: '/admin/dashboard', level: 'beginner', estimatedMinutes: 5,
     },
     {
       id: '1.14', trail: 1,
       title: 'Use a Quick Action to navigate',
-      description: 'Click any Quick Action button (e.g. "Create Event") and verify it takes you to the correct admin page. Use the breadcrumb to return.',
+      description: 'Click any Quick Action button (e.g. "Create Event") and verify it takes you to the correct admin page. Use the breadcrumb bar to return to the dashboard.',
       route: '/admin/dashboard', level: 'beginner', estimatedMinutes: 2,
       autoDetectAction: 'dashboard.quick_action_used',
     },
@@ -120,32 +127,32 @@ const trail1: BreadcrumbTrail = {
     // ── Section D: Activity & Monitoring ───────────────────────────────────
     {
       id: '1.15', trail: 1,
-      title: 'Review the Recent Activity timeline',
-      description: 'Scroll through the activity feed to see who did what and when — edits, creates, deletions, and logins.',
+      title: '⑭ Review the Recent Activity timeline',
+      description: 'Tour step 14 — Scroll through the activity feed to see who did what and when. It logs every create, edit, and delete action across the platform. Click an entry to navigate to the affected item.',
       route: '/admin/dashboard', level: 'beginner', estimatedMinutes: 5,
     },
     {
       id: '1.16', trail: 1,
-      title: 'Check Upcoming Events',
-      description: 'View the Upcoming Events timeline on the dashboard. Note the event dates, titles, and status indicators.',
+      title: '⑮ Check Upcoming Events',
+      description: 'Tour step 15 — View the Upcoming Events panel. The left border colour signals urgency: red = within 3 days, amber = within a week, blue = further out. Click any event to manage it.',
       route: '/admin/dashboard', level: 'beginner', estimatedMinutes: 3,
     },
     {
       id: '1.17', trail: 1,
-      title: 'Monitor System Status indicators',
-      description: 'Find the System Status card. Check maintenance mode state and submission queue health. Green = healthy, amber = attention needed.',
+      title: '⑫–⑬ Monitor System Status & User Distribution',
+      description: 'Tour steps 12–13 — The System Status card shows maintenance and submission queue health (green = ok, amber = warning, red = alert). The User Distribution chart (Super Admin only) maps your team\'s role breakdown.',
       route: '/admin/dashboard', level: 'intermediate', estimatedMinutes: 3,
     },
     {
       id: '1.18', trail: 1,
-      title: 'Review the Submissions overview',
-      description: 'Locate the Submissions panel showing Contact, Partnership, and Volunteer counts. Note the "new" badge on pending volunteer applications.',
+      title: '⑯ Review the Submissions overview',
+      description: 'Tour step 16 — Locate the Submissions panel showing Contact, Partnership, and Volunteer counts. A pending badge appears when new volunteer applications need review. Click "View all →" to read and reply.',
       route: '/admin/dashboard', level: 'intermediate', estimatedMinutes: 3,
     },
     {
       id: '1.19', trail: 1,
-      title: 'Explore the Content Pipeline',
-      description: 'Read the Content Pipeline section to understand Programs (active/featured/total) and Stories (published/drafts/this month) at a glance.',
+      title: '⑰ Explore the Content Pipeline',
+      description: 'Tour step 17 — Read the Content Pipeline section: Programs (active / featured / total) and Stories (published / drafts / this month). Use this two-column snapshot to spot content gaps before acting via Quick Actions.',
       route: '/admin/dashboard', level: 'intermediate', estimatedMinutes: 3,
     },
 
@@ -153,20 +160,20 @@ const trail1: BreadcrumbTrail = {
     {
       id: '1.20', trail: 1,
       title: 'Understand the Story Album banner',
-      description: 'When completed events have no photo album, a banner prompts you to create one. Understand this event → album workflow.',
+      description: 'When completed events have no photo album, a banner prompts you to create one. Understand this event → media album workflow and why it matters for public galleries.',
       route: '/admin/dashboard', level: 'intermediate', estimatedMinutes: 3,
     },
     {
       id: '1.21', trail: 1,
       title: 'Open the Onboarding page',
-      description: 'Click the progress bar or navigate to Onboarding in the sidebar. View the full checklist, auto-detected items, and trail breakdown.',
+      description: 'Click the progress bar or navigate to Onboarding in the sidebar. View the full checklist, auto-detected items, and trail breakdown to track your learning journey.',
       route: '/admin/onboarding', level: 'beginner', estimatedMinutes: 2,
       autoDetectAction: 'dashboard.onboarding_visited',
     },
     {
       id: '1.22', trail: 1,
       title: 'Click a stat card to navigate',
-      description: 'Each stat card is a clickable link. Click "Active Programs" to jump to Programs, or "Total Events" to jump to Events.',
+      description: 'Each stat card is a clickable link. Click "Active Programs" to jump to Programs, or "Total Events" to jump to Events. The breadcrumb bar shows where you are.',
       route: '/admin/dashboard', level: 'beginner', estimatedMinutes: 2,
       autoDetectAction: 'dashboard.stat_card_clicked',
     },
@@ -185,7 +192,7 @@ const trail1: BreadcrumbTrail = {
     {
       id: '1.25', trail: 1,
       title: 'Understand session expiry',
-      description: 'Learn that your session uses a JWT with automatic refresh. If idle too long, you will be redirected to login — this is normal and secure.',
+      description: 'Your session uses a JWT with automatic refresh. If idle too long, you will be redirected to login — this is normal and secure. No data is lost.',
       route: '/admin/dashboard', level: 'intermediate', estimatedMinutes: 2,
     },
   ],
@@ -348,21 +355,88 @@ const trail9: BreadcrumbTrail = {
 // =============================================================================
 // Trail 10 — Events Management (Events Manager)
 // =============================================================================
+// 10 breadcrumbs covering the full events workflow:
+//   A. Discovery  — opening the hub, filter tabs, view modes
+//   B. Authoring  — create, draft vs. publish, edit
+//   C. Lifecycle  — status transitions, duplicate, delete
+//   D. Media      — uploading event photos / albums
+//
+// Route note: "Create Event" opens a modal ON /admin/events (EventList).
+// There is no /admin/events/new standalone page used in normal flow any more.
 
 const trail10: BreadcrumbTrail = {
   number: 10,
   title: 'Events Management',
-  description: 'Create, edit, delete, and manage the event lifecycle.',
+  description: 'Create, manage, and track the full event lifecycle — from first draft to archived record.',
   roles: ['events_manager', 'owner', 'super_admin'],
   breadcrumbs: [
-    { id: '10.1', trail: 10, title: 'View all events', description: 'Open Events and see the list with status tabs.', route: '/admin/events', level: 'beginner', estimatedMinutes: 3 },
-    { id: '10.2', trail: 10, title: 'Use status filters', description: 'Click each status tab to filter events.', route: '/admin/events', level: 'beginner', estimatedMinutes: 3 },
-    { id: '10.3', trail: 10, title: 'Create a new event', description: 'Fill in all required fields and create an event.', route: '/admin/events/new', level: 'intermediate', estimatedMinutes: 15, autoDetectAction: 'event.created' },
-    { id: '10.4', trail: 10, title: 'Save as Draft vs. Publish', description: 'Save as Draft, then change to Published and verify on the homepage.', route: '/admin/events/new', level: 'intermediate', estimatedMinutes: 5 },
-    { id: '10.5', trail: 10, title: 'Edit an existing event', description: 'Open an event, make changes, and save.', route: '/admin/events', level: 'beginner', estimatedMinutes: 5, autoDetectAction: 'event.edited' },
-    { id: '10.6', trail: 10, title: 'Delete an event', description: 'Delete an event and confirm the deletion dialog.', route: '/admin/events', level: 'intermediate', estimatedMinutes: 3, autoDetectAction: 'event.deleted' },
-    { id: '10.7', trail: 10, title: 'Upload event media', description: 'Upload images and associate them with an event album.', route: '/admin/media', level: 'intermediate', estimatedMinutes: 10 },
-    { id: '10.8', trail: 10, title: 'Manage event lifecycle', description: 'Walk through Draft → Published → Completed → Archived.', route: '/admin/events', level: 'intermediate', estimatedMinutes: 5 },
+    // ── Step 1: Open Events hub ───────────────────────────────────────────
+    {
+      id: '10.1', trail: 10,
+      title: 'Open the Events hub',
+      description: 'Click Events in the sidebar to land on the events list. Observe the status-filter row, search bar, view-mode toggle, and the Create Event button.',
+      route: '/admin/events', level: 'beginner', estimatedMinutes: 3,
+      autoDetectAction: 'event.page_visited',
+    },
+    // ── Step 2: Status filter tabs overview ──────────────────────────────
+    {
+      id: '10.2', trail: 10,
+      title: 'Use the event status filter tabs',
+      description: 'Click each filter tab — All, Published, Draft, Completed, Archived — to understand what events belong to each lifecycle stage.',
+      route: '/admin/events', level: 'beginner', estimatedMinutes: 3,
+      autoDetectAction: 'event.filter_used',
+    },
+    // ── Step 3: Published filter ──────────────────────────────────────────
+    {
+      id: '10.3', trail: 10,
+      title: 'Browse Published events',
+      description: 'Use the Published filter to see all events currently live and visible to the public on the website.',
+      route: '/admin/events', level: 'beginner', estimatedMinutes: 2,
+    },
+    // ── Step 4: Draft filter ──────────────────────────────────────────────
+    {
+      id: '10.4', trail: 10,
+      title: 'Browse Draft events',
+      description: 'Use the Draft filter to see private events visible only to admins — useful for preparing events before going public.',
+      route: '/admin/events', level: 'beginner', estimatedMinutes: 2,
+    },
+    // ── Step 5: Completed filter ──────────────────────────────────────────
+    {
+      id: '10.5', trail: 10,
+      title: 'Browse Completed events',
+      description: 'Use the Completed filter to see past events. Completed events remain on the site as a record and can be linked to a photo album.',
+      route: '/admin/events', level: 'beginner', estimatedMinutes: 2,
+    },
+    // ── Step 6: Archived filter ───────────────────────────────────────────
+    {
+      id: '10.6', trail: 10,
+      title: 'Browse Archived events',
+      description: 'Use the Archived filter to see events removed from the public site but kept for internal records.',
+      route: '/admin/events', level: 'beginner', estimatedMinutes: 2,
+    },
+    // ── Step 7: Grid & List view toggle ──────────────────────────────────
+    {
+      id: '10.7', trail: 10,
+      title: 'Switch between Grid and List view',
+      description: 'Click the Grid/List toggle (top-right of the filter row) to switch views. Grid shows visual cards; List shows a compact table suited for bulk scanning.',
+      route: '/admin/events', level: 'beginner', estimatedMinutes: 2,
+      autoDetectAction: 'event.view_switched',
+    },
+    // ── Step 8: Create Event button ───────────────────────────────────────
+    {
+      id: '10.8', trail: 10,
+      title: 'Create a new event',
+      description: 'Click the Create Event button to open the event creation form.',
+      route: '/admin/events', level: 'intermediate', estimatedMinutes: 5,
+      autoDetectAction: 'event.created',
+    },
+    // ── Step 9: Complete the event creation form ──────────────────────────
+    {
+      id: '10.9', trail: 10,
+      title: 'Complete the event creation form',
+      description: 'Fill in all required fields (name, date, location or virtual link), set the status to Draft or Published, and save the event.',
+      route: '/admin/events', level: 'intermediate', estimatedMinutes: 10,
+    },
   ],
 };
 

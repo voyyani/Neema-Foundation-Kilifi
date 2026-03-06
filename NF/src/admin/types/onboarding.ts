@@ -27,6 +27,12 @@ export interface TourStep {
   trailNumber?: number;
   /** Optional breadcrumb ID (e.g. '1.1', '3.5') */
   breadcrumbId?: string;
+  /**
+   * When true, this step is silently skipped if the target element is not
+   * present in the DOM. Use for role-specific or conditionally rendered
+   * sections (e.g. User Distribution for super_admin only).
+   */
+  skipIfMissing?: boolean;
 }
 
 // =============================================================================

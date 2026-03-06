@@ -172,7 +172,7 @@ export default function ContentManagerDashboard({ data, loading, error, userName
 
       {/* Two-column: Quick Actions + Recent Content Changes */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <SectionCard title="Quick Actions">
+        <SectionCard title="Quick Actions" dataTour="quick-actions">
           <QuickActionGrid actions={quickActions} />
         </SectionCard>
 

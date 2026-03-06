@@ -38,6 +38,11 @@ export default function EventDetailPage() {
       try {
         await updateEvent(id, data);
         track('event.edited');
+        // Track lifecycle advancement separately so breadcrumb 10.7 fires
+        // whenever the user changes the event status (not just on any edit).
+        if (event && data.status !== event.status) {
+          track('event.status_changed');
+        }
         navigate('/admin/events');
       } catch (err) {
         // updateEvent already shows a toast — keep user on the form for fixes

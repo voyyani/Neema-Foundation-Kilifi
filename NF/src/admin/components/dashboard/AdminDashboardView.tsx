@@ -158,11 +158,11 @@ export default function AdminDashboardView({ data, loading, error, userName, rol
 
       {/* Three-column on desktop: Actions + System Health + Activity */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <SectionCard title="Quick Actions">
+        <SectionCard title="Quick Actions" dataTour="quick-actions">
           <QuickActionGrid actions={quickActions} />
         </SectionCard>
 
-        <SectionCard title="System Status">
+        <SectionCard title="System Status" dataTour="system-status">
           <SystemHealthCard
             maintenance={data?.maintenance}
             submissions={data?.submissions}

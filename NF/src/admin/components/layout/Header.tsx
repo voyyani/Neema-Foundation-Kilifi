@@ -36,6 +36,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
       <button
         type="button"
         aria-label="Open navigation"
+        data-tour="mobile-hamburger"
         className="touch-target tap-scale -ml-1 rounded-xl text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors lg:hidden"
         onClick={onMenuClick}
       >

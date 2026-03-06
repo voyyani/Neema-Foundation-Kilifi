@@ -122,6 +122,7 @@ export default function SuperAdminDashboard({
       icon: <Plus className="h-5 w-5" />,
       color: 'bg-blue-500',
       permission: 'create_events',
+      tourId: 'quick-action-create-event',
     },
     {
       name: 'New Program',
@@ -130,6 +131,7 @@ export default function SuperAdminDashboard({
       icon: <BookOpen className="h-5 w-5" />,
       color: 'bg-green-500',
       permission: 'create_content',
+      tourId: 'quick-action-new-program',
     },
     {
       name: 'Write Story',
@@ -138,6 +140,7 @@ export default function SuperAdminDashboard({
       icon: <PenSquare className="h-5 w-5" />,
       color: 'bg-purple-500',
       permission: 'create_content',
+      tourId: 'quick-action-write-story',
     },
     {
       name: 'Update Hero',
@@ -146,6 +149,7 @@ export default function SuperAdminDashboard({
       icon: <Edit className="h-5 w-5" />,
       color: 'bg-orange-500',
       permission: 'edit_content',
+      tourId: 'quick-action-update-hero',
     },
     ...(isSuperAdmin
       ? [
@@ -156,6 +160,7 @@ export default function SuperAdminDashboard({
             icon: <Users className="h-5 w-5" />,
             color: 'bg-red-500',
             permission: 'view_users' as const,
+            tourId: 'quick-action-manage-users',
           },
         ]
       : []),
@@ -166,6 +171,7 @@ export default function SuperAdminDashboard({
       icon: <CreditCard className="h-5 w-5" />,
       color: 'bg-emerald-500',
       permission: 'view_bank_details',
+      tourId: 'quick-action-bank-details',
     },
     {
       name: 'Site Settings',
@@ -174,6 +180,7 @@ export default function SuperAdminDashboard({
       icon: <Settings className="h-5 w-5" />,
       color: 'bg-gray-600',
       permission: 'view_settings',
+      tourId: 'quick-action-site-settings',
     },
     {
       name: 'Maintenance',
@@ -182,6 +189,7 @@ export default function SuperAdminDashboard({
       icon: <Wrench className="h-5 w-5" />,
       color: 'bg-amber-500',
       permission: 'manage_site_maintenance',
+      tourId: 'quick-action-maintenance',
     },
   ];
 
@@ -229,13 +237,13 @@ export default function SuperAdminDashboard({
       {/* Main grid — 3 cols on desktop */}
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
         {/* Column 1: Quick Actions */}
-        <SectionCard title="Quick Actions">
+        <SectionCard title="Quick Actions" dataTour="quick-actions">
           <QuickActionGrid actions={quickActions} />
         </SectionCard>
 
         {/* Column 2: System Health + Role Distribution (super_admin only) */}
         <div className="space-y-5">
-          <SectionCard title="System Status">
+          <SectionCard title="System Status" dataTour="system-status">
             <SystemHealthCard
               maintenance={data?.maintenance}
               submissions={data?.submissions}
@@ -247,6 +255,7 @@ export default function SuperAdminDashboard({
             <SectionCard
               title="User Distribution"
               action={{ label: 'Manage', href: '/admin/users' }}
+              dataTour="user-distribution"
             >
               <RoleDistributionChart users={data?.users} loading={loading} />
             </SectionCard>
@@ -262,6 +271,7 @@ export default function SuperAdminDashboard({
           <SectionCard
             title="Upcoming Events"
             action={{ label: 'All events', href: '/admin/events' }}
+            dataTour="upcoming-events"
           >
             <UpcomingEventsTimeline events={data?.upcomingEvents || []} loading={loading} />
           </SectionCard>
@@ -272,7 +282,7 @@ export default function SuperAdminDashboard({
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         {/* Submissions */}
         {data?.submissions && (
-          <div className="bg-white shadow-sm rounded-2xl overflow-hidden">
+          <div className="bg-white shadow-sm rounded-2xl overflow-hidden" data-tour="submissions">
             <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
               <h2 className="text-base sm:text-lg font-semibold text-gray-900">Submissions</h2>
               <a
@@ -318,7 +328,7 @@ export default function SuperAdminDashboard({
         )}
 
         {/* Content Pipeline */}
-        <div className="bg-white shadow-sm rounded-2xl overflow-hidden">
+        <div className="bg-white shadow-sm rounded-2xl overflow-hidden" data-tour="content-pipeline">
           <div className="px-5 py-4 border-b border-gray-100">
             <h2 className="text-base sm:text-lg font-semibold text-gray-900">Content Pipeline</h2>
           </div>

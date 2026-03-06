@@ -197,6 +197,8 @@ export interface QuickAction {
   icon: React.ReactNode;
   color: string;
   permission: Permission;
+  /** Optional data-tour id for guided tour targeting */
+  tourId?: string;
 }
 
 export function QuickActionGrid({ actions }: { actions: QuickAction[] }) {
@@ -215,6 +217,7 @@ export function QuickActionGrid({ actions }: { actions: QuickAction[] }) {
           key={action.name}
           to={action.href}
           onClick={() => track('dashboard.quick_action_used')}
+          data-tour={action.tourId}
           className="tap-scale relative group bg-gray-50 p-4 rounded-xl border-2 border-gray-100 hover:border-[#B01C2E] hover:bg-red-50 active:bg-red-100 transition-all text-left min-h-[60px]"
         >
           <div className="flex items-start space-x-3">

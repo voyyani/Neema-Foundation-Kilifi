@@ -1,11 +1,12 @@
 /**
- * OnboardingPage — Phase 4, Deliverable 4.3
+ * OnboardingPage — Phase 4, Deliverable 4.3 (updated with Dashboard Tour Steps)
  *
  * A dedicated `/admin/onboarding` page showing the complete breadcrumb
  * checklist for the user's role with completed items checked off.
  *
  * Features:
  * - Full-width progress summary header
+ * - Dashboard Tour Steps visual guide (17 steps)
  * - Per-trail collapsible checklist sections
  * - Manual check/uncheck of breadcrumbs
  * - Auto-detected completions highlighted
@@ -24,6 +25,17 @@ import {
   ArrowRight,
   Sparkles,
   Target,
+  Play,
+  LayoutDashboard,
+  PanelLeftClose,
+  BarChart2,
+  Zap as ZapIcon,
+  Monitor,
+  Users2,
+  Activity,
+  CalendarClock,
+  Inbox,
+  GitBranch,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useOnboardingProgress } from '../hooks/useOnboardingProgress';
@@ -32,7 +44,151 @@ import { getRoleDisplayName } from '../lib/auth';
 import { getBreadcrumbsForRole } from '../components/onboarding/breadcrumbDefinitions';
 import BreadcrumbChecklist from '../components/onboarding/BreadcrumbChecklist';
 import RoleMasteryBadge from '../components/onboarding/RoleMasteryBadge';
+import { useTour } from '../components/onboarding/TourProvider';
 import type { UserRole } from '../types/roles';
+
+// ---------------------------------------------------------------------------
+// Dashboard Tour Steps — visual guide data
+// ---------------------------------------------------------------------------
+
+const DASHBOARD_TOUR_STEPS = [
+  {
+    number: 1,
+    icon: LayoutDashboard,
+    title: 'Navigation Sidebar',
+    description: 'The primary navigation hub — links filtered to your role.',
+    color: 'text-blue-600 bg-blue-50',
+    breadcrumbId: '1.5',
+  },
+  {
+    number: 2,
+    icon: PanelLeftClose,
+    title: 'Mobile Menu / Collapse',
+    description: 'Tap ☰ to open the slide-out sidebar on phones & tablets.',
+    color: 'text-indigo-600 bg-indigo-50',
+    breadcrumbId: '1.7',
+  },
+  {
+    number: 3,
+    icon: BarChart2,
+    title: 'Stats Bar',
+    description: 'Live KPI cards — Events, Programs, Stories, Impact, Users.',
+    color: 'text-emerald-600 bg-emerald-50',
+    breadcrumbId: '1.11',
+  },
+  {
+    number: 4,
+    icon: ZapIcon,
+    title: 'Quick Actions Grid',
+    description: 'One-click shortcuts to every key workflow.',
+    color: 'text-amber-600 bg-amber-50',
+    breadcrumbId: '1.13',
+  },
+  {
+    number: 5,
+    icon: ZapIcon,
+    title: '➔ Create Event',
+    description: 'Start a new event — goes through Draft → Published → Completed.',
+    color: 'text-blue-500 bg-blue-50',
+    breadcrumbId: '1.13',
+  },
+  {
+    number: 6,
+    icon: ZapIcon,
+    title: '➔ New Program',
+    description: 'Create a foundation program with title, description, gallery.',
+    color: 'text-green-500 bg-green-50',
+    breadcrumbId: '1.13',
+  },
+  {
+    number: 7,
+    icon: ZapIcon,
+    title: '➔ Write Story',
+    description: 'Draft a success story — Draft → Published workflow.',
+    color: 'text-purple-500 bg-purple-50',
+    breadcrumbId: '1.13',
+  },
+  {
+    number: 8,
+    icon: ZapIcon,
+    title: '➔ Update Hero',
+    description: 'Edit homepage carousel slides — headline, CTA, background.',
+    color: 'text-orange-500 bg-orange-50',
+    breadcrumbId: '1.13',
+  },
+  {
+    number: 9,
+    icon: ZapIcon,
+    title: '➔ Bank Details',
+    description: 'Manage M-Pesa Paybill, bank account, donation instructions.',
+    color: 'text-emerald-600 bg-emerald-50',
+    breadcrumbId: '1.14',
+  },
+  {
+    number: 10,
+    icon: ZapIcon,
+    title: '➔ Site Settings',
+    description: 'Configure contact info, socials, and site metadata.',
+    color: 'text-gray-600 bg-gray-50',
+    breadcrumbId: '1.14',
+  },
+  {
+    number: 11,
+    icon: ZapIcon,
+    title: '➔ Maintenance',
+    description: 'Schedule maintenance windows with custom messages.',
+    color: 'text-amber-600 bg-amber-50',
+    breadcrumbId: '1.14',
+  },
+  {
+    number: 12,
+    icon: Monitor,
+    title: 'System Status',
+    description: 'Health indicators — maintenance rules, submission queues.',
+    color: 'text-teal-600 bg-teal-50',
+    breadcrumbId: '1.17',
+  },
+  {
+    number: 13,
+    icon: Users2,
+    title: 'User Distribution',
+    description: 'Role breakdown chart — Super Admin only.',
+    color: 'text-red-600 bg-red-50',
+    breadcrumbId: '1.17',
+  },
+  {
+    number: 14,
+    icon: Activity,
+    title: 'Recent Activity',
+    description: 'Full audit timeline — who did what and when.',
+    color: 'text-violet-600 bg-violet-50',
+    breadcrumbId: '1.15',
+  },
+  {
+    number: 15,
+    icon: CalendarClock,
+    title: 'Upcoming Events',
+    description: 'Chronological list with urgency colour coding.',
+    color: 'text-blue-600 bg-blue-50',
+    breadcrumbId: '1.16',
+  },
+  {
+    number: 16,
+    icon: Inbox,
+    title: 'Submissions',
+    description: 'Contact, Partnership & Volunteer form entries.',
+    color: 'text-rose-600 bg-rose-50',
+    breadcrumbId: '1.18',
+  },
+  {
+    number: 17,
+    icon: GitBranch,
+    title: 'Content Pipeline',
+    description: 'Programs (active/featured/total) + Stories snapshot.',
+    color: 'text-cyan-600 bg-cyan-50',
+    breadcrumbId: '1.19',
+  },
+] as const;
 
 export default function OnboardingPage() {
   const { profile } = useAuth();
@@ -46,6 +202,8 @@ export default function OnboardingPage() {
     markMastery,
   } = useOnboardingProgress();
   const { track } = useOnboardingTracker();
+  const { startTour, completedTourIds } = useTour();
+  const isDashboardTourDone = completedTourIds.includes('viewer');
 
   // Auto-track onboarding page visit
   useEffect(() => {
@@ -163,6 +321,86 @@ export default function OnboardingPage() {
           value={stats.remainingMinutes < 60 ? `${stats.remainingMinutes}m` : `${Math.round(stats.remainingMinutes / 60)}h`}
           sub={stats.remainingMinutes === 0 ? 'all done!' : 'estimated'}
         />
+      </div>
+
+      {/* ================================================================= */}
+      {/* Dashboard Tour Steps — visual guide                               */}
+      {/* ================================================================= */}
+      <div className="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
+        {/* Header */}
+        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 bg-[#B01C2E]/10 rounded-xl">
+              <LayoutDashboard className="h-4 w-4 text-[#B01C2E]" />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-gray-900">Dashboard Orientation Tour</h2>
+              <p className="text-xs text-gray-500">17 guided steps covering every dashboard section</p>
+            </div>
+          </div>
+          <button
+            onClick={() => startTour('viewer')}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all tap-scale
+              bg-gradient-to-r from-[#B01C2E] to-[#8A1624] text-white hover:shadow-md hover:shadow-red-200 active:scale-95"
+          >
+            <Play className="h-3.5 w-3.5" />
+            {isDashboardTourDone ? 'Replay Tour' : 'Start Tour'}
+          </button>
+        </div>
+
+        {/* Steps grid */}
+        <div className="p-4 sm:p-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            {DASHBOARD_TOUR_STEPS.map((step) => {
+              const StepIcon = step.icon;
+              // Check if the breadcrumb for this step is completed
+              const isStepDone = rows.some((r) => r.breadcrumb_id === step.breadcrumbId);
+              return (
+                <div
+                  key={step.number}
+                  className={`flex items-start gap-3 p-3 rounded-xl border transition-colors ${
+                    isStepDone
+                      ? 'bg-emerald-50/60 border-emerald-100'
+                      : 'bg-gray-50/80 border-gray-100'
+                  }`}
+                >
+                  {/* Step number bubble */}
+                  <div className="shrink-0 flex flex-col items-center gap-1.5">
+                    <div className={`h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                      isStepDone
+                        ? 'bg-emerald-500 text-white'
+                        : 'bg-white border-2 border-gray-200 text-gray-500'
+                    }`}>
+                      {isStepDone ? '✓' : step.number}
+                    </div>
+                  </div>
+                  {/* Icon + content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <div className={`p-1 rounded-lg ${step.color}`}>
+                        <StepIcon className="h-3 w-3" />
+                      </div>
+                      <p className={`text-xs font-semibold truncate ${
+                        isStepDone ? 'text-emerald-800' : 'text-gray-800'
+                      }`}>
+                        {step.title}
+                      </p>
+                    </div>
+                    <p className="text-[10px] text-gray-500 leading-relaxed line-clamp-2">
+                      {step.description}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Footer note */}
+          <p className="text-[10px] text-gray-400 mt-4 text-center">
+            Steps marked with a green badge are automatically detected as complete when you run the tour.
+            Steps marked as ✓ do not repeat.
+          </p>
+        </div>
       </div>
 
       {/* ================================================================= */}

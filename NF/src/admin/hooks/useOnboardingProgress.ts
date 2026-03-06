@@ -13,6 +13,8 @@ import { useCallback, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 import { getTrailsForRole } from '../components/onboarding/breadcrumbDefinitions';
+import { getTourById } from '../components/onboarding/tourData';
+import { useTour } from '../components/onboarding/TourProvider';
 import type {
   OnboardingProgressRow,
   UserProgress,
@@ -32,6 +34,7 @@ const PROGRESS_KEY = 'onboarding-progress';
 
 export function useOnboardingProgress() {
   const { profile } = useAuth();
+  const { completedTourIds } = useTour();
   const queryClient = useQueryClient();
   const userId = profile?.id;
   const userRole = (profile?.role || 'viewer') as UserRole;
@@ -72,6 +75,22 @@ export function useOnboardingProgress() {
     const trails = getTrailsForRole(userRole);
     const completedIds = new Set((rows ?? []).map((r) => r.breadcrumb_id));
 
+    // ── Synthesize completions from tours_completed ───────────────────────
+    // If a tour is marked done in TourProvider state but the DB rows are
+    // missing (e.g. migration not yet applied, or a silent upsert failure),
+    // derive the completions directly from the tour step definitions so the
+    // onboarding page always reflects tour completion correctly.
+    // completedTourIds is kept in sync synchronously by persistCompletion
+    // (before any DB write), so this is always fresh.
+    for (const tourId of completedTourIds) {
+      const tour = getTourById(tourId);
+      if (tour) {
+        for (const step of tour.steps) {
+          if (step.breadcrumbId) completedIds.add(step.breadcrumbId);
+        }
+      }
+    }
+
     const trailProgress: TrailProgress[] = trails.map((trail) => {
       const total = trail.breadcrumbs.length;
       const completedBreadcrumbs = new Set<string>();
@@ -95,7 +114,7 @@ export function useOnboardingProgress() {
     const masteredAt = (profile as unknown as Record<string, unknown>)?.role_mastery_completed_at as string | null ?? null;
 
     return { total, completed, percentage, trails: trailProgress, isMastered, masteredAt };
-  }, [rows, userRole, profile]);
+  }, [rows, userRole, profile, completedTourIds]);
 
   // Toggle a single breadcrumb as complete / incomplete
   const toggleBreadcrumb = useCallback(

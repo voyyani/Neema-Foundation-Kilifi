@@ -43,10 +43,12 @@ const ACTION_TO_BREADCRUMB: Record<string, { id: string; trail: number }> = {
   // Trail 8 — Media
   'media.uploaded':             { id: '8.2',  trail: 8 },
 
-  // Trail 10 — Events
-  'event.created':              { id: '10.3', trail: 10 },
-  'event.edited':               { id: '10.5', trail: 10 },
-  'event.deleted':              { id: '10.6', trail: 10 },
+  // Trail 10 — Events Management (9 steps matching the guided tour)
+  'event.page_visited':         { id: '10.1', trail: 10 },  // Step 1
+  'event.filter_used':          { id: '10.2', trail: 10 },  // Step 2
+  // Steps 3–6 (filter tabs) are marked automatically on tour completion
+  'event.view_switched':        { id: '10.7', trail: 10 },  // Step 7
+  'event.created':              { id: '10.8', trail: 10 },  // Step 8
 
   // Trail 12 — Bank Details
   'bank.created':               { id: '12.3', trail: 12 },

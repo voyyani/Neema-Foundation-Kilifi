@@ -36,6 +36,11 @@ export default function EventList() {
     return () => window.removeEventListener('nf:close-create-modal', handleTourCloseModal);
   }, [handleTourCloseModal]);
 
+  // Auto-detect: mark '10.1 — Open Events hub' once on page mount
+  useEffect(() => {
+    track('event.page_visited');
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Debounced search
   const handleSearch = debounce((value: string) => {
     setFilters(prev => ({ ...prev, search: value || undefined }));
@@ -43,6 +48,7 @@ export default function EventList() {
 
   const handleStatusFilter = (status: EventStatus | 'all') => {
     setFilters(prev => ({ ...prev, status }));
+    track('event.filter_used');
   };
 
   const handleDelete = async () => {
@@ -55,6 +61,7 @@ export default function EventList() {
 
   const handleDuplicate = async (id: string) => {
     await duplicateEvent(id);
+    track('event.duplicated');
   };
 
   if (isLoading) {
@@ -97,6 +104,7 @@ export default function EventList() {
             type="text"
             placeholder="Search events…"
             value={searchTerm}
+            data-tour="events-search"
             onChange={(e) => {
               setSearchTerm(e.target.value);
               handleSearch(e.target.value);
@@ -125,7 +133,7 @@ export default function EventList() {
           {/* View Toggle — always visible, pushed right on sm+ */}
           <div className="flex ml-auto gap-1 border border-gray-200 rounded-xl p-1 bg-white shadow-sm" data-tour="events-view-toggle">
             <button
-              onClick={() => setViewMode('grid')}
+              onClick={() => { setViewMode('grid'); track('event.view_switched'); }}
               className={`tap-scale p-2 rounded-lg transition-colors min-h-[36px] min-w-[36px] ${
                 viewMode === 'grid' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:bg-gray-50'
               }`}
@@ -134,7 +142,7 @@ export default function EventList() {
               <Grid className="w-4 h-4" />
             </button>
             <button
-              onClick={() => setViewMode('table')}
+              onClick={() => { setViewMode('table'); track('event.view_switched'); }}
               className={`tap-scale p-2 rounded-lg transition-colors min-h-[36px] min-w-[36px] ${
                 viewMode === 'table' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:bg-gray-50'
               }`}
