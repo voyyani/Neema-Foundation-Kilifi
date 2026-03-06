@@ -11,6 +11,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabasePublic as supabase } from '../../lib/supabase/client';
 import type { MaintenanceScope, MaintenanceSeverity } from '../../admin/types/maintenance';
+import { FEATURE_GROUPS } from '../../admin/config/maintenanceRegistry';
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 
@@ -42,7 +43,7 @@ export interface MaintenanceStatus {
 // ─── SessionStorage Cache (Phase 7.6) ─────────────────────────────────────────
 
 const CACHE_KEY = 'nf:maintenance:rules';
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 60 * 1000; // 60 seconds — match refetchInterval so stale cache never blocks a new rule
 
 interface CacheEntry {
   rules: ActiveMaintenanceRule[];
@@ -148,24 +149,41 @@ export function useMaintenanceStatus(): MaintenanceStatus & {
     (r) => r.scope === 'global' && r.severity === 'full_block'
   );
 
-  const isUnderMaintenance = (scope: MaintenanceScope, targetKey: string): boolean => {
-    // Global full_block always wins
-    if (isGlobalMaintenance) return true;
-
-    return rules.some(
-      (r) =>
-        (r.scope === scope && r.target_key === targetKey) ||
-        (r.scope === 'global') // Any global rule affects everything
+  // ─── Feature group resolver ───────────────────────────────────────────────
+  // Returns the highest-priority feature_group rule whose targets include
+  // the given targetKey (exact) or the page portion of a section key.
+  const resolveFeatureGroupRule = (targetKey: string): ActiveMaintenanceRule | null => {
+    const pageKey = targetKey.split(':')[0];
+    // rules are already sorted priority DESC
+    return (
+      rules.find((r) => {
+        if (r.scope !== 'feature_group') return false;
+        const group = FEATURE_GROUPS.find((fg) => fg.key === r.target_key);
+        return group?.targets.some((t) => t === targetKey || t === pageKey) ?? false;
+      }) ?? null
     );
   };
 
+  const isUnderMaintenance = (scope: MaintenanceScope, targetKey: string): boolean => {
+    // Global full_block always wins
+    if (isGlobalMaintenance) return true;
+    // Exact scope+key match
+    if (rules.some((r) => r.scope === scope && r.target_key === targetKey)) return true;
+    // Any global-scope rule affects everything
+    if (rules.some((r) => r.scope === 'global')) return true;
+    // Feature group rules that cover this page/section
+    return resolveFeatureGroupRule(targetKey) !== null;
+  };
+
   const getRule = (scope: MaintenanceScope, targetKey: string): ActiveMaintenanceRule | null => {
-    // Find the most specific matching rule (highest priority first since sorted)
-    return (
-      rules.find((r) => r.scope === scope && r.target_key === targetKey) ??
-      rules.find((r) => r.scope === 'global') ??
-      null
-    );
+    // Exact scope+target match (highest priority first — already sorted)
+    const exact = rules.find((r) => r.scope === scope && r.target_key === targetKey);
+    if (exact) return exact;
+    // Feature group rules that cover this page/section
+    const fgRule = resolveFeatureGroupRule(targetKey);
+    if (fgRule) return fgRule;
+    // Global fallback last
+    return rules.find((r) => r.scope === 'global') ?? null;
   };
 
   const getRulesForScope = (scope: MaintenanceScope): ActiveMaintenanceRule[] => {
