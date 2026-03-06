@@ -285,10 +285,6 @@ interface ReplyTemplateData {
 
 function replyEmailTemplate(data: ReplyTemplateData): string {
   const content = `
-    <p style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 16px;">
-      Hi <strong>${escapeHtml(firstName(data.recipientName))}</strong>,
-    </p>
-
     <div style="color:#374151;font-size:15px;line-height:1.7;margin:0 0 28px;">
       ${nl2br(data.adminMessage)}
     </div>
@@ -506,7 +502,7 @@ interface CallerProfile {
 // ─── Role label mapping ─────────────────────────────────────────────────────
 
 const ROLE_LABELS: Record<string, string> = {
-  super_admin: 'Director',
+  super_admin: 'Administrator',
   owner: 'Director',
   admin: 'Administrator',
   content_manager: 'Content Manager',
