@@ -282,6 +282,15 @@ export function useDeleteMaintenanceRule() {
 
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
+      // First, nullify audit log references to this rule so that the
+      // AFTER DELETE trigger can insert a 'deleted' entry without hitting
+      // the FK constraint (migration 20260306173000 drops the FK on live DB,
+      // but this guard handles any environment where it still exists).
+      await supabase
+        .from('maintenance_audit_log')
+        .update({ rule_id: null } as never)
+        .eq('rule_id', id);
+
       const { data, error } = await supabase
         .from('maintenance_rules')
         .delete()
@@ -529,6 +538,12 @@ export function useBulkDeleteMaintenanceRules() {
   return useMutation({
     mutationFn: async (ids: string[]): Promise<void> => {
       for (const id of ids) {
+        // Nullify audit log references before delete (FK guard, see 20260306173000).
+        await supabase
+          .from('maintenance_audit_log')
+          .update({ rule_id: null } as never)
+          .eq('rule_id', id);
+
         const { data, error } = await supabase
           .from('maintenance_rules')
           .delete()
