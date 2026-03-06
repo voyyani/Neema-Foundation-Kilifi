@@ -19,7 +19,7 @@ import NotFound from './pages/NotFound';
 import Maintenance from './pages/Maintenance';
 // Use the barrel export to improve resolver compatibility on case-sensitive filesystems
 import { Programs } from './components/programs';
-import { MaintenanceProvider, MaintenanceBanner, MaintenanceGate, MaintenanceErrorBoundary } from './components/maintenance';
+import { MaintenanceProvider, MaintenanceBanner, MaintenanceGate, MaintenanceErrorBoundary, MaintenancePlaceholder } from './components/maintenance';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 import { AuthProvider } from './admin/hooks/useAuth';
 import { queryClient } from './admin/config/queryClient';
@@ -248,7 +248,19 @@ const App: React.FC = () => {
                           <Route path="/donate" element={<MaintenanceGate page="donate"><Donate /></MaintenanceGate>} />
                           <Route path="/bank-details" element={<MaintenanceGate page="bank_details"><BankDetails /></MaintenanceGate>} />
                           <Route path="/legacy-giving" element={<MaintenanceGate page="legacy_giving"><LegacyGiving /></MaintenanceGate>} />
-                          <Route path="/volunteer" element={<MaintenanceGate page="volunteer"><Volunteer /></MaintenanceGate>} />
+                          {/* Volunteer page is currently under maintenance — swap rule for DB-driven gate once the
+                              migration 20260306163400_enable_volunteer_maintenance.sql has been applied. */}
+                          <Route path="/volunteer" element={<MaintenancePlaceholder rule={{
+                            id: 'volunteer-static',
+                            scope: 'page',
+                            target_key: 'volunteer',
+                            severity: 'full_block',
+                            title: 'Volunteer Opportunities — Coming Soon',
+                            message: "We're updating our volunteer programme to better serve the Ganze community. Check back soon to find the perfect role that matches your skills and availability.",
+                            display_config: { theme: 'branded', show_countdown: false, show_progress: false },
+                            estimated_end: null,
+                            priority: 80,
+                          }} />} />
                           <Route path="/partner" element={<MaintenanceGate page="partnership"><Partnership /></MaintenanceGate>} />
                           <Route path="/sponsorship" element={<MaintenanceGate page="sponsorship"><Sponsorship /></MaintenanceGate>} />
                           <Route path="/board" element={<MaintenanceGate page="board"><Board /></MaintenanceGate>} />
