@@ -234,6 +234,32 @@ export function TourProvider({ children }: TourProviderProps) {
               driverRef.current?.destroy();
               return;
             }
+
+            // Close the mobile sidebar when leaving a step that targetted the
+            // sidebar or a nav link — before showing the next step.
+            const currentTourStep = tour.steps[cur];
+            if (
+              typeof currentTourStep?.target === 'string' &&
+              (currentTourStep.target.includes('data-tour="nav-') ||
+                currentTourStep.target.includes('data-tour="sidebar"'))
+            ) {
+              window.dispatchEvent(new CustomEvent('nf:close-sidebar'));
+            }
+
+            // If the next step targets the create-event modal, click the
+            // Create Event button to open it, then wait for the animation.
+            const nextTourStep = tour.steps[next];
+            if (nextTourStep?.target === '[data-tour="new-event-modal"]') {
+              const createBtn = document.querySelector(
+                '[data-tour="events-create-btn"]',
+              ) as HTMLButtonElement | null;
+              createBtn?.click();
+              setTimeout(() => {
+                driverRef.current?.moveNext();
+              }, 450);
+              return;
+            }
+
             navigateForStep(next).then(() => {
               driverRef.current?.moveNext();
             });
@@ -254,6 +280,13 @@ export function TourProvider({ children }: TourProviderProps) {
               currentState.currentStep >= tour.steps.length - 1;
 
             if (wasLastStep) {
+              // If the finishing step was the create-event modal, dismiss it
+              // cleanly so the UI is left in a tidy state.
+              const lastStep = tour.steps[tour.steps.length - 1];
+              if (lastStep?.target === '[data-tour="new-event-modal"]') {
+                window.dispatchEvent(new CustomEvent('nf:close-create-modal'));
+              }
+
               persistCompletion(tourId);
               const completedState: TourState = {
                 tourId,

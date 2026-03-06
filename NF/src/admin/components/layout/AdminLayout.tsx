@@ -32,10 +32,21 @@ export default function AdminLayout() {
     }
   }, []);
 
+  // Listen for tour-triggered sidebar close requests (mobile)
+  const handleCloseSidebar = useCallback(() => {
+    if (window.innerWidth < 1024) {
+      setSidebarOpen(false);
+    }
+  }, []);
+
   useEffect(() => {
     window.addEventListener('nf:open-sidebar', handleOpenSidebar);
-    return () => window.removeEventListener('nf:open-sidebar', handleOpenSidebar);
-  }, [handleOpenSidebar]);
+    window.addEventListener('nf:close-sidebar', handleCloseSidebar);
+    return () => {
+      window.removeEventListener('nf:open-sidebar', handleOpenSidebar);
+      window.removeEventListener('nf:close-sidebar', handleCloseSidebar);
+    };
+  }, [handleOpenSidebar, handleCloseSidebar]);
 
   return (
     <TourProvider>

@@ -1,10 +1,11 @@
 // Event List Component
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, Grid, List as ListIcon } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Search, Plus, Grid, List as ListIcon, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import EventCard from './EventCard';
+import EventForm from './EventForm';
 import EventStatusBadge from './EventStatusBadge';
 import EmptyState from '../ui/EmptyState';
 import LoadingSpinner from '../ui/LoadingSpinner';
@@ -20,9 +21,20 @@ export default function EventList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const { events, isLoading, deleteEvent, duplicateEvent } = useEvents(filters);
+  const { events, isLoading, createEvent, deleteEvent, duplicateEvent } = useEvents(filters);
   const { track } = useOnboardingTracker();
+
+  // Listen for tour-driven close event so the guided tour can dismiss the modal
+  const handleTourCloseModal = useCallback(() => {
+    setShowCreateModal(false);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('nf:close-create-modal', handleTourCloseModal);
+    return () => window.removeEventListener('nf:close-create-modal', handleTourCloseModal);
+  }, [handleTourCloseModal]);
 
   // Debounced search
   const handleSearch = debounce((value: string) => {
@@ -67,7 +79,7 @@ export default function EventList() {
         </div>
         {/* Full-width on mobile, auto on sm+ */}
         <button
-          onClick={() => navigate('/admin/events/new')}
+          onClick={() => setShowCreateModal(true)}
           data-tour="events-create-btn"
           className="tap-scale w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 active:bg-blue-800 transition-colors font-medium text-sm shadow-sm min-h-[44px]"
         >
@@ -99,6 +111,7 @@ export default function EventList() {
             <button
               key={filter.value}
               onClick={() => handleStatusFilter(filter.value)}
+              data-tour={`events-filter-${filter.value}`}
               className={`tap-scale flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors min-h-[36px] ${
                 filters.status === filter.value
                   ? 'bg-blue-600 text-white shadow-sm'
@@ -109,13 +122,14 @@ export default function EventList() {
             </button>
           ))}
 
-          {/* View Toggle — pushed right on non-mobile */}
-          <div className="hidden sm:flex ml-auto gap-1 border border-gray-200 rounded-xl p-1 bg-white shadow-sm">
+          {/* View Toggle — always visible, pushed right on sm+ */}
+          <div className="flex ml-auto gap-1 border border-gray-200 rounded-xl p-1 bg-white shadow-sm" data-tour="events-view-toggle">
             <button
               onClick={() => setViewMode('grid')}
               className={`tap-scale p-2 rounded-lg transition-colors min-h-[36px] min-w-[36px] ${
                 viewMode === 'grid' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:bg-gray-50'
               }`}
+              title="Grid view"
             >
               <Grid className="w-4 h-4" />
             </button>
@@ -124,6 +138,7 @@ export default function EventList() {
               className={`tap-scale p-2 rounded-lg transition-colors min-h-[36px] min-w-[36px] ${
                 viewMode === 'table' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:bg-gray-50'
               }`}
+              title="List view"
             >
               <ListIcon className="w-4 h-4" />
             </button>
@@ -240,6 +255,69 @@ export default function EventList() {
         confirmLabel="Delete"
         variant="danger"
       />
+
+      {/* ── Create Event Modal ─────────────────────────────────────────── */}
+      <AnimatePresence>
+        {showCreateModal && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              key="create-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowCreateModal(false)}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+            />
+
+            {/* Modal sheet */}
+            <div className="fixed inset-0 z-50 overflow-y-auto">
+              <div className="min-h-full px-4 py-8 sm:py-12 flex items-start justify-center">
+                <motion.div
+                  key="create-modal"
+                  initial={{ opacity: 0, y: 28, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 28, scale: 0.97 }}
+                  transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+                  className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl ring-1 ring-black/5"
+                >
+                  {/* Modal header */}
+                  <div
+                    data-tour="new-event-modal"
+                    className="flex items-center justify-between px-6 py-4 border-b border-gray-100"
+                  >
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900">Create New Event</h2>
+                      <p className="text-sm text-gray-500 mt-0.5">
+                        Fill in the details to publish or save as draft
+                      </p>
+                    </div>
+                    <button
+                      data-tour="new-event-modal-close"
+                      onClick={() => setShowCreateModal(false)}
+                      className="p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                      aria-label="Close"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  {/* Modal body */}
+                  <div className="px-6 py-6">
+                    <EventForm
+                      onSubmit={async (data) => {
+                        await createEvent(data);
+                        track('event.created');
+                        setShowCreateModal(false);
+                      }}
+                    />
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

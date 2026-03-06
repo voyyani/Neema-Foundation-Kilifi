@@ -184,45 +184,104 @@ const eventsManagerTour: RoleTour = {
   trails: [10],
   estimatedMinutes: 12,
   steps: [
+    // ── Step 1: Navigate to Events via sidebar ────────────────────────────
     {
       target: '[data-tour="nav-events"]',
       title: 'Events Section',
       content:
-        'Click "Events" to see all events. Use status tabs (Draft, Published, Cancelled, Completed, Archived) and the search box to filter events.',
+        'Click <strong>Events</strong> in the sidebar to open your Events hub — the central place to create, edit, and track every foundation event.',
       route: '/admin/events',
       placement: 'right',
       trailNumber: 10,
       breadcrumbId: '10.1',
     },
+    // ── Step 2: All filters overview ──────────────────────────────────────
     {
       target: '[data-tour="events-status-tabs"]',
       title: 'Status Filters',
       content:
-        'Click each status tab to filter events by their current state. This helps you quickly find events at any stage of their lifecycle.',
+        'These tabs let you instantly filter events by lifecycle stage. The active filter is highlighted in blue. Starting on <strong>All</strong> shows every event at a glance — let\'s walk through each filter.',
       route: '/admin/events',
       placement: 'bottom',
       trailNumber: 10,
       breadcrumbId: '10.2',
     },
+    // ── Step 3: Published ─────────────────────────────────────────────────
+    {
+      target: '[data-tour="events-filter-published"]',
+      title: 'Published Events',
+      content:
+        '<strong>Published</strong> events are live and visible to the public on the website. Switch to this filter any time you want to quickly see what\'s currently on display.',
+      route: '/admin/events',
+      placement: 'bottom',
+      trailNumber: 10,
+      breadcrumbId: '10.2',
+    },
+    // ── Step 4: Draft ─────────────────────────────────────────────────────
+    {
+      target: '[data-tour="events-filter-draft"]',
+      title: 'Draft Events',
+      content:
+        '<strong>Draft</strong> events are private — they\'re only visible to admins. Use drafts to prepare an event in advance before making it public.',
+      route: '/admin/events',
+      placement: 'bottom',
+      trailNumber: 10,
+      breadcrumbId: '10.2',
+    },
+    // ── Step 5: Completed ─────────────────────────────────────────────────
+    {
+      target: '[data-tour="events-filter-completed"]',
+      title: 'Completed Events',
+      content:
+        '<strong>Completed</strong> events have already taken place. They remain on the site as a record and can be linked to a photo album in the Media Library to showcase what happened.',
+      route: '/admin/events',
+      placement: 'bottom',
+      trailNumber: 10,
+      breadcrumbId: '10.2',
+    },
+    // ── Step 6: Archived ──────────────────────────────────────────────────
+    {
+      target: '[data-tour="events-filter-archived"]',
+      title: 'Archived Events',
+      content:
+        '<strong>Archived</strong> events are removed from the public site but kept for internal records. Always archive rather than delete events you no longer want visible.',
+      route: '/admin/events',
+      placement: 'bottom',
+      trailNumber: 10,
+      breadcrumbId: '10.2',
+    },
+    // ── Step 7: Grid & List view toggle ───────────────────────────────────
+    {
+      target: '[data-tour="events-view-toggle"]',
+      title: 'Grid & List View',
+      content:
+        'Switch between <strong>Grid</strong> (spacious cards, great for scanning covers) and <strong>List</strong> (compact table, ideal for bulk editing). Your view preference is remembered.',
+      route: '/admin/events',
+      placement: 'bottom',
+      trailNumber: 10,
+      breadcrumbId: '10.2',
+    },
+    // ── Step 8: Create Event button ───────────────────────────────────────
     {
       target: '[data-tour="events-create-btn"]',
       title: 'Create a New Event',
       content:
-        'Click "New Event" to create an event. Fill in the title, date & time, location, description, category, and status. Optionally add an end time and cover image.',
+        'Ready to add your first event? Click <strong>Next</strong> and we\'ll open the Create Event form for you — or click the button yourself at any time.',
       route: '/admin/events',
       placement: 'bottom',
       trailNumber: 10,
       breadcrumbId: '10.3',
     },
+    // ── Step 9: New Event modal — Finish ──────────────────────────────────
     {
-      target: '[data-tour="events-list"]',
-      title: 'Event Lifecycle',
+      target: '[data-tour="new-event-modal"]',
+      title: 'Your First Event 🎉',
       content:
-        'Events move through: Draft → Published → Completed → Archived. Click any event row to edit it. You can also delete events from the action menu.',
+        'The form is open! Fill in the event title, date, location, and any other details. Set the status to <strong>Draft</strong> to save privately, or <strong>Published</strong> to go live. Click <strong>Finish</strong> to complete your onboarding.',
       route: '/admin/events',
-      placement: 'top',
+      placement: 'bottom',
       trailNumber: 10,
-      breadcrumbId: '10.8',
+      breadcrumbId: '10.3',
     },
   ],
 };

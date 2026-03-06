@@ -109,7 +109,7 @@ const form = useForm({
     // Scroll to first visible error element
     const el = document.querySelector('[data-form-error]') as HTMLElement | null;
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    console.error('[EventForm] validation errors', errs);
+    console.debug('[EventForm] validation errors', errs);
   };
 
   const isBusy = localLoading || isSubmitting || !!isLoading;
