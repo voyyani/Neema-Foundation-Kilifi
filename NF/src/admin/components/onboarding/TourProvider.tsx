@@ -230,8 +230,10 @@ export function TourProvider({ children }: TourProviderProps) {
             const cur = activeTourRef.current?.currentStep ?? 0;
             const next = cur + 1;
             if (next >= tour.steps.length) {
-              // Last step → let driver.js handle the "Finish" action
-              driverRef.current?.destroy();
+              // Last step — use moveNext() so driver.js calls g() → onDestroyStarted
+              // naturally. Calling destroy() directly calls g(false) which SKIPS
+              // onDestroyStarted, preventing tour completion and modal cleanup.
+              driverRef.current?.moveNext();
               return;
             }
 

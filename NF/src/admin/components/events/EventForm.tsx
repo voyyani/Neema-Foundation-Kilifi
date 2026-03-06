@@ -15,10 +15,11 @@ import type { Event, EventStatus } from '../../types/events';
 interface EventFormProps {
   event?: Event;
   onSubmit: (data: EventFormSchema) => Promise<void>;
+  onCancel?: () => void;
   isLoading?: boolean;
 }
 
-export default function EventForm({ event, onSubmit, isLoading }: EventFormProps) {
+export default function EventForm({ event, onSubmit, onCancel, isLoading }: EventFormProps) {
   const navigate = useNavigate();
   const [isGeneratingSlug, setIsGeneratingSlug] = useState(true);
   const [localLoading, setLocalLoading] = useState(false);
@@ -545,7 +546,7 @@ const form = useForm({
       <div className="flex flex-col-reverse sm:flex-row gap-3">
         <button
           type="button"
-          onClick={() => navigate('/admin/events')}
+          onClick={() => onCancel ? onCancel() : navigate('/admin/events')}
           className="tap-scale w-full sm:w-auto px-6 py-3 sm:py-2.5 border border-gray-200 rounded-xl text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors font-medium text-sm min-h-[44px]"
           disabled={isBusy}
         >

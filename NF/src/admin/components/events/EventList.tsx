@@ -310,6 +310,7 @@ export default function EventList() {
                         track('event.created');
                         setShowCreateModal(false);
                       }}
+                      onCancel={() => setShowCreateModal(false)}
                     />
                   </div>
                 </motion.div>
