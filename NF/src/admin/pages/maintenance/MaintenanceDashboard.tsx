@@ -682,7 +682,7 @@ function MaintenanceDashboardContent() {
         </AnimatePresence>
 
         {/* ── Rules Table ──────────────────────────────────────────────── */}
-        <div className="border-t border-gray-100">
+        <div className="border-t border-gray-100" data-tour="maintenance-rules-list">
           {/* Bulk action bar (Phase 6) */}
           <AnimatePresence>
             {bulkMode && selectedIds.size > 0 && (

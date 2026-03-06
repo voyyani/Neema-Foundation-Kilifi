@@ -80,17 +80,46 @@ const MaintenanceIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const SubmissionsIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.012 1.244l.256.512a2.25 2.25 0 002.013 1.244h3.218a2.25 2.25 0 002.013-1.244l.256-.512a2.25 2.25 0 012.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 00-2.15-1.588H6.911a2.25 2.25 0 00-2.15 1.588L2.35 13.177a2.25 2.25 0 00-.1.661z" />
+  </svg>
+);
+
+const OnboardingIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
+  </svg>
+);
+
 const navigationWithIcons: NavItem[] = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: DashboardIcon, requiredPermission: 'view_dashboard' },
   { name: 'Events', href: '/admin/events', icon: EventsIcon, requiredPermission: 'view_events' },
   { name: 'Media', href: '/admin/media', icon: MediaIcon, requiredPermission: 'view_content' },
   { name: 'Content', href: '/admin/content', icon: ContentIcon, requiredPermission: 'view_content' },
   { name: 'Programs', href: '/admin/content/programs', icon: ProgramsIcon, requiredPermission: 'view_content' },
+  { name: 'Submissions', href: '/admin/content/submissions', icon: SubmissionsIcon, requiredPermission: 'view_content' },
   { name: 'Users', href: '/admin/users', icon: UsersIcon, requiredPermission: 'view_users' },
   { name: 'Bank Details', href: '/admin/bank-details', icon: BankIcon, requiredPermission: 'view_bank_details' },
   { name: 'Maintenance', href: '/admin/maintenance', icon: MaintenanceIcon, requiredPermission: 'manage_site_maintenance' },
   { name: 'Site Settings', href: '/admin/site-settings', icon: SettingsIcon, requiredPermission: 'view_settings' },
+  { name: 'Onboarding', href: '/admin/onboarding', icon: OnboardingIcon, requiredPermission: 'view_dashboard' },
 ];
+
+/** Map nav item names → data-tour attribute values for tour targeting */
+const NAV_TOUR_IDS: Record<string, string> = {
+  Dashboard: 'nav-dashboard',
+  Events: 'nav-events',
+  Media: 'nav-media',
+  Content: 'nav-content',
+  Programs: 'nav-programs',
+  Submissions: 'nav-submissions',
+  Users: 'nav-users',
+  'Bank Details': 'nav-bank-details',
+  Maintenance: 'nav-maintenance',
+  'Site Settings': 'nav-site-settings',
+  Onboarding: 'nav-onboarding',
+};
 
 function SidebarContent({ onClose }: { onClose?: () => void }) {
   const location = useLocation();
@@ -123,20 +152,25 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex flex-1 flex-col">
+      <nav className="flex flex-1 flex-col" data-tour="sidebar">
         <ul role="list" className="flex flex-1 flex-col gap-y-7">
           <li>
             <ul role="list" className="-mx-2 space-y-1">
               {filteredNavigation.map((item) => {
-                const isActive = location.pathname === item.href;
+                // BUG-10 fix: use startsWith() so sub-pages highlight their parent.
+                // e.g. /admin/content/hero highlights "Content", /admin/events/<uuid> highlights "Events"
+                const isActive =
+                  location.pathname === item.href ||
+                  location.pathname.startsWith(item.href + '/');
                 return (
                   <li key={item.name}>
                     <Link
                       to={item.href}
                       onClick={onClose}
+                      data-tour={NAV_TOUR_IDS[item.name]}
                       className={clsx(
                         isActive
-                          ? 'bg-white/20 text-white shadow-sm'
+                          ? 'bg-white/20 text-white shadow-sm sidebar-active-item'
                           : 'text-red-100 hover:text-white hover:bg-white/10',
                         /* Mobile: larger tap target + press scale feedback */
                         'tap-scale group flex gap-x-3 rounded-xl p-3 text-sm leading-6 font-semibold transition-colors',

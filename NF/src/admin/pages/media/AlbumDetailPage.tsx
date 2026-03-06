@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMediaAlbum, updateMediaAlbum } from '../../hooks/useMediaAlbums';
+import { useBreadcrumbEntity } from '../../components/layout/BreadcrumbContext';
 import AlbumForm from '../../components/media/AlbumForm';
 import ImageGrid from '../../components/media/ImageGrid';
 import UploadWidget from '../../components/media/UploadWidget';
@@ -24,6 +25,9 @@ export default function AlbumDetailPage() {
   const [editMode, setEditMode] = useState(false);
   const [localItems, setLocalItems] = useState<MediaItem[] | null>(null);
   const [isTogglingPublish, setIsTogglingPublish] = useState(false);
+
+  // Inject album title into breadcrumb trail (Phase 3 — BUG-08)
+  useBreadcrumbEntity(album?.title);
 
   // Use local items state once uploads come in (avoids full refetch flickers)
   const displayItems = localItems ?? items;

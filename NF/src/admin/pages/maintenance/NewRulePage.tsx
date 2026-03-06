@@ -7,6 +7,7 @@
 
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Plus } from 'lucide-react';
 import { ProtectedRoute } from '../../components/auth/ProtectedRoute';
@@ -25,6 +26,7 @@ import type {
 
 function NewRulePageContent() {
   const navigate = useNavigate();
+  const { track } = useOnboardingTracker();
   const createMutation = useCreateMaintenanceRule();
 
   const handleSubmit = useCallback(
@@ -39,6 +41,7 @@ function NewRulePageContent() {
 
       createMutation.mutate(input, {
         onSuccess: () => {
+          track('maintenance.rule_created');
           navigate('/admin/maintenance');
         },
       });

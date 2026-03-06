@@ -38,6 +38,7 @@ import {
   useBankDetailsAdmin,
 } from '../hooks/useBankDetailsAdmin';
 import { usePermissions } from '../hooks';
+import { useOnboardingTracker } from '../hooks/useOnboardingTracker';
 import type { BankDetail, BankDetailFormData } from '../types/bank';
 
 // ---------------------------------------------------------------------------
@@ -77,6 +78,7 @@ function StatCard({ label, value, icon, colour, loading }: StatCardProps) {
 function BankDetailsContent() {
   const { can } = usePermissions();
   const hook = useBankDetailsAdmin();
+  const { track } = useOnboardingTracker();
 
   // Modal state
   const [modal, setModal] = useState<{
@@ -103,9 +105,10 @@ function BankDetailsContent() {
       await hook.update(modal.editing.id, data);
     } else {
       await hook.create(data);
+      track('bank.created');
     }
     closeModal();
-  }, [modal.editing, hook, closeModal]);
+  }, [modal.editing, hook, closeModal, track]);
 
   // ── Derived counts ────────────────────────────────────────────────────────
 
@@ -222,7 +225,7 @@ function BankDetailsContent() {
         savingState={hook.savingState}
         error={null}
         onEdit={openEdit}
-        onToggle={hook.toggle}
+        onToggle={async (id: string) => { await hook.toggle(id); track('bank.toggled'); }}
         onDelete={hook.remove}
         onReorder={hook.reorder}
         onRefetch={hook.refetch}

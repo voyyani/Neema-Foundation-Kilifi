@@ -24,10 +24,12 @@ CREATE EXTENSION IF NOT EXISTS pg_net;
 --   - Email notifications before maintenance starts
 
 -- Remove existing job if re-running migration
-SELECT cron.unschedule('check-maintenance-schedule')
-WHERE EXISTS (
-  SELECT 1 FROM cron.job WHERE jobname = 'check-maintenance-schedule'
-);
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'check-maintenance-schedule') THEN
+    PERFORM cron.unschedule('check-maintenance-schedule');
+  END IF;
+END $$;
 
 -- Schedule the edge function to run every minute
 DO $$
@@ -92,6 +94,7 @@ CREATE INDEX IF NOT EXISTS idx_maintenance_notifications_window
 -- RLS for notifications table
 ALTER TABLE public.maintenance_notifications ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Admins read maintenance notifications" ON public.maintenance_notifications;
 CREATE POLICY "Admins read maintenance notifications"
   ON public.maintenance_notifications FOR SELECT
   USING (
@@ -101,6 +104,7 @@ CREATE POLICY "Admins read maintenance notifications"
     )
   );
 
+DROP POLICY IF EXISTS "System inserts maintenance notifications" ON public.maintenance_notifications;
 CREATE POLICY "System inserts maintenance notifications"
   ON public.maintenance_notifications FOR INSERT
   WITH CHECK (true);
@@ -172,9 +176,29 @@ END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 
 -- ============================================================================
--- 4. Update active_maintenance_rules view to include schedule status
+-- 4. Add estimated_end column to maintenance_rules if not exists
+--    (Must happen BEFORE recreating the view so r.* includes it)
 -- ============================================================================
-CREATE OR REPLACE VIEW public.active_maintenance_rules AS
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'maintenance_rules'
+      AND column_name = 'estimated_end'
+  ) THEN
+    ALTER TABLE public.maintenance_rules ADD COLUMN estimated_end TIMESTAMPTZ;
+  END IF;
+END $$;
+
+-- ============================================================================
+-- 5. Update active_maintenance_rules view to include schedule status
+--    DROP + CREATE (not REPLACE) because adding estimated_end to
+--    maintenance_rules shifts r.* column positions, which CREATE OR
+--    REPLACE VIEW cannot reconcile.
+-- ============================================================================
+DROP VIEW IF EXISTS public.active_maintenance_rules;
+CREATE VIEW public.active_maintenance_rules AS
 SELECT r.*,
   COALESCE(
     (SELECT json_agg(json_build_object(
@@ -222,29 +246,14 @@ WHERE r.is_active = true
    );
 
 -- ============================================================================
--- 5. Add estimated_end column to maintenance_rules if not exists
--- ============================================================================
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM information_schema.columns
-    WHERE table_schema = 'public'
-      AND table_name = 'maintenance_rules'
-      AND column_name = 'estimated_end'
-  ) THEN
-    ALTER TABLE public.maintenance_rules ADD COLUMN estimated_end TIMESTAMPTZ;
-  END IF;
-END $$;
-
--- ============================================================================
 -- Summary
 -- ============================================================================
 -- This migration sets up:
 --   1. pg_cron job running every minute to check maintenance schedules
 --   2. maintenance_notifications table to track sent alerts
 --   3. is_maintenance_schedule_active() function for server-side schedule checks
---   4. Updated active_maintenance_rules view with schedule awareness
---   5. estimated_end column on maintenance_rules
+--   4. estimated_end column on maintenance_rules
+--   5. Updated active_maintenance_rules view with schedule awareness (DROP + CREATE)
 --
 -- The check-maintenance-schedule Edge Function handles:
 --   - Auto-activation when a schedule window starts

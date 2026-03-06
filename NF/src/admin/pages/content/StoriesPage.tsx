@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useStories } from '../../hooks/useStories';
+import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
 import { 
   Plus, 
   Search, 
@@ -546,6 +547,7 @@ export default function StoriesPage() {
     unpublishStory,
     toggleFeatured
   } = useStories();
+  const { track } = useOnboardingTracker();
 
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -579,6 +581,7 @@ export default function StoriesPage() {
       await updateStory(selectedStory.id, data);
     } else {
       await createStory(data);
+      track('story.created');
     }
   };
 
@@ -701,7 +704,7 @@ export default function StoriesPage() {
               story={story}
               onEdit={() => handleEdit(story)}
               onDelete={() => handleDelete(story.id)}
-              onPublish={() => publishStory(story.id)}
+              onPublish={async () => { await publishStory(story.id); track('story.published'); }}
               onUnpublish={() => unpublishStory(story.id)}
               onToggleFeatured={() => toggleFeatured(story.id)}
             />

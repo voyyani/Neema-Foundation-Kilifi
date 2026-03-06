@@ -23,6 +23,7 @@ import {
 } from '../../types/roles';
 import { toast } from 'sonner';
 import clsx from 'clsx';
+import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
 
 // =============================================================================
 // Types
@@ -601,6 +602,7 @@ const UserRow: React.FC<UserRowProps> = ({
 
 const UsersManagementPage: React.FC = () => {
   const { profile } = useAuth();
+  const { track } = useOnboardingTracker();
   const [users, setUsers] = useState<UserWithMeta[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -684,6 +686,7 @@ const UsersManagementPage: React.FC = () => {
       }
 
       toast.success('User updated successfully');
+      track('user.role_changed');
       setRoleChangeUser(null);
       fetchUsers(true);
     } catch (err) {
@@ -733,6 +736,7 @@ const UsersManagementPage: React.FC = () => {
     }
 
     toast.success((data as any)?.message || `Invitation sent to ${email}!`);
+    track('user.invited');
 
     // Refresh the user list — the profile row was pre-seeded by the Edge Function
     await fetchUsers();
@@ -808,6 +812,7 @@ const UsersManagementPage: React.FC = () => {
               </button>
               <button
                 onClick={() => setShowInviteModal(true)}
+                data-tour="users-invite-btn"
                 className="inline-flex items-center px-4 py-2 bg-[#B01C2E] text-white rounded-lg text-sm font-medium hover:bg-[#8A1624] transition-colors shadow-sm"
               >
                 <UserPlusIcon />
@@ -884,7 +889,7 @@ const UsersManagementPage: React.FC = () => {
         </div>
 
         {/* Users Table */}
-        <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border overflow-hidden" data-tour="users-list">
           {loading ? (
             <div className="p-6">
               <LoadingSkeleton />

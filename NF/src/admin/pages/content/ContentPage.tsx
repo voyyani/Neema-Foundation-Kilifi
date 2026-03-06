@@ -1,7 +1,7 @@
 // Content Management Hub Page
 
 import { Link } from 'react-router-dom';
-import { Settings, Image, Layout, BookOpen, TrendingUp, Users, Handshake } from 'lucide-react';
+import { Settings, Image, Layout, BookOpen, TrendingUp, Users, Handshake, Inbox } from 'lucide-react';
 
 export default function ContentPage() {
   const contentSections = [
@@ -11,6 +11,7 @@ export default function ContentPage() {
       icon: Layout,
       href: '/admin/content/programs',
       color: 'bg-blue-500',
+      tourId: 'content-programs-card',
     },
     {
       title: 'Hero Slides',
@@ -18,6 +19,7 @@ export default function ContentPage() {
       icon: Image,
       href: '/admin/content/hero',
       color: 'bg-purple-500',
+      tourId: 'content-hero-card',
     },
     {
       title: 'Stories',
@@ -25,6 +27,7 @@ export default function ContentPage() {
       icon: BookOpen,
       href: '/admin/content/stories',
       color: 'bg-orange-500',
+      tourId: 'content-stories-card',
     },
     {
       title: 'Impact Metrics',
@@ -32,6 +35,7 @@ export default function ContentPage() {
       icon: TrendingUp,
       href: '/admin/content/impact',
       color: 'bg-cyan-500',
+      tourId: 'content-impact-card',
     },
     {
       title: 'Partners',
@@ -39,6 +43,7 @@ export default function ContentPage() {
       icon: Handshake,
       href: '/admin/content/partners',
       color: 'bg-green-500',
+      tourId: 'content-partners-card',
     },
     {
       title: 'Board Members',
@@ -46,6 +51,15 @@ export default function ContentPage() {
       icon: Users,
       href: '/admin/content/board',
       color: 'bg-pink-500',
+      tourId: 'content-board-card',
+    },
+    {
+      title: 'Submissions',
+      description: 'View contact form submissions and partnership inquiries',
+      icon: Inbox,
+      href: '/admin/content/submissions',
+      color: 'bg-indigo-500',
+      tourId: 'content-submissions-card',
     },
   ];
 
@@ -63,6 +77,7 @@ export default function ContentPage() {
           <Link
             key={section.href}
             to={section.href}
+            data-tour={section.tourId}
             className="block bg-white rounded-lg border-2 border-gray-200 p-6 hover:border-blue-500 hover:shadow-md transition-all"
           >
             <div className="flex items-start justify-between mb-4">

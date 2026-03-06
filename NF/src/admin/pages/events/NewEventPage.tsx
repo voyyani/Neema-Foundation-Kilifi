@@ -4,15 +4,18 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import EventForm from '../../components/events/EventForm';
 import { useEvents } from '../../hooks/useEvents';
+import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
 import type { EventFormSchema } from '../../lib/validators';
 
 export default function NewEventPage() {
   const navigate = useNavigate();
   const { createEvent } = useEvents();
+  const { track } = useOnboardingTracker();
 
   const handleSubmit = async (data: EventFormSchema) => {
     try {
       await createEvent(data);
+      track('event.created');
       navigate('/admin/events');
     } catch (err) {
       // createEvent already toasts; keep user on form for fixes

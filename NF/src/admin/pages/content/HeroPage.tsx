@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useHeroContent } from '../../hooks/useHeroContent';
+import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
 import { Plus, Edit2, Trash2, Eye, EyeOff, ArrowUpDown } from 'lucide-react';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
@@ -13,6 +14,7 @@ import { toast } from 'sonner';
 
 export default function HeroPage() {
   const { slides, isLoading, createSlide, updateSlide, deleteSlide, toggleActive, reorderSlides } = useHeroContent();
+  const { track } = useOnboardingTracker();
   const [showModal, setShowModal] = useState(false);
   const [editingSlide, setEditingSlide] = useState<HeroSlide | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
@@ -213,8 +215,10 @@ export default function HeroPage() {
           onSave={async (data) => {
             if (editingSlide) {
               await updateSlide(editingSlide.id, data);
+              track('hero.edited');
             } else {
               await createSlide(data);
+              track('hero.created');
             }
             setShowModal(false);
           }}

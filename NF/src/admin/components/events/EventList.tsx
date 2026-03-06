@@ -10,6 +10,7 @@ import EmptyState from '../ui/EmptyState';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import ConfirmDialog from '../ui/ConfirmDialog';
 import { useEvents } from '../../hooks/useEvents';
+import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
 import type { EventFilters, EventStatus } from '../../types/events';
 import { formatDate, debounce } from '../../lib/utils';
 
@@ -21,6 +22,7 @@ export default function EventList() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const { events, isLoading, deleteEvent, duplicateEvent } = useEvents(filters);
+  const { track } = useOnboardingTracker();
 
   // Debounced search
   const handleSearch = debounce((value: string) => {
@@ -34,6 +36,7 @@ export default function EventList() {
   const handleDelete = async () => {
     if (deleteId) {
       await deleteEvent(deleteId);
+      track('event.deleted');
       setDeleteId(null);
     }
   };
@@ -65,6 +68,7 @@ export default function EventList() {
         {/* Full-width on mobile, auto on sm+ */}
         <button
           onClick={() => navigate('/admin/events/new')}
+          data-tour="events-create-btn"
           className="tap-scale w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-3 sm:py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 active:bg-blue-800 transition-colors font-medium text-sm shadow-sm min-h-[44px]"
         >
           <Plus className="w-5 h-5" />
@@ -90,7 +94,7 @@ export default function EventList() {
         </div>
 
         {/* Status Filters — horizontal scroll strip on mobile */}
-        <div className="flex items-center gap-2 admin-scroll-x pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
+        <div className="flex items-center gap-2 admin-scroll-x pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap" data-tour="events-status-tabs">
           {statusFilters.map((filter) => (
             <button
               key={filter.value}
@@ -139,7 +143,7 @@ export default function EventList() {
           }}
         />
       ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5" data-tour="events-list">
           {events.map((event) => (
             <EventCard
               key={event.id}

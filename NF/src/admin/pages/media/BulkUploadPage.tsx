@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, FolderOpen, Loader2 } from 'lucide-react';
 import { useMediaAlbums, createMediaAlbum } from '../../hooks/useMediaAlbums';
+import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
 import UploadWidget from '../../components/media/UploadWidget';
 import AlbumForm from '../../components/media/AlbumForm';
 import type { MediaAlbum, MediaItem } from '../../types/media';
@@ -16,6 +17,7 @@ type Mode = 'select' | 'create';
 export default function BulkUploadPage() {
   const navigate = useNavigate();
   const { albums, isLoading } = useMediaAlbums();
+  const { track } = useOnboardingTracker();
   const [mode, setMode] = useState<Mode>('select');
   const [selectedAlbumId, setSelectedAlbumId] = useState<string>('');
   const [uploadedCount, setUploadedCount] = useState(0);
@@ -29,6 +31,7 @@ export default function BulkUploadPage() {
 
   function handleUploadComplete(items: MediaItem[]) {
     setUploadedCount(prev => prev + items.length);
+    track('media.uploaded');
   }
 
   return (

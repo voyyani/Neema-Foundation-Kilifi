@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { usePrograms } from '../../hooks/usePrograms';
+import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
 import type { Program, ProgramInput } from '../../types/content';
 import { Plus, Search, Filter, Edit2, Trash2, Star, Check, X, Image as ImageIcon, Video, Target, Users } from 'lucide-react';
 import { EnhancedProgramForm } from '../../components/programs';
@@ -7,6 +8,7 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog';
 
 export default function ProgramsPage() {
   const { programs, isLoading, error, createProgram, updateProgram, deleteProgram, toggleActive, toggleFeatured } = usePrograms();
+  const { track } = useOnboardingTracker();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProgram, setEditingProgram] = useState<Program | null>(null);
@@ -155,7 +157,7 @@ export default function ProgramsPage() {
               onEdit={() => handleOpenModal(program)}
               onDelete={() => handleDelete(program)}
               onToggleActive={() => toggleActive(program.id)}
-              onToggleFeatured={() => toggleFeatured(program.id)}
+              onToggleFeatured={async () => { await toggleFeatured(program.id); track('program.featured'); }}
             />
           ))}
         </div>
@@ -171,6 +173,7 @@ export default function ProgramsPage() {
               await updateProgram(editingProgram.id, data);
             } else {
               await createProgram(data);
+              track('program.created');
             }
             handleCloseModal();
           }}

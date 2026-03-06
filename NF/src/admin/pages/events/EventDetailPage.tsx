@@ -6,6 +6,8 @@ import { ArrowLeft } from 'lucide-react';
 import EventForm from '../../components/events/EventForm';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { useEvents } from '../../hooks/useEvents';
+import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
+import { useBreadcrumbEntity } from '../../components/layout/BreadcrumbContext';
 import type { Event } from '../../types/events';
 import type { EventFormSchema } from '../../lib/validators';
 
@@ -13,8 +15,12 @@ export default function EventDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getEvent, updateEvent } = useEvents();
+  const { track } = useOnboardingTracker();
   const [event, setEvent] = useState<Event | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Inject event title into breadcrumb trail (Phase 3 — BUG-08)
+  useBreadcrumbEntity(event?.title);
 
   useEffect(() => {
     async function loadEvent() {
@@ -31,6 +37,7 @@ export default function EventDetailPage() {
     if (id) {
       try {
         await updateEvent(id, data);
+        track('event.edited');
         navigate('/admin/events');
       } catch (err) {
         // updateEvent already shows a toast — keep user on the form for fixes

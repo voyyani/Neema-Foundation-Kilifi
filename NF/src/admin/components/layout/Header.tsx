@@ -2,6 +2,7 @@ import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { HelpMenuButton } from '../onboarding';
 import { toast } from 'sonner';
 
 interface HeaderProps {
@@ -86,11 +87,14 @@ export default function Header({ onMenuClick }: HeaderProps) {
             </svg>
           </button>
 
+          {/* Help & Tours button — Phase 2 Onboarding */}
+          <HelpMenuButton />
+
           {/* Separator */}
           <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" aria-hidden="true" />
 
           {/* Profile dropdown */}
-          <Menu as="div" className="relative">
+          <Menu as="div" className="relative" data-tour="user-menu">
             <Menu.Button className="touch-target tap-scale -m-1 rounded-xl hover:bg-gray-100 active:bg-gray-200 transition-colors">
               <span className="sr-only">Open user menu</span>
               <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#B01C2E] to-[#8A1624] flex items-center justify-center ring-2 ring-white shadow-sm">

@@ -223,3 +223,45 @@ a:focus-visible {
   outline: 2px solid #B01C2E;
   outline-offset: 2px;
 }
+
+/* =========================================================================
+ * Phase 4 — Sidebar ↔ Breadcrumb Visual Connector (4.2)
+ * ========================================================================= */
+
+/**
+ * When a sidebar item is active, show a subtle connector bar on its right
+ * edge that visually "connects" to the breadcrumb bar area.
+ */
+.sidebar-active-item {
+  position: relative;
+}
+.sidebar-active-item::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.7);
+  animation: sidebar-connector-pulse 2s ease-in-out infinite;
+}
+
+@keyframes sidebar-connector-pulse {
+  0%, 100% { opacity: 0.5; height: 50%; }
+  50%      { opacity: 1;   height: 70%; }
+}
+
+/**
+ * Breadcrumb bar subtle entrance animation — slides in from the left
+ * on route change for a polished feel.
+ */
+.breadcrumb-bar {
+  animation: breadcrumb-slide-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes breadcrumb-slide-in {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}

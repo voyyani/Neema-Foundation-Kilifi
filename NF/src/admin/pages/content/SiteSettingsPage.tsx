@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSiteSettings } from '../../hooks/useSiteSettings';
 import { HexColorPicker } from 'react-colorful';
-import { Save, Loader2 } from 'lucide-react';
+import { Save, Loader2, Mail } from 'lucide-react';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 
 export default function SiteSettingsPage() {
@@ -33,6 +33,9 @@ export default function SiteSettingsPage() {
     contact_email: settings?.contact_email || '',
     contact_phone: settings?.contact_phone || '',
     contact_address: settings?.contact_address || '',
+    reply_default_signoff: settings?.reply_default_signoff || 'Warmly',
+    reply_from_name: settings?.reply_from_name || 'Neema Foundation Kilifi',
+    reply_auto_status_change: settings?.reply_auto_status_change ?? true,
   });
 
   // Update form when settings load
@@ -59,6 +62,9 @@ export default function SiteSettingsPage() {
         contact_email: settings.contact_email || '',
         contact_phone: settings.contact_phone || '',
         contact_address: settings.contact_address || '',
+        reply_default_signoff: settings.reply_default_signoff || 'Warmly',
+        reply_from_name: settings.reply_from_name || 'Neema Foundation Kilifi',
+        reply_auto_status_change: settings.reply_auto_status_change ?? true,
       });
     }
   }, [settings]);
@@ -318,6 +324,63 @@ export default function SiteSettingsPage() {
                 rows={3}
                 placeholder="Ganze Sub-county, Kilifi County, Kenya"
               />
+            </div>
+          </div>
+        </div>
+
+        {/* Email Reply Defaults */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Mail className="h-5 w-5 text-[#B01C2E]" />
+            <h2 className="text-lg font-semibold text-gray-900">Email Reply Defaults</h2>
+          </div>
+          <p className="text-sm text-gray-500 mb-4">
+            Configure defaults for admin reply emails sent to submission contacts and volunteer applicants.
+          </p>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Reply-From Name</label>
+              <input
+                type="text"
+                value={formData.reply_from_name}
+                onChange={(e) => setFormData({ ...formData, reply_from_name: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent"
+                placeholder="Neema Foundation Kilifi"
+                maxLength={100}
+              />
+              <p className="text-xs text-gray-400 mt-1">Shown in the email sign-off block (e.g. &quot;Warmly, Admin Name · Neema Foundation Kilifi&quot;)</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Default Sign-Off</label>
+              <input
+                type="text"
+                value={formData.reply_default_signoff}
+                onChange={(e) => setFormData({ ...formData, reply_default_signoff: e.target.value })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent"
+                placeholder="Warmly"
+                maxLength={50}
+              />
+              <p className="text-xs text-gray-400 mt-1">The closing word before the admin&apos;s name (e.g. &quot;Warmly,&quot; &quot;Best regards,&quot; &quot;With appreciation,&quot;)</p>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Auto-Update Status on Reply</label>
+                  <p className="text-xs text-gray-400 mt-0.5">When enabled, sending a reply automatically changes the submission status to &quot;Responded&quot;</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.reply_auto_status_change}
+                    onChange={(e) => setFormData({ ...formData, reply_auto_status_change: e.target.checked })}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:ring-2 peer-focus:ring-[#B01C2E]/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#B01C2E]" />
+                </label>
+              </div>
             </div>
           </div>
         </div>

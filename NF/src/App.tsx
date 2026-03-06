@@ -63,6 +63,16 @@ const NewRulePage          = lazyWithRetry(() => import('./admin/pages/maintenan
 const EditRulePage         = lazyWithRetry(() => import('./admin/pages/maintenance/EditRulePage'));
 const MaintenanceHistory   = lazyWithRetry(() => import('./admin/pages/maintenance/MaintenanceHistory'));
 
+// Onboarding Progress (Phase 4 — Breadcrumbs Roadmap)
+const OnboardingPage       = lazyWithRetry(() => import('./admin/pages/OnboardingPage'));
+
+// Submissions & Volunteer Applications (Phase 2 — Breadcrumbs Audit)
+const SubmissionsPage              = lazyWithRetry(() => import('./admin/pages/SubmissionsPage'));
+const VolunteerApplicationsPage    = lazyWithRetry(() => import('./admin/pages/VolunteerApplicationsPage'));
+
+// Admin 404 (Phase 1 — Breadcrumbs Audit)
+const AdminNotFound        = lazyWithRetry(() => import('./admin/pages/AdminNotFound'));
+
 // Public Media Pages (Phase 2)
 const MediaPage          = lazyWithRetry(() => import('./pages/MediaPage'));
 const EventStoryPage     = lazyWithRetry(() => import('./pages/media/EventStoryPage'));
@@ -174,6 +184,14 @@ const App: React.FC = () => {
                     <Route path="maintenance/new" element={<NewRulePage />} />
                     <Route path="maintenance/:id/edit" element={<EditRulePage />} />
                     <Route path="maintenance/history" element={<MaintenanceHistory />} />
+                    {/* Onboarding Progress — Phase 4 */}
+                    <Route path="onboarding" element={<OnboardingPage />} />
+                    {/* Submissions — moved under Content section */}
+                    <Route path="content/submissions" element={<SubmissionsPage />} />
+                    {/* Volunteer Applications — Phase 2 Breadcrumbs Audit */}
+                    <Route path="volunteer-applications" element={<VolunteerApplicationsPage />} />
+                    {/* Admin 404 catch-all — Phase 1 Breadcrumbs Audit */}
+                    <Route path="*" element={<AdminNotFound />} />
                   </Route>
                 </Route>
 

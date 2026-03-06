@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Pencil, Loader2, AlertTriangle, MessageSquare, Send } from 'lucide-react';
 import { ProtectedRoute } from '../../components/auth/ProtectedRoute';
 import { RuleForm, StatusUpdateForm, StatusTimeline } from '../../components/maintenance';
+import { useBreadcrumbEntity } from '../../components/layout/BreadcrumbContext';
 import {
   useMaintenanceRule,
   useUpdateMaintenanceRule,
@@ -32,6 +33,9 @@ function EditRulePageContent() {
   const { data: rule, isLoading, error } = useMaintenanceRule(id);
   const updateMutation = useUpdateMaintenanceRule();
   const [showStatusPanel, setShowStatusPanel] = useState(true);
+
+  // Inject rule title into breadcrumb trail (Phase 3 — BUG-08)
+  useBreadcrumbEntity(rule?.title);
 
   const handleSubmit = useCallback(
     (

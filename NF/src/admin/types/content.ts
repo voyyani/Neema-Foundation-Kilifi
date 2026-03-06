@@ -23,6 +23,10 @@ export interface SiteSettings {
   contact_email: string | null;
   contact_phone: string | null;
   contact_address: string | null;
+  // Reply system defaults
+  reply_default_signoff: string | null;
+  reply_from_name: string | null;
+  reply_auto_status_change: boolean | null;
   updated_at: string;
 }
 
@@ -47,6 +51,10 @@ export interface SiteSettingsInput {
   contact_email?: string;
   contact_phone?: string;
   contact_address?: string;
+  // Reply system defaults
+  reply_default_signoff?: string;
+  reply_from_name?: string;
+  reply_auto_status_change?: boolean;
 }
 
 // Hero Content

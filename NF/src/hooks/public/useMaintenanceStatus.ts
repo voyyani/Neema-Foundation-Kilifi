@@ -90,10 +90,28 @@ export function useMaintenanceStatus(): MaintenanceStatus & {
     queryKey: ['public', 'maintenance', 'status'],
     queryFn: async (): Promise<ActiveMaintenanceRule[]> => {
       // Use the view for active rules — automatically filtered server-side
-      const { data, error: fetchError } = await supabase
+      // Try full column list first; fall back without estimated_end if the column
+      // hasn't been added yet (add-maintenance-scheduling migration not run)
+      let data: unknown[] | null = null;
+      let fetchError: { message?: string; code?: string } | null = null;
+
+      const res1 = await supabase
         .from('active_maintenance_rules')
         .select('id, scope, target_key, severity, title, message, display_config, estimated_end, priority')
         .order('priority', { ascending: false });
+
+      if (res1.error && res1.error.code === '42703') {
+        // Column doesn't exist — retry without estimated_end
+        const res2 = await supabase
+          .from('active_maintenance_rules')
+          .select('id, scope, target_key, severity, title, message, display_config, priority')
+          .order('priority', { ascending: false });
+        data = res2.data;
+        fetchError = res2.error;
+      } else {
+        data = res1.data;
+        fetchError = res1.error;
+      }
 
       if (fetchError) {
         console.error('Failed to fetch maintenance status:', fetchError);
