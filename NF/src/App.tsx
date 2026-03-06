@@ -1,6 +1,6 @@
 // src/App.tsx
-import React, { Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
+import React, { Suspense, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate, useNavigate } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'sonner';
@@ -24,6 +24,7 @@ import LoadingSpinner from './components/ui/LoadingSpinner';
 import { AuthProvider } from './admin/hooks/useAuth';
 import { queryClient } from './admin/config/queryClient';
 import { lazyWithRetry } from './lib/lazyWithRetry';
+import { supabaseAdmin } from './lib/supabase/client';
 
 // Lazy load admin routes for code splitting
 const AdminLogin = lazyWithRetry(() => import('./admin/pages/AdminLogin'));
@@ -124,6 +125,27 @@ class GlobalErrorBoundary extends React.Component<
   }
 }
 
+// Listens for Supabase PASSWORD_RECOVERY events (both implicit-flow hash tokens
+// and PKCE code-exchange tokens) and navigates to the reset-password page.
+// Using onAuthStateChange is required because supabaseAdmin clears the URL hash
+// immediately on load — by the time a useEffect runs the hash is already gone.
+const AuthHashHandler: React.FC = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const { data: { subscription } } = supabaseAdmin.auth.onAuthStateChange(
+      (event) => {
+        if (event === 'PASSWORD_RECOVERY') {
+          navigate('/admin/reset-password', { replace: true });
+        }
+      }
+    );
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  return null;
+};
+
 // Scope AuthProvider only to admin subtree to keep public pages auth-free
 const AdminShell = () => (
   <AuthProvider>
@@ -137,6 +159,7 @@ const App: React.FC = () => {
     <GlobalErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <Router>
+          <AuthHashHandler />
           <Toaster position="top-right" richColors />
           <div className="App">
             <div className="min-h-screen flex flex-col">

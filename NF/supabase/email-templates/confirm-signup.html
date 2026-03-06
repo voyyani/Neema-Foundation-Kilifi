@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Confirm Your Email — Neema Foundation</title>
+  <style>
+    body, html { margin: 0; padding: 0; background-color: #f7f7f7; font-family: Georgia, 'Times New Roman', Times, serif; }
+    table { border-collapse: collapse; }
+    img { border: 0; display: block; }
+    a { color: #B01C2E; text-decoration: none; }
+    .wrapper { width: 100%; background-color: #f7f7f7; padding: 32px 16px; }
+    .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+    .header { background-color: #B01C2E; padding: 32px 40px 28px; text-align: center; }
+    .header img { width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 16px; background: #fff; padding: 4px; }
+    .header-title { color: #ffffff; font-family: Georgia, serif; font-size: 22px; font-weight: bold; margin: 0 0 4px; letter-spacing: 0.5px; }
+    .header-tagline { color: rgba(255,255,255,0.80); font-family: Arial, sans-serif; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; margin: 0; }
+    .body { padding: 40px 40px 32px; }
+    .body h1 { font-family: Georgia, serif; font-size: 24px; color: #111827; margin: 0 0 12px; }
+    .body p { font-family: Arial, sans-serif; font-size: 15px; line-height: 1.7; color: #374151; margin: 0 0 20px; }
+    .btn-wrap { text-align: center; margin: 32px 0; }
+    .btn { display: inline-block; background-color: #B01C2E; color: #ffffff !important; font-family: Arial, sans-serif; font-size: 15px; font-weight: bold; letter-spacing: 0.5px; text-decoration: none !important; padding: 14px 36px; border-radius: 8px; }
+    .notice { background-color: #F0FDF4; border-left: 4px solid #16a34a; border-radius: 4px; padding: 14px 18px; margin: 24px 0 0; }
+    .notice p { font-family: Arial, sans-serif; font-size: 13px; color: #15803d; margin: 0; line-height: 1.6; }
+    .divider { border: none; border-top: 1px solid #E5E7EB; margin: 32px 0 0; }
+    .fallback { font-family: Arial, sans-serif; font-size: 13px; color: #6B7280; margin: 20px 0 0; line-height: 1.6; }
+    .fallback a { color: #B01C2E; word-break: break-all; }
+    .footer { background-color: #111827; padding: 28px 40px; text-align: center; }
+    .footer p { font-family: Arial, sans-serif; font-size: 12px; color: #9CA3AF; margin: 0 0 6px; line-height: 1.6; }
+    .footer a { color: #D1D5DB; text-decoration: none; }
+    @media only screen and (max-width: 480px) {
+      .header, .body, .footer { padding-left: 24px; padding-right: 24px; }
+      .body h1 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <table class="container" width="100%" cellpadding="0" cellspacing="0" role="presentation">
+      <tr>
+        <td class="header">
+          <img src="https://res.cloudinary.com/dzqdxosk2/image/upload/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png" alt="Neema Foundation Logo" width="72" height="72" />
+          <p class="header-title">Neema Foundation</p>
+          <p class="header-tagline">Need meets God's Grace</p>
+        </td>
+      </tr>
+      <tr>
+        <td class="body">
+          <h1>Confirm your email address</h1>
+          <p>Hello,</p>
+          <p>
+            Thank you for joining Neema Foundation. Please confirm your email address
+            <strong>{{ .Email }}</strong> by clicking the button below to activate your account.
+          </p>
+          <div class="btn-wrap">
+            <a href="{{ .ConfirmationURL }}" class="btn" target="_blank">
+              Confirm Email Address
+            </a>
+          </div>
+          <p>
+            This confirmation link expires in <strong>24 hours</strong>. If you did not
+            create an account with us, you can safely ignore this email.
+          </p>
+          <div class="notice">
+            <p>✅ Once confirmed, you will have access to your account and can begin using the admin panel.</p>
+          </div>
+          <hr class="divider" />
+          <p class="fallback">
+            If the button above doesn't work, copy and paste this URL into your browser:<br />
+            <a href="{{ .ConfirmationURL }}">{{ .ConfirmationURL }}</a>
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td class="footer">
+          <p><strong style="color:#E5E7EB;">Neema Foundation Kilifi</strong></p>
+          <p>Transforming Ganze Community · Kilifi, Kenya</p>
+          <p>
+            <a href="https://neemafoundationkilifi.org">neemafoundationkilifi.org</a>
+            &nbsp;·&nbsp;
+            <a href="mailto:neemafoundationkilifi@gmail.com">neemafoundationkilifi@gmail.com</a>
+          </p>
+          <p style="margin-top:12px; color:#6B7280; font-size:11px;">
+            You are receiving this email because someone signed up using this address.
+            This is an automated message — please do not reply.
+          </p>
+        </td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>

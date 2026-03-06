@@ -38,7 +38,7 @@ export const supabaseAdmin = createClient<Database>(supabaseUrl, supabaseAnonKey
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false,
+    detectSessionInUrl: true,
     storage: typeof window !== 'undefined' ? window.localStorage : undefined,
     storageKey: 'neema-admin-auth',
     flowType: 'pkce',
