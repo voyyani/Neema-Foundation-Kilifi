@@ -282,12 +282,18 @@ export function useDeleteMaintenanceRule() {
 
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('maintenance_rules')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .select('id');
 
       if (error) throw error;
+
+      // If RLS silently blocked the delete, no rows come back — surface it.
+      if (!data || data.length === 0) {
+        throw new Error('Permission denied: could not delete the maintenance rule. Run the latest DB migrations and verify your admin role.');
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.maintenanceRules });
@@ -523,12 +529,17 @@ export function useBulkDeleteMaintenanceRules() {
   return useMutation({
     mutationFn: async (ids: string[]): Promise<void> => {
       for (const id of ids) {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('maintenance_rules')
           .delete()
-          .eq('id', id);
+          .eq('id', id)
+          .select('id');
 
         if (error) throw error;
+
+        if (!data || data.length === 0) {
+          throw new Error(`Permission denied: could not delete rule ${id}. Run the latest DB migrations and verify your admin role.`);
+        }
       }
     },
     onSuccess: (_data, ids) => {
