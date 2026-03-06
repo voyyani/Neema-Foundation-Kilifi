@@ -15,7 +15,8 @@
  * ensures crawlers get the correct HTTP status code.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+// Vercel Edge Middleware — standard Web API (no next/server needed for non-Next.js projects)
+// Pass-through is achieved by returning undefined; blocking by returning a Response.
 
 // ─── Configuration ────────────────────────────────────────────────────────────
 
@@ -91,9 +92,7 @@ async function getActiveRules(): Promise<MaintenanceRule[]> {
         Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         'Content-Type': 'application/json',
       },
-      // Edge cache hint
-      next: { revalidate: CACHE_TTL },
-    } as RequestInit);
+    });
 
     if (!res.ok) {
       console.error(`[maintenance-middleware] Supabase responded ${res.status}`);
@@ -173,12 +172,12 @@ function generateMaintenanceHTML(rule: MaintenanceRule): string {
 
 // ─── Middleware ────────────────────────────────────────────────────────────────
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+export default async function middleware(request: Request): Promise<Response | undefined> {
+  const { pathname } = new URL(request.url);
 
   // Skip bypass patterns (admin, assets, etc.)
   if (BYPASS_PATTERNS.some((p) => p.test(pathname))) {
-    return NextResponse.next();
+    return; // pass through to static file serving
   }
 
   // Only intercept bot/crawler requests with 503
@@ -193,13 +192,13 @@ export async function middleware(request: NextRequest) {
 
   // For regular browser users, let the SPA handle everything
   if (!isBot) {
-    return NextResponse.next();
+    return; // pass through to static file serving
   }
 
   // Fetch active rules
   const rules = await getActiveRules();
   if (rules.length === 0) {
-    return NextResponse.next();
+    return; // pass through
   }
 
   // Check for global full_block
@@ -208,7 +207,7 @@ export async function middleware(request: NextRequest) {
   );
   if (globalBlock) {
     const retryAfter = computeRetryAfter(globalBlock.estimated_end);
-    return new NextResponse(generateMaintenanceHTML(globalBlock), {
+    return new Response(generateMaintenanceHTML(globalBlock), {
       status: 503,
       headers: {
         'Content-Type': 'text/html; charset=utf-8',
@@ -225,7 +224,7 @@ export async function middleware(request: NextRequest) {
     const routePattern = PAGE_KEY_TO_ROUTE[rule.target_key];
     if (routePattern && isPath(pathname, routePattern)) {
       const retryAfter = computeRetryAfter(rule.estimated_end);
-      return new NextResponse(generateMaintenanceHTML(rule), {
+      return new Response(generateMaintenanceHTML(rule), {
         status: 503,
         headers: {
           'Content-Type': 'text/html; charset=utf-8',
@@ -238,7 +237,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // No maintenance match — pass through
-  return NextResponse.next();
+  return; // let Vercel serve the static file normally
 }
 
 // ─── Matcher ──────────────────────────────────────────────────────────────────
