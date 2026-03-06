@@ -7,8 +7,7 @@
 #   npx supabase link --project-ref <your-project-ref>
 #   npx supabase functions deploy invite-user
 
-[project]
-id = "sflwsxrihvzpbrcwhknl"
+project_id = "sflwsxrihvzpbrcwhknl"
 
 [functions.invite-user]
 verify_jwt = true
