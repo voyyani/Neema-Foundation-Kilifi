@@ -20,12 +20,12 @@ export function lazyWithRetry<T extends React.ComponentType<any>>(
         message.includes('ChunkLoadError');
 
       if (isChunkError && typeof window !== 'undefined') {
-        console.error('[lazyWithRetry] Stale chunk detected, forcing hard reload.', err);
         // Avoid infinite loops: only reload once per session for this error
         const flag = 'nf-last-chunk-reload';
         const lastReload = sessionStorage.getItem(flag);
         const now = Date.now();
         if (!lastReload || now - Number(lastReload) > 15_000) {
+          console.error('[lazyWithRetry] Stale chunk detected, forcing hard reload.', err);
           sessionStorage.setItem(flag, String(now));
           // Use a cache-busting URL parameter so the browser requests a
           // fresh HTML page (and therefore fresh asset hashes) instead of
@@ -33,6 +33,10 @@ export function lazyWithRetry<T extends React.ComponentType<any>>(
           const url = new URL(window.location.href);
           url.searchParams.set('_cb', String(now));
           window.location.replace(url.toString());
+          // Return a never-resolving promise so Suspense keeps its spinner
+          // while the redirect is in flight — prevents the error boundary
+          // from catching the throw before navigation completes.
+          return new Promise(() => {}) as never;
         }
       }
       throw err;
