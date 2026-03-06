@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Lock, Eye, EyeOff, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import { useAuth } from '../hooks/useAuth';
 import { formatAuthError } from '../lib/authErrors';
+import { supabaseAdmin } from '../../lib/supabase/client';
 
 export default function ResetPassword() {
   const [password, setPassword] = useState('');
@@ -12,8 +12,13 @@ export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { updatePassword } = useAuth();
+  const isMounted = useRef(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => { isMounted.current = false; };
+  }, []);
 
   // Password strength validation
   const passwordRequirements = [
@@ -46,22 +51,31 @@ export default function ResetPassword() {
     setIsLoading(true);
 
     try {
-      await updatePassword(password);
-      toast.success('Password Updated!', {
-        description: 'Your password has been successfully updated.',
+      const { error: updateError } = await supabaseAdmin.auth.updateUser({
+        password,
       });
-      
-      // Navigate to dashboard after short delay
-      setTimeout(() => {
-        navigate('/admin/dashboard', { replace: true });
-      }, 1000);
+
+      if (updateError) throw updateError;
+
+      if (isMounted.current) {
+        toast.success('Password Updated!', {
+          description: 'Your password has been successfully updated.',
+        });
+        setTimeout(() => {
+          navigate('/admin/dashboard', { replace: true });
+        }, 1000);
+      }
     } catch (error) {
       const authError = formatAuthError(error);
-      toast.error(authError.title, {
-        description: authError.message,
-      });
+      if (isMounted.current) {
+        toast.error(authError.title, {
+          description: authError.message,
+        });
+      }
     } finally {
-      setIsLoading(false);
+      if (isMounted.current) {
+        setIsLoading(false);
+      }
     }
   };
 

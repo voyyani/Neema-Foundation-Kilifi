@@ -60,6 +60,12 @@ export const AUTH_ERRORS = {
     action: 'Use at least 8 characters with letters and numbers.',
     code: 'weak_password',
   },
+  SAME_PASSWORD: {
+    title: 'Same Password Used',
+    message: 'Your new password must be different from your current password.',
+    action: 'Please choose a different password.',
+    code: 'same_password',
+  },
   EMAIL_ALREADY_IN_USE: {
     title: 'Email Already Registered',
     message: 'An account with this email already exists.',
@@ -109,6 +115,14 @@ export function formatAuthError(error: any): AuthErrorInfo {
 
   if (code === 'weak_password' || message.includes('Password should be')) {
     return AUTH_ERRORS.WEAK_PASSWORD;
+  }
+
+  if (
+    code === 'same_password' ||
+    message.toLowerCase().includes('different from the old') ||
+    message.toLowerCase().includes('same password')
+  ) {
+    return AUTH_ERRORS.SAME_PASSWORD;
   }
 
   if (code === 'email_exists' || message.includes('already registered')) {

@@ -125,17 +125,33 @@ class GlobalErrorBoundary extends React.Component<
   }
 }
 
-// Listens for Supabase PASSWORD_RECOVERY events (both implicit-flow hash tokens
-// and PKCE code-exchange tokens) and navigates to the reset-password page.
-// Using onAuthStateChange is required because supabaseAdmin clears the URL hash
-// immediately on load — by the time a useEffect runs the hash is already gone.
+// supabase-js does NOT replay PASSWORD_RECOVERY to late onAuthStateChange subscribers.
+// The PKCE code exchange fires asynchronously at module-load time — before any React
+// component mounts. We capture the event here at module level so AuthHashHandler
+// can read the flag synchronously when it first renders.
+let _passwordRecoveryPending = false;
+supabaseAdmin.auth.onAuthStateChange((event) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    _passwordRecoveryPending = true;
+  }
+});
+
+// AuthHashHandler reads the module-level flag on mount (handles events that already
+// fired) and also keeps a live subscription for events that fire after mount.
 const AuthHashHandler: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (_passwordRecoveryPending) {
+      _passwordRecoveryPending = false;
+      navigate('/admin/reset-password', { replace: true });
+      return;
+    }
+
     const { data: { subscription } } = supabaseAdmin.auth.onAuthStateChange(
       (event) => {
         if (event === 'PASSWORD_RECOVERY') {
+          _passwordRecoveryPending = false;
           navigate('/admin/reset-password', { replace: true });
         }
       }
