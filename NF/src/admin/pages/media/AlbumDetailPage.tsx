@@ -17,6 +17,7 @@ import UploadWidget from '../../components/media/UploadWidget';
 import type { MediaAlbum, MediaItem } from '../../types/media';
 import { ALBUM_TYPE_LABELS, ALBUM_TYPE_COLORS } from '../../types/media';
 import { toast } from 'sonner';
+import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
 
 export default function AlbumDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -25,6 +26,7 @@ export default function AlbumDetailPage() {
   const [editMode, setEditMode] = useState(false);
   const [localItems, setLocalItems] = useState<MediaItem[] | null>(null);
   const [isTogglingPublish, setIsTogglingPublish] = useState(false);
+  const { track } = useOnboardingTracker();
 
   // Inject album title into breadcrumb trail (Phase 3 — BUG-08)
   useBreadcrumbEntity(album?.title);
@@ -52,6 +54,10 @@ export default function AlbumDetailPage() {
 
   function handleNewItems(newItems: MediaItem[]) {
     setLocalItems(prev => [...(prev ?? items), ...newItems]);
+    // Track album population breadcrumb (8.5) on first upload into an album
+    if ((localItems ?? items).length === 0 && newItems.length > 0) {
+      track('media.album_populated');
+    }
   }
 
   if (isLoading) {

@@ -5,9 +5,11 @@ import { useSiteSettings } from '../../hooks/useSiteSettings';
 import { HexColorPicker } from 'react-colorful';
 import { Save, Loader2, Mail } from 'lucide-react';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
 
 export default function SiteSettingsPage() {
   const { settings, isLoading, updateSettings } = useSiteSettings();
+  const { track } = useOnboardingTracker();
   const [isSaving, setIsSaving] = useState(false);
   const [showPrimaryPicker, setShowPrimaryPicker] = useState(false);
   const [showSecondaryPicker, setShowSecondaryPicker] = useState(false);
@@ -74,6 +76,7 @@ export default function SiteSettingsPage() {
     setIsSaving(true);
     try {
       await updateSettings(formData);
+      track('site_settings.saved');
     } catch (error) {
       console.error('Save error:', error);
     } finally {
@@ -252,7 +255,7 @@ export default function SiteSettingsPage() {
         </div>
 
         {/* Social Media */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="bg-white rounded-lg border border-gray-200 p-6" data-tour="site-settings-social">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Social Media</h2>
           
           <div className="space-y-4">
@@ -289,7 +292,7 @@ export default function SiteSettingsPage() {
         </div>
 
         {/* Contact Information */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="bg-white rounded-lg border border-gray-200 p-6" data-tour="site-settings-contact">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h2>
           
           <div className="space-y-4">

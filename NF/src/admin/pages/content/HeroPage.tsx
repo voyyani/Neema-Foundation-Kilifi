@@ -59,8 +59,9 @@ export default function HeroPage() {
         <div className="flex gap-3">
           {slides.length > 1 && (
             <button
+              data-tour="hero-reorder-btn"
               onClick={() => setIsReorderMode(!isReorderMode)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${`
                 isReorderMode 
                   ? 'bg-[#B01C2E] text-white border-[#B01C2E]' 
                   : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
@@ -71,6 +72,7 @@ export default function HeroPage() {
             </button>
           )}
           <button
+            data-tour="hero-create-btn"
             onClick={handleCreate}
             className="flex items-center gap-2 px-4 py-2 bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624]"
           >
@@ -139,7 +141,7 @@ export default function HeroPage() {
           )}
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">{slides.map((slide) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-tour="hero-slides-list">{slides.map((slide) => (
             <div
               key={slide.id}
               className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow"

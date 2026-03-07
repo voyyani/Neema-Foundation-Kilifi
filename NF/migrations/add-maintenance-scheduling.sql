@@ -56,16 +56,20 @@ BEGIN
   PERFORM cron.schedule(
     'check-maintenance-schedule',           -- job name
     '* * * * *',                            -- every minute
-    $q$
-    SELECT net.http_post(
-      url := %L || '/functions/v1/check-maintenance-schedule',
-      headers := jsonb_build_object(
-        'Content-Type', 'application/json',
-        'Authorization', 'Bearer ' || %L
-      ),
-      body := '{}'::jsonb
-    );
-    $q$
+    format(
+      $q$
+      SELECT net.http_post(
+        url := %L || '/functions/v1/check-maintenance-schedule',
+        headers := jsonb_build_object(
+          'Content-Type', 'application/json',
+          'Authorization', 'Bearer ' || %L
+        ),
+        body := '{}'::jsonb
+      );
+      $q$,
+      v_supabase_url,
+      v_service_role_key
+    )
   );
 END
 $$;

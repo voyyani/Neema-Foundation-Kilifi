@@ -440,6 +440,7 @@ export default function BoardPage() {
           </p>
         </div>
         <button
+          data-tour="board-create-btn"
           onClick={handleCreate}
           className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
         >
@@ -487,7 +488,7 @@ export default function BoardPage() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-tour="board-list">
           {filteredMembers.map((member) => (
             <MemberCard
               key={member.id}

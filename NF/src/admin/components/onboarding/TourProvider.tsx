@@ -26,8 +26,10 @@ import './tour.css';
 import { useAuth } from '../../hooks/useAuth';
 import { supabaseAdmin as supabase } from '../../../lib/supabase/client';
 import { getToursForRole, getTourById } from './tourData';
+import { getBreadcrumbsForRole } from './breadcrumbDefinitions';
 import type { TourContextValue, TourState, RoleTour } from '../../types/onboarding';
 import { toast } from 'sonner';
+import { waitForElement } from '../../lib/waitForElement';
 
 const TourContext = createContext<TourContextValue | undefined>(undefined);
 
@@ -78,6 +80,9 @@ export function TourProvider({ children }: TourProviderProps) {
 
   const driverRef = useRef<Driver | null>(null);
   const activeTourRef = useRef<TourState | null>(null);
+  // BUG-005: always point to the latest persistCompletion to avoid stale closures
+  // inside driver.js onDestroyStarted callback which is set up once at tour start.
+  const persistCompletionRef = useRef<((tourId: string) => Promise<void>) | null>(null);
   const queryClient = useQueryClient();
 
   // Compute available tours for the current role
@@ -96,15 +101,16 @@ export function TourProvider({ children }: TourProviderProps) {
       try {
         const { data } = await supabase
           .from('profiles')
-          .select('tours_completed, onboarding_completed_at')
+          .select('tours_completed, onboarding_completed_at, welcome_dismissed_at')
           .eq('id', user.id)
           .single();
 
         const completed: string[] = data?.tours_completed ?? [];
         setCompletedTourIds(completed);
 
-        // Show welcome modal on first login (no tours completed)
-        if (completed.length === 0 && !data?.onboarding_completed_at) {
+        // Show welcome modal only if user has never dismissed it
+        // BUG-003: use welcome_dismissed_at instead of onboarding_completed_at
+        if (completed.length === 0 && !data?.welcome_dismissed_at) {
           setShowWelcome(true);
         }
       } catch (err) {
@@ -145,17 +151,25 @@ export function TourProvider({ children }: TourProviderProps) {
       }
 
       // ── 2. Mark each tour breadcrumb as completed in onboarding_progress ─
-      // The onboarding page reads from onboarding_progress, not from profiles.
-      // Without this, the checklist never updates even though the tour marker
-      // is persisted above.
+      // BUG-001: mark ALL breadcrumbs in the tour's declared trails[], not just
+      // the ones with explicit step.breadcrumbId mappings. This fixes the problem
+      // where single-step-per-trail tours (like contentManagerTour) only marked
+      // ~12% of their trail breadcrumbs on completion.
       const tourDef = getTourById(tourId);
       if (tourDef && user?.id) {
-        // Collect unique breadcrumbs from this tour's steps (steps can share
-        // a breadcrumb ID when multiple tour steps cover the same breadcrumb).
+        // Step-mapped breadcrumbs (explicit per-step IDs)
         const uniqueBreadcrumbs = new Map<string, number>();
         for (const step of tourDef.steps) {
-          if (step.breadcrumbId && !uniqueBreadcrumbs.has(step.breadcrumbId)) {
+          if (step.breadcrumbId && step.trailNumber !== undefined && !uniqueBreadcrumbs.has(step.breadcrumbId)) {
             uniqueBreadcrumbs.set(step.breadcrumbId, step.trailNumber);
+          }
+        }
+
+        // BUG-001 fix: also collect every breadcrumb from trails declared in tourDef.trails[]
+        const roleBreadcrumbs = getBreadcrumbsForRole(profile?.role ?? '');
+        for (const bc of roleBreadcrumbs) {
+          if (tourDef.trails.includes(bc.trail) && !uniqueBreadcrumbs.has(bc.id)) {
+            uniqueBreadcrumbs.set(bc.id, bc.trail);
           }
         }
 
@@ -192,8 +206,13 @@ export function TourProvider({ children }: TourProviderProps) {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['auth-profile'] });
     },
-    [user?.id, completedTourIds, availableTours, queryClient],
+    [user?.id, completedTourIds, availableTours, queryClient, profile?.role],
   );
+
+  // BUG-005: keep ref in sync with the latest persistCompletion
+  useEffect(() => {
+    persistCompletionRef.current = persistCompletion;
+  }, [persistCompletion]);
 
   // ── Start a tour ───────────────────────────────────────────────────────
   const startTour = useCallback(
@@ -214,11 +233,10 @@ export function TourProvider({ children }: TourProviderProps) {
 
       // Small delay to ensure DOM has settled after navigation
       setTimeout(() => {
-        // Filter out skipIfMissing steps where target element is absent.
-        // Since all dashboard steps share route '/admin/dashboard', the DOM
-        // is fully rendered at this point and the check is reliable.
-        const availableSteps = filterAvailableSteps(tour.steps);
-        const activeTourDef: RoleTour = { ...tour, steps: availableSteps };
+        // BUG-004: do NOT filter steps upfront — skipIfMissing is evaluated
+        // per-step in onHighlightStarted so elements on later routes are not
+        // wrongly dropped while the DOM shows a different page.
+        const activeTourDef: RoleTour = { ...tour };
         const driveSteps = toDriveSteps(activeTourDef);
 
         // Helper: check if a tour step targets a sidebar element and
@@ -287,6 +305,14 @@ export function TourProvider({ children }: TourProviderProps) {
             // indexOf(step) returns -1 (reference mismatch). Read the
             // canonical activeIndex from driver.js state instead.
             const stepIndex = (state as Record<string, unknown>).activeIndex as number ?? 0;
+            // BUG-004: per-step skipIfMissing check. If the target is absent
+            // from the DOM at highlight time, skip immediately instead of
+            // filtering upfront (which broke multi-route tours).
+            const currentStepDef = activeTourDef.steps[stepIndex];
+            if (currentStepDef?.skipIfMissing && !document.querySelector(currentStepDef.target)) {
+              driverRef.current?.moveNext();
+              return;
+            }
             syncStepState(stepIndex);
           },
           // Intercept Next / Previous so we can navigate + wait for the
@@ -314,17 +340,18 @@ export function TourProvider({ children }: TourProviderProps) {
             }
 
             // If the next step targets the create-event modal, click the
-            // Create Event button to open it, then wait for the animation.
-            const nextTourStep = activeTourDef.steps[next];
-            if (nextTourStep?.target === '[data-tour="new-event-modal"]') {
-              const createBtn = document.querySelector(
-                '[data-tour="events-create-btn"]',
-              ) as HTMLButtonElement | null;
-              createBtn?.click();
-              setTimeout(() => {
-                driverRef.current?.moveNext();
-              }, 450);
-              return;
+              // Create Event button to open it, then wait for the element.
+              // BUG-002: replaced fixed 450ms setTimeout with waitForElement
+              // so the tour doesn't race against Supabase or slow animations.
+              const nextTourStep = activeTourDef.steps[next];
+              if (nextTourStep?.target === '[data-tour="new-event-modal"]') {
+                const createBtn = document.querySelector(
+                  '[data-tour="events-create-btn"]',
+                ) as HTMLButtonElement | null;
+                createBtn?.click();
+                waitForElement('[data-tour="new-event-modal"]').then(() => {
+                  driverRef.current?.moveNext();
+                });
             }
 
             navigateForStep(next).then(() => {
@@ -354,9 +381,9 @@ export function TourProvider({ children }: TourProviderProps) {
                 window.dispatchEvent(new CustomEvent('nf:close-create-modal'));
               }
 
-              // persistCompletion is async — it upserts rows then invalidates
-              // the progress query itself. Do NOT invalidate here (race condition).
-              persistCompletion(tourId);
+              // BUG-005: use ref so the callback always calls the latest
+              // version of persistCompletion regardless of closure age.
+              persistCompletionRef.current?.(tourId);
               const completedState: TourState = {
                 tourId,
                 currentStep: activeTourDef.steps.length - 1,
@@ -409,9 +436,17 @@ export function TourProvider({ children }: TourProviderProps) {
     toast('Tour skipped. You can replay it from the Help menu anytime.');
   }, []);
 
+  // BUG-003: persist welcome dismissal so the modal doesn't re-appear on next login
   const dismissWelcome = useCallback(() => {
     setShowWelcome(false);
-  }, []);
+    if (user?.id) {
+      supabase
+        .from('profiles')
+        .update({ welcome_dismissed_at: new Date().toISOString() } as Record<string, unknown>)
+        .eq('id', user.id)
+        .then(() => {});  // fire-and-forget
+    }
+  }, [user?.id]);
 
   // ── Cleanup on unmount ──────────────────────────────────────────────────
   useEffect(() => {

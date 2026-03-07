@@ -16,7 +16,7 @@
  *  - ProtectedRoute wrapper — users without view_bank_details are redirected
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   Building2,
   Plus,
@@ -80,6 +80,11 @@ function BankDetailsContent() {
   const hook = useBankDetailsAdmin();
   const { track } = useOnboardingTracker();
 
+  // Track on-mount view for breadcrumb 12.1
+  useEffect(() => {
+    track('bank.viewed');
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Modal state
   const [modal, setModal] = useState<{
     open:     boolean;
@@ -140,6 +145,7 @@ function BankDetailsContent() {
 
         {can('manage_bank_details') && (
           <motion.button
+            data-tour="bank-add-btn"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={openCreate}

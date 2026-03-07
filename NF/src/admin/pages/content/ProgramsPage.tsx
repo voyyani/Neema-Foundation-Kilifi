@@ -74,6 +74,7 @@ export default function ProgramsPage() {
           <p className="text-gray-600 mt-1">Manage foundation programs and initiatives</p>
         </div>
         <button
+          data-tour="programs-create-btn"
           onClick={() => handleOpenModal()}
           className="px-4 py-2 bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624] flex items-center gap-2"
         >
@@ -83,7 +84,7 @@ export default function ProgramsPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm p-4 mb-6 flex flex-wrap gap-4">
+      <div className="bg-white rounded-lg shadow-sm p-4 mb-6 flex flex-wrap gap-4" data-tour="programs-filters">
         <div className="flex-1 min-w-[200px]">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -149,7 +150,7 @@ export default function ProgramsPage() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-tour="programs-list">
           {filteredPrograms.map(program => (
             <ProgramCard
               key={program.id}

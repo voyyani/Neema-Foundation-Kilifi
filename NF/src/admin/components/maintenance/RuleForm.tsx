@@ -55,7 +55,7 @@ interface RuleFormProps {
   /** Called on save with the form data */
   onSubmit: (
     data: CreateMaintenanceRuleInput | (UpdateMaintenanceRuleInput & { id: string }),
-    options: { activate: boolean }
+    options: { activate: boolean; schedule: ScheduleData }
   ) => void;
   /** Called when user cancels */
   onCancel: () => void;
@@ -195,9 +195,9 @@ export default function RuleForm({
       };
 
       if (isEditing && initialRule) {
-        onSubmit({ id: initialRule.id, ...payload }, { activate });
+        onSubmit({ id: initialRule.id, ...payload }, { activate, schedule });
       } else {
-        onSubmit(payload, { activate });
+        onSubmit(payload, { activate, schedule });
       }
     },
     [

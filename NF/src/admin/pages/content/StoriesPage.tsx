@@ -616,6 +616,7 @@ export default function StoriesPage() {
           </p>
         </div>
         <button
+          data-tour="stories-create-btn"
           onClick={handleCreate}
           className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
         >
@@ -657,7 +658,7 @@ export default function StoriesPage() {
           </div>
 
           {/* Status Filter */}
-          <div className="relative">
+          <div className="relative" data-tour="stories-status-filter">
             <Eye className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
             <select
               value={statusFilter}
@@ -697,7 +698,7 @@ export default function StoriesPage() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6" data-tour="stories-list">
           {filteredStories.map((story) => (
             <StoryCard
               key={story.id}

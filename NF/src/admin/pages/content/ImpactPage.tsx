@@ -465,6 +465,7 @@ export default function ImpactPage() {
           </p>
         </div>
         <button
+          data-tour="impact-create-btn"
           onClick={handleCreate}
           className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
         >
@@ -494,7 +495,7 @@ export default function ImpactPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" data-tour="impact-metrics-list">
           {metrics.map((metric) => (
             <MetricCard
               key={metric.id}

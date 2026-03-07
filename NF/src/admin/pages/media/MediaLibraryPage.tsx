@@ -11,6 +11,7 @@ import AlbumCard from '../../components/media/AlbumCard';
 import AlbumForm from '../../components/media/AlbumForm';
 import type { AlbumFilters, AlbumType, MediaAlbum } from '../../types/media';
 import { ALBUM_TYPE_LABELS } from '../../types/media';
+import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
 
 const TYPE_FILTERS: Array<{ value: AlbumType | 'all'; label: string }> = [
   { value: 'all', label: 'All Albums' },
@@ -24,6 +25,7 @@ export default function MediaLibraryPage() {
   const [filters, setFilters] = useState<AlbumFilters>({ album_type: 'all' });
   const [search, setSearch] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const { track } = useOnboardingTracker();
 
   const { albums, isLoading, error, refetch } = useMediaAlbums({
     ...filters,
@@ -31,6 +33,7 @@ export default function MediaLibraryPage() {
   });
 
   function handleCreated(_album: MediaAlbum) {
+    track('album.created');
     setShowCreateModal(false);
     refetch();
   }
@@ -46,6 +49,7 @@ export default function MediaLibraryPage() {
           </p>
         </div>
         <button
+          data-tour="album-create-btn"
           onClick={() => setShowCreateModal(true)}
           className="flex items-center gap-2 px-4 py-2 bg-[#B01C2E] text-white text-sm font-medium rounded-lg hover:bg-[#8A1624] transition-colors"
         >
@@ -128,6 +132,7 @@ export default function MediaLibraryPage() {
         </div>
       ) : (
         <motion.div
+          data-tour="media-album-list"
           className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
           initial="hidden"
           animate="show"

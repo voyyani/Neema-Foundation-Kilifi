@@ -14,11 +14,20 @@ import { ProtectedRoute } from '../../components/auth/ProtectedRoute';
 import { RuleForm } from '../../components/maintenance';
 import {
   useCreateMaintenanceRule,
+  useCreateMaintenanceSchedule,
 } from '../../hooks/useMaintenanceRules';
 import type {
   CreateMaintenanceRuleInput,
   UpdateMaintenanceRuleInput,
 } from '../../types/maintenance';
+import type { ScheduleData } from '../../components/maintenance/ScheduleEditor';
+
+/** Convert a datetime-local string to a UTC ISO string.
+ *  datetime-local values are stored/displayed as UTC (consistent with how
+ *  they are read back: new Date(s.starts_at).toISOString().slice(0,16)). */
+function toUtcIso(datetimeLocal: string): string {
+  return new Date(datetimeLocal + ':00Z').toISOString();
+}
 
 // =============================================================================
 // Component
@@ -28,25 +37,43 @@ function NewRulePageContent() {
   const navigate = useNavigate();
   const { track } = useOnboardingTracker();
   const createMutation = useCreateMaintenanceRule();
+  const scheduleMutation = useCreateMaintenanceSchedule();
 
   const handleSubmit = useCallback(
     (
       data: CreateMaintenanceRuleInput | (UpdateMaintenanceRuleInput & { id: string }),
-      options: { activate: boolean }
+      options: { activate: boolean; schedule: ScheduleData }
     ) => {
+      // is_active is already correctly computed by RuleForm:
+      //   true  → activate=true AND mode='immediate' (manual toggle ON)
+      //   false → mode='scheduled'  (cron/Edge Function handles activation)
+      // Do NOT override is_active here.
       const input = data as CreateMaintenanceRuleInput;
-      if (options.activate) {
-        input.is_active = true;
-      }
 
       createMutation.mutate(input, {
-        onSuccess: () => {
+        onSuccess: (rule) => {
           track('maintenance.rule_created');
-          navigate('/admin/maintenance');
+
+          const { schedule } = options;
+          if (schedule.mode === 'scheduled' && schedule.startsAt) {
+            // Save the schedule row so the cron job can auto-activate the rule
+            scheduleMutation.mutate(
+              {
+                rule_id: rule.id,
+                starts_at: toUtcIso(schedule.startsAt),
+                ends_at: schedule.endsAt ? toUtcIso(schedule.endsAt) : null,
+                timezone: schedule.timezone,
+                recurrence: schedule.recurrence,
+              },
+              { onSettled: () => navigate('/admin/maintenance') },
+            );
+          } else {
+            navigate('/admin/maintenance');
+          }
         },
       });
     },
-    [createMutation, navigate]
+    [createMutation, scheduleMutation, navigate, track],
   );
 
   const handleCancel = useCallback(() => {

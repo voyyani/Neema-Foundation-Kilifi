@@ -151,6 +151,7 @@ export function useCreateMaintenanceRule() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.maintenanceRules });
+      queryClient.invalidateQueries({ queryKey: ['public', 'maintenance', 'status'] });
       toast.success(`Rule "${data.title}" created`, {
         description: `Target: ${data.target_key}`,
       });
@@ -197,6 +198,7 @@ export function useUpdateMaintenanceRule() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.maintenanceRules });
       queryClient.invalidateQueries({ queryKey: queryKeys.maintenanceRule(data.id) });
+      queryClient.invalidateQueries({ queryKey: ['public', 'maintenance', 'status'] });
       toast.success(`Rule "${data.title}" updated`);
     },
     onError: (error: Error) => {
@@ -261,6 +263,7 @@ export function useToggleMaintenanceRule() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.maintenanceRules });
+      queryClient.invalidateQueries({ queryKey: ['public', 'maintenance', 'status'] });
     },
     onSuccess: (data) => {
       toast.success(
@@ -306,6 +309,7 @@ export function useDeleteMaintenanceRule() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.maintenanceRules });
+      queryClient.invalidateQueries({ queryKey: ['public', 'maintenance', 'status'] });
       toast.success('Maintenance rule deleted');
     },
     onError: (error: Error) => {
@@ -523,6 +527,7 @@ export function useBulkToggleMaintenanceRules() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.maintenanceRules });
+      queryClient.invalidateQueries({ queryKey: ['public', 'maintenance', 'status'] });
     },
     onSuccess: (data, vars) => {
       toast.success(
@@ -559,6 +564,7 @@ export function useBulkDeleteMaintenanceRules() {
     },
     onSuccess: (_data, ids) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.maintenanceRules });
+      queryClient.invalidateQueries({ queryKey: ['public', 'maintenance', 'status'] });
       toast.success(`${ids.length} rule${ids.length > 1 ? 's' : ''} deleted`);
     },
     onError: (error: Error) => {
@@ -681,6 +687,106 @@ export function useApplyTemplate() {
     },
     onError: (error: Error) => {
       toast.error('Failed to apply template', { description: error.message });
+    },
+  });
+}
+
+// =============================================================================
+// =============================================================================
+// Create a schedule for a rule (inserts one row into maintenance_schedules)
+// =============================================================================
+
+export interface CreateScheduleInput {
+  rule_id: string;
+  starts_at: string;    // UTC ISO string
+  ends_at?: string | null;
+  timezone: string;
+  recurrence: import('../types/maintenance').RecurrenceConfig | null;
+}
+
+export function useCreateMaintenanceSchedule() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (input: CreateScheduleInput): Promise<MaintenanceSchedule> => {
+      const { data, error } = await (supabase
+        .from('maintenance_schedules') as any)
+        .insert({
+          rule_id: input.rule_id,
+          starts_at: input.starts_at,
+          ends_at: input.ends_at ?? null,
+          timezone: input.timezone,
+          recurrence: input.recurrence ?? null,
+          is_active: true,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as MaintenanceSchedule;
+    },
+    onSuccess: (_data, { rule_id }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.maintenanceRules });
+      queryClient.invalidateQueries({ queryKey: queryKeys.maintenanceRule(rule_id) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.maintenanceSchedules });
+      queryClient.invalidateQueries({ queryKey: ['public', 'maintenance', 'status'] });
+    },
+    onError: (error: Error) => {
+      console.error('Failed to create maintenance schedule:', error);
+      toast.error('Failed to save schedule', { description: error.message });
+    },
+  });
+}
+
+// =============================================================================
+// Replace all schedules for a rule (delete-then-insert, used on edit)
+// =============================================================================
+
+export function useReplaceMaintenanceSchedule() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      rule_id,
+      schedule,
+    }: {
+      rule_id: string;
+      /** Pass null to clear all schedules (immediate mode) */
+      schedule: Omit<CreateScheduleInput, 'rule_id'> | null;
+    }): Promise<void> => {
+      // Delete all existing schedules for this rule
+      const { error: delError } = await supabase
+        .from('maintenance_schedules')
+        .delete()
+        .eq('rule_id', rule_id);
+
+      if (delError) throw delError;
+
+      // Insert new schedule if mode is 'scheduled'
+      if (schedule) {
+        const { error: insError } = await (supabase
+          .from('maintenance_schedules') as any)
+          .insert({
+            rule_id,
+            starts_at: schedule.starts_at,
+            ends_at: schedule.ends_at ?? null,
+            timezone: schedule.timezone,
+            recurrence: schedule.recurrence ?? null,
+            is_active: true,
+          });
+
+        if (insError) throw insError;
+      }
+    },
+    onSuccess: (_data, { rule_id }) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.maintenanceRules });
+      queryClient.invalidateQueries({ queryKey: queryKeys.maintenanceRule(rule_id) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.maintenanceSchedules });
+      queryClient.invalidateQueries({ queryKey: ['public', 'maintenance', 'status'] });
+    },
+    onError: (error: Error) => {
+      console.error('Failed to replace maintenance schedule:', error);
+      toast.error('Failed to update schedule', { description: error.message });
     },
   });
 }

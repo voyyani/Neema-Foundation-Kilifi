@@ -46,6 +46,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
+import { useOnboardingTracker } from '../hooks/useOnboardingTracker';
 import ReplyModal from '../components/shared/ReplyModal';
 import type { ReplyPayload, ReplyModalSubmission } from '../components/shared/ReplyModal';
 import ConversationTimeline from '../components/shared/ConversationTimeline';
@@ -146,6 +147,7 @@ const STATUS_EMAIL_TEMPLATES: Record<string, {
 export default function VolunteerApplicationsPage() {
   const queryClient = useQueryClient();
   const { profile } = useAuth();
+  const { track } = useOnboardingTracker();
   const [tab, setTab] = useState<TabFilter>('all');
   const [search, setSearch] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -364,6 +366,10 @@ export default function VolunteerApplicationsPage() {
       }
 
       toast.success(`Reply sent to ${replyTarget?.name ?? 'recipient'}!`);
+      // Track volunteer status email breadcrumb (9.10)
+      if (payload.replyType === 'status_change') {
+        track('volunteer.status_email_sent');
+      }
       // Refresh applications, reply counts, and expanded replies
       queryClient.invalidateQueries({ queryKey: ['admin-volunteer-applications'] });
       queryClient.invalidateQueries({ queryKey: ['admin-volunteer-reply-counts'] });
@@ -440,7 +446,7 @@ export default function VolunteerApplicationsPage() {
           <p className="text-sm text-gray-500">No volunteer applications found.</p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2" data-tour="applications-table">
           {filtered.map((app) => {
             const isExpanded = expandedId === app.id;
             const statusConf = STATUS_CONFIG[app.status] ?? STATUS_CONFIG.new;

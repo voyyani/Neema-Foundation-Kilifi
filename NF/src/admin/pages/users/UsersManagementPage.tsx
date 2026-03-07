@@ -652,6 +652,11 @@ const UsersManagementPage: React.FC = () => {
     fetchUsers();
   }, [fetchUsers]);
 
+  // Track on-mount view for breadcrumb 16.1
+  useEffect(() => {
+    track('user.page_visited');
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Handle role change (and name update)
   const handleRoleChange = async (newRole: UserRole, reason: string, fullName: string) => {
     if (!roleChangeUser || !profile) return;

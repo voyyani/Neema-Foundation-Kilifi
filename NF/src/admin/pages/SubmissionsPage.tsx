@@ -42,6 +42,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
+import { useOnboardingTracker } from '../hooks/useOnboardingTracker';
 import ReplyModal from '../components/shared/ReplyModal';
 import type { ReplyPayload, ReplyModalSubmission } from '../components/shared/ReplyModal';
 import ConversationTimeline from '../components/shared/ConversationTimeline';
@@ -96,6 +97,7 @@ const STATUSES = ['new', 'in_progress', 'responded', 'closed'] as const;
 export default function SubmissionsPage() {
   const queryClient = useQueryClient();
   const { profile } = useAuth();
+  const { track } = useOnboardingTracker();
   const [tab, setTab] = useState<TabFilter>('all');
   const [search, setSearch] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -269,6 +271,11 @@ export default function SubmissionsPage() {
       }
 
       toast.success(`Reply sent to ${replyTarget?.name ?? 'recipient'}!`);
+      // Track breadcrumb completions for reply actions
+      track('submission.reply_sent');
+      if (payload.templateKey) {
+        track('submission.template_used');
+      }
       // Refresh submissions (status → responded), reply counts, and expanded replies
       queryClient.invalidateQueries({ queryKey: ['admin-submissions'] });
       queryClient.invalidateQueries({ queryKey: ['admin-submission-reply-counts'] });
@@ -349,7 +356,7 @@ export default function SubmissionsPage() {
           <p className="text-sm text-gray-500">No submissions found.</p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2" data-tour="submissions-table">
           {filtered.map((s) => {
             const isExpanded = expandedId === s.id;
             const statusConf = STATUS_CONFIG[s.status] ?? STATUS_CONFIG.new;

@@ -16,7 +16,7 @@
  *  - Fully responsive
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Wrench,
@@ -53,6 +53,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProtectedRoute } from '../../components/auth/ProtectedRoute';
 import { usePermissions } from '../../hooks';
+import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
 import {
   useMaintenanceRules,
   useMaintenanceSchedules,
@@ -302,6 +303,12 @@ function MaintenanceDashboardContent() {
   const { can } = usePermissions();
   const canManage = can('manage_site_maintenance');
   const navigate = useNavigate();
+  const { track } = useOnboardingTracker();
+
+  // Track on-mount view for breadcrumb 13.1
+  useEffect(() => {
+    track('maintenance.viewed');
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── State ───────────────────────────────────────────────────────────────
   const defaultFilters: MaintenanceFilters = { scope: 'all', status: 'all', search: '' };
@@ -486,6 +493,7 @@ function MaintenanceDashboardContent() {
                 <span className="hidden sm:inline">Audit Log</span>
               </button>
               <motion.button
+                data-tour="maintenance-new-btn"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={openCreate}

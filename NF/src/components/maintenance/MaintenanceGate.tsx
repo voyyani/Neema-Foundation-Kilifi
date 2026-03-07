@@ -68,6 +68,10 @@ const MaintenanceGate: React.FC<MaintenanceGateProps> = ({
   if (ctx.isGlobalMaintenance) {
     const globalRule = ctx.getRule('global', '*');
     if (globalRule && globalRule.severity === 'full_block') {
+      // Admin bypass: render real content if the logged-in user's role is exempted
+      if (ctx.adminRole && (globalRule.allowed_roles ?? []).includes(ctx.adminRole)) {
+        return <>{children}</>;
+      }
       if (fallback !== undefined) return <>{fallback}</>;
       return (
         <AnimatePresence mode="wait">
@@ -85,6 +89,9 @@ const MaintenanceGate: React.FC<MaintenanceGateProps> = ({
   for (const { scope, key } of checks) {
     const rule = ctx.getRule(scope, key);
     if (!rule) continue;
+
+    // Admin bypass: if the signed-in user's role is in allowed_roles, skip this rule
+    if (ctx.adminRole && (rule.allowed_roles ?? []).includes(ctx.adminRole)) continue;
 
     // full_block: replace entirely
     if (rule.severity === 'full_block') {

@@ -8,7 +8,8 @@
  * Cached rules are served immediately while a background refetch runs.
  */
 
-import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabasePublic as supabase } from '../../lib/supabase/client';
 import type { MaintenanceScope, MaintenanceSeverity } from '../../admin/types/maintenance';
 import { FEATURE_GROUPS } from '../../admin/config/maintenanceRegistry';
@@ -25,6 +26,8 @@ export interface ActiveMaintenanceRule {
   display_config: Record<string, unknown>;
   estimated_end: string | null;
   priority: number;
+  /** Roles that bypass this maintenance rule and see real content */
+  allowed_roles: string[];
 }
 
 export interface MaintenanceStatus {
@@ -43,7 +46,7 @@ export interface MaintenanceStatus {
 // ─── SessionStorage Cache (Phase 7.6) ─────────────────────────────────────────
 
 const CACHE_KEY = 'nf:maintenance:rules';
-const CACHE_TTL = 60 * 1000; // 60 seconds — match refetchInterval so stale cache never blocks a new rule
+const CACHE_TTL = 15 * 1000; // 15 seconds — short window so Realtime + admin mutations propagate quickly
 
 interface CacheEntry {
   rules: ActiveMaintenanceRule[];
@@ -83,6 +86,7 @@ export function useMaintenanceStatus(): MaintenanceStatus & {
   isLoading: boolean;
   error: Error | null;
 } {
+  const queryClient = useQueryClient();
   const {
     data: rules = [],
     isLoading,
@@ -98,14 +102,14 @@ export function useMaintenanceStatus(): MaintenanceStatus & {
 
       const res1 = await supabase
         .from('active_maintenance_rules')
-        .select('id, scope, target_key, severity, title, message, display_config, estimated_end, priority')
+        .select('id, scope, target_key, severity, title, message, display_config, estimated_end, priority, allowed_roles')
         .order('priority', { ascending: false });
 
       if (res1.error && res1.error.code === '42703') {
         // Column doesn't exist — retry without estimated_end
         const res2 = await supabase
           .from('active_maintenance_rules')
-          .select('id, scope, target_key, severity, title, message, display_config, priority')
+          .select('id, scope, target_key, severity, title, message, display_config, priority, allowed_roles')
           .order('priority', { ascending: false });
         data = res2.data;
         fetchError = res2.error;
@@ -138,12 +142,35 @@ export function useMaintenanceStatus(): MaintenanceStatus & {
         return undefined;
       }
     },
-    staleTime: 30 * 1000, // 30 seconds — check often for maintenance changes
+    staleTime: 15 * 1000, // 15 seconds — quick response to maintenance changes
     gcTime: 2 * 60 * 1000, // 2 minutes
     refetchOnWindowFocus: true,
-    refetchInterval: 60 * 1000, // Auto-refresh every 60 seconds
+    refetchInterval: 30 * 1000, // Auto-refresh every 30 seconds
     retry: 2,
   });
+
+  // ─── Realtime subscription ─────────────────────────────────────────────────
+  // Listens for any INSERT/UPDATE/DELETE on maintenance_rules so the public site
+  // reflects admin toggles from other browser sessions without waiting for the
+  // poll interval.
+  useEffect(() => {
+    const channel = supabase
+      .channel('public-maintenance-rules')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'maintenance_rules' },
+        () => {
+          // Bust sessionStorage so the refetch isn't seeded from stale data
+          sessionStorage.removeItem(CACHE_KEY);
+          queryClient.invalidateQueries({ queryKey: ['public', 'maintenance', 'status'] });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   const isGlobalMaintenance = rules.some(
     (r) => r.scope === 'global' && r.severity === 'full_block'

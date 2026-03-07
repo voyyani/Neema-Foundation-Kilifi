@@ -17,7 +17,14 @@ import { useBreadcrumbEntity } from '../../components/layout/BreadcrumbContext';
 import {
   useMaintenanceRule,
   useUpdateMaintenanceRule,
+  useReplaceMaintenanceSchedule,
 } from '../../hooks/useMaintenanceRules';
+import type { ScheduleData } from '../../components/maintenance/ScheduleEditor';
+
+/** Convert a datetime-local string to a UTC ISO string (consistent with read-back). */
+function toUtcIso(datetimeLocal: string): string {
+  return new Date(datetimeLocal + ':00Z').toISOString();
+}
 import type {
   CreateMaintenanceRuleInput,
   UpdateMaintenanceRuleInput,
@@ -32,6 +39,7 @@ function EditRulePageContent() {
   const { id } = useParams<{ id: string }>();
   const { data: rule, isLoading, error } = useMaintenanceRule(id);
   const updateMutation = useUpdateMaintenanceRule();
+  const scheduleMutation = useReplaceMaintenanceSchedule();
   const [showStatusPanel, setShowStatusPanel] = useState(true);
 
   // Inject rule title into breadcrumb trail (Phase 3 — BUG-08)
@@ -40,22 +48,37 @@ function EditRulePageContent() {
   const handleSubmit = useCallback(
     (
       data: CreateMaintenanceRuleInput | (UpdateMaintenanceRuleInput & { id: string }),
-      options: { activate: boolean }
+      options: { activate: boolean; schedule: ScheduleData }
     ) => {
       if (!('id' in data)) return;
 
+      // is_active is already correctly set by RuleForm — do NOT override here.
       const input = data as UpdateMaintenanceRuleInput & { id: string };
-      if (options.activate) {
-        input.is_active = true;
-      }
 
       updateMutation.mutate(input, {
         onSuccess: () => {
-          navigate('/admin/maintenance');
+          const { schedule } = options;
+          // Replace existing schedules: pass null to clear (immediate mode),
+          // or pass the new schedule (scheduled mode).
+          scheduleMutation.mutate(
+            {
+              rule_id: input.id,
+              schedule:
+                schedule.mode === 'scheduled' && schedule.startsAt
+                  ? {
+                      starts_at: toUtcIso(schedule.startsAt),
+                      ends_at: schedule.endsAt ? toUtcIso(schedule.endsAt) : null,
+                      timezone: schedule.timezone,
+                      recurrence: schedule.recurrence,
+                    }
+                  : null,
+            },
+            { onSettled: () => navigate('/admin/maintenance') },
+          );
         },
       });
     },
-    [updateMutation, navigate]
+    [updateMutation, scheduleMutation, navigate],
   );
 
   const handleCancel = useCallback(() => {

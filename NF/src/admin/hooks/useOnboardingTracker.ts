@@ -60,6 +60,26 @@ const ACTION_TO_BREADCRUMB: Record<string, { id: string; trail: number }> = {
   // Trail 16 — User Management
   'user.invited':               { id: '16.3', trail: 16 },
   'user.role_changed':          { id: '16.4', trail: 16 },
+
+  // Phase 1 — 1.9 expanded coverage
+  // Trail 9 — Form Submissions (reply system)
+  'submission.reply_sent':      { id: '9.6',  trail: 9 },
+  'submission.template_used':   { id: '9.7',  trail: 9 },
+  // Trail 9 — Volunteer applications
+  'volunteer.status_email_sent':{ id: '9.10', trail: 9 },
+  // Trail 8 — Media albums
+  'album.created':              { id: '8.5',  trail: 8 },
+  'media.album_populated':      { id: '8.5',  trail: 8 },
+  // Trail 11 — Site Settings
+  'site_settings.saved':        { id: '11.2', trail: 11 },
+  // Trail 12 — Bank Details (on-mount view)
+  'bank.viewed':                { id: '12.1', trail: 12 },
+  // Trail 13 — Maintenance (on-mount view)
+  'maintenance.viewed':         { id: '13.1', trail: 13 },
+  // Trail 16 — Users (on-mount view)
+  'user.page_visited':          { id: '16.1', trail: 16 },
+  // Trail 1 — Onboarding page visit (alias for dashboard.onboarding_visited)
+  'onboarding.page_visited':    { id: '1.21', trail: 1 },
 };
 
 // ---------------------------------------------------------------------------
