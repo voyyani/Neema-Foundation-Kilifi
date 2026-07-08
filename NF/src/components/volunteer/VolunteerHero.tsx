@@ -27,7 +27,7 @@ const VolunteerHero: React.FC<VolunteerHeroProps> = ({ stats, onOpenModal }) => 
             Join Our Volunteer Family
           </h1>
           <p className="text-white/55 text-sm leading-relaxed max-w-lg mb-8">
-            Be part of something bigger. Join dedicated volunteers transforming lives in the Ganze community through healthcare, education, and sustainable development.
+            Join dedicated volunteers transforming lives in the Ganze community through healthcare, education, and sustainable development.
           </p>
           <button
             onClick={onOpenModal}
