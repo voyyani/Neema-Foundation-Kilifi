@@ -125,7 +125,7 @@ const Board: React.FC = () => {
               About {brand}
             </h1>
             <p className="text-white/55 text-sm leading-relaxed max-w-lg mb-8">
-              Rooted in Ganze, Kilifi County. We exist to bring hope through healthcare, education, and community transformation.
+              We exist to bring hope through healthcare, education, and community transformation.
             </p>
             <Link
               to="/donate"

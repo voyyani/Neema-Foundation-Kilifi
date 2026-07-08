@@ -318,7 +318,7 @@ const Partnership: React.FC = () => {
           >
             {[
               { value: '3', label: 'Active Partners' },
-              { value: '62,000+', label: 'Lives Touched' },
+              { value: '10,000+', label: 'Lives Touched' },
               { value: '6+', label: 'Years Serving' },
             ].map(({ value, label }, i) => (
               <React.Fragment key={label}>
