@@ -234,51 +234,36 @@ const App: React.FC = () => {
                   </Route>
                 </Route>
 
-                {/* Public Routes - With Navbar/Footer */}
+                {/* ✅ Public Routes - With Navbar/Footer (FIXED) */}
                 <Route
                   path="/*"
                   element={
                     <MaintenanceErrorBoundary>
-                    <MaintenanceProvider>
-                      <Navbar />
-                      <MaintenanceBanner />
-                      <main className="flex-1">
-                        <Routes>
-                          <Route path="/" element={<MaintenanceGate page="landing"><Landing /></MaintenanceGate>} />
-                          <Route path="/donate" element={<MaintenanceGate page="donate"><Donate /></MaintenanceGate>} />
-                          <Route path="/bank-details" element={<MaintenanceGate page="bank_details"><BankDetails /></MaintenanceGate>} />
-                          <Route path="/legacy-giving" element={<MaintenanceGate page="legacy_giving"><LegacyGiving /></MaintenanceGate>} />
-                          {/* Volunteer page is currently under maintenance — swap rule for DB-driven gate once the
-                              migration 20260306163400_enable_volunteer_maintenance.sql has been applied. */}
-                          <Route path="/volunteer" element={<MaintenancePlaceholder rule={{
-                            id: 'volunteer-static',
-                            scope: 'page',
-                            target_key: 'volunteer',
-                            severity: 'full_block',
-                            title: 'Volunteer Opportunities — Coming Soon',
-                            message: "We're updating our volunteer programme to better serve the Ganze community. Check back soon to find the perfect role that matches your skills and availability.",
-                            display_config: { theme: 'branded', show_countdown: false, show_progress: false },
-                            estimated_end: null,
-                            priority: 80,
-                          }} />} />
-                          <Route path="/partner" element={<MaintenanceGate page="partnership"><Partnership /></MaintenanceGate>} />
-                          <Route path="/sponsorship" element={<MaintenanceGate page="sponsorship"><Sponsorship /></MaintenanceGate>} />
-                          <Route path="/board" element={<MaintenanceGate page="board"><Board /></MaintenanceGate>} />
-                          <Route path="/programs" element={<MaintenanceGate page="programs"><Programs /></MaintenanceGate>} />
-                          {/* Program Detail — Phase 7 */}
-                          <Route path="/programs/:slug" element={<MaintenanceGate page="program_detail"><ProgramDetailPage /></MaintenanceGate>} />
-                          {/* Media Gallery — Phase 2 */}
-                          <Route path="/media" element={<MaintenanceGate page="media"><MediaPage /></MaintenanceGate>} />
-                          <Route path="/media/events/:slug" element={<MaintenanceGate page="media"><EventStoryPage /></MaintenanceGate>} />
-                          <Route path="/media/programs/:slug" element={<MaintenanceGate page="media"><ProgramGalleryPage /></MaintenanceGate>} />
-                          <Route path="/media/albums/:slug" element={<MaintenanceGate page="media"><AlbumPage /></MaintenanceGate>} />
-                          {/* Legacy full-site maintenance page (direct access) */}
-                          <Route path="/maintenance" element={<Maintenance />} />
-                          <Route path="*" element={<NotFound />} />
-                        </Routes>
-                      </main>
-                      <Footer />
-                    </MaintenanceProvider>
+                      <MaintenanceProvider>
+                        <Navbar />
+                        <MaintenanceBanner />
+                        <main className="flex-1">
+                          <Routes>
+                            <Route path="/" element={<Landing />} />
+                            <Route path="/donate" element={<Donate />} />
+                            <Route path="/bank-details" element={<BankDetails />} />
+                            <Route path="/legacy-giving" element={<LegacyGiving />} />
+                            <Route path="/volunteer" element={<Volunteer />} />
+                            <Route path="/partner" element={<Partnership />} />
+                            <Route path="/sponsorship" element={<Sponsorship />} />
+                            <Route path="/board" element={<Board />} />
+                            <Route path="/programs" element={<Programs />} />
+                            <Route path="/programs/:slug" element={<ProgramDetailPage />} />
+                            <Route path="/media" element={<MediaPage />} />
+                            <Route path="/media/events/:slug" element={<EventStoryPage />} />
+                            <Route path="/media/programs/:slug" element={<ProgramGalleryPage />} />
+                            <Route path="/media/albums/:slug" element={<AlbumPage />} />
+                            <Route path="/maintenance" element={<Maintenance />} />
+                            <Route path="*" element={<NotFound />} />
+                          </Routes>
+                        </main>
+                        <Footer />
+                      </MaintenanceProvider>
                     </MaintenanceErrorBoundary>
                   }
                 />

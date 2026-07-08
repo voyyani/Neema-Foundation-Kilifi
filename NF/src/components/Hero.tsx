@@ -852,7 +852,7 @@ const Hero = () => {
   const heroBadge       = siteSettings?.brand_name || 'Neema Foundation Kilifi';
 
   const heroStats = [
-    { label: 'Beneficiaries', value: '62,000+' },
+    { label: 'Beneficiaries', value: '10,000+' },
     { label: 'Programs',      value: '4 Active' },
     { label: 'Est.',          value: '2020' },
   ];

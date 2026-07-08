@@ -139,7 +139,7 @@ const Board: React.FC = () => {
             <div className="flex flex-wrap gap-8 md:gap-12 mt-12">
               {[
                 { value: '2020', label: 'Founded' },
-                { value: '62,000+', label: 'Lives Touched' },
+                { value: '10,000+', label: 'Lives Touched' },
                 { value: '4', label: 'Active Programs' },
                 { value: 'Ganze', label: 'Based in' },
               ].map((stat) => (

@@ -23,9 +23,9 @@ const CURRENT_YEAR = new Date().getFullYear();
 const QUICK_LINKS = [
   { label: 'Donate', to: '/donate' },
   { label: 'Volunteer', to: '/volunteer' },
-  { label: 'Partner With Us', to: '/contact' },
+  { label: 'Partner With Us', to: '/partner' },
   { label: 'Media Gallery', to: '/media' },
-  { label: 'Board of Directors', to: '/about#board' },
+
 ] as const;
 
 // Sub-components
