@@ -184,7 +184,7 @@ const Donate: React.FC = () => {
             {/* Impact stats */}
             <div className="flex flex-wrap gap-8 md:gap-12 mt-12">
               {[
-                { value: '62,000+', label: 'Lives Touched' },
+                { value: '10,000+', label: 'Lives Touched' },
                 { value: '4', label: 'Active Programs' },
                 { value: '2020', label: 'Est.' },
               ].map((stat) => (
