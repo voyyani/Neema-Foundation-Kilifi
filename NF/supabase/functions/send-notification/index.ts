@@ -18,14 +18,20 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import {
+  escapeDeep,
+  corsHeadersFor,
+  isOriginAllowed,
+  clientIp,
+  checkRateLimit,
+  verifyTurnstile,
+  checkFieldLimits,
+} from '../_shared/security.ts';
 
 // ─── CORS ────────────────────────────────────────────────────────────────────
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
+// Default headers; the handler narrows these to the caller's origin per request.
+let corsHeaders: Record<string, string> = corsHeadersFor(null);
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -414,6 +420,9 @@ type Payload = ContactPayload | PartnershipPayload | VolunteerPayload;
 // ─── Main handler ─────────────────────────────────────────────────────────────
 
 serve(async (req: Request) => {
+  const origin = req.headers.get('origin');
+  corsHeaders = corsHeadersFor(origin);
+
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -422,11 +431,25 @@ serve(async (req: Request) => {
     return json({ error: 'Method not allowed' }, 405);
   }
 
+  // ── Origin allowlist ───────────────────────────────────────────────────────
+  if (!isOriginAllowed(origin)) {
+    console.warn('[send-notification] blocked origin:', origin);
+    return json({ error: 'Forbidden' }, 403);
+  }
+
   let payload: Payload;
   try {
     payload = await req.json();
   } catch {
     return json({ error: 'Invalid JSON body' }, 400);
+  }
+
+  // ── Honeypot: a hidden field that only bots fill in ────────────────────────
+  const asRecord = payload as unknown as Record<string, unknown>;
+  if (typeof asRecord.website === 'string' && asRecord.website.trim() !== '') {
+    console.warn('[send-notification] honeypot triggered');
+    // Report success so the bot never learns it was caught.
+    return json({ success: true }, 200);
   }
 
   // ── Basic validation ────────────────────────────────────────────────────────
@@ -439,6 +462,28 @@ serve(async (req: Request) => {
     return json({ error: `Invalid type. Must be one of: ${validTypes.join(', ')}` }, 400);
   }
 
+  // ── Field length caps ──────────────────────────────────────────────────────
+  const limitError = checkFieldLimits(asRecord);
+  if (limitError) {
+    return json({ error: limitError }, 400);
+  }
+
+  // ── Email shape ────────────────────────────────────────────────────────────
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email.trim())) {
+    return json({ error: 'Please provide a valid email address.' }, 400);
+  }
+
+  const ip = clientIp(req);
+
+  // ── Turnstile (skipped until TURNSTILE_SECRET_KEY is set) ──────────────────
+  const okCaptcha = await verifyTurnstile(
+    typeof asRecord.turnstileToken === 'string' ? asRecord.turnstileToken : undefined,
+    ip,
+  );
+  if (!okCaptcha) {
+    return json({ error: 'Captcha verification failed. Please try again.' }, 403);
+  }
+
   const toEmail =
     Deno.env.get('NOTIFICATION_TO_EMAIL') ?? 'neemafoundationkilifi@gmail.com';
 
@@ -447,6 +492,17 @@ serve(async (req: Request) => {
     Deno.env.get('SUPABASE_URL') ?? '',
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
   );
+
+  // ── Rate limit: 3/hour, 20/day per client ──────────────────────────────────
+  const allowed = await checkRateLimit(supabase, `notify:${ip}`, 3, 20);
+  if (!allowed) {
+    console.warn('[send-notification] rate limited:', ip);
+    return json({ error: 'Too many submissions. Please try again later.' }, 429);
+  }
+
+  // Escaped clone used ONLY for rendering email HTML. Database inserts below
+  // keep using the raw `payload`, so stored data is never entity-encoded.
+  const safe = escapeDeep(payload);
 
   try {
     let recordId: string | null = null;
@@ -472,8 +528,8 @@ serve(async (req: Request) => {
 
       await sendEmail({
         to: toEmail,
-        subject: `[NF] New Contact Message — ${payload.subject || 'General'} from ${payload.name}`,
-        html: contactAdminEmail(payload),
+        subject: `[NF] New Contact Message — ${safe.subject || 'General'} from ${safe.name}`,
+        html: contactAdminEmail(safe),
         replyTo: payload.email,
       });
     }
@@ -500,8 +556,8 @@ serve(async (req: Request) => {
 
       await sendEmail({
         to: toEmail,
-        subject: `[NF] Partnership Inquiry — ${payload.partnershipType ?? 'General'} from ${payload.organization || payload.name}`,
-        html: partnershipAdminEmail(payload),
+        subject: `[NF] Partnership Inquiry — ${safe.partnershipType ?? 'General'} from ${safe.organization || safe.name}`,
+        html: partnershipAdminEmail(safe),
         replyTo: payload.email,
       });
     }
@@ -529,8 +585,8 @@ serve(async (req: Request) => {
       // Email admin
       await sendEmail({
         to: toEmail,
-        subject: `[NF] New Volunteer Application — ${payload.name} (${(payload.rolePreferences ?? []).join(', ') || 'unspecified roles'})`,
-        html: volunteerAdminEmail(payload),
+        subject: `[NF] New Volunteer Application — ${safe.name} (${(safe.rolePreferences ?? []).join(', ') || 'unspecified roles'})`,
+        html: volunteerAdminEmail(safe),
         replyTo: payload.email,
       });
 
@@ -538,7 +594,7 @@ serve(async (req: Request) => {
       await sendEmail({
         to: payload.email,
         subject: `We received your application — Neema Foundation Kilifi`,
-        html: volunteerConfirmationEmail(payload),
+        html: volunteerConfirmationEmail(safe),
       });
     }
 

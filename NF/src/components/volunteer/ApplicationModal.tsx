@@ -71,6 +71,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, roles, onCl
   const [form, setForm] = useState<FormState>(initialForm);
   const [stepError, setStepError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [honeypot, setHoneypot] = useState('');
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
 
@@ -136,6 +137,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, roles, onCl
     try {
       const { error: fnError } = await supabase.functions.invoke('send-notification', {
         body: {
+          website: honeypot,
           type: 'volunteer',
           name: form.name.trim(),
           email: form.email.trim().toLowerCase(),
@@ -272,6 +274,18 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, roles, onCl
                     <span>{stepError}</span>
                   </motion.div>
                 )}
+
+                {/* Honeypot — hidden from humans, filled by bots. Do not remove. */}
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                  style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }}
+                />
 
                 {/* Step content */}
                 <AnimatePresence mode="wait">

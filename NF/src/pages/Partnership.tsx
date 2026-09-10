@@ -175,6 +175,7 @@ const Partnership: React.FC = () => {
   const [formLoading, setFormLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [formSent, setFormSent] = useState(false);
+  const [honeypot, setHoneypot] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -183,6 +184,7 @@ const Partnership: React.FC = () => {
     try {
       const { error: fnError } = await supabase.functions.invoke('send-notification', {
         body: {
+          website: honeypot,
           type: 'partnership',
           name: formData.name,
           email: formData.email,
@@ -718,6 +720,18 @@ const Partnership: React.FC = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Honeypot — hidden from humans, filled by bots. Do not remove. */}
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }}
+              />
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
                     <label
