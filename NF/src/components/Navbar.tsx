@@ -47,7 +47,7 @@ const Logo: React.FC<{ onClick: () => void }> = ({ onClick }) => (
     <Link to="/" onClick={onClick} aria-label="Neema Foundation Home">
       <div className="relative">
         <img 
-          src="https://res.cloudinary.com/dzqdxosk2/image/upload/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png" 
+          src="https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_128,c_limit/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png" 
           alt="Neema Foundation Logo" 
           className="h-12 w-12 sm:h-14 sm:w-14 transition-all duration-300 group-hover:scale-110"
           loading="eager"

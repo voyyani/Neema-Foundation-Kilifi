@@ -22,10 +22,10 @@ export const mainPrograms: Program[] = [
     ],
     color: 'red',
     images: [
-      'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760971000/ahoho-children_placeholder.jpg',
-      'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760971001/ahoho-feeding_placeholder.jpg',
-      'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760971004/ahoho-education_placeholder.jpg',
-      'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760971005/sports-day_placeholder.jpg'
+      'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760971000/ahoho-children_placeholder.jpg',
+      'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760971001/ahoho-feeding_placeholder.jpg',
+      'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760971004/ahoho-education_placeholder.jpg',
+      'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760971005/sports-day_placeholder.jpg'
     ],
     status: 'active',
     impactMetrics: {
@@ -42,7 +42,7 @@ export const mainPrograms: Program[] = [
         time: '10:00 AM - 03:30 PM',
         location: 'Neema Foundation Grounds',
         description: 'A full day of sports competitions, talent displays, and fun activities for all Ahoho Mission children. Featuring foo',
-        image: 'https://res.cloudinary.com/dzqdxosk2/image/upload/v1762525573/WhatsApp_Image_2025-11-07_at_9.25.48_AM_o9nnye.jpg',
+        image: 'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1762525573/WhatsApp_Image_2025-11-07_at_9.25.48_AM_o9nnye.jpg',
         maxAttendees: 700,
         currentAttendees: 450,
         status: 'upcoming'
@@ -83,10 +83,10 @@ export const mainPrograms: Program[] = [
     ],
     color: 'green',
     images: [
-      'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760971002/widows-empowerment_placeholder.jpg',
-      'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760971003/widows-farming_placeholder.jpg',
-      'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760971006/widows-fellowship_placeholder.jpg',
-      'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760971007/business-workshop_placeholder.jpg'
+      'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760971002/widows-empowerment_placeholder.jpg',
+      'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760971003/widows-farming_placeholder.jpg',
+      'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760971006/widows-fellowship_placeholder.jpg',
+      'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760971007/business-workshop_placeholder.jpg'
     ],
     status: 'active',
     impactMetrics: {
@@ -103,7 +103,7 @@ export const mainPrograms: Program[] = [
         time: '09:00 AM - 01:00 PM',
         location: 'Neema Foundation Community Hall',
         description: 'Comprehensive training session on business management, financial literacy, savings strategies, and marketing for widows involved in small business projects.',
-        image: 'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760971007/business-workshop_placeholder.jpg',
+        image: 'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760971007/business-workshop_placeholder.jpg',
         maxAttendees: 60,
         currentAttendees: 42,
         status: 'upcoming'

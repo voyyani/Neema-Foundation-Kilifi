@@ -145,7 +145,7 @@ const Footer: React.FC = () => {
             {/* Logo + Brand */}
             <div className="flex items-center gap-3 mb-4">
               <img
-                src="https://res.cloudinary.com/dzqdxosk2/image/upload/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png"
+                src="https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_128,c_limit/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png"
                 alt="Neema Foundation Kilifi Logo"
                 className="h-12 w-12 opacity-90"
                 loading="lazy"

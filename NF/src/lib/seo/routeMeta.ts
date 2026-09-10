@@ -14,8 +14,12 @@ export const SITE_ORIGIN = 'https://neemafoundationkilifi.org';
 export const SITE_NAME = 'Neema Foundation Kilifi';
 export const TWITTER_HANDLE = '@NeemaFoundation';
 
+/**
+ * Padded to the 1200x630 declared in og:image:width/height. The source asset
+ * is a square logo; without c_pad, social platforms crop it awkwardly.
+ */
 export const DEFAULT_OG_IMAGE =
-  'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png';
+  'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,h_630,c_pad,b_white/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png';
 
 export interface RouteMeta {
   /** Path with a leading slash and no trailing slash (except '/'). */

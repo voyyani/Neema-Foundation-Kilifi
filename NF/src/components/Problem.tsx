@@ -23,8 +23,8 @@ const Problem: React.FC = () => {
           'Average family income: Less than $2 per day'
         ],
         images: [
-          'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760970000/ganze-children_hunger_placeholder.jpg',
-          'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760970001/ganze-food-distribution_placeholder.jpg'
+          'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760970000/ganze-children_hunger_placeholder.jpg',
+          'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760970001/ganze-food-distribution_placeholder.jpg'
         ],
         video: 'https://example.com/ganze-hunger-documentary', // Placeholder
         impact: 'Children struggle to learn, face developmental delays, and lack energy for daily activities',
@@ -47,8 +47,8 @@ const Problem: React.FC = () => {
           'Nearest hospital: 2+ hours travel for most families'
         ],
         images: [
-          'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760970002/ganze-health-clinic_placeholder.jpg',
-          'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760970003/ganze-community-health_placeholder.jpg'
+          'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760970002/ganze-health-clinic_placeholder.jpg',
+          'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760970003/ganze-community-health_placeholder.jpg'
         ],
         video: 'https://example.com/ganze-healthcare-documentary',
         impact: 'Preventable diseases become life-threatening, women risk death during childbirth, children miss vaccinations',
@@ -71,8 +71,8 @@ const Problem: React.FC = () => {
           'Limited access to land ownership and resources'
         ],
         images: [
-          'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760970004/ganze-widows-community_placeholder.jpg',
-          'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760970005/ganze-widows-empowerment_placeholder.jpg'
+          'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760970004/ganze-widows-community_placeholder.jpg',
+          'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760970005/ganze-widows-empowerment_placeholder.jpg'
         ],
         video: 'https://example.com/ganze-widows-documentary',
         impact: 'Intergenerational poverty, children pulled from school, mental health challenges',
@@ -95,8 +95,8 @@ const Problem: React.FC = () => {
           'Limited access to books and educational technology'
         ],
         images: [
-          'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760970006/ganze-school-classroom_placeholder.jpg',
-          'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760970007/ganze-children-learning_placeholder.jpg'
+          'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760970006/ganze-school-classroom_placeholder.jpg',
+          'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760970007/ganze-children-learning_placeholder.jpg'
         ],
         video: 'https://example.com/ganze-education-documentary',
         impact: 'Low literacy rates, limited future opportunities, perpetuation of poverty cycle',
@@ -119,8 +119,8 @@ const Problem: React.FC = () => {
           'High incidence of waterborne diseases like cholera and typhoid'
         ],
         images: [
-          'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760970008/ganze-water-collection_placeholder.jpg',
-          'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760970009/ganze-water-source_placeholder.jpg'
+          'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760970008/ganze-water-collection_placeholder.jpg',
+          'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760970009/ganze-water-source_placeholder.jpg'
         ],
         video: 'https://example.com/ganze-water-documentary',
         impact: 'Children miss school, waterborne diseases spread, economic productivity lost',
@@ -143,8 +143,8 @@ const Problem: React.FC = () => {
           'High rates of substance abuse among unemployed youth'
         ],
         images: [
-          'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760970010/ganze-youth-community_placeholder.jpg',
-          'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760970011/ganze-youth-sports_placeholder.jpg'
+          'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760970010/ganze-youth-community_placeholder.jpg',
+          'https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_1200,c_limit/v1760970011/ganze-youth-sports_placeholder.jpg'
         ],
         video: 'https://example.com/ganze-youth-documentary',
         impact: 'Brain drain, social unrest, wasted potential, mental health crises',
