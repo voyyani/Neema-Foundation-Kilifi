@@ -1,5 +1,7 @@
 // pages/Landing.tsx
 import React from 'react';
+import Seo from '../lib/seo/Seo';
+import { getRouteMeta } from '../lib/seo/routeMeta';
 import Hero from '../components/Hero';
 import TrustBar from '../components/TrustBar';
 import Mission from '../components/Mission';
@@ -14,6 +16,7 @@ import { MaintenanceGate } from '../components/maintenance';
 const Landing: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
+      <Seo meta={getRouteMeta('/')!} />
       {/* Dark fullscreen hero */}
       <MaintenanceGate page="landing" section="hero">
         <Hero />

@@ -1,5 +1,7 @@
 // src/pages/Volunteer.tsx - FIXED IMPORT STRUCTURE
 import React, { useState, useCallback } from 'react';
+import Seo from '../lib/seo/Seo';
+import { getRouteMeta } from '../lib/seo/routeMeta';
 import { 
   Users, Clock, Calendar, GraduationCap, Heart, Map, 
   FileText, Laptop, Star, Award, CheckCircle
@@ -166,6 +168,7 @@ const Volunteer: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col w-full overflow-x-hidden">
+      <Seo meta={getRouteMeta('/volunteer')!} />
       <VolunteerHero 
         stats={volunteerStats} 
         onOpenModal={openApplicationModal} 

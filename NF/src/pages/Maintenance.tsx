@@ -1,5 +1,7 @@
 // Maintenance.tsx
 import React, { useState, useEffect } from 'react';
+import Seo from '../lib/seo/Seo';
+import { getRouteMeta } from '../lib/seo/routeMeta';
 import { motion } from 'framer-motion';
 import { Wrench, Clock, Mail, Heart, ArrowLeft, CheckCircle2, AlertCircle, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -111,6 +113,7 @@ const MAINTENANCE_START_TIME = new Date('2026-02-02T08:00:00+03:00').getTime();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-red-50/30 flex flex-col w-full overflow-x-hidden">
+      <Seo meta={getRouteMeta('/maintenance')!} />
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center w-full py-8 md:py-12">
         <div className="w-full flex justify-center">

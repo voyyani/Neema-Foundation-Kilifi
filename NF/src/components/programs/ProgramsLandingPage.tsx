@@ -1,5 +1,7 @@
 // ProgramsLandingPage.tsx
 import React, { useState, useMemo, useEffect, useRef } from 'react';
+import Seo from '../../lib/seo/Seo';
+import { getRouteMeta } from '../../lib/seo/routeMeta';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { 
@@ -231,6 +233,7 @@ const ProgramsLandingPage: React.FC = () => {
 
   return (
     <ErrorBoundary>
+      <Seo meta={getRouteMeta('/programs')!} />
       <div className="min-h-screen bg-gray-50 pt-20">
         {/* Phase 4 — Immersive rotating hero */}
         <ProgramsHero

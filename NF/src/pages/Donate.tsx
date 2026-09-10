@@ -1,5 +1,7 @@
 // src/pages/Donate.tsx
 import React from 'react';
+import Seo from '../lib/seo/Seo';
+import { getRouteMeta } from '../lib/seo/routeMeta';
 import { Link } from 'react-router-dom';
 import {
   Heart,
@@ -154,6 +156,7 @@ const Donate: React.FC = () => {
 
   return (
     <>
+      <Seo meta={getRouteMeta('/donate')!} />
       {/* ── Hero – dark ── */}
       <section className="relative bg-gray-950 pt-32 pb-20 overflow-hidden w-full">
         <div className="absolute left-0 top-0 h-full w-1 bg-[#B01C2E]" aria-hidden="true" />

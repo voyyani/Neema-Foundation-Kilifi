@@ -2,6 +2,8 @@
 // Phase 7 — live data from Supabase `bank_details_public` view.
 // Backwards-compatible: degrades cleanly when no records are published yet.
 import React, { useState } from 'react';
+import Seo from '../lib/seo/Seo';
+import { getRouteMeta } from '../lib/seo/routeMeta';
 import { Link } from 'react-router-dom';
 import {
   Copy,
@@ -239,6 +241,7 @@ const BankDetails: React.FC = () => {
 
   return (
     <>
+      <Seo meta={getRouteMeta('/bank-details')!} />
       {/* ── Hero – dark ── */}
       <section className="relative bg-gray-950 pt-32 pb-20 overflow-hidden w-full">
         <div className="absolute left-0 top-0 h-full w-1 bg-[#B01C2E]" aria-hidden="true" />
