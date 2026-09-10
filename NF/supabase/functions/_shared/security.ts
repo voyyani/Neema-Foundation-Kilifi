@@ -90,8 +90,11 @@ async function sha256(input: string): Promise<string> {
 
 // ─── Rate limiting ────────────────────────────────────────────────────────────
 
-// deno-lint-ignore no-explicit-any
-type Db = { rpc: (fn: string, args: Record<string, unknown>) => Promise<any> };
+/** Minimal structural shape of the Supabase client's `rpc` method. */
+type RpcResult = { data: unknown; error: unknown };
+type Db = {
+  rpc: (fn: string, args: Record<string, unknown>) => PromiseLike<RpcResult>;
+};
 
 /**
  * Hourly + daily counters. Returns true when the request is allowed.
