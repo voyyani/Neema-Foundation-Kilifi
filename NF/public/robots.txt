@@ -1,0 +1,12 @@
+# Neema Foundation Kilifi
+User-agent: *
+Allow: /
+
+# Admin portal — never indexed
+Disallow: /admin
+Disallow: /admin/
+
+# Maintenance placeholder
+Disallow: /maintenance
+
+Sitemap: https://neemafoundationkilifi.org/sitemap.xml
