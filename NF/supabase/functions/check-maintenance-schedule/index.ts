@@ -297,6 +297,17 @@ async function sendNotificationEmail(
 // ─── Main Handler ────────────────────────────────────────────────────────────
 
 serve(async (req: Request) => {
+  // ── Caller authentication (Phase 0.3 — docs/AUDIT.md §4.2) ────────────────
+  // Skipped when CRON_SECRET is unset, so this deploys safely ahead of ops.
+  const cronSecret = Deno.env.get('CRON_SECRET');
+  if (cronSecret && req.headers.get('x-cron-secret') !== cronSecret) {
+    console.warn('[check-maintenance-schedule] rejected unauthenticated call');
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
