@@ -95,7 +95,7 @@ export default function RichTextEditor({
   const exitSourceMode = () => {
     // Parse the raw HTML back into Tiptap and notify parent
     const trimmed = sourceHtml.trim();
-    editor.commands.setContent(trimmed || '', false);
+    editor.commands.setContent(trimmed || '', { emitUpdate: false });
     onChangeRef.current(trimmed);
     setSourceMode(false);
   };

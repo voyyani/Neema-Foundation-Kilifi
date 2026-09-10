@@ -528,7 +528,7 @@ export default function RuleForm({
         </div>
 
         <div className="flex items-center gap-3">
-          {step === 'preview' || (step !== 'preview' && currentStepIndex === STEPS.length - 1) ? (
+          {currentStepIndex === STEPS.length - 1 ? (
             <>
               {/* Save as Draft */}
               <button

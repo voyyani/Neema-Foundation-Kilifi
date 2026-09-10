@@ -203,11 +203,25 @@ export function useMaintenanceLatestStatuses(ruleIds: string[]): {
       if (!ruleIds.length) return new Map<string, RuleLatestStatus>();
 
       // Fetch latest status update per rule using DISTINCT ON
-      const { data, error } = await supabase
+      // `.from()` resolves to `never` until types.ts is regenerated against the
+      // live database (see the note in src/lib/supabase/types.ts). Describe the
+      // selected columns explicitly so the loop below is genuinely type-checked.
+      type StatusUpdateRow = {
+        rule_id: string;
+        title: string;
+        progress_pct: number | null;
+        status_type: string | null;
+        created_at: string;
+      };
+
+      const { data, error } = (await supabase
         .from('maintenance_status_updates')
         .select('rule_id, title, progress_pct, status_type, created_at')
         .in('rule_id', ruleIds)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })) as unknown as {
+        data: StatusUpdateRow[] | null;
+        error: { message: string } | null;
+      };
 
       if (error) {
         console.error('[LatestStatuses] Failed to fetch:', error);

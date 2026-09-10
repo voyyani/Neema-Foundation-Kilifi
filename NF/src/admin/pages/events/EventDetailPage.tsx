@@ -20,7 +20,7 @@ export default function EventDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   // Inject event title into breadcrumb trail (Phase 3 — BUG-08)
-  useBreadcrumbEntity(event?.title);
+  useBreadcrumbEntity(event?.name);
 
   useEffect(() => {
     async function loadEvent() {

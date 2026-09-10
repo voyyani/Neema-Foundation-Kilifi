@@ -25,7 +25,7 @@ vi.mock('framer-motion', async () => {
                   !['initial', 'animate', 'exit', 'transition', 'variants', 'whileHover', 'whileTap', 'whileInView', 'layout'].includes(key),
               ),
             );
-            const Tag = prop as keyof JSX.IntrinsicElements;
+            const Tag = prop as keyof React.JSX.IntrinsicElements;
             return <Tag {...(filtered as Record<string, unknown>)}>{children}</Tag>;
           };
         }

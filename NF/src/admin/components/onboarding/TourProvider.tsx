@@ -99,11 +99,19 @@ export function TourProvider({ children }: TourProviderProps) {
     const fetchTourState = async () => {
       setLoading(true);
       try {
-        const { data } = await supabase
+        // See the note in src/lib/supabase/types.ts: `.from()` is `never` until
+        // the generated types are refreshed, so name the selected columns here.
+        type OnboardingProfileRow = {
+          tours_completed: string[] | null;
+          onboarding_completed_at: string | null;
+          welcome_dismissed_at: string | null;
+        };
+
+        const { data } = (await supabase
           .from('profiles')
           .select('tours_completed, onboarding_completed_at, welcome_dismissed_at')
           .eq('id', user.id)
-          .single();
+          .single()) as unknown as { data: OnboardingProfileRow | null };
 
         const completed: string[] = data?.tours_completed ?? [];
         setCompletedTourIds(completed);
@@ -144,7 +152,7 @@ export function TourProvider({ children }: TourProviderProps) {
             ...(allComplete
               ? { onboarding_completed_at: new Date().toISOString() }
               : {}),
-          } as Record<string, unknown>)
+          } as unknown as never)
           .eq('id', user.id);
       } catch (err) {
         console.warn('[Onboarding] Could not persist tour completion:', err);
@@ -442,7 +450,7 @@ export function TourProvider({ children }: TourProviderProps) {
     if (user?.id) {
       supabase
         .from('profiles')
-        .update({ welcome_dismissed_at: new Date().toISOString() } as Record<string, unknown>)
+        .update({ welcome_dismissed_at: new Date().toISOString() } as unknown as never)
         .eq('id', user.id)
         .then(() => {});  // fire-and-forget
     }

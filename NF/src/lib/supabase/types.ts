@@ -9,6 +9,20 @@ export type Json =
 // Role type for all role references
 export type UserRoleType = 'super_admin' | 'owner' | 'admin' | 'events_manager' | 'content_manager' | 'viewer'
 
+/**
+ * NOTE (Phase 0 — docs/AUDIT.md §3.1): these tables lack the `Relationships: []`
+ * field that @supabase/postgrest-js `GenericTable` requires, so `Database` fails
+ * its constraint and every `.from()` call resolves to `never`. That is why call
+ * sites cast with `as ReturnType<typeof supabase.from>`.
+ *
+ * Do NOT add `Relationships: []` piecemeal: it makes typing real, and this file
+ * only covers 8 of the 26 tables the app queries, producing ~115 errors. The
+ * correct fix is to regenerate the whole file against the live database once the
+ * migrations are consolidated:
+ *   npx supabase gen types typescript --project-id sflwsxrihvzpbrcwhknl \
+ *     > src/lib/supabase/types.ts
+ * Tracked as Phase 6.1 in docs/ROADMAP.md.
+ */
 export interface Database {
   public: {
     Tables: {
@@ -24,6 +38,9 @@ export interface Database {
           last_login_ip: string | null
           phone_number: string | null
           organization: string | null
+          tours_completed: string[] | null
+          onboarding_completed_at: string | null
+          welcome_dismissed_at: string | null
           created_at: string
           updated_at: string
         }
@@ -38,6 +55,9 @@ export interface Database {
           last_login_ip?: string | null
           phone_number?: string | null
           organization?: string | null
+          tours_completed?: string[] | null
+          onboarding_completed_at?: string | null
+          welcome_dismissed_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -52,6 +72,9 @@ export interface Database {
           last_login_ip?: string | null
           phone_number?: string | null
           organization?: string | null
+          tours_completed?: string[] | null
+          onboarding_completed_at?: string | null
+          welcome_dismissed_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -375,6 +398,38 @@ export interface Database {
           display_order?: number
           created_at?: string
           updated_at?: string
+        }
+      }
+      maintenance_status_updates: {
+        Row: {
+          id: string
+          rule_id: string
+          title: string
+          body: string | null
+          progress_pct: number | null
+          status_type: string | null
+          created_by: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          rule_id: string
+          title: string
+          body?: string | null
+          progress_pct?: number | null
+          status_type?: string | null
+          created_by?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          rule_id?: string
+          title?: string
+          body?: string | null
+          progress_pct?: number | null
+          status_type?: string | null
+          created_by?: string | null
+          created_at?: string | null
         }
       }
     }
