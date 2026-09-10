@@ -111,7 +111,21 @@ The site is currently invisible to search engines and every shared link previews
 
 Client-rendered SPAs are invisible to Facebook, WhatsApp, X and LinkedIn, which do not execute JavaScript. Google indexes them slowly and unreliably.
 
-**Recommendation: `vite-plugin-ssr` / `vike` prerendering, or migrate to Remix.**
+> **Superseded (2026-09-10, during Phase 1 implementation).** Measured against the
+> actual code, 22 files reference `window.`, 9 reference `document.`, 5 use
+> `localStorage` and 2 use `IntersectionObserver`. A prerender pass executes every
+> component in Node, so each is a build-time crash needing an individual guard —
+> a multi-week project with real regression risk, not the ~1 week estimated here.
+>
+> Phase 1 instead generates **one static HTML document per public route at build
+> time**, substituting only the `<head>` meta block. Crawlers get correct titles,
+> descriptions and images; no React runs in Node. See
+> `docs/superpowers/plans/2026-09-10-phase-1-findable-and-fast.md`.
+>
+> Full SSR remains available if the Phase 5 donor portal needs per-request
+> rendering. It is not needed for discoverability.
+
+**Original recommendation: `vite-plugin-ssr` / `vike` prerendering, or migrate to Remix.**
 
 - **Option A — Add prerendering to the existing Vite app** (`vite-plugin-ssg` or `vike`). Lower risk, ~1 week, keeps the entire codebase. Generates static HTML at build time for all public routes, with real per-page `<title>`, `<meta>` and Open Graph tags baked into the served HTML. Dynamic routes (`/programs/:slug`, `/media/albums/:slug`) are enumerated from Supabase at build time. **Recommended — it solves the problem without disturbing 73,000 lines of working code.**
 - **Option B — Migrate to Remix or Next.js.** Better long-term for streaming, server actions and per-request data, but a multi-month migration of the entire routing layer. Not justified by current needs. Revisit only if Phase 5's donor portal demands genuine server-side rendering.

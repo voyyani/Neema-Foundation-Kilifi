@@ -239,15 +239,20 @@ The admin portal has a full stories CMS (`StoriesPage.tsx`, 725 lines). The publ
 
 Every impact story the team writes is therefore: unshareable, unlinkable, invisible to search, and pushed off the homepage by the next one. **This is the single largest wasted asset in the application** — real content is being produced into a dead end.
 
-### 6.5 🟡 Medium — analytics is a placeholder
+### 6.5 🟡 Medium — no analytics is configured
 
-`index.html` loads Google Tag Manager with the literal string `GA_MEASUREMENT_ID`:
+`index.html` carried a Google Tag Manager snippet using the literal string
+`GA_MEASUREMENT_ID`.
 
-```html
-<script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
-```
+> **Correction (2026-09-10):** an earlier revision of this audit stated that this
+> made "a live request to Google on every page load that collects nothing". That
+> was wrong — the snippet was inside an HTML comment and never executed. The dead
+> block has since been removed in Phase 1. The substantive finding is unchanged:
+> **no analytics product is configured.**
 
-This is a **live request to Google on every page load that collects nothing.** Vercel Analytics is separately installed and does work, but there is no conversion tracking — no data on how many visitors reach the donate page, start a volunteer application, or abandon it.
+Vercel Analytics is installed and does work, but there is no conversion tracking —
+no data on how many visitors reach the donate page, start a volunteer application,
+or abandon it.
 
 ### 6.6 🟡 Medium — no localisation
 
