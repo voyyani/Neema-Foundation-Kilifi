@@ -7,13 +7,7 @@ import { Toaster } from 'sonner';
 import Navbar from './components/Navbar';
 import Landing from './pages/Landing';
 import Footer from './components/Footer';
-import Donate from './pages/Donate';
-import BankDetails from './pages/BankDetails';
-import LegacyGiving from './pages/LegacyGiving';
-import Volunteer from './pages/Volunteer';
-import Partnership from './pages/Partnership';
-import Sponsorship from './pages/Sponsorship';
-import Board from './pages/Board';
+
 import { Analytics } from '@vercel/analytics/react';
 import NotFound from './pages/NotFound';
 import Maintenance from './pages/Maintenance';
@@ -25,6 +19,15 @@ import { AuthProvider } from './admin/hooks/useAuth';
 import { queryClient } from './admin/config/queryClient';
 import { lazyWithRetry } from './lib/lazyWithRetry';
 import { supabaseAdmin } from './lib/supabase/client';
+
+// Lazy load public pages — Landing stays eager as the most common entry point
+const Donate = lazyWithRetry(() => import('./pages/Donate'));
+const BankDetails = lazyWithRetry(() => import('./pages/BankDetails'));
+const LegacyGiving = lazyWithRetry(() => import('./pages/LegacyGiving'));
+const Volunteer = lazyWithRetry(() => import('./pages/Volunteer'));
+const Partnership = lazyWithRetry(() => import('./pages/Partnership'));
+const Sponsorship = lazyWithRetry(() => import('./pages/Sponsorship'));
+const Board = lazyWithRetry(() => import('./pages/Board'));
 
 // Lazy load admin routes for code splitting
 const AdminLogin = lazyWithRetry(() => import('./admin/pages/AdminLogin'));

@@ -50,7 +50,7 @@ jobs:
       # Guards the Phase 1 bundle work against regression. See docs/AUDIT.md section 5.1.
       - name: Bundle size budget
         env:
-          MAX_ENTRY_KB: '1100'
+          MAX_ENTRY_KB: '600'
         run: |
           entry=$(find dist/assets -name 'index-*.js' -printf '%s\n' | sort -rn | head -1)
           kb=$(( entry / 1024 ))

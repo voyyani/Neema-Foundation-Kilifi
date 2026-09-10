@@ -16,6 +16,20 @@ export default defineConfig({
     port: 5173,
     https: {},
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Keep large, rarely-changing vendor code in stable chunks so an
+        // application deploy does not invalidate the whole bundle.
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'motion': ['framer-motion'],
+          'supabase': ['@supabase/supabase-js'],
+          'query': ['@tanstack/react-query'],
+        },
+      },
+    },
+  },
   preview: {
     host: true,
     port: 4173,
