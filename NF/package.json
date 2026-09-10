@@ -32,7 +32,6 @@
     "@tiptap/extension-underline": "^3.18.0",
     "@tiptap/react": "^3.18.0",
     "@tiptap/starter-kit": "^3.18.0",
-    "@types/dompurify": "^3.0.5",
     "@vercel/analytics": "^1.6.1",
     "axios": "^1.13.4",
     "clsx": "^2.1.1",
@@ -49,9 +48,7 @@
     "react-hook-form": "^7.71.1",
     "react-router-dom": "^7.9.4",
     "sonner": "^2.0.7",
-    "supabase": "^2.76.17",
     "tailwind-merge": "^3.4.0",
-    "three": "^0.180.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
@@ -63,7 +60,6 @@
     "@types/node": "^24.10.9",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
-    "@types/three": "^0.180.0",
     "@vitejs/plugin-basic-ssl": "^2.1.4",
     "@vitejs/plugin-react": "^5.0.4",
     "autoprefixer": "^10.4.21",
@@ -74,6 +70,7 @@
     "happy-dom": "^20.7.0",
     "jsdom": "^28.1.0",
     "postcss": "^8.5.6",
+    "supabase": "^2.76.17",
     "tailwindcss": "3.4",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.45.0",

@@ -10,7 +10,6 @@ A modern, performant website for Neema Foundation Kilifi that drives donations, 
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=fff)](https://tailwindcss.com/)
 [![React Router](https://img.shields.io/badge/React%20Router-7-CA4245?style=for-the-badge&logo=reactrouter&logoColor=fff)](https://reactrouter.com/)
 [![Framer Motion](https://img.shields.io/badge/Framer%20Motion-12-0055FF?style=for-the-badge&logo=framer&logoColor=fff)](https://www.framer.com/motion/)
-[![Three.js](https://img.shields.io/badge/Three.js-0.180-000000?style=for-the-badge&logo=threedotjs&logoColor=fff)](https://threejs.org/)
 [![ESLint](https://img.shields.io/badge/ESLint-9-4B32C3?style=for-the-badge&logo=eslint&logoColor=fff)](https://eslint.org/)
 
 > This repository lives at `NF/` and uses Vite + React 18/19 API compatibility, TypeScript, and Tailwind 3.4.
@@ -25,7 +24,7 @@ A modern, performant website for Neema Foundation Kilifi that drives donations, 
 ## ✨ Features
 
 - Smooth-scroll navigation with a11y fallbacks
-- Animated hero (Three.js) with reduced-motion support
+- Animated hero with reduced-motion support
 - Framer Motion animations for entrances, counters, and interactions
 - Interactive Programs section with program detail subcomponents
 - Impact metrics with animated counters
@@ -42,7 +41,6 @@ See the detailed PRD at `docs/PRD.md`.
 - Tailwind CSS 3.4
 - React Router 7
 - Framer Motion 12
-- Three.js 0.180
 - ESLint 9, TypeScript ESLint
 
 ## 📦 Scripts
@@ -157,7 +155,7 @@ Tailwind version is pinned to 3.4 and configured via `tailwind.config.js`. Vite 
 
 - Routing via React Router; consider route-based code splitting with `React.lazy`
 - Animations via Framer Motion with `prefers-reduced-motion` fallbacks
-- Hero visuals with Three.js; provide static fallback for older/low-power devices
+- Hero visuals; provide static fallback for older/low-power devices
 - Content: initially static via `src/content/*` and typed via `src/types/*` (see PRD)
 
 ## ♿ Accessibility & ✅ Quality
