@@ -54,7 +54,7 @@ export default function BulkUploadPage() {
       {/* Step 1 — Album selection */}
       <div className="bg-white border border-gray-200 rounded-xl p-6">
         <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <span className="bg-[#B01C2E] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">1</span>
+          <span className="bg-brand-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">1</span>
           Select Target Album
         </h2>
 
@@ -63,7 +63,7 @@ export default function BulkUploadPage() {
           <button
             onClick={() => setMode('select')}
             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-              mode === 'select' ? 'bg-[#B01C2E] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              mode === 'select' ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
             Choose Existing
@@ -71,7 +71,7 @@ export default function BulkUploadPage() {
           <button
             onClick={() => setMode('create')}
             className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-              mode === 'create' ? 'bg-[#B01C2E] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              mode === 'create' ? 'bg-brand-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
             Create New Album
@@ -91,7 +91,7 @@ export default function BulkUploadPage() {
               <select
                 value={selectedAlbumId}
                 onChange={e => setSelectedAlbumId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent outline-none"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-600 focus:border-transparent outline-none"
               >
                 <option value="">— Select an album —</option>
                 {albums.map(a => (
@@ -119,7 +119,7 @@ export default function BulkUploadPage() {
                 </div>
                 <Link
                   to={`/admin/media/albums/${selectedAlbum.id}`}
-                  className="text-xs text-[#B01C2E] hover:underline"
+                  className="text-xs text-brand-600 hover:underline"
                 >
                   View album →
                 </Link>
@@ -138,7 +138,7 @@ export default function BulkUploadPage() {
       {selectedAlbumId && mode === 'select' && (
         <div className="bg-white border border-gray-200 rounded-xl p-6">
           <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <span className="bg-[#B01C2E] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">2</span>
+            <span className="bg-brand-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">2</span>
             Upload Photos
             {uploadedCount > 0 && (
               <span className="ml-auto text-xs text-green-600 font-normal">
@@ -159,7 +159,7 @@ export default function BulkUploadPage() {
         <div className="flex justify-end gap-3">
           <button
             onClick={() => navigate(`/admin/media/albums/${selectedAlbumId}`)}
-            className="px-4 py-2 bg-[#B01C2E] text-white text-sm font-medium rounded-lg hover:bg-[#8A1624] transition-colors"
+            className="px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-colors"
           >
             View &amp; Edit Album →
           </button>

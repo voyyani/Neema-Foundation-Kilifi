@@ -88,3 +88,6 @@ export type {
   ActiveMaintenanceRule,
   MaintenanceStatus,
 } from './useMaintenanceStatus';
+
+export { usePublicBoardMembers } from './usePublicBoardMembers';
+export type { PublicBoardMember } from './usePublicBoardMembers';

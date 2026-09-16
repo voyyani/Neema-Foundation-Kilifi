@@ -129,7 +129,7 @@ export default function AlbumCard({ album, onRefetch }: AlbumCardProps) {
         <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
           <Link
             to={`/admin/media/albums/${album.id}`}
-            className="flex-1 flex items-center justify-center gap-1.5 text-xs font-medium text-white bg-[#B01C2E] hover:bg-[#8A1624] py-1.5 rounded-lg transition-colors"
+            className="flex-1 flex items-center justify-center gap-1.5 text-xs font-medium text-white bg-brand-600 hover:bg-brand-700 py-1.5 rounded-lg transition-colors"
           >
             <Pencil className="h-3.5 w-3.5" />
             Edit
@@ -151,7 +151,7 @@ export default function AlbumCard({ album, onRefetch }: AlbumCardProps) {
             className={`p-1.5 rounded-lg transition-colors disabled:opacity-50 ${
               album.auto_synced
                 ? 'text-gray-300 cursor-not-allowed'
-                : 'text-gray-500 hover:text-red-600 hover:bg-red-50'
+                : 'text-gray-500 hover:text-danger-600 hover:bg-danger-50'
             }`}
           >
             <Trash2 className="h-4 w-4" />

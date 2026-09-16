@@ -109,7 +109,7 @@ export default function ImageItem({ item, albumId, onUpdate, onDelete }: ImageIt
           <button
             onClick={handleSetCover}
             title="Set as album cover"
-            className="p-1.5 rounded-lg bg-white/80 text-gray-700 hover:bg-[#B01C2E] hover:text-white transition-colors"
+            className="p-1.5 rounded-lg bg-white/80 text-gray-700 hover:bg-brand-600 hover:text-white transition-colors"
           >
             <ImageIcon className="h-3.5 w-3.5" />
           </button>
@@ -120,7 +120,7 @@ export default function ImageItem({ item, albumId, onUpdate, onDelete }: ImageIt
             className={`p-1.5 rounded-lg transition-colors disabled:opacity-50 ${
               isSynced
                 ? 'bg-white/40 text-gray-400 cursor-not-allowed'
-                : 'bg-white/80 text-gray-700 hover:bg-red-500 hover:text-white'
+                : 'bg-white/80 text-gray-700 hover:bg-danger-500 hover:text-white'
             }`}
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -158,20 +158,20 @@ export default function ImageItem({ item, albumId, onUpdate, onDelete }: ImageIt
               value={alt}
               onChange={e => setAlt(e.target.value)}
               placeholder="Alt text (required for accessibility)"
-              className="w-full text-xs px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-[#B01C2E] focus:border-transparent outline-none"
+              className="w-full text-xs px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-brand-600 focus:border-transparent outline-none"
             />
             <input
               type="text"
               value={caption}
               onChange={e => setCaption(e.target.value)}
               placeholder="Caption (optional)"
-              className="w-full text-xs px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-[#B01C2E] focus:border-transparent outline-none"
+              className="w-full text-xs px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-brand-600 focus:border-transparent outline-none"
             />
             <div className="flex gap-1 justify-end">
               <button onClick={() => setIsEditing(false)} className="p-1 rounded text-gray-400 hover:text-gray-600">
                 <X className="h-3.5 w-3.5" />
               </button>
-              <button onClick={saveInline} className="p-1 rounded text-[#B01C2E] hover:text-[#8A1624]">
+              <button onClick={saveInline} className="p-1 rounded text-brand-600 hover:text-brand-700">
                 <Check className="h-3.5 w-3.5" />
               </button>
             </div>

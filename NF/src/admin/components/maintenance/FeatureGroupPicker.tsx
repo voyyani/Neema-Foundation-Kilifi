@@ -71,7 +71,7 @@ export default function FeatureGroupPicker({
               whileTap={{ scale: 0.99 }}
               className={`relative flex flex-col p-4 rounded-xl border-2 text-left transition-all duration-200 ${
                 isSelected
-                  ? 'border-[#B01C2E] bg-[#B01C2E]/5 ring-1 ring-[#B01C2E]/20'
+                  ? 'border-brand-600 bg-brand-600/5 ring-1 ring-brand-600/20'
                   : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
               }`}
             >
@@ -80,7 +80,7 @@ export default function FeatureGroupPicker({
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="absolute top-3 right-3 w-5 h-5 rounded-full bg-[#B01C2E] flex items-center justify-center"
+                  className="absolute top-3 right-3 w-5 h-5 rounded-full bg-brand-600 flex items-center justify-center"
                 >
                   <Check className="h-3 w-3 text-white" />
                 </motion.div>
@@ -90,12 +90,12 @@ export default function FeatureGroupPicker({
               <div className="flex items-center gap-3 mb-3">
                 <div
                   className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    isSelected ? 'bg-[#B01C2E]/10' : 'bg-gray-100'
+                    isSelected ? 'bg-brand-600/10' : 'bg-gray-100'
                   }`}
                 >
                   <IconComponent
                     name={group.icon}
-                    className={`h-5 w-5 ${isSelected ? 'text-[#B01C2E]' : 'text-gray-500'}`}
+                    className={`h-5 w-5 ${isSelected ? 'text-brand-600' : 'text-gray-500'}`}
                   />
                 </div>
                 <div>
@@ -115,7 +115,7 @@ export default function FeatureGroupPicker({
                       key={target}
                       className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
                         isSelected
-                          ? 'bg-[#B01C2E]/10 text-[#B01C2E]'
+                          ? 'bg-brand-600/10 text-brand-600'
                           : 'bg-gray-100 text-gray-500'
                       }`}
                       title={resolveTargetLabel(target)}

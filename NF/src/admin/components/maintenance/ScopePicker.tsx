@@ -146,7 +146,7 @@ export default function ScopePicker({
               className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg
                           border transition-all duration-200 ${
                 scope === tab.value
-                  ? 'bg-[#B01C2E] text-white border-[#B01C2E] shadow-sm'
+                  ? 'bg-brand-600 text-white border-brand-600 shadow-sm'
                   : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400 hover:bg-gray-50'
               }`}
             >
@@ -190,21 +190,21 @@ export default function ScopePicker({
                 onClick={() => handleSelect('feature_group', fg.key)}
                 className={`flex items-start gap-3 p-3 rounded-xl border text-left transition-all duration-200 ${
                   isSelected('feature_group', fg.key)
-                    ? 'border-[#B01C2E] bg-[#B01C2E]/5 ring-1 ring-[#B01C2E]/20'
+                    ? 'border-brand-600 bg-brand-600/5 ring-1 ring-brand-600/20'
                     : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }`}
               >
                 <div
                   className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${
                     isSelected('feature_group', fg.key)
-                      ? 'bg-[#B01C2E]/10'
+                      ? 'bg-brand-600/10'
                       : 'bg-gray-100'
                   }`}
                 >
                   <IconComponent
                     name={fg.icon}
                     className={`h-4.5 w-4.5 ${
-                      isSelected('feature_group', fg.key) ? 'text-[#B01C2E]' : 'text-gray-500'
+                      isSelected('feature_group', fg.key) ? 'text-brand-600' : 'text-gray-500'
                     }`}
                   />
                 </div>
@@ -212,7 +212,7 @@ export default function ScopePicker({
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-medium text-gray-900">{fg.label}</span>
                     {isSelected('feature_group', fg.key) && (
-                      <Check className="h-4 w-4 text-[#B01C2E]" />
+                      <Check className="h-4 w-4 text-brand-600" />
                     )}
                   </div>
                   <p className="text-xs text-gray-500 mt-0.5">{fg.description}</p>
@@ -249,7 +249,7 @@ export default function ScopePicker({
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search pages and sections…"
               className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm
-                         focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                         focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
             />
           </div>
 
@@ -281,7 +281,7 @@ export default function ScopePicker({
                       <div
                         className={`flex items-center gap-2 px-3 py-2.5 cursor-pointer transition-colors ${
                           isPageSelected
-                            ? 'bg-[#B01C2E]/5'
+                            ? 'bg-brand-600/5'
                             : hasMatchingSections
                               ? 'bg-blue-50/50'
                               : 'hover:bg-gray-50'
@@ -321,21 +321,21 @@ export default function ScopePicker({
                           <div
                             className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
                               isPageSelected
-                                ? 'bg-[#B01C2E]/10'
+                                ? 'bg-brand-600/10'
                                 : 'bg-gray-100'
                             }`}
                           >
                             <IconComponent
                               name={page.icon}
                               className={`h-4 w-4 ${
-                                isPageSelected ? 'text-[#B01C2E]' : 'text-gray-500'
+                                isPageSelected ? 'text-brand-600' : 'text-gray-500'
                               }`}
                             />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p
                               className={`text-sm font-medium truncate ${
-                                isPageSelected ? 'text-[#B01C2E]' : 'text-gray-900'
+                                isPageSelected ? 'text-brand-600' : 'text-gray-900'
                               }`}
                             >
                               {page.label}
@@ -343,7 +343,7 @@ export default function ScopePicker({
                             <p className="text-[11px] text-gray-400 font-mono">{page.route}</p>
                           </div>
                           {isPageSelected && (
-                            <Check className="h-4 w-4 text-[#B01C2E] flex-shrink-0" />
+                            <Check className="h-4 w-4 text-brand-600 flex-shrink-0" />
                           )}
                         </button>
                       </div>
@@ -377,7 +377,7 @@ export default function ScopePicker({
                                     disabled={scope === 'component' && !hasComponents}
                                     className={`w-full flex items-center gap-2.5 pl-12 pr-3 py-2 text-left transition-colors ${
                                       isSectionSelected
-                                        ? 'bg-[#B01C2E]/5'
+                                        ? 'bg-brand-600/5'
                                         : scope === 'component' && !hasComponents
                                           ? 'opacity-40 cursor-not-allowed'
                                           : 'hover:bg-gray-100'
@@ -385,13 +385,13 @@ export default function ScopePicker({
                                   >
                                     <LayoutGrid
                                       className={`h-3.5 w-3.5 ${
-                                        isSectionSelected ? 'text-[#B01C2E]' : 'text-gray-400'
+                                        isSectionSelected ? 'text-brand-600' : 'text-gray-400'
                                       }`}
                                     />
                                     <span
                                       className={`text-sm flex-1 ${
                                         isSectionSelected
-                                          ? 'font-medium text-[#B01C2E]'
+                                          ? 'font-medium text-brand-600'
                                           : 'text-gray-700'
                                       }`}
                                     >
@@ -401,7 +401,7 @@ export default function ScopePicker({
                                       {section.component_name}
                                     </span>
                                     {isSectionSelected && (
-                                      <Check className="h-3.5 w-3.5 text-[#B01C2E]" />
+                                      <Check className="h-3.5 w-3.5 text-brand-600" />
                                     )}
                                   </button>
 
@@ -421,28 +421,28 @@ export default function ScopePicker({
                                           }
                                           className={`w-full flex items-center gap-2.5 pl-20 pr-3 py-1.5 text-left transition-colors ${
                                             isCompSelected
-                                              ? 'bg-[#B01C2E]/5'
+                                              ? 'bg-brand-600/5'
                                               : 'hover:bg-gray-100'
                                           }`}
                                         >
                                           <Box
                                             className={`h-3 w-3 ${
                                               isCompSelected
-                                                ? 'text-[#B01C2E]'
+                                                ? 'text-brand-600'
                                                 : 'text-gray-300'
                                             }`}
                                           />
                                           <span
                                             className={`text-xs ${
                                               isCompSelected
-                                                ? 'font-medium text-[#B01C2E]'
+                                                ? 'font-medium text-brand-600'
                                                 : 'text-gray-600'
                                             }`}
                                           >
                                             {comp.label}
                                           </span>
                                           {isCompSelected && (
-                                            <Check className="h-3 w-3 text-[#B01C2E]" />
+                                            <Check className="h-3 w-3 text-brand-600" />
                                           )}
                                         </button>
                                       );
@@ -465,7 +465,7 @@ export default function ScopePicker({
             <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
               <MapPin className="h-3.5 w-3.5 text-gray-400" />
               <span className="text-xs text-gray-500">Selected:</span>
-              <code className="text-xs font-mono text-[#B01C2E] bg-[#B01C2E]/5 px-2 py-0.5 rounded">
+              <code className="text-xs font-mono text-brand-600 bg-brand-600/5 px-2 py-0.5 rounded">
                 {targetKey}
               </code>
             </div>

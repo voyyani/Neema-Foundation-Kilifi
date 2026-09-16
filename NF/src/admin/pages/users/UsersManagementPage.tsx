@@ -90,7 +90,7 @@ const RoleBadge: React.FC<{ role: UserRole }> = ({ role }) => {
   const roleInfo = ROLE_DEFINITIONS[role] || ROLE_DEFINITIONS.viewer;
   
   const colorClasses: Record<string, string> = {
-    red: 'bg-red-100 text-red-800 border-red-200',
+    red: 'bg-danger-100 text-danger-800 border-danger-200',
     purple: 'bg-purple-100 text-purple-800 border-purple-200',
     blue: 'bg-blue-100 text-blue-800 border-blue-200',
     green: 'bg-green-100 text-green-800 border-green-200',
@@ -118,11 +118,11 @@ const StatusBadge: React.FC<{ isActive: boolean }> = ({ isActive }) => (
     'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
     isActive 
       ? 'bg-green-100 text-green-800' 
-      : 'bg-red-100 text-red-800'
+      : 'bg-danger-100 text-danger-800'
   )}>
     <span className={clsx(
       'w-1.5 h-1.5 rounded-full mr-1.5',
-      isActive ? 'bg-green-500' : 'bg-red-500'
+      isActive ? 'bg-green-500' : 'bg-danger-500'
     )} />
     {isActive ? 'Active' : 'Inactive'}
   </span>
@@ -156,7 +156,7 @@ const UserAvatar: React.FC<{ user: ProfileData; size?: 'sm' | 'md' | 'lg' }> = (
 
   return (
     <div className={clsx(
-      'rounded-full bg-gradient-to-br from-[#B01C2E] to-[#8A1624] flex items-center justify-center text-white font-semibold',
+      'rounded-full bg-gradient-to-br from-brand-600 to-brand-700 flex items-center justify-center text-white font-semibold',
       sizeClasses[size]
     )}>
       {initial}
@@ -250,7 +250,7 @@ const RoleChangeModal: React.FC<RoleChangeModalProps> = ({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#B01C2E] to-[#8A1624] px-6 py-4">
+        <div className="bg-gradient-to-r from-brand-600 to-brand-700 px-6 py-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-white">Edit User</h3>
             <button
@@ -287,7 +287,7 @@ const RoleChangeModal: React.FC<RoleChangeModalProps> = ({
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="Enter user's full name"
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-[#B01C2E] focus:ring-[#B01C2E]"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-brand-600 focus:ring-brand-600"
             />
             <p className="mt-1 text-xs text-gray-500">
               This name will be displayed on the dashboard welcome message
@@ -301,7 +301,7 @@ const RoleChangeModal: React.FC<RoleChangeModalProps> = ({
             <select
               value={selectedRole}
               onChange={(e) => setSelectedRole(e.target.value as UserRole)}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-[#B01C2E] focus:ring-[#B01C2E]"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-brand-600 focus:ring-brand-600"
               required
             >
               <option value="">Select a role...</option>
@@ -326,7 +326,7 @@ const RoleChangeModal: React.FC<RoleChangeModalProps> = ({
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="E.g., Promoted to manage events, Role restructure, etc."
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-[#B01C2E] focus:ring-[#B01C2E]"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-brand-600 focus:ring-brand-600"
               rows={3}
             />
           </div>
@@ -342,7 +342,7 @@ const RoleChangeModal: React.FC<RoleChangeModalProps> = ({
             <button
               type="submit"
               disabled={loading || !hasChanges}
-              className="px-4 py-2 text-sm font-medium text-white bg-[#B01C2E] rounded-lg hover:bg-[#8A1624] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? 'Saving...' : 'Save Changes'}
             </button>
@@ -395,7 +395,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#B01C2E] to-[#8A1624] px-6 py-4">
+        <div className="bg-gradient-to-r from-brand-600 to-brand-700 px-6 py-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-white">Invite New User</h3>
             <button
@@ -418,7 +418,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="user@example.com"
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-[#B01C2E] focus:ring-[#B01C2E]"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-brand-600 focus:ring-brand-600"
               required
             />
           </div>
@@ -432,7 +432,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="John Doe"
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-[#B01C2E] focus:ring-[#B01C2E]"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-brand-600 focus:ring-brand-600"
             />
           </div>
 
@@ -443,7 +443,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as UserRole)}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-[#B01C2E] focus:ring-[#B01C2E]"
+              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-brand-600 focus:ring-brand-600"
               required
             >
               <option value="">Select a role...</option>
@@ -460,8 +460,8 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({
             )}
           </div>
 
-          <div className="bg-[#B01C2E]/10 border border-[#B01C2E]/20 rounded-lg p-3">
-            <p className="text-sm text-[#B01C2E]">
+          <div className="bg-brand-600/10 border border-brand-600/20 rounded-lg p-3">
+            <p className="text-sm text-brand-600">
               <strong>Note:</strong> An invitation email will be sent to the user with instructions to set up their password.
             </p>
           </div>
@@ -477,7 +477,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({
             <button
               type="submit"
               disabled={loading || !email || !role}
-              className="px-4 py-2 text-sm font-medium text-white bg-[#B01C2E] rounded-lg hover:bg-[#8A1624] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? 'Sending...' : 'Send Invitation'}
             </button>
@@ -511,7 +511,7 @@ const UserRow: React.FC<UserRowProps> = ({
   return (
     <tr className={clsx(
       'hover:bg-gray-50 transition-colors',
-      isCurrentUser && 'bg-[#B01C2E]/5'
+      isCurrentUser && 'bg-brand-600/5'
     )}>
       {/* User */}
       <td className="px-6 py-4 whitespace-nowrap">
@@ -523,7 +523,7 @@ const UserRow: React.FC<UserRowProps> = ({
                 {user.full_name || 'Unknown User'}
               </p>
               {isCurrentUser && (
-                <span className="ml-2 px-2 py-0.5 text-xs bg-[#B01C2E]/10 text-[#B01C2E] rounded-full">
+                <span className="ml-2 px-2 py-0.5 text-xs bg-brand-600/10 text-brand-600 rounded-full">
                   You
                 </span>
               )}
@@ -565,7 +565,7 @@ const UserRow: React.FC<UserRowProps> = ({
           <div className="flex items-center justify-end space-x-2">
             <button
               onClick={() => onRoleChange(user)}
-              className="text-[#B01C2E] hover:text-[#8A1624] font-medium transition-colors"
+              className="text-brand-600 hover:text-brand-700 font-medium transition-colors"
             >
               Change Role
             </button>
@@ -573,7 +573,7 @@ const UserRow: React.FC<UserRowProps> = ({
             {user.is_active ? (
               <button
                 onClick={() => onToggleStatus(user.id, false)}
-                className="text-red-600 hover:text-red-900 font-medium transition-colors"
+                className="text-danger-600 hover:text-danger-900 font-medium transition-colors"
               >
                 Deactivate
               </button>
@@ -782,7 +782,7 @@ const UsersManagementPage: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-danger-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <ShieldIcon />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
@@ -818,7 +818,7 @@ const UsersManagementPage: React.FC = () => {
               <button
                 onClick={() => setShowInviteModal(true)}
                 data-tour="users-invite-btn"
-                className="inline-flex items-center px-4 py-2 bg-[#B01C2E] text-white rounded-lg text-sm font-medium hover:bg-[#8A1624] transition-colors shadow-sm"
+                className="inline-flex items-center px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors shadow-sm"
               >
                 <UserPlusIcon />
                 <span className="ml-2">Invite User</span>
@@ -839,11 +839,11 @@ const UsersManagementPage: React.FC = () => {
           </div>
           <div className="bg-white rounded-xl p-4 shadow-sm border">
             <p className="text-sm font-medium text-gray-500">Inactive</p>
-            <p className="text-2xl font-bold text-red-600 mt-1">{stats.inactive}</p>
+            <p className="text-2xl font-bold text-danger-600 mt-1">{stats.inactive}</p>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-sm border">
             <p className="text-sm font-medium text-gray-500">Admins</p>
-            <p className="text-2xl font-bold text-[#B01C2E] mt-1">
+            <p className="text-2xl font-bold text-brand-600 mt-1">
               {(stats.byRole['super_admin'] || 0) + (stats.byRole['owner'] || 0) + (stats.byRole['admin'] || 0)}
             </p>
           </div>
@@ -862,7 +862,7 @@ const UsersManagementPage: React.FC = () => {
                 placeholder="Search users..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E]"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-600 focus:border-brand-600"
               />
             </div>
 
@@ -870,7 +870,7 @@ const UsersManagementPage: React.FC = () => {
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value as UserRole | 'all')}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E]"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-600 focus:border-brand-600"
             >
               <option value="all">All Roles</option>
               {Object.values(ROLE_DEFINITIONS).map((role) => (
@@ -884,7 +884,7 @@ const UsersManagementPage: React.FC = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E]"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-600 focus:border-brand-600"
             >
               <option value="all">All Status</option>
               <option value="active">Active Only</option>
@@ -908,7 +908,7 @@ const UsersManagementPage: React.FC = () => {
               action={
                 <button
                   onClick={() => setShowInviteModal(true)}
-                  className="inline-flex items-center px-4 py-2 bg-[#B01C2E] text-white rounded-lg text-sm font-medium hover:bg-[#8A1624] transition-colors"
+                  className="inline-flex items-center px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700 transition-colors"
                 >
                   <UserPlusIcon />
                   <span className="ml-2">Invite First User</span>

@@ -101,11 +101,11 @@ function FormField({
         className="block text-sm font-medium text-gray-700 mb-1"
       >
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-danger-500 ml-1">*</span>}
       </label>
       {children}
       {hint && !error && <p className="mt-1 text-xs text-gray-500">{hint}</p>}
-      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+      {error && <p className="mt-1 text-xs text-danger-600">{error}</p>}
     </div>
   );
 }
@@ -123,7 +123,7 @@ function InputField({
         'w-full px-4 py-3 sm:py-2.5 border rounded-xl text-base sm:text-sm min-h-[44px]',
         'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
         'disabled:bg-gray-50 disabled:text-gray-500',
-        error ? 'border-red-300 focus:ring-red-500' : 'border-gray-200',
+        error ? 'border-danger-300 focus:ring-danger-500' : 'border-gray-200',
         props.className ?? '',
       ].join(' ')}
     />
@@ -144,7 +144,7 @@ function TextareaField({
         'w-full px-4 py-3 sm:py-2.5 border rounded-xl text-base sm:text-sm resize-none',
         'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
         'disabled:bg-gray-50 disabled:text-gray-500',
-        error ? 'border-red-300 focus:ring-red-500' : 'border-gray-300',
+        error ? 'border-danger-300 focus:ring-danger-500' : 'border-gray-300',
         props.className ?? '',
       ].join(' ')}
     />
@@ -213,7 +213,7 @@ export function BankDetailsForm({
       {/* ── Method type selector ────────────────────────────────────────── */}
       <div>
         <p className="block text-sm font-medium text-gray-700 mb-2">
-          Payment Method<span className="text-red-500 ml-1">*</span>
+          Payment Method<span className="text-danger-500 ml-1">*</span>
         </p>
         <Controller
           name="method_type"
@@ -248,7 +248,7 @@ export function BankDetailsForm({
           </p>
         )}
         {errors.method_type && (
-          <p className="mt-1 text-xs text-red-600">{errors.method_type.message}</p>
+          <p className="mt-1 text-xs text-danger-600">{errors.method_type.message}</p>
         )}
       </div>
 

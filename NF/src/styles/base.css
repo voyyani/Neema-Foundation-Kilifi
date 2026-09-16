@@ -1,0 +1,314 @@
+/* =========================================================================
+   Base layer — fonts, root variables, browser surfaces.
+   Colour values here are the tokens from tailwind.config.js; nothing in this
+   file introduces a colour that is not in the token system.
+   ========================================================================= */
+
+/* Self-hosted variable fonts (latin subsets). Both are preloaded in
+   index.html; `font-display: swap` keeps text visible on slow links. */
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+  src: url('/fonts/archivo-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: italic;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+  src: url('/fonts/archivo-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light;
+
+  /* The margin rail: the red line of the exercise book that every public
+     surface registers against. 20px on a phone; on wide screens it sits at
+     the left edge of the 1200px page column. */
+  --rail: 20px;
+  --rail-gap: 16px;
+  --gutter: 16px;
+  --rule: 30px;
+
+  /* Token mirrors for the few places plain CSS needs them. */
+  --c-brand: #b01c2e;
+  --c-brand-dark: #8a1624;
+  --c-ink: #151a22;
+  --c-paper: #fcfbf8;
+  --c-rule: #cbd7e4;
+  --c-board: #1b2622;
+  --c-chalk: #f4f1ea;
+
+  font-family: 'Inter', ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-feature-settings: 'cv11', 'ss01', 'tnum';
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --rail: 32px;
+    --rail-gap: 20px;
+    --gutter: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --rail: max(48px, calc((100vw - 1200px) / 2));
+    --rail-gap: 28px;
+    --gutter: 32px;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--c-paper);
+  color: var(--c-ink);
+  line-height: 1.5;
+  overflow-x: clip;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Display type: Archivo, condensed and heavy, like the printed caps on an
+   exercise-book cover. Applied by the `font-display` utility; the width axis
+   is set here so every heading shares one voice. */
+.font-display,
+.font-serif {
+  font-variation-settings: 'wdth' 74;
+  text-wrap: balance;
+}
+
+/* Chalk on the board: a soft edge, never a texture image. */
+.chalk {
+  text-shadow: 0 0 0.03em rgba(244, 241, 234, 0.55);
+  letter-spacing: 0.005em;
+}
+
+.font-display-wide {
+  font-family: 'Archivo', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-variation-settings: 'wdth' 112;
+}
+
+h1, h2, h3, h4 {
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* Tabular figures wherever numbers line up. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Browser surfaces, themed from the palette ------------------------ */
+
+::selection {
+  background: var(--c-brand);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-brand);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+input, textarea, select {
+  caret-color: var(--c-brand);
+  accent-color: var(--c-brand);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #f4f2ed;
+}
+::-webkit-scrollbar-thumb {
+  background: #b8b3a8;
+  border: 2px solid #f4f2ed;
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--c-brand);
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #b8b3a8 #f4f2ed;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+img, video, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Prevent double-tap-to-zoom on all interactive elements */
+button, a, [role='button'], input, select, textarea, label {
+  touch-action: manipulation;
+}
+
+/* ---- The paper ---------------------------------------------------------
+   Feint rules drawn at real 8mm (30px) spacing, not a texture image. Used on
+   the hero and section grounds that are "pages"; sits behind content. */
+.paper-ruled {
+  background-color: var(--c-paper);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(var(--rule) - 1px),
+    var(--c-rule) calc(var(--rule) - 1px),
+    var(--c-rule) var(--rule)
+  );
+  background-size: 100% var(--rule);
+}
+
+.paper-ruled-faint {
+  background-color: var(--c-paper);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(var(--rule) - 1px),
+    rgba(203, 215, 228, 0.55) calc(var(--rule) - 1px),
+    rgba(203, 215, 228, 0.55) var(--rule)
+  );
+  background-size: 100% var(--rule);
+}
+
+/* The red margin rule. Position: absolute inside a `relative` ancestor. */
+.margin-rail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--rail);
+  width: 2px;
+  background: var(--c-brand);
+  pointer-events: none;
+}
+
+/* The chalkboard. A slightly uneven dark green-black, chalk text. */
+.board {
+  background-color: var(--c-board);
+  color: var(--c-chalk);
+  background-image:
+    radial-gradient(120% 80% at 20% 0%, rgba(244, 241, 234, 0.05), transparent 60%),
+    radial-gradient(80% 60% at 90% 100%, rgba(244, 241, 234, 0.035), transparent 60%);
+}
+
+/* A hand-drawn underline in the teacher's pen: one SVG stroke, no gradient. */
+.pen-underline {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 8' preserveAspectRatio='none'%3E%3Cpath d='M2 5.5c40-3 80-4 120-3.5 30 .5 50 1 76 .5' fill='none' stroke='%23B01C2E' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 0.28em;
+  padding-bottom: 0.12em;
+}
+
+/* Rich text from the CMS (RichContent). Token-driven, on the 30px grid. */
+.prose-nf { color: #3d4451; }
+.prose-nf > * + * { margin-top: 1em; }
+.prose-nf h2, .prose-nf h3, .prose-nf h4 {
+  font-family: 'Archivo', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-variation-settings: 'wdth' 82;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  color: var(--c-ink);
+  line-height: 1.1;
+  margin-top: 1.75em;
+}
+.prose-nf h2 { font-size: 1.5rem; }
+.prose-nf h3 { font-size: 1.25rem; }
+.prose-nf h4 { font-size: 1.05rem; }
+.prose-nf strong { color: var(--c-ink); font-weight: 600; }
+.prose-nf a { color: var(--c-brand-dark); text-decoration: underline; text-underline-offset: 4px; }
+.prose-nf ul, .prose-nf ol { padding-left: 1.4em; }
+.prose-nf ul { list-style: disc; }
+.prose-nf ol { list-style: decimal; }
+.prose-nf li + li { margin-top: 0.35em; }
+.prose-nf li::marker { color: var(--c-brand); }
+.prose-nf blockquote {
+  border-top: 1px solid var(--c-rule);
+  border-bottom: 1px solid var(--c-rule);
+  padding: 0.75em 0;
+  font-family: 'Archivo', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-variation-settings: 'wdth' 82;
+  font-size: 1.25rem;
+  line-height: 1.3;
+  color: var(--c-ink);
+}
+.prose-nf img { border-radius: 6px; }
+.prose-nf hr { border: 0; border-top: 1px solid var(--c-rule); }
+
+/* Reduced motion: every authored animation collapses to its final state. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

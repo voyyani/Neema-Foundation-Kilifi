@@ -33,7 +33,7 @@ export default function ForgotPassword() {
 
   if (sent) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-red-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-danger-50 via-white to-danger-50 px-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -67,7 +67,7 @@ export default function ForgotPassword() {
             <div className="space-y-3">
               <button
                 onClick={() => navigate('/')}
-                className="w-full bg-red-800 text-white py-3 px-4 rounded-lg hover:bg-red-900 font-semibold transition-colors"
+                className="w-full bg-danger-800 text-white py-3 px-4 rounded-lg hover:bg-danger-900 font-semibold transition-colors"
               >
                 Return to Home
               </button>
@@ -89,7 +89,7 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-red-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-danger-50 via-white to-danger-50 px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -102,9 +102,9 @@ export default function ForgotPassword() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', delay: 0.1 }}
-              className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4"
+              className="inline-flex items-center justify-center w-16 h-16 bg-danger-100 rounded-full mb-4"
             >
-              <Lock className="h-8 w-8 text-red-800" />
+              <Lock className="h-8 w-8 text-danger-800" />
             </motion.div>
             
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
@@ -131,7 +131,7 @@ export default function ForgotPassword() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
                   required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-800 focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-danger-800 focus:border-transparent transition-all"
                 />
               </div>
             </div>
@@ -139,7 +139,7 @@ export default function ForgotPassword() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-red-800 text-white py-3 px-4 rounded-lg hover:bg-red-900 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-danger-800 text-white py-3 px-4 rounded-lg hover:bg-danger-900 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -167,7 +167,7 @@ export default function ForgotPassword() {
         {/* Help Text */}
         <p className="text-center text-sm text-gray-600 mt-6">
           Need help?{' '}
-          <a href="mailto:support@neemafoundation.org" className="text-red-800 hover:text-red-900 font-medium">
+          <a href="mailto:support@neemafoundation.org" className="text-danger-800 hover:text-danger-900 font-medium">
             Contact Support
           </a>
         </p>

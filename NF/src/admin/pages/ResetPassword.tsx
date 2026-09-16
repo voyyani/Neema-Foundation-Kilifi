@@ -80,7 +80,7 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-red-50 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-danger-50 via-white to-danger-50 px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -93,9 +93,9 @@ export default function ResetPassword() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', delay: 0.1 }}
-              className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4"
+              className="inline-flex items-center justify-center w-16 h-16 bg-danger-100 rounded-full mb-4"
             >
-              <Lock className="h-8 w-8 text-red-800" />
+              <Lock className="h-8 w-8 text-danger-800" />
             </motion.div>
             
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
@@ -123,7 +123,7 @@ export default function ResetPassword() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter new password"
                   required
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-800 focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-danger-800 focus:border-transparent transition-all"
                 />
                 <button
                   type="button"
@@ -171,7 +171,7 @@ export default function ResetPassword() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirm new password"
                   required
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-800 focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-danger-800 focus:border-transparent transition-all"
                 />
                 <button
                   type="button"
@@ -208,7 +208,7 @@ export default function ResetPassword() {
             <button
               type="submit"
               disabled={isLoading || !allRequirementsMet || !passwordsMatch}
-              className="w-full bg-red-800 text-white py-3 px-4 rounded-lg hover:bg-red-900 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-danger-800 text-white py-3 px-4 rounded-lg hover:bg-danger-900 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>

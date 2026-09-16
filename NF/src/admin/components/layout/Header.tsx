@@ -98,7 +98,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <Menu as="div" className="relative" data-tour="user-menu">
             <Menu.Button className="touch-target tap-scale -m-1 rounded-xl hover:bg-gray-100 active:bg-gray-200 transition-colors">
               <span className="sr-only">Open user menu</span>
-              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#B01C2E] to-[#8A1624] flex items-center justify-center ring-2 ring-white shadow-sm">
+              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-brand-600 to-brand-700 flex items-center justify-center ring-2 ring-white shadow-sm">
                 <span className="text-sm font-semibold text-white">
                   {profile?.full_name?.charAt(0).toUpperCase() || 'A'}
                 </span>
@@ -135,7 +135,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
                 {/* Profile info */}
                 <div className="px-4 py-3.5 border-b border-gray-100">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[#B01C2E] to-[#8A1624] flex items-center justify-center flex-shrink-0">
+                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-brand-600 to-brand-700 flex items-center justify-center flex-shrink-0">
                       <span className="text-sm font-bold text-white">
                         {profile?.full_name?.charAt(0).toUpperCase() || 'A'}
                       </span>
@@ -143,7 +143,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-gray-900 truncate">{profile?.full_name}</p>
                       <p className="text-xs text-gray-500 truncate">{profile?.email}</p>
-                      <p className="text-xs text-[#B01C2E] font-medium mt-0.5 capitalize">
+                      <p className="text-xs text-brand-600 font-medium mt-0.5 capitalize">
                         {profile?.role?.replace('_', ' ')}
                       </p>
                     </div>
@@ -176,8 +176,8 @@ export default function Header({ onMenuClick }: HeaderProps) {
                     <button
                       onClick={handleSignOut}
                       className={`${
-                        active ? 'bg-red-50' : ''
-                      } flex w-full items-center px-4 py-3 text-sm text-red-600 min-h-[44px] transition-colors`}
+                        active ? 'bg-danger-50' : ''
+                      } flex w-full items-center px-4 py-3 text-sm text-danger-600 min-h-[44px] transition-colors`}
                     >
                       Sign out
                     </button>

@@ -32,7 +32,7 @@ export function getCategoryColor(category: string) {
 
 export function getColorClasses(color: string) {
   const colors = {
-    red: 'from-red-600 to-red-700 border-red-200',
+    red: 'from-brand-600 to-brand-700 border-brand-200',
     green: 'from-green-600 to-green-700 border-green-200',
     blue: 'from-blue-600 to-blue-700 border-blue-200',
     purple: 'from-purple-600 to-purple-700 border-purple-200'
@@ -42,7 +42,7 @@ export function getColorClasses(color: string) {
 
 export function getEventColor(programColor: string) {
   const colors = {
-    red: 'bg-red-100 text-red-800 border-red-200',
+    red: 'bg-brand-100 text-brand-800 border-brand-200',
     green: 'bg-green-100 text-green-800 border-green-200',
     blue: 'bg-blue-100 text-blue-800 border-blue-200',
     purple: 'bg-purple-100 text-purple-800 border-purple-200'

@@ -100,8 +100,8 @@ export default function HelpMenuButton() {
         {/* Dot indicator for incomplete onboarding */}
         {!isOnboardingComplete && totalCount > 0 && (
           <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#B01C2E] opacity-75" />
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-[#B01C2E]" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-600 opacity-75" />
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-brand-600" />
           </span>
         )}
       </Menu.Button>
@@ -130,7 +130,7 @@ export default function HelpMenuButton() {
                 </p>
               </div>
               {totalCount > 0 && (
-                <span className="text-xs font-bold text-[#B01C2E]">
+                <span className="text-xs font-bold text-brand-600">
                   {progress}%
                 </span>
               )}
@@ -140,7 +140,7 @@ export default function HelpMenuButton() {
             {totalCount > 0 && (
               <div className="mt-2 h-1.5 w-full rounded-full bg-gray-200 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#B01C2E] to-[#D4374B] transition-all duration-500"
+                  className="h-full rounded-full bg-gradient-to-r from-brand-600 to-brand-500 transition-all duration-500"
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -170,7 +170,7 @@ export default function HelpMenuButton() {
                       {isComplete ? (
                         <CheckCircleIcon className="h-5 w-5 text-emerald-500 flex-shrink-0" />
                       ) : (
-                        <PlayIcon className="h-5 w-5 text-[#B01C2E] flex-shrink-0" />
+                        <PlayIcon className="h-5 w-5 text-brand-600 flex-shrink-0" />
                       )}
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium text-gray-900 truncate">

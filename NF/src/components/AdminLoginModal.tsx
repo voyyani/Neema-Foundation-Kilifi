@@ -151,12 +151,12 @@ export default function AdminLoginModal({ isOpen, onClose }: AdminLoginModalProp
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3"
+                    className="mb-4 p-4 bg-brand-50 border border-brand-200 rounded-lg flex items-start gap-3"
                   >
-                    <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <AlertTriangle className="h-5 w-5 text-brand-600 flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-sm font-semibold text-red-900">Account Temporarily Locked</p>
-                      <p className="text-xs text-red-700 mt-1">
+                      <p className="text-sm font-semibold text-brand-900">Account Temporarily Locked</p>
+                      <p className="text-xs text-brand-700 mt-1">
                         Too many failed attempts. Try again in {lockoutTimeRemaining}
                       </p>
                     </div>
@@ -188,12 +188,12 @@ export default function AdminLoginModal({ isOpen, onClose }: AdminLoginModalProp
                       autoComplete="email"
                       {...register('email')}
                       className={`appearance-none block w-full px-4 py-2.5 border ${
-                        errors.email ? 'border-red-300' : 'border-gray-300'
+                        errors.email ? 'border-danger-300' : 'border-gray-300'
                       } rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm`}
                       placeholder="admin@neemafoundation.org"
                     />
                     {errors.email && (
-                      <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>
+                      <p className="mt-1 text-xs text-danger-600">{errors.email.message}</p>
                     )}
                   </div>
 
@@ -208,12 +208,12 @@ export default function AdminLoginModal({ isOpen, onClose }: AdminLoginModalProp
                       autoComplete="current-password"
                       {...register('password')}
                       className={`appearance-none block w-full px-4 py-2.5 border ${
-                        errors.password ? 'border-red-300' : 'border-gray-300'
+                        errors.password ? 'border-danger-300' : 'border-gray-300'
                       } rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm`}
                       placeholder="Enter your password"
                     />
                     {errors.password && (
-                      <p className="mt-1 text-xs text-red-600">{errors.password.message}</p>
+                      <p className="mt-1 text-xs text-danger-600">{errors.password.message}</p>
                     )}
                   </div>
 

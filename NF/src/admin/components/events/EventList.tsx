@@ -239,7 +239,7 @@ export default function EventList() {
                         </button>
                         <button
                           onClick={() => setDeleteId(event.id)}
-                          className="tap-scale text-red-600 hover:text-red-700 text-sm font-medium min-h-[44px] flex items-center"
+                          className="tap-scale text-danger-600 hover:text-danger-700 text-sm font-medium min-h-[44px] flex items-center"
                         >
                           Delete
                         </button>

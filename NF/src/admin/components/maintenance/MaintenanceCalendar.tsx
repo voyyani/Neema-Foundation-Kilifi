@@ -70,17 +70,17 @@ interface CalendarDay {
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const SEVERITY_DOT_COLORS: Record<string, string> = {
-  full_block: 'bg-red-500',
+  full_block: 'bg-danger-500',
   degraded: 'bg-amber-500',
   notice: 'bg-blue-500',
 };
 
 const SEVERITY_EVENT_STYLES: Record<string, { bg: string; border: string; text: string; hoverBg: string }> = {
   full_block: {
-    bg: 'bg-red-50',
-    border: 'border-l-red-500',
-    text: 'text-red-800',
-    hoverBg: 'hover:bg-red-100',
+    bg: 'bg-danger-50',
+    border: 'border-l-danger-500',
+    text: 'text-danger-800',
+    hoverBg: 'hover:bg-danger-100',
   },
   degraded: {
     bg: 'bg-amber-50',
@@ -267,14 +267,14 @@ function DayCell({
         relative w-full aspect-square p-1 rounded-lg border transition-all text-left
         flex flex-col items-center
         ${day.isCurrentMonth ? 'bg-white' : 'bg-gray-50/50'}
-        ${day.isToday ? 'border-[#B01C2E] ring-1 ring-[#B01C2E]/30' : 'border-transparent hover:border-gray-200'}
-        ${isSelected ? 'border-[#B01C2E] bg-[#B01C2E]/5 ring-2 ring-[#B01C2E]/20' : ''}
+        ${day.isToday ? 'border-brand-600 ring-1 ring-brand-600/30' : 'border-transparent hover:border-gray-200'}
+        ${isSelected ? 'border-brand-600 bg-brand-600/5 ring-2 ring-brand-600/20' : ''}
         ${hasEvents ? 'cursor-pointer' : 'cursor-default'}
       `}
     >
       <span className={`
         text-xs font-medium leading-none
-        ${day.isToday ? 'bg-[#B01C2E] text-white w-5 h-5 rounded-full flex items-center justify-center' : ''}
+        ${day.isToday ? 'bg-brand-600 text-white w-5 h-5 rounded-full flex items-center justify-center' : ''}
         ${day.isCurrentMonth ? 'text-gray-900' : 'text-gray-400'}
       `}>
         {day.date.getDate()}
@@ -582,7 +582,7 @@ export default function MaintenanceCalendar({
           <div className="flex flex-wrap items-center gap-3 mt-3 text-xs text-gray-500">
             {monthStats.bySeverity.full_block > 0 && (
               <span className="flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-red-500" />
+                <span className="w-2 h-2 rounded-full bg-danger-500" />
                 {monthStats.bySeverity.full_block} full block
               </span>
             )}

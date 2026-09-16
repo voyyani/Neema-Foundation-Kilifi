@@ -82,7 +82,7 @@ function SortableImage({ url, index, onRemove }: SortableImageProps) {
         <button
           type="button"
           onClick={() => onRemove(index)}
-          className="p-2 bg-red-500/90 rounded-lg text-white hover:bg-red-600"
+          className="p-2 bg-danger-500/90 rounded-lg text-white hover:bg-danger-600"
           title="Remove image"
         >
           <X className="w-5 h-5" />
@@ -207,7 +207,7 @@ export default function ImageGalleryUploader({
           onDrop={handleDrop}
           className={`
             relative border-2 border-dashed rounded-xl p-8 text-center transition-colors
-            ${dragActive ? 'border-[#B01C2E] bg-blue-50' : 'border-gray-300 hover:border-gray-400'}
+            ${dragActive ? 'border-brand-600 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}
             ${isUploading ? 'pointer-events-none' : 'cursor-pointer'}
           `}
         >
@@ -286,7 +286,7 @@ function AddImageByUrl({ onAdd }: { onAdd: (url: string) => void }) {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 text-sm text-[#B01C2E] hover:text-blue-700"
+        className="flex items-center gap-2 text-sm text-brand-600 hover:text-blue-700"
       >
         <Plus className="w-4 h-4" />
         Add image by URL
@@ -302,16 +302,16 @@ function AddImageByUrl({ onAdd }: { onAdd: (url: string) => void }) {
           value={url}
           onChange={(e) => { setUrl(e.target.value); setError(''); }}
           placeholder="https://example.com/image.jpg"
-          className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] ${
-            error ? 'border-red-300' : 'border-gray-300'
+          className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600 ${
+            error ? 'border-danger-300' : 'border-gray-300'
           }`}
         />
-        {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+        {error && <p className="text-xs text-danger-500 mt-1">{error}</p>}
       </div>
       <button
         type="button"
         onClick={handleAdd}
-        className="px-4 py-2 bg-[#B01C2E] text-white text-sm rounded-lg hover:bg-[#8A1624]"
+        className="px-4 py-2 bg-brand-600 text-white text-sm rounded-lg hover:bg-brand-700"
       >
         Add
       </button>

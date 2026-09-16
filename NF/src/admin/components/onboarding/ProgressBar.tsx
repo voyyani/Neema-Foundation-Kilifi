@@ -42,14 +42,14 @@ export default function ProgressBar({ progress, loading, compact }: ProgressBarP
     return (
       <button
         onClick={() => navigate('/admin/onboarding')}
-        className="group relative w-full rounded-xl bg-white p-3 shadow-sm border border-gray-100 hover:border-[#B01C2E]/30 hover:shadow-md transition-all duration-200 text-left touch-target tap-scale"
+        className="group relative w-full rounded-xl bg-white p-3 shadow-sm border border-gray-100 hover:border-brand-600/30 hover:shadow-md transition-all duration-200 text-left touch-target tap-scale"
       >
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             {isComplete ? (
               <Sparkles className="h-4 w-4 text-amber-500" />
             ) : (
-              <Award className="h-4 w-4 text-[#B01C2E]" />
+              <Award className="h-4 w-4 text-brand-600" />
             )}
             <span className="text-xs font-semibold text-gray-700">
               Role Mastery
@@ -64,7 +64,7 @@ export default function ProgressBar({ progress, loading, compact }: ProgressBarP
             className={`h-full rounded-full transition-all duration-700 ease-out ${
               isComplete
                 ? 'bg-gradient-to-r from-amber-400 to-amber-500'
-                : 'bg-gradient-to-r from-[#B01C2E] to-[#D4213D]'
+                : 'bg-gradient-to-r from-brand-600 to-brand-500'
             }`}
             style={{ width: `${percentage}%` }}
           />
@@ -79,7 +79,7 @@ export default function ProgressBar({ progress, loading, compact }: ProgressBarP
       className={`group relative w-full rounded-2xl p-4 sm:p-5 shadow-sm border transition-all duration-300 text-left touch-target tap-scale ${
         isComplete
           ? 'bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-200 hover:border-amber-300 hover:shadow-md'
-          : 'bg-white border-gray-100 hover:border-[#B01C2E]/30 hover:shadow-md'
+          : 'bg-white border-gray-100 hover:border-brand-600/30 hover:shadow-md'
       }`}
     >
       {/* Header row */}
@@ -90,8 +90,8 @@ export default function ProgressBar({ progress, loading, compact }: ProgressBarP
               <Sparkles className="h-4.5 w-4.5 text-amber-600" />
             </div>
           ) : (
-            <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-red-50">
-              <Award className="h-4.5 w-4.5 text-[#B01C2E]" />
+            <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-danger-50">
+              <Award className="h-4.5 w-4.5 text-brand-600" />
             </div>
           )}
           <div>
@@ -113,7 +113,7 @@ export default function ProgressBar({ progress, loading, compact }: ProgressBarP
           >
             {percentage}%
           </span>
-          <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-[#B01C2E] transition-colors" />
+          <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-brand-600 transition-colors" />
         </div>
       </div>
 
@@ -128,7 +128,7 @@ export default function ProgressBar({ progress, loading, compact }: ProgressBarP
                 : percentage >= 50
                   ? 'bg-gradient-to-r from-blue-500 to-blue-400'
                   : percentage >= 25
-                    ? 'bg-gradient-to-r from-[#B01C2E] to-[#D4213D]'
+                    ? 'bg-gradient-to-r from-brand-600 to-brand-500'
                     : 'bg-gradient-to-r from-gray-400 to-gray-300'
           }`}
           style={{ width: `${Math.max(percentage, 2)}%` }}

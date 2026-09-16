@@ -27,7 +27,7 @@ function EstimateBadge({ minutes }: { minutes: number }) {
       ? 'bg-emerald-100 text-emerald-700'
       : minutes <= 20
         ? 'bg-amber-100 text-amber-700'
-        : 'bg-red-100 text-red-700';
+        : 'bg-danger-100 text-danger-700';
 
   return (
     <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${color}`}>
@@ -105,7 +105,7 @@ export default function WelcomeModal() {
             >
               <Dialog.Panel className="w-full max-w-lg rounded-2xl bg-white shadow-2xl ring-1 ring-black/5 overflow-hidden">
                 {/* Header with gradient accent */}
-                <div className="bg-gradient-to-r from-[#B01C2E] to-[#8A1624] px-6 py-8 text-white">
+                <div className="bg-gradient-to-r from-brand-600 to-brand-700 px-6 py-8 text-white">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
                       <svg
@@ -126,12 +126,12 @@ export default function WelcomeModal() {
                       <Dialog.Title className="text-xl font-bold">
                         Welcome to Neema Foundation
                       </Dialog.Title>
-                      <p className="text-sm text-red-200 mt-0.5">
+                      <p className="text-sm text-danger-200 mt-0.5">
                         Admin Portal Onboarding
                       </p>
                     </div>
                   </div>
-                  <p className="text-sm text-red-100 leading-relaxed">
+                  <p className="text-sm text-danger-100 leading-relaxed">
                     We&apos;ve prepared interactive guided tours to help you master every
                     feature of your role. Each tour highlights key UI elements and walks
                     you through real workflows step by step.
@@ -150,10 +150,10 @@ export default function WelcomeModal() {
                         <li key={tour.id}>
                           <button
                             onClick={() => handleStart(tour)}
-                            className="w-full flex items-center justify-between rounded-xl border border-gray-200 p-4 text-left transition-all hover:border-[#B01C2E]/30 hover:bg-red-50/50 hover:shadow-sm active:scale-[0.98] group"
+                            className="w-full flex items-center justify-between rounded-xl border border-gray-200 p-4 text-left transition-all hover:border-brand-600/30 hover:bg-danger-50/50 hover:shadow-sm active:scale-[0.98] group"
                           >
                             <div className="min-w-0 flex-1">
-                              <p className="text-sm font-semibold text-gray-900 group-hover:text-[#B01C2E] truncate">
+                              <p className="text-sm font-semibold text-gray-900 group-hover:text-brand-600 truncate">
                                 {tour.name}
                               </p>
                               <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">

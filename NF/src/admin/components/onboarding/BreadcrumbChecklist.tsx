@@ -31,7 +31,7 @@ import type { OnboardingProgressRow } from '../../types/onboarding';
 const LEVEL_STYLES: Record<string, { bg: string; text: string; label: string }> = {
   beginner:     { bg: 'bg-emerald-50', text: 'text-emerald-700', label: '🟢 Beginner' },
   intermediate: { bg: 'bg-amber-50',   text: 'text-amber-700',   label: '🟡 Intermediate' },
-  advanced:     { bg: 'bg-red-50',     text: 'text-red-700',     label: '🔴 Advanced' },
+  advanced:     { bg: 'bg-danger-50',     text: 'text-danger-700',     label: '🔴 Advanced' },
 };
 
 // ---------------------------------------------------------------------------
@@ -63,7 +63,7 @@ function BreadcrumbRow({ breadcrumb, isCompleted, isAutoDetected, completedAt, o
         {isCompleted ? (
           <CheckCircle2 className="h-5 w-5 text-emerald-500" />
         ) : (
-          <Circle className="h-5 w-5 text-gray-300 group-hover:text-[#B01C2E] transition-colors" />
+          <Circle className="h-5 w-5 text-gray-300 group-hover:text-brand-600 transition-colors" />
         )}
       </div>
 
@@ -168,7 +168,7 @@ function TrailSection({ trailProgress, rows, onToggle, defaultOpen = false }: Tr
             <div className="h-1 w-16 bg-gray-100 rounded-full mt-1 overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all duration-500 ${
-                  isComplete ? 'bg-emerald-500' : 'bg-[#B01C2E]'
+                  isComplete ? 'bg-emerald-500' : 'bg-brand-600'
                 }`}
                 style={{ width: `${Math.max(percentage, 4)}%` }}
               />

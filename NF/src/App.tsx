@@ -1,26 +1,26 @@
 // src/App.tsx
 import React, { Suspense, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Outlet, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
-import { Toaster } from 'sonner';
-import Navbar from './components/Navbar';
+import Navbar from './components/shell/Navbar';
+import Footer from './components/shell/Footer';
 import Landing from './pages/Landing';
-import Footer from './components/Footer';
 
 import { Analytics } from '@vercel/analytics/react';
-import NotFound from './pages/NotFound';
-import Maintenance from './pages/Maintenance';
-// Use the barrel export to improve resolver compatibility on case-sensitive filesystems
-import { Programs } from './components/programs';
-import { MaintenanceProvider, MaintenanceBanner, MaintenanceGate, MaintenanceErrorBoundary, MaintenancePlaceholder } from './components/maintenance';
+import { MaintenanceProvider, MaintenanceBanner, MaintenanceErrorBoundary } from './components/maintenance';
 import LoadingSpinner from './components/ui/LoadingSpinner';
-import { AuthProvider } from './admin/hooks/useAuth';
 import { queryClient } from './admin/config/queryClient';
 import { lazyWithRetry } from './lib/lazyWithRetry';
 import { supabaseAdmin } from './lib/supabase/client';
 
+// Toasts are only fired after a user action, so the toaster can arrive late.
+const Toaster = lazyWithRetry(() => import('sonner').then((m) => ({ default: m.Toaster })));
+
 // Lazy load public pages — Landing stays eager as the most common entry point
+const NotFound = lazyWithRetry(() => import('./pages/NotFound'));
+const Maintenance = lazyWithRetry(() => import('./pages/Maintenance'));
+const Programs = lazyWithRetry(() => import('./pages/ProgramsPage'));
 const Donate = lazyWithRetry(() => import('./pages/Donate'));
 const BankDetails = lazyWithRetry(() => import('./pages/BankDetails'));
 const LegacyGiving = lazyWithRetry(() => import('./pages/LegacyGiving'));
@@ -107,15 +107,15 @@ class GlobalErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-red-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-brand-50 flex items-center justify-center p-4">
           <div className="bg-white p-8 rounded-lg shadow-lg max-w-md text-center">
-            <h1 className="text-2xl font-bold text-red-800 mb-4">Something went wrong</h1>
+            <h1 className="text-2xl font-bold text-brand-800 mb-4">Something went wrong</h1>
             <p className="text-gray-600 mb-4">
               We're sorry, but something went wrong. Please try refreshing the page.
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="bg-red-800 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              className="bg-brand-800 text-white px-6 py-2 rounded-lg hover:bg-brand-700 transition-colors"
             >
               Refresh Page
             </button>
@@ -165,12 +165,8 @@ const AuthHashHandler: React.FC = () => {
   return null;
 };
 
-// Scope AuthProvider only to admin subtree to keep public pages auth-free
-const AdminShell = () => (
-  <AuthProvider>
-    <Outlet />
-  </AuthProvider>
-);
+// AuthProvider is scoped to the admin subtree and loaded with it
+const AdminShell = lazyWithRetry(() => import('./admin/components/auth/AdminShell'));
 
 const App: React.FC = () => {
   return (
@@ -179,10 +175,12 @@ const App: React.FC = () => {
       <QueryClientProvider client={queryClient}>
         <Router>
           <AuthHashHandler />
-          <Toaster position="top-right" richColors />
+          <Suspense fallback={null}>
+            <Toaster position="top-right" richColors />
+          </Suspense>
           <div className="App">
             <div className="min-h-screen flex flex-col">
-              <Suspense fallback={<LoadingSpinner />}>
+              <Suspense fallback={<LoadingSpinner fullPage />}>
                 <Routes>
                 {/* Admin Routes - No Navbar/Footer */}
                 <Route element={<AdminShell />}>
@@ -245,7 +243,8 @@ const App: React.FC = () => {
                       <MaintenanceProvider>
                         <Navbar />
                         <MaintenanceBanner />
-                        <main className="flex-1">
+                        <main id="main" className="flex flex-1 flex-col" tabIndex={-1}>
+                          <Suspense fallback={<LoadingSpinner fullPage />}>
                           <Routes>
                             <Route path="/" element={<Landing />} />
                             <Route path="/donate" element={<Donate />} />
@@ -264,6 +263,7 @@ const App: React.FC = () => {
                             <Route path="/maintenance" element={<Maintenance />} />
                             <Route path="*" element={<NotFound />} />
                           </Routes>
+                          </Suspense>
                         </main>
                         <Footer />
                       </MaintenanceProvider>

@@ -158,8 +158,8 @@ function ToggleSwitch({
       onClick={() => onChange(!checked)}
       className={`
         relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent
-        transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#B01C2E] focus:ring-offset-2
-        ${checked ? 'bg-[#B01C2E]' : 'bg-gray-200'}
+        transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2
+        ${checked ? 'bg-brand-600' : 'bg-gray-200'}
         ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
       `}
     >
@@ -190,7 +190,7 @@ function EmptyState({ onCreateClick }: { onCreateClick: () => void }) {
       </p>
       <button
         onClick={onCreateClick}
-        className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#B01C2E] hover:bg-[#8A1624]
+        className="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-700
                    text-white text-sm font-medium rounded-lg shadow-sm transition-colors"
       >
         <Plus className="h-4 w-4" />
@@ -235,8 +235,8 @@ function DeleteConfirmModal({
             className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6"
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                <AlertTriangle className="h-5 w-5 text-red-600" />
+              <div className="w-10 h-10 rounded-full bg-danger-100 flex items-center justify-center">
+                <AlertTriangle className="h-5 w-5 text-danger-600" />
               </div>
               <div>
                 <h3 className="text-base font-semibold text-gray-900">Delete Rule</h3>
@@ -246,7 +246,7 @@ function DeleteConfirmModal({
             <p className="text-sm text-gray-600 mb-6">
               Are you sure you want to delete <strong>"{rule.title}"</strong>?
               {rule.is_active && (
-                <span className="block mt-1 text-red-600 font-medium">
+                <span className="block mt-1 text-danger-600 font-medium">
                   Warning: This rule is currently active!
                 </span>
               )}
@@ -261,7 +261,7 @@ function DeleteConfirmModal({
               <button
                 onClick={onConfirm}
                 disabled={isDeleting}
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-danger-600 hover:bg-danger-700
                            text-white text-sm font-medium rounded-lg transition-colors
                            disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -413,12 +413,12 @@ function MaintenanceDashboardContent() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl"
+            className="flex items-start gap-3 p-4 bg-danger-50 border border-danger-200 rounded-xl"
           >
-            <XCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+            <XCircle className="h-5 w-5 text-danger-600 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm font-semibold text-red-800">Global Maintenance Active</p>
-              <p className="text-xs text-red-600 mt-0.5">
+              <p className="text-sm font-semibold text-danger-800">Global Maintenance Active</p>
+              <p className="text-xs text-danger-600 mt-0.5">
                 A global full-block rule is active. The entire public site is showing a maintenance page.
               </p>
             </div>
@@ -429,8 +429,8 @@ function MaintenanceDashboardContent() {
       {/* ── Page Header ──────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#B01C2E]/10 flex items-center justify-center flex-shrink-0">
-            <Wrench className="h-5 w-5 text-[#B01C2E]" />
+          <div className="w-10 h-10 rounded-xl bg-brand-600/10 flex items-center justify-center flex-shrink-0">
+            <Wrench className="h-5 w-5 text-brand-600" />
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900 leading-tight">Maintenance</h1>
@@ -497,9 +497,9 @@ function MaintenanceDashboardContent() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={openCreate}
-                className="inline-flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 bg-[#B01C2E] hover:bg-[#8A1624]
+                className="inline-flex items-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 bg-brand-600 hover:bg-brand-700
                            text-white text-xs sm:text-sm font-medium rounded-lg shadow-sm transition-colors
-                           focus:outline-none focus:ring-2 focus:ring-[#B01C2E] focus:ring-offset-2 whitespace-nowrap"
+                           focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2 whitespace-nowrap"
               >
                 <Plus className="h-4 w-4" />
                 <span className="hidden xs:inline">New Rule</span>
@@ -522,7 +522,7 @@ function MaintenanceDashboardContent() {
           label="Active"
           value={stats.active}
           icon={<AlertTriangle className="h-5 w-5 text-white" />}
-          colour="bg-red-500"
+          colour="bg-danger-500"
           loading={isLoading}
         />
         <StatCard
@@ -577,7 +577,7 @@ function MaintenanceDashboardContent() {
               onChange={(e) => setFilters((f) => ({ ...f, search: e.target.value }))}
               placeholder="Search rules…"
               className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm
-                         focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                         focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
             />
           </div>
 
@@ -587,7 +587,7 @@ function MaintenanceDashboardContent() {
             className={`inline-flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-lg border
                         transition-colors ${
               showFilters
-                ? 'bg-[#B01C2E]/5 border-[#B01C2E]/30 text-[#B01C2E]'
+                ? 'bg-brand-600/5 border-brand-600/30 text-brand-600'
                 : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
             }`}
           >
@@ -608,7 +608,7 @@ function MaintenanceDashboardContent() {
               className={`inline-flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-lg border
                           transition-colors ${
                 bulkMode
-                  ? 'bg-[#B01C2E]/5 border-[#B01C2E]/30 text-[#B01C2E]'
+                  ? 'bg-brand-600/5 border-brand-600/30 text-brand-600'
                   : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
               }`}
             >
@@ -643,7 +643,7 @@ function MaintenanceDashboardContent() {
                       className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full
                                   border transition-colors ${
                         filters.scope === opt.value
-                          ? 'bg-[#B01C2E] text-white border-[#B01C2E]'
+                          ? 'bg-brand-600 text-white border-brand-600'
                           : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
                       }`}
                     >
@@ -666,7 +666,7 @@ function MaintenanceDashboardContent() {
                       }
                       className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-colors ${
                         filters.status === status
-                          ? 'bg-[#B01C2E] text-white border-[#B01C2E]'
+                          ? 'bg-brand-600 text-white border-brand-600'
                           : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
                       }`}
                     >
@@ -709,8 +709,8 @@ function MaintenanceDashboardContent() {
                       onClick={handleBulkActivate}
                       disabled={bulkToggleMutation.isPending}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium
-                                 text-red-700 bg-red-50 border border-red-200 rounded-lg
-                                 hover:bg-red-100 transition-colors disabled:opacity-50"
+                                 text-danger-700 bg-danger-50 border border-danger-200 rounded-lg
+                                 hover:bg-danger-100 transition-colors disabled:opacity-50"
                     >
                       <Zap className="h-3 w-3" />
                       Activate All
@@ -729,7 +729,7 @@ function MaintenanceDashboardContent() {
                       onClick={handleBulkDelete}
                       disabled={bulkDeleteMutation.isPending}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium
-                                 text-white bg-red-600 rounded-lg hover:bg-red-700
+                                 text-white bg-danger-600 rounded-lg hover:bg-danger-700
                                  transition-colors disabled:opacity-50"
                     >
                       <Trash2 className="h-3 w-3" />
@@ -768,8 +768,8 @@ function MaintenanceDashboardContent() {
             </div>
           ) : error ? (
             <div className="p-8 text-center">
-              <XCircle className="h-8 w-8 text-red-400 mx-auto mb-2" />
-              <p className="text-sm text-red-600 font-medium">Failed to load rules</p>
+              <XCircle className="h-8 w-8 text-danger-400 mx-auto mb-2" />
+              <p className="text-sm text-danger-600 font-medium">Failed to load rules</p>
               <p className="text-xs text-gray-500 mt-1">{(error as Error).message}</p>
             </div>
           ) : rules.length === 0 ? (
@@ -787,7 +787,7 @@ function MaintenanceDashboardContent() {
                           title={selectedIds.size === rules.length ? 'Deselect all' : 'Select all'}
                         >
                           {selectedIds.size === rules.length
-                            ? <CheckSquare className="h-4 w-4 text-[#B01C2E]" />
+                            ? <CheckSquare className="h-4 w-4 text-brand-600" />
                             : <Square className="h-4 w-4" />
                           }
                         </button>
@@ -824,7 +824,7 @@ function MaintenanceDashboardContent() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       className={`hover:bg-gray-50/50 transition-colors ${
-                        rule.is_active ? 'bg-red-50/30' : ''
+                        rule.is_active ? 'bg-danger-50/30' : ''
                       }`}
                     >
                       {/* Bulk checkbox (Phase 6) */}
@@ -835,7 +835,7 @@ function MaintenanceDashboardContent() {
                             className="text-gray-400 hover:text-gray-700 transition-colors"
                           >
                             {selectedIds.has(rule.id)
-                              ? <CheckSquare className="h-4 w-4 text-[#B01C2E]" />
+                              ? <CheckSquare className="h-4 w-4 text-brand-600" />
                               : <Square className="h-4 w-4" />
                             }
                           </button>
@@ -908,10 +908,10 @@ function MaintenanceDashboardContent() {
                               </button>
                               <button
                                 onClick={() => setDeleteTarget(rule)}
-                                className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                                className="p-2 hover:bg-danger-50 rounded-lg transition-colors"
                                 title="Delete"
                               >
-                                <Trash2 className="h-4 w-4 text-red-400" />
+                                <Trash2 className="h-4 w-4 text-danger-400" />
                               </button>
                             </>
                           )}
@@ -990,7 +990,7 @@ function MaintenanceDashboardContent() {
                           entry.action === 'create'
                             ? 'bg-green-400'
                             : entry.action === 'delete'
-                              ? 'bg-red-400'
+                              ? 'bg-danger-400'
                               : 'bg-blue-400'
                         }`}
                       />

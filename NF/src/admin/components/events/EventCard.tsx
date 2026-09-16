@@ -81,7 +81,7 @@ export default function EventCard({ event, onEdit, onDelete, onDuplicate }: Even
                   <div className="h-px bg-gray-100 mx-3" />
                   <button
                     onClick={() => { onDelete(event.id); setShowMenu(false); }}
-                    className="tap-scale w-full px-4 py-3 text-left text-sm text-red-600 hover:bg-red-50 active:bg-red-100 flex items-center gap-3 min-h-[44px] transition-colors"
+                    className="tap-scale w-full px-4 py-3 text-left text-sm text-danger-600 hover:bg-danger-50 active:bg-danger-100 flex items-center gap-3 min-h-[44px] transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                     Delete

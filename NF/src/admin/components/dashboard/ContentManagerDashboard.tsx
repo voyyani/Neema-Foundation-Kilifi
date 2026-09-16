@@ -124,7 +124,7 @@ export default function ContentManagerDashboard({ data, loading, error, userName
       description: 'Update homepage counters',
       href: '/admin/content/impact',
       icon: <TrendingUp className="h-5 w-5" />,
-      color: 'bg-red-500',
+      color: 'bg-danger-500',
       permission: 'edit_content',
     },
   ];

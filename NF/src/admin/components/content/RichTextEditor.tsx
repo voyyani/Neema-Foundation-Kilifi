@@ -40,7 +40,7 @@ export default function RichTextEditor({
     }),
     Link.configure({
       openOnClick: false,
-      HTMLAttributes: { class: 'text-[#B01C2E] underline' },
+      HTMLAttributes: { class: 'text-brand-600 underline' },
     }),
     Underline,
     Placeholder.configure({ placeholder }),

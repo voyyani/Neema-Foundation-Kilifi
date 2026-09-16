@@ -243,8 +243,8 @@ function SortableRow({
               onClick={() => onDelete(record)}
               disabled={isBusy}
               title="Delete permanently"
-              className="p-1.5 rounded-lg text-gray-400 hover:text-red-600
-                         hover:bg-red-50 disabled:opacity-40
+              className="p-1.5 rounded-lg text-gray-400 hover:text-danger-600
+                         hover:bg-danger-50 disabled:opacity-40
                          disabled:cursor-not-allowed transition-colors"
             >
               <Trash2 className="w-4 h-4" />
@@ -336,8 +336,8 @@ export function BankDetailsTable({
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-12 gap-4">
-        <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
-          <AlertCircle className="w-6 h-6 text-red-600" />
+        <div className="w-12 h-12 rounded-full bg-danger-100 flex items-center justify-center">
+          <AlertCircle className="w-6 h-6 text-danger-600" />
         </div>
         <div className="text-center">
           <p className="text-sm font-medium text-gray-900">Failed to load bank details</p>
@@ -482,7 +482,7 @@ export function BankDetailsTable({
                         onClick={() => setDeleteTarget(record)}
                         disabled={isBusy}
                         title="Delete"
-                        className="touch-target tap-scale rounded-xl text-gray-400 hover:text-red-600 hover:bg-red-50 active:bg-red-100 disabled:opacity-40 transition-colors"
+                        className="touch-target tap-scale rounded-xl text-gray-400 hover:text-danger-600 hover:bg-danger-50 active:bg-danger-100 disabled:opacity-40 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

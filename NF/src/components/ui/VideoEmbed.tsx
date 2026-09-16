@@ -2,7 +2,7 @@
 // Professional video embed component with YouTube/Vimeo support
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Volume2, VolumeX } from 'lucide-react';
+import { Play } from 'lucide-react';
 
 interface VideoEmbedProps {
   url: string;
@@ -25,7 +25,7 @@ interface VideoEmbedProps {
  */
 export function VideoEmbed({ url, thumbnail, title, className = '' }: VideoEmbedProps) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted] = useState(false);
 
   // Extract video ID and platform
   const getVideoInfo = (url: string) => {
@@ -121,7 +121,7 @@ export function VideoEmbed({ url, thumbnail, title, className = '' }: VideoEmbed
           whileHover={{ scale: 1.15 }}
           whileTap={{ scale: 0.95 }}
         >
-          <Play className="h-10 w-10 text-red-700 fill-red-700 ml-1" />
+          <Play className="h-10 w-10 text-brand-700 fill-brand-700 ml-1" />
         </motion.div>
       </div>
 

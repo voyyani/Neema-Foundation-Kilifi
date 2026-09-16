@@ -66,7 +66,7 @@ export default function EventDetailPage() {
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Event not found</h2>
           <button
             onClick={() => navigate('/admin/events')}
-            className="text-[#B01C2E] hover:text-[#8A1624]"
+            className="text-brand-600 hover:text-brand-700"
           >
             Go back to events
           </button>

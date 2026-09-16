@@ -53,57 +53,57 @@ export const LOGO_URL = 'https://res.cloudinary.com/dzqdxosk2/image/upload/v1760
 
 /**
  * Primary action buttons, headers, gradients
- * Replace: bg-blue-600 → bg-[#B01C2E], hover:bg-blue-700 → hover:bg-[#8A1624]
+ * Replace: bg-blue-600 → bg-brand-600, hover:bg-blue-700 → hover:bg-brand-700
  */
 export const THEME_CLASSES = {
   // Sidebar
   sidebar: {
-    bg: 'bg-gradient-to-b from-[#B01C2E] to-[#8A1624]',
-    navActive: 'bg-[#8A1624] text-white',
-    navInactive: 'text-red-100 hover:text-white hover:bg-[#8A1624]',
-    navIcon: 'text-red-200 group-hover:text-white',
-    userBg: 'bg-[#8A1624]/50',
-    userAvatar: 'bg-[#D42A3F]',
-    textMuted: 'text-red-200',
+    bg: 'bg-gradient-to-b from-brand-600 to-brand-700',
+    navActive: 'bg-brand-700 text-white',
+    navInactive: 'text-danger-100 hover:text-white hover:bg-brand-700',
+    navIcon: 'text-danger-200 group-hover:text-white',
+    userBg: 'bg-brand-700/50',
+    userAvatar: 'bg-brand-500',
+    textMuted: 'text-danger-200',
   },
   
   // Buttons
   button: {
-    primary: 'bg-[#B01C2E] hover:bg-[#8A1624] text-white',
-    secondary: 'bg-[#B01C2E]/10 text-[#B01C2E] hover:bg-[#B01C2E]/20',
-    outline: 'border-[#B01C2E] text-[#B01C2E] hover:bg-[#B01C2E]/10',
+    primary: 'bg-brand-600 hover:bg-brand-700 text-white',
+    secondary: 'bg-brand-600/10 text-brand-600 hover:bg-brand-600/20',
+    outline: 'border-brand-600 text-brand-600 hover:bg-brand-600/10',
   },
   
   // Modals
   modal: {
-    header: 'bg-gradient-to-r from-[#B01C2E] to-[#8A1624]',
+    header: 'bg-gradient-to-r from-brand-600 to-brand-700',
   },
   
   // Focus states
   focus: {
-    ring: 'focus:ring-[#B01C2E] focus:border-[#B01C2E]',
-    border: 'focus:border-[#B01C2E]',
+    ring: 'focus:ring-brand-600 focus:border-brand-600',
+    border: 'focus:border-brand-600',
   },
   
   // Links
   link: {
-    primary: 'text-[#B01C2E] hover:text-[#8A1624]',
+    primary: 'text-brand-600 hover:text-brand-700',
   },
   
   // Badges
   badge: {
-    primary: 'bg-[#B01C2E]/10 text-[#B01C2E] border-[#B01C2E]/20',
+    primary: 'bg-brand-600/10 text-brand-600 border-brand-600/20',
   },
   
   // Gradients
   gradient: {
-    primary: 'from-[#B01C2E] to-[#8A1624]',
-    subtle: 'from-red-50 to-red-100',
+    primary: 'from-brand-600 to-brand-700',
+    subtle: 'from-danger-50 to-danger-100',
   },
   
   // Spinner/Loading
   loading: {
-    spinner: 'border-[#B01C2E]',
+    spinner: 'border-brand-600',
   },
 } as const;
 
@@ -119,10 +119,10 @@ export const STATUS_COLORS = {
     dot: 'bg-green-500',
   },
   error: {
-    bg: 'bg-red-100',
-    text: 'text-red-800',
-    border: 'border-red-200',
-    dot: 'bg-red-500',
+    bg: 'bg-danger-100',
+    text: 'text-danger-800',
+    border: 'border-danger-200',
+    dot: 'bg-danger-500',
   },
   warning: {
     bg: 'bg-amber-100',
@@ -131,8 +131,8 @@ export const STATUS_COLORS = {
     dot: 'bg-amber-500',
   },
   info: {
-    bg: 'bg-[#B01C2E]/10',
-    text: 'text-[#B01C2E]',
-    border: 'border-[#B01C2E]/20',
+    bg: 'bg-brand-600/10',
+    text: 'text-brand-600',
+    border: 'border-brand-600/20',
   },
 } as const;

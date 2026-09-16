@@ -1,331 +1,146 @@
-// src/pages/Donate.tsx
-import React from 'react';
+/**
+ * /donate — Give to the Foundation.
+ *
+ * Persuade, then operate: the page opens on ruled paper with the ask and
+ * the amount line; the ways to give follow with copyable details; the
+ * "what happens next" steps close the loop; the reasons stand beneath.
+ * Section keys: hero · amounts · payment_form · recurring_options.
+ */
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import Seo from '../lib/seo/Seo';
 import { getRouteMeta } from '../lib/seo/routeMeta';
-import { Link } from 'react-router-dom';
-import {
-  Heart,
-  ArrowRight,
-  Phone,
-  Building2,
-  Globe,
-  HeartPulse,
-  BookOpen,
-  Users,
-} from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useNFContent } from '../content/useNFContent';
-import { useBankDetails, type PublicBankDetail } from '../hooks/public/useBankDetails';
+import { MaintenanceGate } from '../components/maintenance';
+import { useBankDetails } from '../hooks/public/useBankDetails';
+import { usePublicSiteSettings } from '../hooks/public';
+import { Button, Container, Section, SectionHeading, Tick } from '../components/ui';
+import AmountSelector from '../components/donate/AmountSelector';
+import { PaymentMethodsList } from '../components/donate/PaymentMethods';
 
-const easing = [0.22, 1, 0.36, 1] as const;
-
-// --- Types ---
-interface MethodCardData {
-  icon: React.ElementType;
-  title: string;
-  body: string;
-  ctaLabel: string;
-  ctaHref: string;
-  external: boolean;
-}
-
-// --- Helpers ---
-function publicBankDetailToCard(d: PublicBankDetail): MethodCardData {
-  switch (d.method_type) {
-    case 'bank_transfer':
-      return {
-        icon: Building2,
-        title: d.label || 'Bank Transfer',
-        body: [d.bank_name, d.account_name].filter(Boolean).join(' · ') || 'International or local bank wire transfer.',
-        ctaLabel: 'View Bank Details',
-        ctaHref: '/bank-details',
-        external: false,
-      };
-    case 'mpesa_paybill':
-      return {
-        icon: Phone,
-        title: d.label || 'M-Pesa Paybill',
-        body: `Paybill: ${d.paybill_number || 'See details'}${d.account_name ? ` · A/C: ${d.account_name}` : ''}`,
-        ctaLabel: 'View Details',
-        ctaHref: '/bank-details',
-        external: false,
-      };
-    case 'mpesa_till':
-      return {
-        icon: Phone,
-        title: d.label || 'M-Pesa Till',
-        body: `Till: ${d.till_number || 'See details'}${d.account_name ? ` · ${d.account_name}` : ''}`,
-        ctaLabel: 'View Details',
-        ctaHref: '/bank-details',
-        external: false,
-      };
-    case 'paypal':
-      return {
-        icon: Globe,
-        title: d.label || 'PayPal',
-        body: d.instructions || 'Donate securely via PayPal.',
-        ctaLabel: 'View Details',
-        ctaHref: '/bank-details',
-        external: false,
-      };
-    case 'stripe':
-    default:
-      return {
-        icon: Globe,
-        title: d.label || 'Online Donation',
-        body: d.instructions || 'Donate securely online from anywhere in the world.',
-        ctaLabel: 'Donate Online',
-        ctaHref: '/bank-details',
-        external: false,
-      };
-  }
-}
-
-const WHY_REASONS = [
-  {
-    icon: HeartPulse,
-    title: 'Healthcare Access',
-    body: 'Direct funding for Neema Health outreach clinics serving remote Ganze villages.',
-  },
-  {
-    icon: BookOpen,
-    title: 'Education & Hope',
-    body: 'Books, meals and mentorship for 650+ children through Ahoho Mission.',
-  },
-  {
-    icon: Users,
-    title: 'Community Resilience',
-    body: 'Equipping widows, youth and families with skills for lasting self-sufficiency.',
-  },
+const REASONS = [
+  { title: 'Healthcare access', body: 'Direct funding for Neema Health outreach clinics serving remote Ganze villages.' },
+  { title: 'Education and hope', body: 'Books, meals and mentorship for 650+ children through the Ahoho Mission.' },
+  { title: 'Community resilience', body: 'Equipping widows, youth and families with skills for lasting self-sufficiency.' },
 ];
 
-
-
-// --- Sub-components ---
-const MethodCard: React.FC<MethodCardData> = ({ icon: Icon, title, body, ctaLabel, ctaHref, external }) => (
-  <div className="bg-white rounded-2xl border border-gray-100 p-7 flex flex-col hover:border-[#B01C2E]/25 hover:shadow-sm transition-all duration-300">
-    <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center mb-5">
-      <Icon className="h-5 w-5 text-[#B01C2E]" aria-hidden="true" />
-    </div>
-    <h3 className="text-base font-bold text-gray-900 mb-2">{title}</h3>
-    <p className="text-sm text-gray-500 leading-relaxed flex-grow mb-6">{body}</p>
-    {external ? (
-      <a
-        href={ctaHref}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#B01C2E] hover:underline underline-offset-4"
-      >
-        {ctaLabel}
-        <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-      </a>
-    ) : (
-      <Link
-        to={ctaHref}
-        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#B01C2E] hover:underline underline-offset-4"
-      >
-        {ctaLabel}
-        <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-      </Link>
-    )}
-  </div>
-);
-
-const ReasonCard: React.FC<{ icon: React.ElementType; title: string; body: string }> = ({
-  icon: Icon,
-  title,
-  body,
-}) => (
-  <div className="bg-white rounded-2xl border border-gray-100 p-6 hover:border-[#B01C2E]/20 hover:shadow-sm transition-all duration-300">
-    <div className="w-9 h-9 bg-red-50 rounded-xl flex items-center justify-center mb-4">
-      <Icon className="h-4 w-4 text-[#B01C2E]" aria-hidden="true" />
-    </div>
-    <h3 className="text-base font-bold text-gray-900 mb-2">{title}</h3>
-    <p className="text-sm text-gray-500 leading-relaxed">{body}</p>
-  </div>
-);
-
-// --- Page ---
 const Donate: React.FC = () => {
-  const { content } = useNFContent();
-  const brand = content?.site?.brandName || 'Neema Foundation';
-  const mission = content?.site?.mission;
-
-  const { data: liveDetails = [], isLoading: detailsLoading } = useBankDetails();
-  const methodCards: MethodCardData[] = liveDetails.map(publicBankDetailToCard);
+  const { data: details, isLoading, isError, refetch } = useBankDetails();
+  const { data: site } = usePublicSiteSettings();
+  const [amount, setAmount] = useState<number | null>(1000);
+  const [frequency, setFrequency] = useState<'once' | 'monthly'>('once');
+  const hasMpesa = (details ?? []).some((d) => d.method_type.startsWith('mpesa'));
 
   return (
     <>
       <Seo meta={getRouteMeta('/donate')!} />
-      {/* ── Hero – dark ── */}
-      <section className="relative bg-gray-950 pt-32 pb-20 overflow-hidden w-full">
-        <div className="absolute left-0 top-0 h-full w-1 bg-[#B01C2E]" aria-hidden="true" />
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: easing }}
-          >
-            <p className="text-white/40 text-xs uppercase tracking-widest font-medium mb-4">
-              Make a Difference Today
-            </p>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Support {brand}
-            </h1>
-            <p className="text-white/55 text-sm leading-relaxed max-w-lg mb-8">
-              {mission ||
-                'Your donation helps us continue our work transforming lives in the Ganze community through healthcare, education, and empowerment.'}
-            </p>
-            <Link
-              to="/bank-details"
-              className="bg-[#B01C2E] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#8A1624] transition-colors inline-flex items-center gap-2 text-sm"
-            >
-              <Heart className="h-4 w-4" aria-hidden="true" />
-              Donate Now
-            </Link>
 
-            {/* Impact stats */}
-            <div className="flex flex-wrap gap-8 md:gap-12 mt-12">
-              {[
-                { value: '10,000+', label: 'Lives Touched' },
-                { value: '4', label: 'Active Programs' },
-                { value: '2020', label: 'Est.' },
-              ].map((stat) => (
-                <div key={stat.label}>
-                  <p className="text-2xl font-bold text-white">{stat.value}</p>
-                  <p className="text-xs text-white/40 uppercase tracking-widest mt-0.5">{stat.label}</p>
+      <MaintenanceGate page="donate" section="hero">
+        <Section ground="ruled" pad="lg" as="header" aria-labelledby="donate-title">
+          <Container>
+            <div className="grid gap-rule md:grid-cols-12 md:gap-x-10">
+              <div className="md:col-span-7">
+                <h1 id="donate-title" className="font-display uppercase text-display-xl text-content max-w-[14ch]">Give to the Foundation</h1>
+                <p className="mt-rule max-w-measure text-lg leading-rule text-content-2 md:text-xl">
+                  {site?.mission ?? 'Your gift funds healthcare, education and empowerment programmes in Ganze Sub-county, run by people from Ganze.'}
+                </p>
+                <p className="mt-4 max-w-measure text-base leading-rule text-content-3">
+                  Gifts arrive by M-Pesa or bank transfer today. Card payments and M-Pesa prompts straight from this page are coming; the details below work now.
+                </p>
+              </div>
+              <div className="md:col-span-5 md:self-end">
+                <ul className="divide-y divide-border-rule border-y border-border-rule">
+                  {['A registered community-based organisation in Kilifi County', 'Every programme and its team is listed on this site', 'The board that governs the Foundation is published here'].map((t) => (
+                    <li key={t} className="flex items-start gap-3 py-3 text-sm leading-6 text-content-2">
+                      <Tick className="mt-0.5 h-5 w-5 shrink-0" drawn={false} />{t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </Container>
+        </Section>
+      </MaintenanceGate>
+
+      <MaintenanceGate page="donate" section="amounts">
+        <Section ground="paper" pad="lg" aria-labelledby="amount-title">
+          <Container>
+            <SectionHeading id="amount-title" title="Your gift" lede="Choose an amount and it is written into the instructions below." />
+            <div className="max-w-2xl">
+              <AmountSelector amount={amount} onChange={setAmount} frequency={frequency} onFrequencyChange={setFrequency} />
+            </div>
+          </Container>
+        </Section>
+      </MaintenanceGate>
+
+      <MaintenanceGate page="donate" section="payment_form">
+        <Section ground="ruled-faint" pad="lg" aria-labelledby="ways-title">
+          <Container>
+            <div className="grid gap-rule md:grid-cols-12 md:gap-x-10">
+              <div className="md:col-span-7">
+                <SectionHeading id="ways-title" title="Ways to give" lede="Tap Copy on any line and paste it into M-Pesa or your banking app." />
+                <PaymentMethodsList details={details} isLoading={isLoading} isError={isError} onRetry={() => refetch()} amount={amount} />
+                <p className="mt-6 text-sm text-content-3">
+                  <Link to="/bank-details" className="font-semibold text-brand-700 underline-offset-4 hover:underline">All bank and international details</Link>
+                </p>
+              </div>
+              <aside className="md:col-span-5" aria-labelledby="next-title">
+                <h2 id="next-title" className="font-display uppercase text-display-sm text-content">What happens next</h2>
+                <ol className="mt-4 divide-y divide-border-rule border-y border-border-rule">
+                  {[
+                    hasMpesa ? 'Send the gift by M-Pesa or bank transfer using the details on the left.' : 'Send the gift using the details on the left.',
+                    'You will get the usual confirmation from M-Pesa or your bank.',
+                    `If you would like an acknowledgement, forward the confirmation to ${site?.contact_email ?? 'the office'} with your name.`,
+                    'Your gift goes into the programmes, and the next figures are posted on the home page.',
+                  ].map((t, i) => (
+                    <li key={t} className="grid grid-cols-[2rem_1fr] gap-x-2 py-3">
+                      <span className="font-display text-xl font-bold tabular text-brand-600" aria-hidden="true">{i + 1}.</span>
+                      <span className="text-sm leading-6 text-content-2">{t}</span>
+                    </li>
+                  ))}
+                </ol>
+              </aside>
+            </div>
+          </Container>
+        </Section>
+      </MaintenanceGate>
+
+      <MaintenanceGate page="donate" section="recurring_options">
+        <Section ground="board" pad="lg" aria-labelledby="monthly-title">
+          <Container>
+            <div className="grid gap-rule md:grid-cols-12 md:gap-x-10">
+              <div className="md:col-span-7">
+                <SectionHeading id="monthly-title" tone="board" title="Give every month" lede="A standing gift is what keeps the porridge pot on every school day. Set it up once with your bank or M-Pesa and it runs on its own." />
+                <p className="text-sm leading-6 text-content-chalk-2">
+                  In M-Pesa: <span className="text-content-chalk">Lipa na M-Pesa → Pay Bill → Frequent payments</span> lets you save the Paybill and account for next month. In a banking app, set up a standing order to the account above.
+                </p>
+              </div>
+              <div className="md:col-span-5 md:self-center">
+                <Button to="/sponsorship" tone="board" variant="chalk" size="lg" trailingIcon={<ArrowRight className="h-5 w-5" aria-hidden="true" />}>
+                  Sponsor a child or a programme
+                </Button>
+              </div>
+            </div>
+          </Container>
+        </Section>
+      </MaintenanceGate>
+
+      <Section ground="paper" pad="lg" aria-labelledby="why-title">
+        <Container>
+          <SectionHeading id="why-title" title="Where it goes" />
+          <ol className="grid gap-x-10 md:grid-cols-3">
+            {REASONS.map((r, i) => (
+              <li key={r.title} className="grid grid-cols-[2.5rem_1fr] gap-x-3 border-t border-border-rule py-5">
+                <span className="font-display tabular text-display-sm text-brand-600" aria-hidden="true">{i + 1}.</span>
+                <div>
+                  <p className="font-display uppercase text-display-sm text-content">{r.title}</p>
+                  <p className="mt-1 text-base leading-7 text-content-2">{r.body}</p>
                 </div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── Ways to Give – white ── */}
-      <section className="py-16 md:py-24 bg-white w-full">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: easing }}
-          >
-            <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-full px-4 py-2 mb-5">
-              <Heart className="h-4 w-4 text-[#B01C2E]" aria-hidden="true" />
-              <span className="text-xs uppercase tracking-widest font-medium text-[#B01C2E]">
-                Give Today
-              </span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Ways to Give</h2>
-            <p className="text-gray-500 max-w-xl mx-auto">
-              Choose the giving method that works best for you.
-            </p>
-          </motion.div>
-
-          {detailsLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-8">
-              {[1, 2, 3].map((n) => (
-                <div key={n} className="h-52 bg-gray-100 rounded-2xl animate-pulse" />
-              ))}
-            </div>
-          ) : methodCards.length === 0 ? (
-            <p className="text-center text-gray-400 text-sm py-12">
-              Payment methods are being set up — please check back soon or visit the{' '}
-              <Link to="/bank-details" className="text-[#B01C2E] underline underline-offset-4">bank details page</Link>.
-            </p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-8">
-              {methodCards.map((card, index) => (
-                <motion.div
-                  key={card.title + index}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.08, duration: 0.55, ease: easing }}
-                >
-                  <MethodCard {...card} />
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* ── Why It Matters – gray-50 ── */}
-      <section className="py-16 md:py-24 bg-gray-50 w-full">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: easing }}
-          >
-            <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-full px-4 py-2 mb-5">
-              <HeartPulse className="h-4 w-4 text-[#B01C2E]" aria-hidden="true" />
-              <span className="text-xs uppercase tracking-widest font-medium text-[#B01C2E]">
-                Your Impact
-              </span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Why It Matters</h2>
-            <p className="text-gray-500 max-w-xl mx-auto">
-              Every gift you give directly transforms lives in Ganze, Kilifi County.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
-            {WHY_REASONS.map((reason, index) => (
-              <motion.div
-                key={reason.title}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.08, duration: 0.55, ease: easing }}
-              >
-                <ReasonCard {...reason} />
-              </motion.div>
+              </li>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Final CTA band – dark ── */}
-      <section className="relative py-14 md:py-20 bg-gray-950 overflow-hidden w-full">
-        <div className="absolute left-0 top-0 h-full w-1 bg-[#B01C2E]" aria-hidden="true" />
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: easing }}
-          >
-            <p className="text-white/40 text-xs uppercase tracking-widest mb-3">Every Gift Counts</p>
-            <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
-              Ready to Make a Difference?
-            </h2>
-            <p className="text-white/55 text-sm leading-relaxed max-w-lg mb-8">
-              Join hundreds of supporters transforming lives in Ganze. Your generosity funds
-              healthcare, education, and lasting community resilience.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Link
-                to="/bank-details"
-                className="bg-[#B01C2E] text-white px-6 py-3 rounded-xl font-semibold hover:bg-[#8A1624] transition-colors inline-flex items-center gap-2 text-sm"
-              >
-                <Heart className="h-4 w-4" aria-hidden="true" />
-                Give Now
-              </Link>
-              <Link
-                to="/volunteer"
-                className="bg-white/10 border border-white/20 text-white px-6 py-3 rounded-xl font-semibold hover:bg-white/20 transition-colors inline-flex items-center gap-2 text-sm"
-              >
-                Volunteer Instead
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+          </ol>
+        </Container>
+      </Section>
     </>
   );
 };

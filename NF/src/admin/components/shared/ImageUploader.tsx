@@ -151,7 +151,7 @@ export function ImageUploader({
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="absolute inset-0 bg-red-500/90 flex items-center justify-center"
+                className="absolute inset-0 bg-danger-500/90 flex items-center justify-center"
               >
                 <div className="text-center text-white">
                   <AlertCircle className="w-12 h-12 mx-auto mb-2" />
@@ -178,7 +178,7 @@ export function ImageUploader({
               ${getAspectRatioClass()} w-full rounded-lg border-2 border-dashed 
               transition-all cursor-pointer
               ${isDragActive && !isDragReject ? 'border-blue-500 bg-blue-50' : ''}
-              ${isDragReject ? 'border-red-500 bg-red-50' : ''}
+              ${isDragReject ? 'border-danger-500 bg-danger-50' : ''}
               ${!isDragActive && !isDragReject ? 'border-gray-300 hover:border-gray-400 bg-gray-50 hover:bg-gray-100' : ''}
             `}
           >
@@ -192,9 +192,9 @@ export function ImageUploader({
                 </>
               ) : isDragReject ? (
                 <>
-                  <AlertCircle className="w-12 h-12 text-red-500" />
-                  <div className="text-red-600 font-medium">Invalid file type</div>
-                  <div className="text-sm text-red-500">
+                  <AlertCircle className="w-12 h-12 text-danger-500" />
+                  <div className="text-danger-600 font-medium">Invalid file type</div>
+                  <div className="text-sm text-danger-500">
                     Please upload JPG, PNG, WebP, or GIF
                   </div>
                 </>

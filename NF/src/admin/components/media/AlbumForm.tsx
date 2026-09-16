@@ -121,14 +121,14 @@ export default function AlbumForm({
       {/* Title */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Album Title <span className="text-red-500">*</span>
+          Album Title <span className="text-danger-500">*</span>
         </label>
         <input
           type="text"
           value={form.title}
           onChange={e => set('title', e.target.value)}
           placeholder="e.g. World Orphan Day 2025"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent outline-none"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-600 focus:border-transparent outline-none"
           required
         />
       </div>
@@ -141,7 +141,7 @@ export default function AlbumForm({
           value={form.slug ?? ''}
           onChange={e => { setSlugManuallyEdited(true); set('slug', e.target.value); }}
           placeholder="auto-generated"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-mono focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent outline-none"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-mono focus:ring-2 focus:ring-brand-600 focus:border-transparent outline-none"
         />
         <p className="text-xs text-gray-400 mt-1">Used in the public URL. Leave blank to auto-generate.</p>
       </div>
@@ -154,7 +154,7 @@ export default function AlbumForm({
           onChange={e => set('description', e.target.value)}
           rows={3}
           placeholder="Brief description of this album..."
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm resize-none focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent outline-none"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm resize-none focus:ring-2 focus:ring-brand-600 focus:border-transparent outline-none"
         />
       </div>
 
@@ -165,7 +165,7 @@ export default function AlbumForm({
           value={form.album_type}
           onChange={e => set('album_type', e.target.value as AlbumType)}
           disabled={isAutoSynced}
-          className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent outline-none ${
+          className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-600 focus:border-transparent outline-none ${
             isAutoSynced ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''
           }`}
         >
@@ -185,7 +185,7 @@ export default function AlbumForm({
           <select
             value={form.event_id ?? ''}
             onChange={e => set('event_id', e.target.value || null)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent outline-none"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-600 focus:border-transparent outline-none"
           >
             <option value="">— None —</option>
             {events.map(ev => (
@@ -203,7 +203,7 @@ export default function AlbumForm({
             value={form.program_id ?? ''}
             onChange={e => set('program_id', e.target.value || null)}
             disabled={isAutoSynced}
-            className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent outline-none ${
+            className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-600 focus:border-transparent outline-none ${
               isAutoSynced ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''
             }`}
           >
@@ -225,7 +225,7 @@ export default function AlbumForm({
           type="date"
           value={form.taken_at ?? ''}
           onChange={e => set('taken_at', e.target.value || null)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent outline-none"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-600 focus:border-transparent outline-none"
         />
       </div>
 
@@ -236,7 +236,7 @@ export default function AlbumForm({
             type="checkbox"
             checked={form.is_published}
             onChange={e => set('is_published', e.target.checked)}
-            className="h-4 w-4 rounded border-gray-300 text-[#B01C2E] focus:ring-[#B01C2E]"
+            className="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-600"
           />
           <span className="text-sm font-medium text-gray-700">Published</span>
         </label>
@@ -245,7 +245,7 @@ export default function AlbumForm({
             type="checkbox"
             checked={form.is_featured}
             onChange={e => set('is_featured', e.target.checked)}
-            className="h-4 w-4 rounded border-gray-300 text-[#B01C2E] focus:ring-[#B01C2E]"
+            className="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-600"
           />
           <span className="text-sm font-medium text-gray-700">Featured</span>
         </label>
@@ -263,7 +263,7 @@ export default function AlbumForm({
         <button
           type="submit"
           disabled={isSaving}
-          className="px-4 py-2 text-sm font-medium text-white bg-[#B01C2E] hover:bg-[#8A1624] rounded-lg transition-colors disabled:opacity-60 flex items-center gap-2"
+          className="px-4 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-700 rounded-lg transition-colors disabled:opacity-60 flex items-center gap-2"
         >
           {isSaving && <Loader2 className="h-4 w-4 animate-spin" />}
           {album ? 'Save Changes' : 'Create Album'}

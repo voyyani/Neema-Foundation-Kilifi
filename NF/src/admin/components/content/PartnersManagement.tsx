@@ -87,7 +87,7 @@ function PartnerModal({ isOpen, onClose, partner }: PartnerModalProps) {
               required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-danger-500 focus:border-transparent"
               placeholder="e.g., KickStart International"
             />
           </div>
@@ -100,7 +100,7 @@ function PartnerModal({ isOpen, onClose, partner }: PartnerModalProps) {
               type="url"
               value={formData.logo_url || ''}
               onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-danger-500 focus:border-transparent"
               placeholder="https://example.com/logo.png"
             />
             <p className="mt-1 text-xs text-gray-500">
@@ -116,7 +116,7 @@ function PartnerModal({ isOpen, onClose, partner }: PartnerModalProps) {
               type="text"
               value={formData.type || ''}
               onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-danger-500 focus:border-transparent"
               placeholder="e.g., Community Partner, Faith Partner"
             />
           </div>
@@ -129,7 +129,7 @@ function PartnerModal({ isOpen, onClose, partner }: PartnerModalProps) {
               value={formData.description || ''}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-danger-500 focus:border-transparent"
               placeholder="Brief description of the partnership..."
             />
           </div>
@@ -142,7 +142,7 @@ function PartnerModal({ isOpen, onClose, partner }: PartnerModalProps) {
               type="url"
               value={formData.website_url || ''}
               onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-danger-500 focus:border-transparent"
               placeholder="https://partner-website.com"
             />
           </div>
@@ -153,7 +153,7 @@ function PartnerModal({ isOpen, onClose, partner }: PartnerModalProps) {
                 type="checkbox"
                 checked={formData.is_featured}
                 onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
-                className="w-4 h-4 text-red-600 rounded focus:ring-red-500"
+                className="w-4 h-4 text-danger-600 rounded focus:ring-danger-500"
               />
               <span className="text-sm text-gray-700">Featured (show on landing page)</span>
             </label>
@@ -163,7 +163,7 @@ function PartnerModal({ isOpen, onClose, partner }: PartnerModalProps) {
                 type="checkbox"
                 checked={formData.is_active}
                 onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-                className="w-4 h-4 text-red-600 rounded focus:ring-red-500"
+                className="w-4 h-4 text-danger-600 rounded focus:ring-danger-500"
               />
               <span className="text-sm text-gray-700">Active</span>
             </label>
@@ -173,7 +173,7 @@ function PartnerModal({ isOpen, onClose, partner }: PartnerModalProps) {
             <button
               type="submit"
               disabled={createMutation.isPending || updateMutation.isPending}
-              className="flex-1 bg-red-600 text-white px-4 py-2.5 rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+              className="flex-1 bg-danger-600 text-white px-4 py-2.5 rounded-lg hover:bg-danger-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
             >
               {createMutation.isPending || updateMutation.isPending ? 'Saving...' : 'Save Partner'}
             </button>
@@ -227,7 +227,7 @@ function SortablePartnerRow({ partner, onEdit, onDelete, onToggleFeatured, onTog
               className="w-12 h-12 object-contain rounded border"
             />
           ) : (
-            <div className="w-12 h-12 bg-red-100 rounded flex items-center justify-center text-red-700 font-bold">
+            <div className="w-12 h-12 bg-danger-100 rounded flex items-center justify-center text-danger-700 font-bold">
               {partner.name.split(' ').map((w: string) => w[0]).join('')}
             </div>
           )}
@@ -282,14 +282,14 @@ function SortablePartnerRow({ partner, onEdit, onDelete, onToggleFeatured, onTog
           )}
           <button
             onClick={() => onEdit(partner)}
-            className="p-2 text-[#B01C2E] hover:text-blue-800"
+            className="p-2 text-brand-600 hover:text-blue-800"
             title="Edit"
           >
             <Pencil className="h-4 w-4" />
           </button>
           <button
             onClick={() => onDelete(partner.id)}
-            className="p-2 text-red-600 hover:text-red-800"
+            className="p-2 text-danger-600 hover:text-danger-800"
             title="Delete"
           >
             <Trash2 className="h-4 w-4" />
@@ -361,7 +361,7 @@ export default function PartnersManagement() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-danger-600"></div>
       </div>
     );
   }
@@ -381,7 +381,7 @@ export default function PartnersManagement() {
             setEditingPartner(null);
             setIsModalOpen(true);
           }}
-          className="flex items-center justify-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 text-sm font-medium shrink-0 w-full sm:w-auto"
+          className="flex items-center justify-center gap-2 bg-danger-600 text-white px-4 py-2 rounded-lg hover:bg-danger-700 text-sm font-medium shrink-0 w-full sm:w-auto"
         >
           <Plus className="h-4 w-4" />
           <span>Add Partner</span>
@@ -455,7 +455,7 @@ export default function PartnersManagement() {
                       className="w-12 h-12 object-contain rounded border bg-gray-50"
                     />
                   ) : (
-                    <div className="w-12 h-12 bg-red-100 rounded flex items-center justify-center text-red-700 font-bold text-sm">
+                    <div className="w-12 h-12 bg-danger-100 rounded flex items-center justify-center text-danger-700 font-bold text-sm">
                       {partner.name.split(' ').map((w: string) => w[0]).join('').slice(0, 3)}
                     </div>
                   )}
@@ -501,13 +501,13 @@ export default function PartnersManagement() {
                   )}
                   <button
                     onClick={() => handleEdit(partner)}
-                    className="p-2 text-[#B01C2E] hover:text-[#8a1522]"
+                    className="p-2 text-brand-600 hover:text-brand-700"
                   >
                     <Pencil className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(partner.id)}
-                    className="p-2 text-red-600 hover:text-red-800"
+                    className="p-2 text-danger-600 hover:text-danger-800"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>

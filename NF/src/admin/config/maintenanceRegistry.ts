@@ -531,7 +531,7 @@ export const QUICK_PRESETS: QuickPreset[] = [
     label: 'Full Site Maintenance',
     description: 'Block entire public site immediately',
     icon: 'Globe',
-    color: 'bg-red-500',
+    color: 'bg-danger-500',
     rule: {
       scope: 'global',
       target_key: 'global',

@@ -53,7 +53,7 @@ Everything that isn't an event or a user, grouped under **Content**:
 - **Site Settings** — brand name, tagline, mission/vision/values, social
   links, and a primary/secondary color picker.
   ⚠️ **The color picker does not currently affect the live site** — see
-  [DESIGN-MASTER-PLAN.md §1](DESIGN-MASTER-PLAN.md#1-current-state--the-token-system-exists-and-is-being-ignored).
+  [DESIGN.md](../DESIGN.md) (the design plan was retired into it in Phase 2).
   Don't rely on it to rebrand anything until that's wired up or removed.
 - **Submissions** (`/admin/content/submissions`) — every contact-form,
   partnership, and donation-adjacent inquiry lands here, `new → in_progress →

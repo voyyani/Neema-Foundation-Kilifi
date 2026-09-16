@@ -165,7 +165,7 @@ function ConfirmDialog({
             <span className="text-gray-500">Severity</span>
             <span className={`font-medium capitalize ${
               preset.rule.severity === 'full_block'
-                ? 'text-red-600'
+                ? 'text-danger-600'
                 : preset.rule.severity === 'degraded'
                   ? 'text-amber-600'
                   : 'text-blue-600'
@@ -243,17 +243,17 @@ function TemplateList({
             <button
               onClick={() => onApply(template)}
               disabled={isApplying}
-              className="px-2 py-1 text-[10px] font-medium text-white bg-[#B01C2E] rounded
-                         hover:bg-[#8A1624] transition-colors disabled:opacity-50"
+              className="px-2 py-1 text-[10px] font-medium text-white bg-brand-600 rounded
+                         hover:bg-brand-700 transition-colors disabled:opacity-50"
             >
               Use
             </button>
             <button
               onClick={() => onDelete(template.id)}
-              className="p-1 hover:bg-red-50 rounded transition-colors"
+              className="p-1 hover:bg-danger-50 rounded transition-colors"
               title="Delete template"
             >
-              <X className="h-3 w-3 text-gray-400 hover:text-red-500" />
+              <X className="h-3 w-3 text-gray-400 hover:text-danger-500" />
             </button>
           </div>
         </div>

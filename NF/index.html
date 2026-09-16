@@ -2,14 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="https://res.cloudinary.com/dzqdxosk2/image/upload/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="https://res.cloudinary.com/dzqdxosk2/image/upload/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://res.cloudinary.com/dzqdxosk2/image/upload/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://res.cloudinary.com/dzqdxosk2/image/upload/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png">
+    <link rel="icon" type="image/svg+xml" href="https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_64/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_180/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_32/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_16/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png">
     
     <!-- Essential Meta Tags -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#991B1B" />
+    <meta name="theme-color" content="#B01C2E" />
     
     <!-- Primary Meta Tags -->
     <title>Neema Foundation - Transforming Ganze Community</title>
@@ -36,11 +36,9 @@
     <meta property="twitter:description" content="Join Neema Foundation in our mission to transform the Ganze community through education, healthcare, and sustainable development programs.">
     <meta property="twitter:image" content="https://res.cloudinary.com/dzqdxosk2/image/upload/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png">
     
-    <!-- Preload Critical Resources -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"></noscript>
+    <!-- Fonts: self-hosted latin subsets, declared in src/styles/base.css -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/archivo-latin.woff2" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin>
     
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -71,11 +69,12 @@
     <link rel="preconnect" href="https://res.cloudinary.com">
     
     <style>
-      /* Critical CSS for initial load */
+      /* Critical CSS for initial load — token values from tailwind.config.js */
       body {
         margin: 0;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-        background: linear-gradient(135deg, #fef2f2 0%, #ffffff 50%, #fef2f2 100%);
+        background: #FCFBF8;
+        color: #151A22;
         min-height: 100vh;
       }
       
@@ -85,67 +84,74 @@
         flex-direction: column;
       }
       
-      /* Loading Animation */
+      /* Loading screen: a blank page with the red margin rule. */
       .loading-container {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, #fef2f2 0%, #ffffff 50%, #fef2f2 100%);
+        inset: 0;
+        background: #FCFBF8;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         z-index: 9999;
-        transition: opacity 0.5s ease-out;
+        transition: opacity 0.3s ease-out;
+      }
+      .loading-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 20px;
+        width: 2px;
+        background: #B01C2E;
+      }
+      @media (min-width: 1024px) {
+        .loading-container::before { left: max(48px, calc((100vw - 1200px) / 2)); }
       }
       
       .loading-logo {
-        width: 80px;
-        height: 80px;
-        margin-bottom: 20px;
-        animation: pulse 2s infinite ease-in-out;
+        width: 64px;
+        height: 64px;
+        margin-bottom: 16px;
       }
       
       .loading-text {
-        font-family: 'Playfair Display', serif;
-        font-size: 24px;
-        font-weight: 600;
-        color: #991B1B;
-        margin-bottom: 8px;
+        font-family: 'Archivo', 'Inter', sans-serif;
+        font-variation-settings: 'wdth' 82;
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        color: #151A22;
+        margin-bottom: 6px;
       }
       
       .loading-subtext {
         font-size: 14px;
-        color: #6B7280;
-        margin-bottom: 30px;
+        color: #5F6774;
+        margin-bottom: 28px;
       }
       
       .loading-bar {
-        width: 200px;
-        height: 4px;
-        background: #E5E7EB;
-        border-radius: 2px;
+        width: 160px;
+        height: 2px;
+        background: #E3E0D9;
         overflow: hidden;
       }
       
       .loading-progress {
         height: 100%;
-        background: linear-gradient(90deg, #991B1B, #DC2626);
-        border-radius: 2px;
-        animation: loading 1.5s infinite ease-in-out;
-      }
-      
-      @keyframes pulse {
-        0%, 100% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.05); opacity: 0.9; }
+        width: 40%;
+        background: #B01C2E;
+        animation: loading 1.2s infinite cubic-bezier(0.16, 1, 0.3, 1);
       }
       
       @keyframes loading {
         0% { transform: translateX(-100%); }
-        50% { transform: translateX(0); }
-        100% { transform: translateX(100%); }
+        100% { transform: translateX(260%); }
+      }
+      
+      @media (prefers-reduced-motion: reduce) {
+        .loading-progress { animation: none; width: 100%; }
       }
       
       .fade-out {
@@ -155,15 +161,24 @@
     </style>
   </head>
   <body>
+    <!--
+      impeccable direction contract · seed dbfc66cd · code-led
+      THESIS: The site is a Kenyan school exercise book kept by the Foundation: ruled paper, a red margin rule, figures tallied on the classroom board. It refuses the charity template (full-bleed photo hero, three icon cards, urgency button).
+      OWN-WORLD: Paper #FCFBF8 with blue feint rules at 30px; the maroon margin rail every element registers against; chalkboard bands #1B2622 with chalk type for figures and the ask; Archivo condensed caps for headings, Inter for reading; photographs placed as captioned plates; the teacher's tick and pen underline as the only ornament.
+      STORY: A donor on a phone in Kilifi or abroad understands in one screen who this is (a registered CBO in Ganze since 2020), sees the work as figures and photographs, and gives by Paybill or bank with no doubt about what happens next.
+      FIRST VIEWPORT (360px): nav on paper with logo left and a maroon Give button right; below, ruled paper with the rail: the headline in condensed caps at ~44px, one-sentence subtitle, primary Give + secondary See programmes, then the Ahoho Mission photograph as a plate with its caption; three tallies with unit, period and programme follow.
+      FORM: Kenyan school exercise book & chalkboard, candidate 4 of 7 (assigned by roll dbfc66cd). Raises: structure is the only ornament (Coptic); every zone headed by its literal name (streetwear); one rail all matter registers against (emission rail); every figure carries unit, period and subject (six-pack); rules drawn real, not a texture (silkscreen).
+      FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+    -->
     <!-- Loading Screen -->
     <div id="loading" class="loading-container">
       <img 
-        src="https://res.cloudinary.com/dzqdxosk2/image/upload/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png" 
+        src="https://res.cloudinary.com/dzqdxosk2/image/upload/f_auto,q_auto,w_128/v1760952334/6cf22f36-8abb-4663-b252-00da5f81f79a_pptxk0.png" 
         alt="Neema Foundation Logo" 
         class="loading-logo"
       />
       <div class="loading-text">Neema Foundation</div>
-      <div class="loading-subtext">Transforming Ganze Community</div>
+      <div class="loading-subtext">Ganze Sub-county, Kilifi</div>
       <div class="loading-bar">
         <div class="loading-progress"></div>
       </div>
@@ -176,15 +191,13 @@
     <script>
       // Remove loading screen when app is ready
       window.addEventListener('load', function() {
-        setTimeout(function() {
-          const loadingElement = document.getElementById('loading');
-          if (loadingElement) {
-            loadingElement.classList.add('fade-out');
-            setTimeout(function() {
-              loadingElement.remove();
-            }, 500);
-          }
-        }, 1000);
+        const loadingElement = document.getElementById('loading');
+        if (loadingElement) {
+          loadingElement.classList.add('fade-out');
+          setTimeout(function() {
+            loadingElement.remove();
+          }, 300);
+        }
       });
 
       // Fallback in case load event doesn't fire

@@ -128,7 +128,7 @@ function DiffTable({ diff }: { diff: Record<string, { before: unknown; after: un
         <thead>
           <tr className="bg-gray-50 border-b border-gray-200">
             <th className="text-left py-1.5 px-3 font-medium text-gray-500 w-1/3">Field</th>
-            <th className="text-left py-1.5 px-3 font-medium text-red-500 w-1/3">Before</th>
+            <th className="text-left py-1.5 px-3 font-medium text-danger-500 w-1/3">Before</th>
             <th className="text-left py-1.5 px-3 font-medium text-green-600 w-1/3">After</th>
           </tr>
         </thead>
@@ -138,7 +138,7 @@ function DiffTable({ diff }: { diff: Record<string, { before: unknown; after: un
               <td className="py-1.5 px-3 text-gray-600 font-medium whitespace-nowrap">
                 {field.replace(/_/g, ' ')}
               </td>
-              <td className="py-1.5 px-3 text-red-700 bg-red-50">
+              <td className="py-1.5 px-3 text-danger-700 bg-danger-50">
                 <DiffValue value={before} />
               </td>
               <td className="py-1.5 px-3 text-green-700 bg-green-50">

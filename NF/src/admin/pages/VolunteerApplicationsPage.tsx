@@ -95,7 +95,7 @@ const STATUS_CONFIG: Record<
   new:          { label: 'New',          color: 'text-blue-700',    bg: 'bg-blue-50 border-blue-200',     icon: <Clock className="h-3 w-3" /> },
   under_review: { label: 'Under Review', color: 'text-amber-700',   bg: 'bg-amber-50 border-amber-200',   icon: <Eye className="h-3 w-3" /> },
   accepted:     { label: 'Accepted',     color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200', icon: <CheckCircle2 className="h-3 w-3" /> },
-  rejected:     { label: 'Rejected',     color: 'text-red-700',     bg: 'bg-red-50 border-red-200',       icon: <XCircle className="h-3 w-3" /> },
+  rejected:     { label: 'Rejected',     color: 'text-danger-700',     bg: 'bg-danger-50 border-danger-200',       icon: <XCircle className="h-3 w-3" /> },
   waitlisted:   { label: 'Waitlisted',   color: 'text-purple-700',  bg: 'bg-purple-50 border-purple-200', icon: <Pause className="h-3 w-3" /> },
 };
 
@@ -425,7 +425,7 @@ export default function VolunteerApplicationsPage() {
             placeholder="Search by name, email, or location…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]/30 focus:border-[#B01C2E]"
+            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600/30 focus:border-brand-600"
           />
         </div>
       </div>
@@ -436,9 +436,9 @@ export default function VolunteerApplicationsPage() {
           <Loader2 className="h-6 w-6 text-gray-400 animate-spin" />
         </div>
       ) : error ? (
-        <div className="rounded-xl bg-red-50 border border-red-200 p-6 text-center">
-          <p className="text-sm text-red-700">Failed to load volunteer applications.</p>
-          <p className="text-xs text-red-500 mt-1">Run the migration to create the volunteer_applications table.</p>
+        <div className="rounded-xl bg-danger-50 border border-danger-200 p-6 text-center">
+          <p className="text-sm text-danger-700">Failed to load volunteer applications.</p>
+          <p className="text-xs text-danger-500 mt-1">Run the migration to create the volunteer_applications table.</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="rounded-xl border border-gray-100 bg-white p-12 text-center">
@@ -463,8 +463,8 @@ export default function VolunteerApplicationsPage() {
                   className="w-full flex items-center gap-3 p-4 text-left hover:bg-gray-50 transition-colors"
                 >
                   <div className="shrink-0">
-                    <div className="h-10 w-10 rounded-full bg-[#B01C2E]/10 flex items-center justify-center">
-                      <User className="h-5 w-5 text-[#B01C2E]" />
+                    <div className="h-10 w-10 rounded-full bg-brand-600/10 flex items-center justify-center">
+                      <User className="h-5 w-5 text-brand-600" />
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
@@ -486,7 +486,7 @@ export default function VolunteerApplicationsPage() {
                   </div>
                   <div className="shrink-0 flex items-center gap-3">
                     {replyCountMap[app.id] > 0 && (
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-[#B01C2E]/10 text-[#B01C2E]">
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-brand-600/10 text-brand-600">
                         <MessageSquareReply className="h-3 w-3" />
                         {replyCountMap[app.id]} {replyCountMap[app.id] === 1 ? 'reply' : 'replies'}
                       </span>
@@ -570,7 +570,7 @@ export default function VolunteerApplicationsPage() {
                           href={app.cv_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-sm text-[#B01C2E] hover:underline"
+                          className="inline-flex items-center gap-1.5 text-sm text-brand-600 hover:underline"
                         >
                           <FileText className="h-4 w-4" />
                           View CV / Resume
@@ -641,7 +641,7 @@ export default function VolunteerApplicationsPage() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => openReply(app)}
-                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#B01C2E] rounded-lg hover:bg-[#9A1827] transition-colors shadow-sm"
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors shadow-sm"
                       >
                         <Reply className="h-4 w-4" />
                         Reply to {app.name.split(/\s+/)[0]}
@@ -668,7 +668,7 @@ export default function VolunteerApplicationsPage() {
                         }}
                         rows={2}
                         placeholder="Add reviewer notes…"
-                        className="w-full text-sm border border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-[#B01C2E]/30 focus:border-[#B01C2E] resize-none"
+                        className="w-full text-sm border border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-brand-600/30 focus:border-brand-600 resize-none"
                       />
                     </div>
                   </div>
@@ -688,8 +688,8 @@ export default function VolunteerApplicationsPage() {
           />
           <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4 z-50">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-[#B01C2E]/10 flex items-center justify-center shrink-0">
-                <Send className="h-5 w-5 text-[#B01C2E]" />
+              <div className="h-10 w-10 rounded-full bg-brand-600/10 flex items-center justify-center shrink-0">
+                <Send className="h-5 w-5 text-brand-600" />
               </div>
               <div>
                 <h3 className="text-base font-semibold text-gray-900">
@@ -722,7 +722,7 @@ export default function VolunteerApplicationsPage() {
                     statusPrompt.newStatus,
                   )
                 }
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#B01C2E] rounded-lg hover:bg-[#9A1827] transition-colors shadow-sm"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors shadow-sm"
               >
                 <Mail className="h-4 w-4" />
                 Customise & Send

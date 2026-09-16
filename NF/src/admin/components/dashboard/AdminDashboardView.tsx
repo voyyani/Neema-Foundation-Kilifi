@@ -176,7 +176,7 @@ export default function AdminDashboardView({ data, loading, error, userName, rol
               <CreditCard className="h-4 w-4 text-gray-400" />
               <a
                 href="/admin/bank-details"
-                className="text-[#B01C2E] hover:text-[#8A1624] font-medium transition-colors"
+                className="text-brand-600 hover:text-brand-700 font-medium transition-colors"
               >
                 Manage payment methods →
               </a>
@@ -195,7 +195,7 @@ export default function AdminDashboardView({ data, loading, error, userName, rol
           {data.submissions.awaitingReply > 0 && (
             <a
               href="/admin/content/submissions"
-              className="flex items-center justify-between px-4 py-3 rounded-2xl bg-red-50 border border-red-100 text-red-700 hover:bg-red-100 transition-colors"
+              className="flex items-center justify-between px-4 py-3 rounded-2xl bg-danger-50 border border-danger-100 text-danger-700 hover:bg-danger-100 transition-colors"
             >
               <span className="text-sm font-medium">
                 {data.submissions.awaitingReply} submission{data.submissions.awaitingReply === 1 ? '' : 's'} awaiting reply

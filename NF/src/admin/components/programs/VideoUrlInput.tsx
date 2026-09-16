@@ -149,8 +149,8 @@ export default function VideoUrlInput({
             placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
             className={`w-full pl-10 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
               videoUrl && !isValid
-                ? 'border-red-300 focus:ring-red-500'
-                : 'border-gray-300 focus:ring-[#B01C2E]'
+                ? 'border-danger-300 focus:ring-danger-500'
+                : 'border-gray-300 focus:ring-brand-600'
             }`}
           />
           {videoUrl && (
@@ -200,7 +200,7 @@ export default function VideoUrlInput({
           <div className="mt-2">
             <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
               <div
-                className="h-full bg-[#B01C2E] transition-all duration-200"
+                className="h-full bg-brand-600 transition-all duration-200"
                 style={{ width: `${progress.percentage}%` }}
               />
             </div>
@@ -218,9 +218,9 @@ export default function VideoUrlInput({
               <>
                 <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                   videoInfo.type === 'youtube' 
-                    ? 'bg-red-100 text-red-800' 
+                    ? 'bg-danger-100 text-danger-800' 
                     : videoInfo.type === 'vimeo'
-                    ? 'bg-[#B01C2E]/10 text-blue-800'
+                    ? 'bg-brand-600/10 text-blue-800'
                     : 'bg-gray-100 text-gray-800'
                 }`}>
                   {videoInfo.type === 'youtube' && '▶ YouTube'}
@@ -232,14 +232,14 @@ export default function VideoUrlInput({
                     href={videoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-[#B01C2E] hover:text-blue-700 flex items-center gap-1"
+                    className="text-xs text-brand-600 hover:text-blue-700 flex items-center gap-1"
                   >
                     Open in new tab <ExternalLink className="w-3 h-3" />
                   </a>
                 )}
               </>
             ) : (
-              <span className="flex items-center gap-1 text-xs text-red-600">
+              <span className="flex items-center gap-1 text-xs text-danger-600">
                 <AlertCircle className="w-4 h-4" />
                 Unrecognized video URL format
               </span>
@@ -331,7 +331,7 @@ export default function VideoUrlInput({
               <button
                 type="button"
                 onClick={handleAutoThumbnail}
-                className="text-xs text-[#B01C2E] hover:text-blue-700 flex items-center gap-1"
+                className="text-xs text-brand-600 hover:text-blue-700 flex items-center gap-1"
               >
                 <RefreshCw className="w-3 h-3" />
                 Use auto-detected
@@ -352,7 +352,7 @@ export default function VideoUrlInput({
                 setCustomThumbnail(!!e.target.value);
               }}
               placeholder={autoThumbnail || 'Custom thumbnail URL (optional)'}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"
             />
           </div>
           <p className="text-xs text-gray-500 mt-1">

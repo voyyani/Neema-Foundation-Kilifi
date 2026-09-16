@@ -131,39 +131,39 @@ const form = useForm({
           {/* Event Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Event Name <span className="text-red-500">*</span>
+              Event Name <span className="text-danger-500">*</span>
             </label>
             <input
               {...register('name')}
               type="text"
-              className={`w-full px-4 py-3 sm:py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px] ${
-                errors.name ? 'border-red-300' : 'border-gray-200'
+              className={`w-full px-4 py-3 sm:py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-600 text-base min-h-[44px] ${
+                errors.name ? 'border-danger-300' : 'border-gray-200'
               }`}
               placeholder="e.g., Community Health Outreach"
             />
             {errors.name && (
-              <p data-form-error className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+              <p data-form-error className="mt-1 text-sm text-danger-600">{errors.name.message}</p>
             )}
           </div>
 
           {/* Slug */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              URL Slug <span className="text-red-500">*</span>
+              URL Slug <span className="text-danger-500">*</span>
             </label>
             <div className="flex gap-2">
               <input
                 {...register('slug')}
                 type="text"
                 onFocus={() => setIsGeneratingSlug(false)}
-                className={`flex-1 px-4 py-3 sm:py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px] ${
-                  errors.slug ? 'border-red-300' : 'border-gray-200'
+                className={`flex-1 px-4 py-3 sm:py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-600 text-base min-h-[44px] ${
+                  errors.slug ? 'border-danger-300' : 'border-gray-200'
                 }`}
                 placeholder="community-health-outreach"
               />
             </div>
             {errors.slug && (
-              <p className="mt-1 text-sm text-red-600">{errors.slug.message}</p>
+              <p className="mt-1 text-sm text-danger-600">{errors.slug.message}</p>
             )}
             <p className="mt-1 text-xs text-gray-500">
               Used in the event URL. Only lowercase letters, numbers, and hyphens.
@@ -176,7 +176,7 @@ const form = useForm({
             <input
               {...register('purpose')}
               type="text"
-              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
+              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-600 text-base min-h-[44px]"
               placeholder="Short description of the event purpose"
             />
           </div>
@@ -188,14 +188,14 @@ const form = useForm({
             </label>
             <select
               {...register('program_id')}
-              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
+              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-600 text-base min-h-[44px]"
             >
               <option value="">Select a program</option>
               {programs.map((p) => (
                 <option key={p.id} value={p.id}>{p.name}</option>
               ))}
             </select>            {errors.program_id && (
-              <p className="mt-1 text-sm text-red-600">{errors.program_id.message}</p>
+              <p className="mt-1 text-sm text-danger-600">{errors.program_id.message}</p>
             )}            <p className="mt-1 text-xs text-gray-500">
               Choose a program; upcoming events will display on that program’s page.
             </p>
@@ -208,11 +208,11 @@ const form = useForm({
               {...register('description')}
               rows={4}
               maxLength={10000}
-              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base"
+              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-600 text-base"
               placeholder="Detailed event description..."
             />
             {errors.description && (
-              <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+              <p className="mt-1 text-sm text-danger-600">{errors.description.message}</p>
             )}
           </div>
         </div>
@@ -226,7 +226,7 @@ const form = useForm({
         className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 shadow-sm"
       >
         <div className="flex items-center gap-2 mb-4">
-          <Calendar className="w-5 h-5 text-[#B01C2E]" />
+          <Calendar className="w-5 h-5 text-brand-600" />
           <h2 className="text-lg font-semibold text-gray-900">Date & Time</h2>
         </div>
 
@@ -234,7 +234,7 @@ const form = useForm({
           {/* Start Date */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Start Date <span className="text-red-500">*</span>
+              Start Date <span className="text-danger-500">*</span>
             </label>
             <Controller
               name="start_date"
@@ -246,14 +246,14 @@ const form = useForm({
                   onChange={(e) =>
                     field.onChange(e.target.value ? new Date(e.target.value) : undefined)
                   }
-                  className={`w-full px-4 py-3 sm:py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px] ${
-                    errors.start_date ? 'border-red-300' : 'border-gray-200'
+                  className={`w-full px-4 py-3 sm:py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-600 text-base min-h-[44px] ${
+                    errors.start_date ? 'border-danger-300' : 'border-gray-200'
                   }`}
                 />
               )}
             />
             {errors.start_date && (
-              <p className="mt-1 text-sm text-red-600">{errors.start_date.message}</p>
+              <p className="mt-1 text-sm text-danger-600">{errors.start_date.message}</p>
             )}
           </div>
 
@@ -270,12 +270,12 @@ const form = useForm({
                   onChange={(e) =>
                     field.onChange(e.target.value ? new Date(e.target.value) : undefined)
                   }
-                  className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
+                  className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-600 text-base min-h-[44px]"
                 />
               )}
             />
             {errors.end_date && (
-              <p className="mt-1 text-sm text-red-600">{errors.end_date.message}</p>
+              <p className="mt-1 text-sm text-danger-600">{errors.end_date.message}</p>
             )}
           </div>
 
@@ -285,7 +285,7 @@ const form = useForm({
             <input
               {...register('start_time')}
               type="time"
-              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
+              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-600 text-base min-h-[44px]"
             />
           </div>
 
@@ -295,7 +295,7 @@ const form = useForm({
             <input
               {...register('end_time')}
               type="time"
-              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
+              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-600 text-base min-h-[44px]"
             />
           </div>
         </div>
@@ -310,9 +310,9 @@ const form = useForm({
       >
         <div className="flex items-center gap-2 mb-4">
           {watchIsVirtual ? (
-            <Globe className="w-5 h-5 text-[#B01C2E]" />
+            <Globe className="w-5 h-5 text-brand-600" />
           ) : (
-            <MapPin className="w-5 h-5 text-[#B01C2E]" />
+            <MapPin className="w-5 h-5 text-brand-600" />
           )}
           <h2 className="text-lg font-semibold text-gray-900">Location</h2>
         </div>
@@ -323,7 +323,7 @@ const form = useForm({
             <input
               {...register('is_virtual')}
               type="checkbox"
-              className="w-4 h-4 text-[#B01C2E] border-gray-300 rounded focus:ring-[#B01C2E]"
+              className="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-600"
             />
             <span className="text-sm font-medium text-gray-700">This is a virtual event</span>
           </label>
@@ -333,18 +333,18 @@ const form = useForm({
           /* Virtual Link */
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Virtual Link <span className="text-red-500">*</span>
+              Virtual Link <span className="text-danger-500">*</span>
             </label>
             <input
               {...register('virtual_link')}
               type="url"
-              className={`w-full px-4 py-3 sm:py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px] ${
-                errors.virtual_link ? 'border-red-300' : 'border-gray-200'
+              className={`w-full px-4 py-3 sm:py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-600 text-base min-h-[44px] ${
+                errors.virtual_link ? 'border-danger-300' : 'border-gray-200'
               }`}
               placeholder="https://zoom.us/j/123456789"
             />
             {errors.virtual_link && (
-              <p className="mt-1 text-sm text-red-600">{errors.virtual_link.message}</p>
+              <p className="mt-1 text-sm text-danger-600">{errors.virtual_link.message}</p>
             )}
           </div>
         ) : (
@@ -352,18 +352,18 @@ const form = useForm({
             {/* Venue Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Venue Name <span className="text-red-500">*</span>
+                Venue Name <span className="text-danger-500">*</span>
               </label>
               <input
                 {...register('venue_name')}
                 type="text"
-                className={`w-full px-4 py-3 sm:py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px] ${
-                  errors.venue_name ? 'border-red-300' : 'border-gray-200'
+                className={`w-full px-4 py-3 sm:py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-600 text-base min-h-[44px] ${
+                  errors.venue_name ? 'border-danger-300' : 'border-gray-200'
                 }`}
                 placeholder="e.g., Ganze Community Center"
               />
               {errors.venue_name && (
-                <p className="mt-1 text-sm text-red-600">{errors.venue_name.message}</p>
+                <p className="mt-1 text-sm text-danger-600">{errors.venue_name.message}</p>
               )}
             </div>
 
@@ -374,7 +374,7 @@ const form = useForm({
                 {...register('venue_address')}
                 rows={2}
                 maxLength={1000}
-                className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base"
+                className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-600 text-base"
                 placeholder="Full address..."
               />
             </div>
@@ -390,7 +390,7 @@ const form = useForm({
         className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 shadow-sm"
       >
         <div className="flex items-center gap-2 mb-4">
-          <Users className="w-5 h-5 text-[#B01C2E]" />
+          <Users className="w-5 h-5 text-brand-600" />
           <h2 className="text-lg font-semibold text-gray-900">Registration</h2>
         </div>
 
@@ -400,7 +400,7 @@ const form = useForm({
             <input
               {...register('requires_registration')}
               type="checkbox"
-              className="w-4 h-4 text-[#B01C2E] border-gray-300 rounded focus:ring-[#B01C2E]"
+              className="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-600"
             />
             <span className="text-sm font-medium text-gray-700">Requires registration</span>
           </label>
@@ -415,7 +415,7 @@ const form = useForm({
             <input
               {...register('registration_link')}
               type="url"
-              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
+              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-600 text-base min-h-[44px]"
               placeholder="https://..."
             />
           </div>
@@ -436,7 +436,7 @@ const form = useForm({
                     onChange={(e) =>
                       field.onChange(e.target.value ? new Date(e.target.value) : undefined)
                     }
-                    className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
+                    className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-600 text-base min-h-[44px]"
                   />
                 )}
               />
@@ -451,11 +451,11 @@ const form = useForm({
                 {...register('max_attendees', { valueAsNumber: true })}
                 type="number"
                 min={1}
-                className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
+                className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-600 text-base min-h-[44px]"
                 placeholder="Leave empty for unlimited"
               />
               {errors.max_attendees && (
-                <p className="mt-1 text-sm text-red-600">{errors.max_attendees.message}</p>
+                <p className="mt-1 text-sm text-danger-600">{errors.max_attendees.message}</p>
               )}
             </div>
           </div>
@@ -470,7 +470,7 @@ const form = useForm({
         className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 shadow-sm"
       >
         <div className="flex items-center gap-2 mb-4">
-          <Tag className="w-5 h-5 text-[#B01C2E]" />
+          <Tag className="w-5 h-5 text-brand-600" />
           <h2 className="text-lg font-semibold text-gray-900">Publishing</h2>
         </div>
 
@@ -480,7 +480,7 @@ const form = useForm({
             <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
             <select
               {...register('status')}
-              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
+              className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-600 text-base min-h-[44px]"
             >
               <option value="draft">Draft</option>
               <option value="published">Published</option>
@@ -496,7 +496,7 @@ const form = useForm({
               <input
                 {...register('is_featured')}
                 type="checkbox"
-                className="w-4 h-4 text-[#B01C2E] border-gray-300 rounded focus:ring-[#B01C2E]"
+                className="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-600"
               />
               <span className="text-sm font-medium text-gray-700">Feature this event</span>
             </label>
@@ -509,7 +509,7 @@ const form = useForm({
               <input
                 {...register('donation_link' as const)}
                 type="url"
-                className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
+                className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-600 text-base min-h-[44px]"
                 placeholder="https://donate.example.com/event"
               />
             </div>
@@ -518,7 +518,7 @@ const form = useForm({
               <input
                 {...register('volunteer_link' as const)}
                 type="url"
-                className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-base min-h-[44px]"
+                className="w-full px-4 py-3 sm:py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-600 text-base min-h-[44px]"
                 placeholder="https://volunteer.example.com/event"
               />
             </div>
@@ -528,7 +528,7 @@ const form = useForm({
 
       {/* Error summary */}
       {hasErrors && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-lg border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-700">
           <strong>Please fix the following before saving:</strong>
           <ul className="mt-1 list-disc list-inside space-y-0.5">
             {(Object.entries(errors) as [string, any][]).map(([key, err]) =>
@@ -555,7 +555,7 @@ const form = useForm({
         <button
           type="submit"
           disabled={isBusy}
-          className="tap-scale flex-1 px-6 py-3 sm:py-2.5 bg-[#B01C2E] text-white rounded-xl hover:bg-[#8A1624] active:bg-[#6B111C] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm min-h-[44px] shadow-sm"
+          className="tap-scale flex-1 px-6 py-3 sm:py-2.5 bg-brand-600 text-white rounded-xl hover:bg-brand-700 active:bg-brand-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm min-h-[44px] shadow-sm"
         >
           {isBusy ? 'Saving…' : event ? 'Update Event' : 'Create Event'}
         </button>

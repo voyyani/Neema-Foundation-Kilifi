@@ -118,14 +118,14 @@ export function RichMediaInput({
             value={url}
             onChange={(e) => handleUrlChange(e.target.value)}
             placeholder={placeholder}
-            className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B01C2E]"
+            className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-600"
           />
           {mediaInfo && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
               {mediaInfo.valid ? (
                 <CheckCircle2 className="w-5 h-5 text-green-500" />
               ) : (
-                <AlertCircle className="w-5 h-5 text-red-500" />
+                <AlertCircle className="w-5 h-5 text-danger-500" />
               )}
             </div>
           )}
@@ -138,13 +138,13 @@ export function RichMediaInput({
           <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
             {mediaInfo.type === 'youtube' && (
               <>
-                <Youtube className="w-4 h-4 text-red-600" />
+                <Youtube className="w-4 h-4 text-danger-600" />
                 YouTube Video
               </>
             )}
             {mediaInfo.type === 'vimeo' && (
               <>
-                <Video className="w-4 h-4 text-[#B01C2E]" />
+                <Video className="w-4 h-4 text-brand-600" />
                 Vimeo Video
               </>
             )}

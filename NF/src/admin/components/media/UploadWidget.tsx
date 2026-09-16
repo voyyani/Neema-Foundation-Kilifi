@@ -126,12 +126,12 @@ export default function UploadWidget({ albumId, existingCount, onUploadComplete 
         {...getRootProps()}
         className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
           isDragActive
-            ? 'border-[#B01C2E] bg-red-50'
+            ? 'border-brand-600 bg-danger-50'
             : 'border-gray-300 bg-gray-50 hover:border-gray-400 hover:bg-gray-100'
         }`}
       >
         <input {...getInputProps()} />
-        <Upload className={`mx-auto h-10 w-10 mb-3 ${isDragActive ? 'text-[#B01C2E]' : 'text-gray-400'}`} />
+        <Upload className={`mx-auto h-10 w-10 mb-3 ${isDragActive ? 'text-brand-600' : 'text-gray-400'}`} />
         <p className="text-sm font-medium text-gray-700">
           {isDragActive ? 'Drop photos here…' : 'Drag photos here, or click to browse'}
         </p>
@@ -145,7 +145,7 @@ export default function UploadWidget({ albumId, existingCount, onUploadComplete 
             <p className="text-sm font-medium text-gray-700">
               {queue.length} photo{queue.length !== 1 ? 's' : ''} queued
               {doneCount > 0 && <span className="text-green-600 ml-2">· {doneCount} done</span>}
-              {errorCount > 0 && <span className="text-red-600 ml-2">· {errorCount} failed</span>}
+              {errorCount > 0 && <span className="text-danger-600 ml-2">· {errorCount} failed</span>}
             </p>
             <button
               onClick={() => {
@@ -182,7 +182,7 @@ export default function UploadWidget({ albumId, existingCount, onUploadComplete 
                     </div>
                   )}
                   {f.status === 'error' && (
-                    <div className="absolute inset-0 bg-red-500/50 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-danger-500/50 flex items-center justify-center">
                       <AlertCircle className="h-5 w-5 text-white" />
                     </div>
                   )}
@@ -206,7 +206,7 @@ export default function UploadWidget({ albumId, existingCount, onUploadComplete 
             <button
               onClick={handleUploadAll}
               disabled={isUploading || isSaving}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-[#B01C2E] text-white text-sm font-medium rounded-lg hover:bg-[#8A1624] transition-colors disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-colors disabled:opacity-50"
             >
               {(isUploading || isSaving) && <Loader2 className="h-4 w-4 animate-spin" />}
               Upload {pendingCount} photo{pendingCount !== 1 ? 's' : ''} to album

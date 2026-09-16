@@ -124,5 +124,5 @@ history (it's what made every other entry in this file reconstructable).
 ### Changed
 - Volunteer component decomposed into smaller pieces with proper type exports
   — an early instance of the same decomposition work
-  [DESIGN-MASTER-PLAN.md §6](DESIGN-MASTER-PLAN.md#6-suggested-sequencing) now
+  the former design master plan (retired into [DESIGN.md](../DESIGN.md) in Phase 2) now
   recommends repeating for `Hero.tsx`.

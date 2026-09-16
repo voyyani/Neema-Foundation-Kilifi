@@ -90,7 +90,7 @@ function EditRulePageContent() {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-[#B01C2E] mx-auto mb-3" />
+          <Loader2 className="h-8 w-8 animate-spin text-brand-600 mx-auto mb-3" />
           <p className="text-sm text-gray-500">Loading rule…</p>
         </div>
       </div>
@@ -102,8 +102,8 @@ function EditRulePageContent() {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="text-center max-w-sm">
-          <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-3">
-            <AlertTriangle className="h-6 w-6 text-red-600" />
+          <div className="w-12 h-12 rounded-full bg-danger-100 flex items-center justify-center mx-auto mb-3">
+            <AlertTriangle className="h-6 w-6 text-danger-600" />
           </div>
           <h2 className="text-lg font-semibold text-gray-900 mb-1">Rule not found</h2>
           <p className="text-sm text-gray-500 mb-4">
@@ -113,7 +113,7 @@ function EditRulePageContent() {
           </p>
           <button
             onClick={() => navigate('/admin/maintenance')}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#B01C2E] hover:bg-[#8A1624]
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-700
                        text-white text-sm font-medium rounded-lg transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
@@ -135,8 +135,8 @@ function EditRulePageContent() {
           <ArrowLeft className="h-5 w-5 text-gray-500" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#B01C2E]/10 flex items-center justify-center">
-            <Pencil className="h-5 w-5 text-[#B01C2E]" />
+          <div className="w-10 h-10 rounded-xl bg-brand-600/10 flex items-center justify-center">
+            <Pencil className="h-5 w-5 text-brand-600" />
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900">Edit Maintenance Rule</h1>
@@ -163,13 +163,13 @@ function EditRulePageContent() {
           <span
             className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${
               rule.is_active
-                ? 'bg-red-100 text-red-700'
+                ? 'bg-danger-100 text-danger-700'
                 : 'bg-gray-100 text-gray-600'
             }`}
           >
             <span
               className={`w-2 h-2 rounded-full ${
-                rule.is_active ? 'bg-red-500 animate-pulse' : 'bg-gray-400'
+                rule.is_active ? 'bg-danger-500 animate-pulse' : 'bg-gray-400'
               }`}
             />
             {rule.is_active ? 'Active' : 'Inactive'}
@@ -208,7 +208,7 @@ function EditRulePageContent() {
               {/* Post New Update */}
               <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Send className="h-4 w-4 text-[#B01C2E]" />
+                  <Send className="h-4 w-4 text-brand-600" />
                   <h3 className="text-sm font-semibold text-gray-900">Post Status Update</h3>
                 </div>
                 <StatusUpdateForm

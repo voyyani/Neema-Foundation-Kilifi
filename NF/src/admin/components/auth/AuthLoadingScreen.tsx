@@ -3,7 +3,7 @@ import { Loader2 } from 'lucide-react';
 
 export default function AuthLoadingScreen() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 via-white to-red-50">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-danger-50 via-white to-danger-50">
       <div className="text-center">
         {/* Animated Logo */}
         <motion.div
@@ -55,7 +55,7 @@ export default function AuthLoadingScreen() {
           transition={{ delay: 0.4, duration: 0.3 }}
           className="flex justify-center"
         >
-          <Loader2 className="h-8 w-8 text-red-800 animate-spin" />
+          <Loader2 className="h-8 w-8 text-danger-800 animate-spin" />
         </motion.div>
 
         {/* Animated Dots */}
@@ -68,7 +68,7 @@ export default function AuthLoadingScreen() {
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}
-              className="w-2 h-2 bg-red-800 rounded-full"
+              className="w-2 h-2 bg-danger-800 rounded-full"
               animate={{
                 scale: [1, 1.5, 1],
                 opacity: [0.5, 1, 0.5],
