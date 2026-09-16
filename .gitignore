@@ -1,4 +1,7 @@
 .env.local
 
+# Dependencies installed locally, never committed
+node_modules/
+
 # Claude Code worktrees are local scratch space, never committed
 .claude/worktrees/
