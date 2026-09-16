@@ -11,7 +11,7 @@
 
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import { useTour } from './TourProvider';
+import { useTour } from './useTour';
 
 // ---------------------------------------------------------------------------
 // Icons

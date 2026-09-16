@@ -17,7 +17,6 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 interface DraggableListProps<T> {
   items: T[];

@@ -15,8 +15,8 @@ const programsTable = () => supabase.from('programs') as any;
  *  - Ensures slug is generated from name when not supplied
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function normalizePayload(payload: Record<string, any>, name?: string): Record<string, any> {
-  const out: Record<string, any> = { ...payload };
+function normalizePayload(payload: Record<string, unknown>, name?: string): Record<string, unknown> {
+  const out: Record<string, unknown> = { ...payload };
 
   // Auto-generate slug
   if (name && (!out.slug || String(out.slug).trim() === '')) {
@@ -51,7 +51,7 @@ async function tryWrite(
   payload: Record<string, any>,
 ): Promise<Program> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let current: Record<string, any> = { ...payload };
+  const current: Record<string, any> = { ...payload };
   const MAX_RETRIES = 20; // at most 20 unknown columns before giving up
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
@@ -174,7 +174,7 @@ export function usePrograms() {
     try {
       const maxOrder = Math.max(...programs.map(p => p.display_order), 0);
 
-      const raw: Record<string, any> = {
+      const raw: Record<string, unknown> = {
         ...input,
         display_order: maxOrder + 1,
         is_active: input.is_active ?? true,
@@ -202,7 +202,7 @@ export function usePrograms() {
   // Update program
   const updateProgram = async (id: string, input: Partial<ProgramInput>): Promise<Program> => {
     try {
-      const payload = normalizePayload(input as Record<string, any>, input.name);
+      const payload = normalizePayload(input as unknown as Record<string, unknown>, input.name);
 
       const data = await tryWrite(
         (p) => programsTable().update(p).eq('id', id).select().single(),

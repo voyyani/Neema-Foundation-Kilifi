@@ -3,7 +3,8 @@
  */
 
 // Phase 2
-export { TourProvider, useTour } from './TourProvider';
+export { TourProvider } from './TourProvider';
+export { useTour } from './useTour';
 export { default as WelcomeModal } from './WelcomeModal';
 export { default as HelpMenuButton } from './HelpMenuButton';
 export { getToursForRole, getTourById, ALL_TOURS } from './tourData';

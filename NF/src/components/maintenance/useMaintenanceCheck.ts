@@ -10,10 +10,8 @@
  */
 
 import type { MaintenanceScope } from '../../admin/types/maintenance';
-import {
-  useMaintenanceContext,
-  type MaintenanceInfo,
-} from './MaintenanceProvider';
+import { useMaintenanceContext } from './MaintenanceContext';
+import type { MaintenanceInfo } from './MaintenanceProvider';
 import type { ActiveMaintenanceRule } from '../../hooks/public/useMaintenanceStatus';
 
 export interface MaintenanceCheckResult {

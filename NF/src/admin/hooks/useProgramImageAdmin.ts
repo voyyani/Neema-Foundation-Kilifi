@@ -13,6 +13,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
+import { untypedTable } from '../../lib/supabase/client';
 import { useCloudinaryUpload } from './useCloudinaryUpload';
 import { cloudinaryFolders } from '../config/cloudinary';
 import { toast } from 'sonner';
@@ -31,8 +32,7 @@ export function useProgramImagesAdmin(programId: string | undefined) {
     queryKey: QUERY_KEY(programId),
     queryFn: async (): Promise<ProgramImage[]> => {
       if (!programId) return [];
-      const { data, error } = await (supabase as any)
-        .from('program_images')
+      const { data, error } = await untypedTable(supabase, 'program_images')
         .select(
           'id, program_id, cloudinary_id, url, image_url, caption, alt_text, is_cover, is_primary, display_order, taken_at, created_at, updated_at',
         )
@@ -85,16 +85,14 @@ export function useUploadProgramImage() {
       // 2. Determine display_order (append after current images)
       let order = displayOrder;
       if (order === undefined) {
-        const { count } = await (supabase as any)
-          .from('program_images')
+        const { count } = await untypedTable(supabase, 'program_images')
           .select('id', { count: 'exact', head: true })
           .eq('program_id', programId);
         order = (count ?? 0) as number;
       }
 
       // 3. Insert into program_images
-      const { data, error } = await (supabase as any)
-        .from('program_images')
+      const { data, error } = await untypedTable(supabase, 'program_images')
         .insert({
           program_id: programId,
           cloudinary_id: result.publicId,
@@ -143,8 +141,7 @@ export function useUpdateProgramImage() {
 
   return useMutation({
     mutationFn: async ({ imageId, patch }: UpdateProgramImageArgs) => {
-      const { data, error } = await (supabase as any)
-        .from('program_images')
+      const { data, error } = await untypedTable(supabase, 'program_images')
         .update({ ...patch, updated_at: new Date().toISOString() })
         .eq('id', imageId)
         .select()
@@ -193,15 +190,13 @@ export function useSetProgramCover() {
   return useMutation({
     mutationFn: async ({ programId, imageId }: SetProgramCoverArgs) => {
       // Clear all covers first
-      const { error: clearErr } = await (supabase as any)
-        .from('program_images')
+      const { error: clearErr } = await untypedTable(supabase, 'program_images')
         .update({ is_cover: false, is_primary: false })
         .eq('program_id', programId);
       if (clearErr) throw clearErr;
 
       // Set the new cover
-      const { data, error } = await (supabase as any)
-        .from('program_images')
+      const { data, error } = await untypedTable(supabase, 'program_images')
         .update({ is_cover: true, is_primary: true })
         .eq('id', imageId)
         .select()
@@ -209,8 +204,7 @@ export function useSetProgramCover() {
       if (error) throw error;
 
       // Sync programs.cover_image so legacy cover_image column stays in sync
-      await (supabase as any)
-        .from('programs')
+      await untypedTable(supabase, 'programs')
         .update({
           cover_image: data.url ?? data.image_url,
           cover_cloudinary_id: data.cloudinary_id,
@@ -258,8 +252,7 @@ export function useDeleteProgramImage() {
 
   return useMutation({
     mutationFn: async ({ imageId }: DeleteProgramImageArgs) => {
-      const { error } = await (supabase as any)
-        .from('program_images')
+      const { error } = await untypedTable(supabase, 'program_images')
         .delete()
         .eq('id', imageId);
       if (error) throw error;
@@ -305,8 +298,7 @@ export function useReorderProgramImages() {
     mutationFn: async ({ orderedIds }: ReorderProgramImagesArgs) => {
       // Upsert each row with its new index as display_order
       const upserts = orderedIds.map((id, index) => ({ id, display_order: index }));
-      const { error } = await (supabase as any)
-        .from('program_images')
+      const { error } = await untypedTable(supabase, 'program_images')
         .upsert(upserts, { onConflict: 'id' });
       if (error) throw error;
     },

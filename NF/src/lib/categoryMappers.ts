@@ -3,9 +3,12 @@
  * Maps database categories to UI properties (icons, colors)
  */
 
-import { 
-  Stethoscope, BookOpen, Users, Trophy, 
-  Heart, Activity
+import {
+  Stethoscope,
+  BookOpen,
+  Users,
+  Trophy,
+  Heart,
 } from 'lucide-react';
 
 export const categoryToIcon = {

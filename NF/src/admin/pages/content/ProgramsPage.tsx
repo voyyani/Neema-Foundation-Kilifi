@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { usePrograms } from '../../hooks/usePrograms';
 import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
-import type { Program, ProgramInput } from '../../types/content';
+import type { Program } from '../../types/content';
 import { Plus, Search, Filter, Edit2, Trash2, Star, Check, X, Image as ImageIcon, Video, Target, Users } from 'lucide-react';
 import { EnhancedProgramForm } from '../../components/programs';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
@@ -17,18 +17,6 @@ export default function ProgramsPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [deleteConfirm, setDeleteConfirm] = useState<Program | null>(null);
 
-  // Show error if hook failed
-  if (error) {
-    return (
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="bg-danger-50 border border-danger-200 rounded-lg p-4">
-          <h3 className="text-danger-800 font-semibold mb-2">Error Loading Programs</h3>
-          <p className="text-danger-600 text-sm">{error.message}</p>
-        </div>
-      </div>
-    );
-  }
-
   // Filter programs
   const filteredPrograms = useMemo(() => {
     return programs.filter(program => {
@@ -43,6 +31,18 @@ export default function ProgramsPage() {
       return matchesSearch && matchesCategory && matchesStatus;
     });
   }, [programs, searchQuery, categoryFilter, statusFilter]);
+
+  // Show error if hook failed
+  if (error) {
+    return (
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="bg-danger-50 border border-danger-200 rounded-lg p-4">
+          <h3 className="text-danger-800 font-semibold mb-2">Error Loading Programs</h3>
+          <p className="text-danger-600 text-sm">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleOpenModal = (program?: Program) => {
     setEditingProgram(program || null);

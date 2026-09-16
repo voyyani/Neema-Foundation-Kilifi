@@ -1,5 +1,5 @@
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { useRef, useCallback, useEffect, useState, useMemo } from 'react';
+import { useRef, useEffect, useState, useMemo } from 'react';
 import { usePermissions } from '../../hooks';
 import {
   breadcrumbLabels,
@@ -8,7 +8,7 @@ import {
   segmentEntityFormat,
   isDynamicSegment,
 } from './breadcrumbConfig';
-import { useBreadcrumb } from './BreadcrumbContext';
+import { useBreadcrumb } from './useBreadcrumb';
 
 // ---------------------------------------------------------------------------
 // Icons (inline SVGs so we don't need an extra lucide-react import)

@@ -78,3 +78,15 @@ export type Inserts<T extends keyof Database['public']['Tables']> =
   Database['public']['Tables'][T]['Insert'];
 export type Updates<T extends keyof Database['public']['Tables']> =
   Database['public']['Tables'][T]['Update'];
+
+/**
+ * Escape hatch for tables that `Database` (types.ts) does not describe yet:
+ * maintenance_rules / _templates / _schedules, onboarding_progress,
+ * program_images. Every former `as any` cast on those queries goes through
+ * here so the debt is one grep away. Phase 8.1 regenerates types.ts from the
+ * consolidated schema and deletes this.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type UntypedClient = { from: (table: string) => any };
+export const untypedTable = (client: { from: unknown }, table: string) =>
+  (client as unknown as UntypedClient).from(table);

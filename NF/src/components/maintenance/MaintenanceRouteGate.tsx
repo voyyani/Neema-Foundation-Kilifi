@@ -15,7 +15,7 @@
  */
 import React, { Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useMaintenanceContext } from './MaintenanceProvider';
+import { useMaintenanceContext } from './MaintenanceContext';
 import { resolvePageKey, resolveRouteRule } from './resolvePageKey';
 
 const MaintenancePlaceholder = React.lazy(() => import('./MaintenancePlaceholder'));

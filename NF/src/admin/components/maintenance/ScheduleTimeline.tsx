@@ -14,10 +14,6 @@ import {
   RefreshCw,
   ChevronLeft,
   ChevronRight,
-  ZoomIn,
-  ZoomOut,
-  Maximize2,
-  AlertTriangle,
   CheckCircle2,
   Timer,
   Loader2,
@@ -29,7 +25,6 @@ import type {
   RecurrenceConfig,
 } from '../../types/maintenance';
 import { SEVERITY_CONFIG } from '../../types/maintenance';
-import { resolveTargetLabel } from '../../config/maintenanceRegistry';
 
 // =============================================================================
 // Types

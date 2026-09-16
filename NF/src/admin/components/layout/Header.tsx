@@ -1,6 +1,6 @@
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { HelpMenuButton } from '../onboarding';
 import { toast } from 'sonner';
@@ -11,7 +11,6 @@ interface HeaderProps {
 
 export default function Header({ onMenuClick }: HeaderProps) {
   const { profile, signOut } = useAuth();
-  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     try {

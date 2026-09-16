@@ -12,7 +12,6 @@ interface RichMediaInputProps {
 export function RichMediaInput({
   value = '',
   onChange,
-  type = 'any',
   label = 'Media URL',
   placeholder = 'https://youtube.com/watch?v=...',
 }: RichMediaInputProps) {

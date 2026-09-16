@@ -23,5 +23,5 @@ export {
   WelcomeHeader,
   ErrorBanner,
   DashboardEmpty,
-  formatTimeAgo,
 } from './DashboardWidgets';
+export { formatTimeAgo } from '../../lib/formatTimeAgo';

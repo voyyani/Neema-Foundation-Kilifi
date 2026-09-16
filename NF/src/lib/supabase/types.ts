@@ -172,6 +172,8 @@ export interface Database {
           created_at: string
           updated_at: string
           published_at: string | null
+          donation_link: string | null
+          volunteer_link: string | null
         }
         Insert: {
           id?: string
@@ -201,6 +203,8 @@ export interface Database {
           created_at?: string
           updated_at?: string
           published_at?: string | null
+          donation_link?: string | null
+          volunteer_link?: string | null
         }
         Update: {
           id?: string
@@ -230,6 +234,8 @@ export interface Database {
           created_at?: string
           updated_at?: string
           published_at?: string | null
+          donation_link?: string | null
+          volunteer_link?: string | null
         }
       }
       programs: {
@@ -254,6 +260,8 @@ export interface Database {
           cover_image: string | null
           created_at: string
           updated_at: string
+          donation_link: string | null
+          volunteer_link: string | null
         }
         Insert: {
           id?: string
@@ -276,6 +284,8 @@ export interface Database {
           cover_image?: string | null
           created_at?: string
           updated_at?: string
+          donation_link?: string | null
+          volunteer_link?: string | null
         }
         Update: {
           id?: string
@@ -298,6 +308,8 @@ export interface Database {
           cover_image?: string | null
           created_at?: string
           updated_at?: string
+          donation_link?: string | null
+          volunteer_link?: string | null
         }
       }
       site_settings: {

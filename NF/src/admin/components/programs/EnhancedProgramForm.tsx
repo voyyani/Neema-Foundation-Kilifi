@@ -1,9 +1,9 @@
 // Enhanced Program Editor Modal
 // World-class admin form with all the new fields and components
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { X, ChevronLeft, ChevronRight, Save, Loader2, AlertCircle } from 'lucide-react';
-import type { Program, ProgramInput, ProgramCategory, ProgramTestimonial } from '../../types/content';
+import type { Program, ProgramInput, ProgramCategory } from '../../types/content';
 import RichTextEditor from '../content/RichTextEditor';
 import ImageGalleryUploader from './ImageGalleryUploader';
 import ProgramImageUploader from './ProgramImageUploader';
@@ -799,7 +799,7 @@ export default function EnhancedProgramForm({
 
             {/* Step counter — visible on mobile only */}
             <span className="text-xs text-gray-400 font-medium sm:hidden">
-              {currentIndex + 1} / {SECTIONS.length}
+              {currentIndex + 1} / {SECTIONS.length}
             </span>
 
             {/* ── Right-side actions ── */}

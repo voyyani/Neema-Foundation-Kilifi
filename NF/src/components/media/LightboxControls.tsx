@@ -1,49 +1,17 @@
 /**
- * Lightbox controls — share panel, icon and navigation buttons, and the
- * Cloudinary URL helpers. Split from MediaLightbox by responsibility.
+ * Lightbox controls — share panel, icon and navigation buttons. Split from
+ * MediaLightbox by responsibility; URL and touch helpers live in lightboxUtils.
  */
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Check, Instagram, Link2, MessageCircle } from 'lucide-react';
-import { ensureExtension } from './OptimizedImage';
-
-// ─── Utility ──────────────────────────────────────────────────────────────────
-
-/** Inject a Cloudinary transformation string into a full URL */
-export function injectTransform(url: string, transform: string): string {
-  if (!url) return url;
-  const marker = '/upload/';
-  const idx = url.indexOf(marker);
-  if (idx !== -1) {
-    return ensureExtension(
-      `${url.slice(0, idx + marker.length)}${transform}/${url.slice(idx + marker.length)}`,
-    );
-  }
-  return ensureExtension(url);
-}
-
-/** Build a download-forced URL via Cloudinary fl_attachment */
-export function buildDownloadUrl(url: string): string {
-  return injectTransform(url, 'fl_attachment');
-}
-
-/** Touch distance between two touches */
-export function touchDist(t: React.TouchList): number {
-  const dx = t[0].clientX - t[1].clientX;
-  const dy = t[0].clientY - t[1].clientY;
-  return Math.hypot(dx, dy);
-}
-
-
-// ─── Share Panel ─────────────────────────────────────────────────────────────
 
 interface SharePanelProps {
-  url: string;
   caption: string | null | undefined;
   onDismiss: () => void;
 }
 
-export const SharePanel: React.FC<SharePanelProps> = ({ url, caption, onDismiss }) => {
+export const SharePanel: React.FC<SharePanelProps> = ({ caption, onDismiss }) => {
   const [copied, setCopied] = useState(false);
 
   async function copyLink() {

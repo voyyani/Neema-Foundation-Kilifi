@@ -163,7 +163,7 @@ interface AuditEntryProps {
   isLast: boolean;
 }
 
-function AuditEntry({ entry, showIp, isFirst, isLast }: AuditEntryProps) {
+function AuditEntry({ entry, showIp, isLast }: AuditEntryProps) {
   const [expanded, setExpanded] = useState(false);
 
   const initials = entry.actor_email

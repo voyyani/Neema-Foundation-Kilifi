@@ -7,7 +7,7 @@ import EventForm from '../../components/events/EventForm';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { useEvents } from '../../hooks/useEvents';
 import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
-import { useBreadcrumbEntity } from '../../components/layout/BreadcrumbContext';
+import { useBreadcrumbEntity } from '../../components/layout/useBreadcrumb';
 import type { Event } from '../../types/events';
 import type { EventFormSchema } from '../../lib/validators';
 

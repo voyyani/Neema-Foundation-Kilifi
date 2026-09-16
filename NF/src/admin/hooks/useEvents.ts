@@ -2,13 +2,16 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
+import { untypedTable, type Tables, type Updates } from '../../lib/supabase/client';
 import type { Event, EventFormData, EventFilters, EventListItem } from '../types/events';
 import { toast } from 'sonner';
 import { slugify } from '../lib/utils';
 
 // Type helpers for Supabase operations
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const eventsTable = () => supabase.from('events') as any;
+// Events are typed in Database; the join to programs is added per query.
+const eventsTable = () => untypedTable(supabase, 'events');
+type EventRow = Tables<'events'> & { programs?: { name?: string } | null };
 
 // Helper to convert date to ISO string
 const toISOString = (date: Date | string | undefined | null): string | null => {
@@ -66,7 +69,7 @@ export function useEvents(filters?: EventFilters) {
       if (fetchError) throw fetchError;
 
       // Transform data to include program name
-      const transformedData: EventListItem[] = (data || []).map((event: any) => ({
+      const transformedData: EventListItem[] = ((data || []) as EventRow[]).map((event) => ({
         ...event,
         program_name: event.programs?.name || undefined,
       }));
@@ -113,8 +116,8 @@ export function useEvents(filters?: EventFilters) {
         registration_link: data.registration_link || null,
         registration_deadline: toISOString(data.registration_deadline),
         max_attendees: data.max_attendees || null,
-        donation_link: (data as any).donation_link || null,
-        volunteer_link: (data as any).volunteer_link || null,
+        donation_link: data.donation_link || null,
+        volunteer_link: data.volunteer_link || null,
         status: data.status,
         is_featured: data.is_featured,
         program_id: data.program_id || null,
@@ -179,14 +182,14 @@ export function useEvents(filters?: EventFilters) {
       const user = sessionData.session?.user;
       if (!user) throw new Error('Not authenticated. Please log in and try again.');
 
-      const updateData: any = {};
+      const updateData: Updates<'events'> = {};
 
       // Only include fields that are provided
       if (data.name !== undefined) updateData.name = data.name;
       if (data.slug !== undefined) updateData.slug = data.slug;
       if (data.purpose !== undefined) updateData.purpose = data.purpose || null;
       if (data.description !== undefined) updateData.description = data.description || null;
-      if (data.start_date !== undefined) updateData.start_date = toISOString(data.start_date);
+      if (data.start_date !== undefined) updateData.start_date = toISOString(data.start_date) ?? undefined;
       if (data.end_date !== undefined) updateData.end_date = toISOString(data.end_date);
       if (data.start_time !== undefined) updateData.start_time = data.start_time || null;
       if (data.end_time !== undefined) updateData.end_time = data.end_time || null;
@@ -198,20 +201,20 @@ export function useEvents(filters?: EventFilters) {
       if (data.registration_link !== undefined) updateData.registration_link = data.registration_link || null;
       if (data.registration_deadline !== undefined) updateData.registration_deadline = toISOString(data.registration_deadline);
       if (data.max_attendees !== undefined) updateData.max_attendees = data.max_attendees || null;
-      if ((data as any).donation_link !== undefined) updateData.donation_link = (data as any).donation_link || null;
-      if ((data as any).volunteer_link !== undefined) updateData.volunteer_link = (data as any).volunteer_link || null;
+      if (data.donation_link !== undefined) updateData.donation_link = data.donation_link || null;
+      if (data.volunteer_link !== undefined) updateData.volunteer_link = data.volunteer_link || null;
       if (data.status !== undefined) updateData.status = data.status;
       if (data.is_featured !== undefined) updateData.is_featured = data.is_featured;
       if (data.program_id !== undefined) updateData.program_id = data.program_id || null;
       if (data.cover_image !== undefined) updateData.cover_image = data.cover_image || null;
-      if (data.partners !== undefined) updateData.partners = data.partners.length > 0 ? data.partners : null;
+      if (data.partners !== undefined) updateData.partners = data.partners.length > 0 ? data.partners : [];
 
       updateData.updated_at = new Date().toISOString();
 
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 15000); // 15 s safety net
 
-      let updatedEvent: any;
+      let updatedEvent: Event;
       try {
         const { data, error: updateError } = await eventsTable()
           .update(updateData)
@@ -283,11 +286,12 @@ export function useEvents(filters?: EventFilters) {
       if (!user) throw new Error('Not authenticated');
 
       // Create duplicate with modified name and slug
-      const duplicateData: any = {
-        ...(originalEvent as any),
+      const original = originalEvent as Tables<'events'>;
+      const duplicateData: Partial<Tables<'events'>> = {
+        ...original,
         id: undefined,
-        name: `${(originalEvent as any).name} (Copy)`,
-        slug: `${(originalEvent as any).slug}-copy-${Date.now()}`,
+        name: `${original.name} (Copy)`,
+        slug: `${original.slug}-copy-${Date.now()}`,
         status: 'draft' as const,
         created_by: user.id,
         created_at: undefined,

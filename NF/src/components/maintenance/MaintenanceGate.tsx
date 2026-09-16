@@ -22,7 +22,7 @@
 import React, { Suspense } from 'react';
 import type { MaintenanceScope } from '../../admin/types/maintenance';
 import type { ActiveMaintenanceRule } from '../../hooks/public/useMaintenanceStatus';
-import { useMaintenanceContext } from './MaintenanceProvider';
+import { useMaintenanceContext } from './MaintenanceContext';
 
 const MaintenancePlaceholder = React.lazy(() => import('./MaintenancePlaceholder'));
 

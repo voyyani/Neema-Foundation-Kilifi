@@ -30,7 +30,7 @@ const Quote: React.FC<{ story: PublicStory }> = ({ story }) => {
 };
 
 const Stories: React.FC = () => {
-  const { data: stories = [], isLoading, error } = usePublicStories();
+  const { data: stories = [], isLoading } = usePublicStories();
   const published = stories.filter((s) => s.is_published !== false);
   const quotes = published.filter((s) => s.category === 'testimonial').slice(0, 3);
   const others = published.filter((s) => s.category !== 'testimonial').slice(0, 3);

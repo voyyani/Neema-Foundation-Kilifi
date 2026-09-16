@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Images, Calendar, Pencil, Trash2, Star, RefreshCw } from 'lucide-react';
+import { Eye, EyeOff, Images, Calendar, Pencil, Trash2, RefreshCw } from 'lucide-react';
 import { formatDate } from '../../lib/utils';
 import { updateMediaAlbum, deleteMediaAlbum } from '../../hooks/useMediaAlbums';
 import { ALBUM_TYPE_LABELS, ALBUM_TYPE_COLORS } from '../../types/media';

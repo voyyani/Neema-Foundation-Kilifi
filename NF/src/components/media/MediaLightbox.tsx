@@ -18,10 +18,11 @@ import ReactDOM from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X, Download, Info, Share2, Maximize2, Minimize2 } from 'lucide-react';
 import type { PublicMediaItem } from '../../hooks/public/usePublicMedia';
-import { LightboxIconBtn, LightboxNavBtn, SharePanel, buildDownloadUrl, injectTransform } from './LightboxControls';
+import { LightboxIconBtn, LightboxNavBtn, SharePanel } from './LightboxControls';
+import { buildDownloadUrl, injectTransform } from './lightboxUtils';
 import { useLightboxChrome } from './useLightboxChrome';
 import { useLightboxGestures } from './useLightboxGestures';
-import { ensureExtension } from './OptimizedImage';
+import { ensureExtension } from '../../lib/cloudinaryUrls';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -199,9 +200,7 @@ const MediaLightbox: React.FC<MediaLightboxProps> = ({
             </LightboxIconBtn>
             <AnimatePresence>
               {showShare && (
-                <SharePanel
-                  url={item.url}
-                  caption={item.caption}
+                <SharePanel caption={item.caption}
                   onDismiss={() => setShowShare(false)}
                 />
               )}

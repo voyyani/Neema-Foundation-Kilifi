@@ -5,6 +5,7 @@ import { lazy, type LazyExoticComponent } from 'react';
 
 type Importer<T> = () => Promise<{ default: T }>;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- React.lazy's own constraint
 export function lazyWithRetry<T extends React.ComponentType<any>>(
   importer: Importer<T>
 ): LazyExoticComponent<T> {

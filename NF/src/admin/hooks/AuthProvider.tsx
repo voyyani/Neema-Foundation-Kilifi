@@ -1,11 +1,11 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
+import { AuthContext } from './AuthContext';
 import type { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabaseAdmin as supabase, type Inserts } from '../../lib/supabase/client';
 import type { AuthContextValue, UserProfile } from '../types/auth';
 import SessionExpiryWarning from '../components/auth/SessionExpiryWarning';
 import { toast } from 'sonner';
 
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -155,8 +155,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
           const res = await supabase.auth.getSession();
           sessionError = res.error;
           initialSession = res.data.session;
-        } catch (err: any) {
-          if (err?.name === 'AbortError') {
+        } catch (err) {
+          if ((err as { name?: string } | null)?.name === 'AbortError') {
             console.warn('[Auth Init] AbortError on getSession, clearing storage and retrying once');
             clearSupabaseStorage();
             const retry = await supabase.auth.getSession();
@@ -435,17 +435,4 @@ export function AuthProvider({ children }: AuthProviderProps) {
       )}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-}
-
-// Optional accessor for public surfaces that only need best-effort auth info
-export function useAuthOptional() {
-  return useContext(AuthContext);
 }

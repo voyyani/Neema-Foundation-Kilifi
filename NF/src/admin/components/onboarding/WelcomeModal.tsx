@@ -13,7 +13,7 @@
 
 import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { useTour } from './TourProvider';
+import { useTour } from './useTour';
 import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
 import type { RoleTour } from '../../types/onboarding';
 

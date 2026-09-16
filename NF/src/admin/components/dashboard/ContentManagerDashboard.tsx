@@ -22,15 +22,7 @@ import type { DashboardData } from '../../hooks/useDashboardStats';
 import { useOnboardingProgress } from '../../hooks/useOnboardingProgress';
 import ProgressBar from '../onboarding/ProgressBar';
 import type { QuickAction } from './DashboardWidgets';
-import {
-  WelcomeHeader,
-  SectionCard,
-  StatCard,
-  QuickActionGrid,
-  ActivityTimeline,
-  StoryAlbumBanner,
-  ErrorBanner,
-} from './DashboardWidgets';
+import { WelcomeHeader, SectionCard, StatCard, QuickActionGrid, ActivityTimeline, StoryAlbumBanner, ErrorBanner } from './DashboardWidgets';
 
 interface Props {
   data: DashboardData | undefined;

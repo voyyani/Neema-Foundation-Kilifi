@@ -18,14 +18,10 @@ import {
   Users,
   TrendingUp,
   Settings,
-  Shield,
   Wrench,
-  Inbox,
   CreditCard,
-  UserPlus,
   Edit,
   Plus,
-  Eye,
   PenSquare,
 } from 'lucide-react';
 import type { DashboardData } from '../../hooks/useDashboardStats';
@@ -33,18 +29,7 @@ import type { UserRole } from '../../types/roles';
 import { useOnboardingProgress } from '../../hooks/useOnboardingProgress';
 import ProgressBar from '../onboarding/ProgressBar';
 import type { QuickAction } from './DashboardWidgets';
-import {
-  WelcomeHeader,
-  SectionCard,
-  StatCard,
-  QuickActionGrid,
-  ActivityTimeline,
-  UpcomingEventsTimeline,
-  SystemHealthCard,
-  RoleDistributionChart,
-  StoryAlbumBanner,
-  ErrorBanner,
-} from './DashboardWidgets';
+import { WelcomeHeader, SectionCard, StatCard, QuickActionGrid, ActivityTimeline, UpcomingEventsTimeline, SystemHealthCard, RoleDistributionChart, StoryAlbumBanner, ErrorBanner } from './DashboardWidgets';
 
 interface Props {
   data: DashboardData | undefined;

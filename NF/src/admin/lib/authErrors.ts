@@ -83,11 +83,16 @@ export const AUTH_ERRORS = {
 /**
  * Formats Supabase auth errors into user-friendly messages
  */
-export function formatAuthError(error: any): AuthErrorInfo {
+/** The loose shape Supabase, fetch and our own throws share. */
+type ErrorLike = { code?: string; error_code?: string; name?: string; message?: string; msg?: string; error_description?: string };
+const asErrorLike = (e: unknown): ErrorLike => (typeof e === 'object' && e !== null ? (e as ErrorLike) : { message: String(e) });
+
+export function formatAuthError(raw: unknown): AuthErrorInfo {
   // Handle null/undefined
-  if (!error) {
+  if (!raw) {
     return AUTH_ERRORS.GENERIC_ERROR;
   }
+  const error = asErrorLike(raw);
 
   // Extract error code and message
   const code = error.code || error.error_code || error.name;
@@ -153,8 +158,9 @@ export function formatAuthError(error: any): AuthErrorInfo {
 /**
  * Check if error is a network/connectivity issue
  */
-export function isNetworkError(error: any): boolean {
-  if (!error) return false;
+export function isNetworkError(raw: unknown): boolean {
+  if (!raw) return false;
+  const error = asErrorLike(raw);
   
   const message = (error.message || '').toLowerCase();
   return (
@@ -169,8 +175,9 @@ export function isNetworkError(error: any): boolean {
 /**
  * Check if error requires re-authentication
  */
-export function requiresReauth(error: any): boolean {
-  if (!error) return false;
+export function requiresReauth(raw: unknown): boolean {
+  if (!raw) return false;
+  const error = asErrorLike(raw);
   
   const code = error.code || error.error_code;
   const message = (error.message || '').toLowerCase();

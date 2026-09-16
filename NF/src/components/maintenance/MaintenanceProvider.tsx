@@ -6,7 +6,8 @@
  * useMaintenanceCheck to query maintenance state without extra network calls.
  */
 
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { MaintenanceContext } from './MaintenanceContext';
 import {
   useMaintenanceStatus,
   type ActiveMaintenanceRule,
@@ -62,7 +63,6 @@ export interface MaintenanceInfo {
 
 // ─── Context ──────────────────────────────────────────────────────────────────
 
-const MaintenanceContext = createContext<MaintenanceContextValue | null>(null);
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
@@ -176,18 +176,5 @@ export const MaintenanceProvider: React.FC<{ children: React.ReactNode }> = ({
     </MaintenanceContext.Provider>
   );
 };
-
-// ─── Hook ─────────────────────────────────────────────────────────────────────
-
-export function useMaintenanceContext(): MaintenanceContextValue {
-  const ctx = useContext(MaintenanceContext);
-  if (!ctx) {
-    throw new Error(
-      'useMaintenanceContext must be used within a <MaintenanceProvider>. ' +
-        'Wrap your public routes with MaintenanceProvider.',
-    );
-  }
-  return ctx;
-}
 
 export default MaintenanceProvider;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { AuthProvider } from '../../hooks/useAuth';
+import { AuthProvider } from '../../hooks/AuthProvider';
 
 /**
  * AdminShell — scopes AuthProvider to the admin subtree. Loaded lazily so

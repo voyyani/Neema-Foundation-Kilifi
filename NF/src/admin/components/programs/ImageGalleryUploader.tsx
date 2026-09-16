@@ -19,7 +19,7 @@ import {
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Upload, X, GripVertical, Image as ImageIcon, Plus, Loader2 } from 'lucide-react';
+import { Upload, X, GripVertical, Plus, Loader2 } from 'lucide-react';
 import { useCloudinaryUpload } from '../../hooks/useCloudinaryUpload';
 import { cloudinaryFolders } from '../../config/cloudinary';
 

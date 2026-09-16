@@ -174,7 +174,6 @@ export function BankDetailsForm({
     register,
     control,
     handleSubmit,
-    setValue,
     watch,
     formState: { errors, isSubmitting },
   } = useForm<BankDetailSchema>({

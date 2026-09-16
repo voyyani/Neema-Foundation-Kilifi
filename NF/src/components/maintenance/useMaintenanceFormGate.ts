@@ -11,7 +11,7 @@
  * `notice` never disables anything.
  */
 import type { ActiveMaintenanceRule } from '../../hooks/public/useMaintenanceStatus';
-import { useMaintenanceContext } from './MaintenanceProvider';
+import { useMaintenanceContext } from './MaintenanceContext';
 
 export interface FormGateOptions {
   /** Feature group key from FEATURE_GROUPS, e.g. 'contact' */

@@ -600,7 +600,7 @@ export default function ProgramImageUploader({ programId }: ProgramImageUploader
                     uploadProgress={
                       idx === currentUploadIndexRef.current
                         ? uploadMutation.variables !== undefined
-                          ? (uploadMutation as any).uploadProgress?.percentage ?? 0
+                          ? (uploadMutation as { uploadProgress?: { percentage?: number } }).uploadProgress?.percentage ?? 0
                           : 0
                         : entry.status === 'done'
                         ? 100

@@ -98,7 +98,7 @@ function ConfirmDialog({
         message: preset.rule.message,
         priority: preset.rule.priority,
         display_config: {},
-        metadata: preset.rule.metadata as any,
+        metadata: preset.rule.metadata as Record<string, unknown>,
         allowed_roles: ['super_admin', 'admin'],
         estimated_end: null,
         created_by: null,
@@ -291,7 +291,7 @@ export default function QuickActions({
         title: confirmPreset.rule.title,
         message: confirmPreset.rule.message,
         priority: confirmPreset.rule.priority,
-        metadata: confirmPreset.rule.metadata as any,
+        metadata: confirmPreset.rule.metadata as Record<string, unknown>,
         is_active: true,
       },
       {

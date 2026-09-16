@@ -17,7 +17,6 @@ import {
   Zap,
   Clock,
   MapPin,
-  ChevronDown,
   ChevronRight,
   Trophy,
 } from 'lucide-react';

@@ -64,7 +64,7 @@ export function ImageUploader({
             setPreview(null);
           }
         }
-      } catch (error) {
+      } catch {
         setUploadStatus('error');
         setPreview(null);
       }

@@ -237,7 +237,7 @@ const RoleChangeModal: React.FC<RoleChangeModalProps> = ({
     try {
       await onSubmit(selectedRole, reason, fullName);
       onClose();
-    } catch (error) {
+    } catch {
       // Error handled in parent
     } finally {
       setLoading(false);
@@ -384,7 +384,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({
     try {
       await onInvite(email, role, fullName);
       onClose();
-    } catch (error) {
+    } catch {
       // Error handled in parent
     } finally {
       setLoading(false);
@@ -506,7 +506,6 @@ const UserRow: React.FC<UserRowProps> = ({
   currentUserId,
 }) => {
   const isCurrentUser = user.id === currentUserId;
-  const roleInfo = ROLE_DEFINITIONS[user.role as UserRole] || ROLE_DEFINITIONS.viewer;
 
   return (
     <tr className={clsx(
@@ -735,12 +734,12 @@ const UsersManagementPage: React.FC = () => {
 
     if (error) {
       // error.message may be a raw fetch error; also check the response body
-      const message = (data as any)?.error || error.message || 'Failed to send invitation.';
+      const message = (data as { error?: string } | null)?.error || error.message || 'Failed to send invitation.';
       toast.error(message);
       throw new Error(message);
     }
 
-    toast.success((data as any)?.message || `Invitation sent to ${email}!`);
+    toast.success((data as { message?: string } | null)?.message || `Invitation sent to ${email}!`);
     track('user.invited');
 
     // Refresh the user list — the profile row was pre-seeded by the Edge Function

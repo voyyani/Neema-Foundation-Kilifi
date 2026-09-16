@@ -8,11 +8,7 @@
  * All functions are pure (no side-effects) and fully typed.
  */
 
-import {
-  buildCloudinaryUrl,
-  buildOptimizedSrcSet,
-  buildBlurUrl,
-} from '../components/media/OptimizedImage';
+import { buildCloudinaryUrl, buildOptimizedSrcSet, buildBlurUrl } from './cloudinaryUrls';
 
 // Re-export so consumers only need one import path
 export { buildCloudinaryUrl, buildOptimizedSrcSet, buildBlurUrl };

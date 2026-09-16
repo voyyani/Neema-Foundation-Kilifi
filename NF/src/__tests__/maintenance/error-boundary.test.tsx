@@ -25,11 +25,8 @@ afterEach(() => {
 });
 
 // Component that always throws (simulates MaintenanceProvider crashing)
-function CrashingMaintenanceProvider({
-  children: _children,
-}: {
-  children: React.ReactNode;
-}): React.ReactElement {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function CrashingMaintenanceProvider(_props: { children: React.ReactNode }): React.ReactElement {
   throw new Error('Maintenance system crashed!');
 }
 

@@ -1,8 +1,8 @@
 // SEO Fields Editor Component
 // Configure meta title, description, and social sharing image
 
-import { useState, useEffect } from 'react';
-import { Search, FileText, Image as ImageIcon, ExternalLink, AlertCircle, CheckCircle, Upload, Loader2, X } from 'lucide-react';
+import { useState } from 'react';
+import { Search, FileText, Image as ImageIcon, ExternalLink, AlertCircle, CheckCircle, Loader2, X } from 'lucide-react';
 import { useCloudinaryUpload } from '../../hooks/useCloudinaryUpload';
 import { cloudinaryFolders } from '../../config/cloudinary';
 

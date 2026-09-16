@@ -10,8 +10,6 @@
  */
 
 import {
-  createContext,
-  useContext,
   useState,
   useEffect,
   useCallback,
@@ -28,10 +26,10 @@ import { supabaseAdmin as supabase } from '../../../lib/supabase/client';
 import { getToursForRole, getTourById } from './tourData';
 import { getBreadcrumbsForRole } from './breadcrumbDefinitions';
 import type { TourContextValue, TourState, RoleTour } from '../../types/onboarding';
+import { TourContext } from './tourContext';
 import { toast } from 'sonner';
 import { waitForElement } from '../../lib/waitForElement';
 
-const TourContext = createContext<TourContextValue | undefined>(undefined);
 
 // ---------------------------------------------------------------------------
 // Helper: convert our TourStep[] → driver.js DriveStep[]
@@ -50,16 +48,6 @@ function toDriveSteps(tour: RoleTour): DriveStep[] {
 }
 
 // ---------------------------------------------------------------------------
-// Helper: filter steps marked skipIfMissing where their DOM element is absent
-// ---------------------------------------------------------------------------
-
-function filterAvailableSteps(steps: RoleTour['steps']): RoleTour['steps'] {
-  return steps.filter((step) => {
-    if (!step.skipIfMissing) return true;
-    return !!document.querySelector(step.target);
-  });
-}
-
 // ---------------------------------------------------------------------------
 // Provider
 // ---------------------------------------------------------------------------
@@ -484,11 +472,3 @@ export function TourProvider({ children }: TourProviderProps) {
 // ---------------------------------------------------------------------------
 // Hook
 // ---------------------------------------------------------------------------
-
-export function useTour(): TourContextValue {
-  const ctx = useContext(TourContext);
-  if (!ctx) {
-    throw new Error('useTour must be used within a <TourProvider>');
-  }
-  return ctx;
-}

@@ -5,7 +5,8 @@
  */
 
 // Context provider
-export { MaintenanceProvider, useMaintenanceContext } from './MaintenanceProvider';
+export { MaintenanceProvider } from './MaintenanceProvider';
+export { useMaintenanceContext } from './MaintenanceContext';
 export type { MaintenanceContextValue, MaintenanceInfo } from './MaintenanceProvider';
 
 // Gate wrapper

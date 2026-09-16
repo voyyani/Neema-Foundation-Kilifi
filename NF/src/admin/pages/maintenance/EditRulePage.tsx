@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Pencil, Loader2, AlertTriangle, MessageSquare, Send } from 'lucide-react';
 import { ProtectedRoute } from '../../components/auth/ProtectedRoute';
 import { RuleForm, StatusUpdateForm, StatusTimeline } from '../../components/maintenance';
-import { useBreadcrumbEntity } from '../../components/layout/BreadcrumbContext';
+import { useBreadcrumbEntity } from '../../components/layout/useBreadcrumb';
 import {
   useMaintenanceRule,
   useUpdateMaintenanceRule,

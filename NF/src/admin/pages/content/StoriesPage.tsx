@@ -20,7 +20,6 @@ import {
 import RichTextEditor from '../../components/content/RichTextEditor';
 import type { Story, StoryInput } from '../../types/content';
 import { slugify } from '../../lib/utils';
-import { format } from 'date-fns';
 
 type StoryCategory = 'impact' | 'testimonial' | 'event' | 'news' | 'volunteer';
 
@@ -205,10 +204,10 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
     excerpt: story?.excerpt || '',
     content: story?.content || '',
     category: (story?.category as StoryCategory) || 'impact',
-    image_url: (story as any)?.cover_image || '',
+    image_url: story?.cover_image || '',
     author_name: story?.author_name || '',
     author_role: story?.author_role || '',
-    author_photo_url: (story as any)?.author_photo || '',
+    author_photo_url: story?.author_photo || '',
     status: story?.is_published ? 'published' : 'draft',
     is_featured: story?.is_featured || false,
   });
@@ -231,10 +230,10 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
         excerpt: story?.excerpt || '',
         content: story?.content || '',
         category: (story?.category as StoryCategory) || 'impact',
-        image_url: (story as any)?.cover_image || '',
+        image_url: story?.cover_image || '',
         author_name: story?.author_name || '',
         author_role: story?.author_role || '',
-        author_photo_url: (story as any)?.author_photo || '',
+        author_photo_url: story?.author_photo || '',
         status: story?.is_published ? 'published' : 'draft',
         is_featured: story?.is_featured || false,
       });

@@ -25,7 +25,7 @@ import {
   type ReplyTemplate,
 } from '../admin/config/replyTemplates';
 import ReplyModal from '../admin/components/shared/ReplyModal';
-import type { ReplyModalSubmission, ReplyPayload } from '../admin/components/shared/ReplyModal';
+import type { ReplyModalSubmission } from '../admin/components/shared/ReplyModal';
 
 // =============================================================================
 // Mock supabase

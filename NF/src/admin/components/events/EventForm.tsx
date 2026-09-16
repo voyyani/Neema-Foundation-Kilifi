@@ -5,12 +5,12 @@ import { useForm, Controller, useWatch } from 'react-hook-form';
 import { usePrograms } from '../../hooks/usePrograms';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, MapPin, Globe, Users, Image as ImageIcon, Tag } from 'lucide-react';
+import { Calendar, MapPin, Globe, Users, Tag } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { eventSchema, type EventFormSchema } from '../../lib/validators';
 import { slugify } from '../../lib/utils';
 import { toast } from 'sonner';
-import type { Event, EventStatus } from '../../types/events';
+import type { Event } from '../../types/events';
 
 interface EventFormProps {
   event?: Event;
@@ -50,8 +50,8 @@ const form = useForm({
           : undefined,
         max_attendees: event.max_attendees || undefined,
         cover_image: event.cover_image || undefined,
-        donation_link: (event as any).donation_link || undefined,
-        volunteer_link: (event as any).volunteer_link || undefined,
+        donation_link: event.donation_link || undefined,
+        volunteer_link: event.volunteer_link || undefined,
         program_id: event.program_id || undefined,
         partners: event.partners || [],
         status: event.status,
@@ -99,7 +99,7 @@ const form = useForm({
 
   const handleInvalid = (errs: typeof errors) => {
     const messages = Object.values(errs)
-      .map((e: any) => e?.message)
+      .map((e) => (e as { message?: string } | undefined)?.message)
       .filter(Boolean);
     const first = messages[0];
     toast.error(
@@ -531,7 +531,7 @@ const form = useForm({
         <div className="rounded-lg border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-700">
           <strong>Please fix the following before saving:</strong>
           <ul className="mt-1 list-disc list-inside space-y-0.5">
-            {(Object.entries(errors) as [string, any][]).map(([key, err]) =>
+            {(Object.entries(errors) as [string, { message?: string } | undefined][]).map(([key, err]) =>
               err?.message ? (
                 <li key={key}>
                   <span className="capitalize">{key.replace(/_/g, ' ')}</span>: {err.message}

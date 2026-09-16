@@ -1,4 +1,5 @@
-export { AuthProvider, useAuth } from './useAuth';
+export { AuthProvider } from './AuthProvider';
+export { useAuth } from './useAuth';
 export { usePermissions, useCanAction, useRoleLevel } from './usePermissions';
 export { useDashboardStats } from './useDashboardStats';
 export type {

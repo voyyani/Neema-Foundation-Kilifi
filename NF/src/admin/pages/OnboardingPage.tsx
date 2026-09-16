@@ -44,7 +44,7 @@ import { getRoleDisplayName } from '../lib/auth';
 import { getBreadcrumbsForRole } from '../components/onboarding/breadcrumbDefinitions';
 import BreadcrumbChecklist from '../components/onboarding/BreadcrumbChecklist';
 import RoleMasteryBadge from '../components/onboarding/RoleMasteryBadge';
-import { useTour } from '../components/onboarding/TourProvider';
+import { useTour } from '../components/onboarding/useTour';
 import type { UserRole } from '../types/roles';
 
 // ---------------------------------------------------------------------------

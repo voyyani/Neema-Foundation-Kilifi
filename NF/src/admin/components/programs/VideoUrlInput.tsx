@@ -79,7 +79,6 @@ export default function VideoUrlInput({
   onThumbnailChange,
 }: VideoUrlInputProps) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [customThumbnail, setCustomThumbnail] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { uploadVideo, isUploading, progress } = useCloudinaryUpload();
   
@@ -100,7 +99,6 @@ export default function VideoUrlInput({
     onVideoChange('');
     onThumbnailChange?.('');
     setIsPlaying(false);
-    setCustomThumbnail(false);
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,7 +121,6 @@ export default function VideoUrlInput({
   const handleAutoThumbnail = () => {
     if (autoThumbnail) {
       onThumbnailChange?.(autoThumbnail);
-      setCustomThumbnail(false);
     }
   };
 
@@ -349,7 +346,6 @@ export default function VideoUrlInput({
               value={thumbnailUrl || ''}
               onChange={(e) => {
                 onThumbnailChange(e.target.value);
-                setCustomThumbnail(!!e.target.value);
               }}
               placeholder={autoThumbnail || 'Custom thumbnail URL (optional)'}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"

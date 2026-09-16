@@ -30,9 +30,7 @@ import {
   Images,
   ChevronDown,
   ChevronRight,
-  Shield,
   Eye,
-  EyeOff,
   Layers,
   ZapOff,
   Zap,
@@ -632,7 +630,6 @@ export default function SiteMapView({
 // =============================================================================
 
 function CompactRow({
-  pageKey,
   label,
   icon,
   route,

@@ -2,7 +2,7 @@
 // Add/edit/remove testimonials with image upload support
 
 import { useState, useCallback } from 'react';
-import { Quote, User, Plus, X, Image as ImageIcon, Loader2, Upload, GripVertical, Edit2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Quote, User, Plus, X, Image as ImageIcon, Loader2, GripVertical, Edit2, ChevronDown, ChevronUp } from 'lucide-react';
 import type { ProgramTestimonial } from '../../types/content';
 import { useCloudinaryUpload } from '../../hooks/useCloudinaryUpload';
 import { cloudinaryFolders } from '../../config/cloudinary';
@@ -148,7 +148,7 @@ function TestimonialForm({
   isNew: boolean;
 }) {
   const [formData, setFormData] = useState<ProgramTestimonial>(testimonial);
-  const { uploadImage, isUploading, progress } = useCloudinaryUpload();
+  const { uploadImage, isUploading } = useCloudinaryUpload();
 
   const handleImageUpload = useCallback(async (file: File) => {
     const result = await uploadImage(file, {

@@ -17,7 +17,6 @@ import {
   Calendar
 } from 'lucide-react';
 import type { ImpactMetric, ImpactMetricInput } from '../../types/content';
-import { format } from 'date-fns';
 
 const ICON_OPTIONS = [
   { value: 'users', label: 'Users', icon: Users },

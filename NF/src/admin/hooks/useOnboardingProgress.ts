@@ -11,10 +11,11 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
+import { untypedTable } from '../../lib/supabase/client';
 import { useAuth } from './useAuth';
 import { getTrailsForRole } from '../components/onboarding/breadcrumbDefinitions';
 import { getTourById } from '../components/onboarding/tourData';
-import { useTour } from '../components/onboarding/TourProvider';
+import { useTour } from '../components/onboarding/useTour';
 import type {
   OnboardingProgressRow,
   UserProgress,
@@ -49,8 +50,7 @@ export function useOnboardingProgress() {
     queryFn: async () => {
       if (!userId) return [];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase
-        .from('onboarding_progress') as any)
+      const { data, error } = await untypedTable(supabase, 'onboarding_progress')
         .select('*')
         .eq('user_id', userId);
       // Gracefully handle table not existing yet (migration not run).
@@ -127,15 +127,14 @@ export function useOnboardingProgress() {
       if (isCompleted) {
         // Remove the completion
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (supabase
-          .from('onboarding_progress') as any)
+        await untypedTable(supabase, 'onboarding_progress')
           .delete()
           .eq('user_id', userId)
           .eq('breadcrumb_id', breadcrumbId);
       } else {
         // Mark as completed (manual, not auto-detected)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (supabase.from('onboarding_progress') as any).upsert(
+        await untypedTable(supabase, 'onboarding_progress').upsert(
           {
             user_id: userId,
             breadcrumb_id: breadcrumbId,
@@ -156,7 +155,7 @@ export function useOnboardingProgress() {
   const markMastery = useCallback(async () => {
     if (!userId || !progress.isMastered) return;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase.from('profiles') as any)
+    await untypedTable(supabase, 'profiles')
       .update({ role_mastery_completed_at: new Date().toISOString() })
       .eq('id', userId);
     queryClient.invalidateQueries({ queryKey: [PROGRESS_KEY, userId] });

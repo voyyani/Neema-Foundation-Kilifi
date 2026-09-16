@@ -17,7 +17,6 @@ import {
   History,
   BarChart3,
   Clock,
-  Shield,
   TrendingUp,
   Activity,
   Search,
@@ -35,11 +34,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ProtectedRoute } from '../../components/auth/ProtectedRoute';
 import {
   useMaintenanceHistory,
-  useMaintenanceRules,
   useMaintenanceStats,
 } from '../../hooks/useMaintenanceRules';
 import { resolveTargetLabel } from '../../config/maintenanceRegistry';
-import type { MaintenanceAuditEntry, MaintenanceAuditAction } from '../../types/maintenance';
+import type { MaintenanceAuditEntry } from '../../types/maintenance';
+
+/** Shape of the JSON snapshots stored on audit rows; only the keys we read. */
+type AuditValues = { title?: string; target_key?: string } | null | undefined;
 
 // =============================================================================
 // Constants
@@ -305,13 +306,13 @@ function AuditTimelineEntry({ entry }: { entry: MaintenanceAuditEntry }) {
   };
 
   const title =
-    (entry.new_values as any)?.title ??
-    (entry.old_values as any)?.title ??
+    (entry.new_values as AuditValues)?.title ??
+    (entry.old_values as AuditValues)?.title ??
     'Unknown rule';
 
   const targetKey =
-    (entry.new_values as any)?.target_key ??
-    (entry.old_values as any)?.target_key;
+    (entry.new_values as AuditValues)?.target_key ??
+    (entry.old_values as AuditValues)?.target_key;
 
   const date = new Date(entry.created_at);
   const dateStr = date.toLocaleDateString('en-US', {
@@ -391,8 +392,8 @@ function MaintenanceHistoryContent() {
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       entries = entries.filter((e) => {
-        const title = String((e.new_values as any)?.title ?? (e.old_values as any)?.title ?? '');
-        const target = String((e.new_values as any)?.target_key ?? (e.old_values as any)?.target_key ?? '');
+        const title = String((e.new_values as AuditValues)?.title ?? (e.old_values as AuditValues)?.title ?? '');
+        const target = String((e.new_values as AuditValues)?.target_key ?? (e.old_values as AuditValues)?.target_key ?? '');
         return (
           title.toLowerCase().includes(q) ||
           target.toLowerCase().includes(q) ||

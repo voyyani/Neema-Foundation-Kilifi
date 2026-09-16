@@ -1,4 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
+
+/** Row shape returned by the `programs:program_id(...)` join before flattening. */
+type EventWithProgramJoin = PublicEvent & { programs?: { name?: string; slug?: string; category?: string } | null };
 import { supabasePublic as supabase } from "../../lib/supabase/client";
 
 export interface PublicEvent {
@@ -63,7 +66,7 @@ export function usePublicEvents(options?: { enabled?: boolean }) {
       }
       
       // Transform to include program name
-      const events = (data || []).map((event: any) => ({
+      const events = ((data || []) as EventWithProgramJoin[]).map((event) => ({
         ...event,
         program_name: event.programs?.name || undefined,
         program_slug: event.programs?.slug || undefined,
@@ -117,7 +120,7 @@ export function usePublicUpcomingEvents(options?: { enabled?: boolean; limit?: n
       }
       
       // Transform to include program name
-      const events = (data || []).map((event: any) => ({
+      const events = ((data || []) as EventWithProgramJoin[]).map((event) => ({
         ...event,
         program_name: event.programs?.name || undefined,
         program_slug: event.programs?.slug || undefined,
@@ -171,7 +174,7 @@ export function usePublicPastEvents(options?: { enabled?: boolean; limit?: numbe
       }
       
       // Transform to include program name
-      const events = (data || []).map((event: any) => ({
+      const events = ((data || []) as EventWithProgramJoin[]).map((event) => ({
         ...event,
         program_name: event.programs?.name || undefined,
         program_slug: event.programs?.slug || undefined,
@@ -223,8 +226,8 @@ export function usePublicProgramEvents(programId: string | null | undefined, opt
         throw error;
       }
       
-      const events = (data || []) as PublicEvent[];
-      const withPrograms = events.map((event: any) => ({
+      const events = (data || []) as EventWithProgramJoin[];
+      const withPrograms = events.map((event) => ({
         ...event,
         program_name: event.programs?.name || undefined,
         program_slug: event.programs?.slug || undefined,
@@ -274,7 +277,7 @@ export function usePublicFeaturedEvents(options?: { enabled?: boolean }) {
       }
       
       // Transform to include program name
-      const events = (data || []).map((event: any) => ({
+      const events = ((data || []) as EventWithProgramJoin[]).map((event) => ({
         ...event,
         program_name: event.programs?.name || undefined,
       }));

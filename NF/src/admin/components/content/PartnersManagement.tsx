@@ -1,6 +1,6 @@
 // Admin Partners Management Page
 import { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Star, Eye, EyeOff, GripVertical, ExternalLink } from 'lucide-react';
+import { Plus, Pencil, Trash2, Star, GripVertical, ExternalLink } from 'lucide-react';
 import { 
   usePartners, 
   useCreatePartner, 
@@ -9,9 +9,10 @@ import {
   useTogglePartnerFeatured,
   useTogglePartnerActive,
   useReorderPartners,
-  type PartnerFormData 
+  type Partner,
+  type PartnerFormData,
 } from '../../hooks/usePartners';
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -19,7 +20,7 @@ import { CSS } from '@dnd-kit/utilities';
 interface PartnerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  partner?: any;
+  partner?: Partner | null;
 }
 
 function PartnerModal({ isOpen, onClose, partner }: PartnerModalProps) {
@@ -191,7 +192,15 @@ function PartnerModal({ isOpen, onClose, partner }: PartnerModalProps) {
   );
 }
 
-function SortablePartnerRow({ partner, onEdit, onDelete, onToggleFeatured, onToggleActive }: any) {
+interface SortablePartnerRowProps {
+  partner: Partner;
+  onEdit: (partner: Partner) => void;
+  onDelete: (id: string) => void;
+  onToggleFeatured: (id: string, next: boolean) => void;
+  onToggleActive: (id: string, next: boolean) => void;
+}
+
+function SortablePartnerRow({ partner, onEdit, onDelete, onToggleFeatured, onToggleActive }: SortablePartnerRowProps) {
   const {
     attributes,
     listeners,
@@ -302,7 +311,7 @@ function SortablePartnerRow({ partner, onEdit, onDelete, onToggleFeatured, onTog
 
 export default function PartnersManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingPartner, setEditingPartner] = useState<any>(null);
+  const [editingPartner, setEditingPartner] = useState<Partner | null>(null);
 
   const { data: partners = [], isLoading } = usePartners();
   const deleteMutation = useDeletePartner();
@@ -317,10 +326,10 @@ export default function PartnersManagement() {
     })
   );
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    if (active.id !== over.id) {
+    if (over && active.id !== over.id) {
       const oldIndex = partners.findIndex((p) => p.id === active.id);
       const newIndex = partners.findIndex((p) => p.id === over.id);
 
@@ -334,7 +343,7 @@ export default function PartnersManagement() {
     }
   };
 
-  const handleEdit = (partner: any) => {
+  const handleEdit = (partner: Partner) => {
     setEditingPartner(partner);
     setIsModalOpen(true);
   };

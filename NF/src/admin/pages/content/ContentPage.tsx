@@ -1,7 +1,7 @@
 // Content Management Hub Page
 
 import { Link } from 'react-router-dom';
-import { Settings, Image, Layout, BookOpen, TrendingUp, Users, Handshake, Inbox } from 'lucide-react';
+import { Image, Layout, BookOpen, TrendingUp, Users, Handshake, Inbox } from 'lucide-react';
 
 export default function ContentPage() {
   const contentSections = [

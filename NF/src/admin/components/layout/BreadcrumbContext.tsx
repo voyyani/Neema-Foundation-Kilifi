@@ -20,27 +20,18 @@
  * The hook automatically clears the entity name on unmount.
  */
 
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
+import { BreadcrumbCtx } from './breadcrumbCtx';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-interface BreadcrumbContextValue {
-  /** The entity name injected by the current detail page (e.g. "Charity Gala") */
-  entityName: string | null;
-  /** Set the entity name — called by detail pages */
-  setEntityName: (name: string | null) => void;
-}
 
 // ---------------------------------------------------------------------------
 // Context
 // ---------------------------------------------------------------------------
 
-const BreadcrumbCtx = createContext<BreadcrumbContextValue>({
-  entityName: null,
-  setEntityName: () => {},
-});
 
 // ---------------------------------------------------------------------------
 // Provider — wrap your layout (AdminLayout) with this
@@ -59,35 +50,3 @@ export function BreadcrumbProvider({ children }: { children: ReactNode }) {
 // ---------------------------------------------------------------------------
 // Hooks
 // ---------------------------------------------------------------------------
-
-/**
- * Read the current breadcrumb entity. Used by BreadcrumbBar.
- */
-export function useBreadcrumb() {
-  return useContext(BreadcrumbCtx);
-}
-
-/**
- * Set the breadcrumb entity name for the current page.
- * Clears automatically on unmount so stale names don't leak.
- *
- * @param name — The entity name to display (e.g. event title, album title).
- *               Pass `undefined` or `null` while loading.
- */
-export function useBreadcrumbEntity(name: string | undefined | null) {
-  const { setEntityName } = useContext(BreadcrumbCtx);
-
-  const stableSet = useCallback(
-    (n: string | null) => setEntityName(n),
-    [setEntityName],
-  );
-
-  useEffect(() => {
-    if (name) {
-      stableSet(name);
-    }
-    return () => {
-      stableSet(null);
-    };
-  }, [name, stableSet]);
-}

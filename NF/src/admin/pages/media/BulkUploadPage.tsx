@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, FolderOpen, Loader2 } from 'lucide-react';
-import { useMediaAlbums, createMediaAlbum } from '../../hooks/useMediaAlbums';
+import { useMediaAlbums } from '../../hooks/useMediaAlbums';
 import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
 import UploadWidget from '../../components/media/UploadWidget';
 import AlbumForm from '../../components/media/AlbumForm';

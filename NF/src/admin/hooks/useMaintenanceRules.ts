@@ -14,6 +14,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
+import { untypedTable } from '../../lib/supabase/client';
 import { useAuth } from './useAuth';
 import { queryKeys } from '../config/queryClient';
 import { toast } from 'sonner';
@@ -131,8 +132,7 @@ export function useCreateMaintenanceRule() {
 
   return useMutation({
     mutationFn: async (input: CreateMaintenanceRuleInput): Promise<MaintenanceRule> => {
-      const { data, error } = await supabase
-        .from('maintenance_rules')
+      const { data, error } = await untypedTable(supabase, 'maintenance_rules')
         .insert({
           ...input,
           display_config: input.display_config ?? {},
@@ -142,7 +142,7 @@ export function useCreateMaintenanceRule() {
           is_active: input.is_active ?? false,
           created_by: user?.id ?? null,
           updated_by: user?.id ?? null,
-        } as any)
+        })
         .select()
         .single();
 
@@ -182,8 +182,7 @@ export function useUpdateMaintenanceRule() {
       id,
       ...input
     }: UpdateMaintenanceRuleInput & { id: string }): Promise<MaintenanceRule> => {
-      const { data, error } = await (supabase
-        .from('maintenance_rules') as any)
+      const { data, error } = await untypedTable(supabase, 'maintenance_rules')
         .update({
           ...input,
           updated_by: user?.id ?? null,
@@ -224,8 +223,7 @@ export function useToggleMaintenanceRule() {
       id: string;
       is_active: boolean;
     }): Promise<MaintenanceRule> => {
-      const { data, error } = await (supabase
-        .from('maintenance_rules') as any)
+      const { data, error } = await untypedTable(supabase, 'maintenance_rules')
         .update({ is_active, updated_by: user?.id ?? null })
         .eq('id', id)
         .select()
@@ -329,13 +327,12 @@ export function useCreateStatusUpdate() {
 
   return useMutation({
     mutationFn: async (input: CreateStatusUpdateInput): Promise<MaintenanceStatusUpdate> => {
-      const { data, error } = await supabase
-        .from('maintenance_status_updates')
+      const { data, error } = await untypedTable(supabase, 'maintenance_status_updates')
         .insert({
           ...input,
           status_type: input.status_type ?? 'info',
           created_by: user?.id ?? null,
-        } as any)
+        })
         .select()
         .single();
 
@@ -487,8 +484,7 @@ export function useBulkToggleMaintenanceRules() {
       const results: MaintenanceRule[] = [];
 
       for (const id of ids) {
-        const { data, error } = await (supabase
-          .from('maintenance_rules') as any)
+        const { data, error } = await untypedTable(supabase, 'maintenance_rules')
           .update({ is_active, updated_by: user?.id ?? null })
           .eq('id', id)
           .select()
@@ -605,8 +601,7 @@ export function useCreateMaintenanceTemplate() {
 
   return useMutation({
     mutationFn: async (input: CreateTemplateInput): Promise<MaintenanceTemplate> => {
-      const { data, error } = await supabase
-        .from('maintenance_templates')
+      const { data, error } = await untypedTable(supabase, 'maintenance_templates')
         .insert({
           ...input,
           display_config: input.display_config ?? {},
@@ -614,7 +609,7 @@ export function useCreateMaintenanceTemplate() {
           allowed_roles: input.allowed_roles ?? ['super_admin', 'admin'],
           priority: input.priority ?? 50,
           created_by: user?.id ?? null,
-        } as any)
+        })
         .select()
         .single();
 
@@ -673,9 +668,9 @@ export function useApplyTemplate() {
       if (fetchError) throw fetchError;
 
       // Increment usage count
-      await (supabase.from('maintenance_templates') as any)
+      await untypedTable(supabase, 'maintenance_templates')
         .update({
-          usage_count: ((template as any).usage_count ?? 0) + 1,
+          usage_count: ((template as { usage_count?: number } | null)?.usage_count ?? 0) + 1,
           last_used_at: new Date().toISOString(),
         })
         .eq('id', templateId);
@@ -709,8 +704,7 @@ export function useCreateMaintenanceSchedule() {
 
   return useMutation({
     mutationFn: async (input: CreateScheduleInput): Promise<MaintenanceSchedule> => {
-      const { data, error } = await (supabase
-        .from('maintenance_schedules') as any)
+      const { data, error } = await untypedTable(supabase, 'maintenance_schedules')
         .insert({
           rule_id: input.rule_id,
           starts_at: input.starts_at,
@@ -764,8 +758,7 @@ export function useReplaceMaintenanceSchedule() {
 
       // Insert new schedule if mode is 'scheduled'
       if (schedule) {
-        const { error: insError } = await (supabase
-          .from('maintenance_schedules') as any)
+        const { error: insError } = await untypedTable(supabase, 'maintenance_schedules')
           .insert({
             rule_id,
             starts_at: schedule.starts_at,

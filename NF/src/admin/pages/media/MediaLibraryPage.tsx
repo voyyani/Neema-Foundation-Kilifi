@@ -9,8 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useMediaAlbums } from '../../hooks/useMediaAlbums';
 import AlbumCard from '../../components/media/AlbumCard';
 import AlbumForm from '../../components/media/AlbumForm';
-import type { AlbumFilters, AlbumType, MediaAlbum } from '../../types/media';
-import { ALBUM_TYPE_LABELS } from '../../types/media';
+import type { AlbumFilters, AlbumType } from '../../types/media';
 import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
 
 const TYPE_FILTERS: Array<{ value: AlbumType | 'all'; label: string }> = [
@@ -32,7 +31,7 @@ export default function MediaLibraryPage() {
     search: search || undefined,
   });
 
-  function handleCreated(_album: MediaAlbum) {
+  function handleCreated() {
     track('album.created');
     setShowCreateModal(false);
     refetch();

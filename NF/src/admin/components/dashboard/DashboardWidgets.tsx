@@ -14,12 +14,12 @@
 
 import { Link } from 'react-router-dom';
 import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
+import { formatTimeAgo } from '../../lib/formatTimeAgo';
 import {
   Calendar,
   BookOpen,
   FileText,
   Users,
-  TrendingUp,
   Edit,
   Settings,
   Loader2,
@@ -28,14 +28,11 @@ import {
   X,
   Clock,
   MapPin,
-  Shield,
   Wrench,
   ChevronRight,
   Inbox,
   UserPlus,
   ArrowUpRight,
-  BarChart3,
-  Eye,
   CheckCircle2,
   AlertTriangle,
   type LucideIcon,
@@ -47,20 +44,6 @@ import type { Permission } from '../../types/roles';
 // Helper
 // =============================================================================
 
-export function formatTimeAgo(date: string): string {
-  const now = new Date();
-  const then = new Date(date);
-  const diffMs = now.getTime() - then.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return then.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
 
 function formatEventDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {

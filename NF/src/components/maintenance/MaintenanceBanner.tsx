@@ -11,7 +11,7 @@ import { FEATURE_GROUPS } from '../../admin/config/maintenanceRegistry';
 import { resolvePageKey } from './resolvePageKey';
 import { AlertTriangle, Clock, Info, X } from 'lucide-react';
 import clsx from 'clsx';
-import { useMaintenanceContext } from './MaintenanceProvider';
+import { useMaintenanceContext } from './MaintenanceContext';
 import type { ActiveMaintenanceRule } from '../../hooks/public/useMaintenanceStatus';
 import { formatTimeLeft, useCountdown } from './useCountdown';
 

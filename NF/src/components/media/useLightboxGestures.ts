@@ -4,7 +4,7 @@
  */
 import { useRef, useState } from 'react';
 import type React from 'react';
-import { touchDist } from './LightboxControls';
+import { touchDist } from './lightboxUtils';
 
 export function useLightboxGestures({ next, prev, onClose }: { next: () => void; prev: () => void; onClose: () => void }) {
   const [pinchScale, setPinchScale] = useState(1);

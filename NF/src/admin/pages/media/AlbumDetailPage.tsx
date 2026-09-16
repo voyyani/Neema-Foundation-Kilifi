@@ -4,24 +4,23 @@
  */
 
 import { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import {
   ArrowLeft, Loader2, Eye, EyeOff, Pencil, Check, Images, RefreshCw, Info, ExternalLink
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMediaAlbum, updateMediaAlbum } from '../../hooks/useMediaAlbums';
-import { useBreadcrumbEntity } from '../../components/layout/BreadcrumbContext';
+import { useBreadcrumbEntity } from '../../components/layout/useBreadcrumb';
 import AlbumForm from '../../components/media/AlbumForm';
 import ImageGrid from '../../components/media/ImageGrid';
 import UploadWidget from '../../components/media/UploadWidget';
-import type { MediaAlbum, MediaItem } from '../../types/media';
+import type { MediaItem } from '../../types/media';
 import { ALBUM_TYPE_LABELS, ALBUM_TYPE_COLORS } from '../../types/media';
 import { toast } from 'sonner';
 import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
 
 export default function AlbumDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const { album, items, isLoading, error, refetch } = useMediaAlbum(id);
   const [editMode, setEditMode] = useState(false);
   const [localItems, setLocalItems] = useState<MediaItem[] | null>(null);
@@ -47,7 +46,7 @@ export default function AlbumDetailPage() {
     }
   }
 
-  function handleAlbumSaved(_updated: MediaAlbum) {
+  function handleAlbumSaved() {
     setEditMode(false);
     refetch();
   }

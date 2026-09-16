@@ -6,8 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen } from '@testing-library/react';
 import React from 'react';
 
 import type { MaintenanceScope, MaintenanceSeverity } from '../../admin/types/maintenance';

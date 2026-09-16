@@ -41,7 +41,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { usePermissions, useAuth } from '../../hooks';
+import { usePermissions } from '../../hooks';
 import { PaymentMethodBadge } from './PaymentMethodBadge';
 import { BankDetailsDeleteDialog } from './BankDetailsDeleteDialog';
 import {
@@ -286,7 +286,6 @@ export function BankDetailsTable({
   onAddNew,
 }: BankDetailsTableProps) {
   const { can, is } = usePermissions();
-  const { profile } = useAuth();
 
   const canEdit   = can('edit_bank_details');
   const canManage = can('manage_bank_details');

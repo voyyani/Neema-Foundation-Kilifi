@@ -14,7 +14,7 @@
  *  - Cleanup on unmount / rule change
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabasePublic as supabase } from '../../lib/supabase/client';
 import type { RealtimeChannel } from '@supabase/supabase-js';

@@ -14,12 +14,10 @@ import {
   Eye,
   Monitor,
   Smartphone,
-  Clock,
   Wrench,
   AlertTriangle,
   Info,
   ArrowRight,
-  BarChart3,
   RefreshCw,
 } from 'lucide-react';
 import { useState } from 'react';

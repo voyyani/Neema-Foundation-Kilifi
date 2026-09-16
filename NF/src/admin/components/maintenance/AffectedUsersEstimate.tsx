@@ -12,11 +12,9 @@
 import { useMemo, useState } from 'react';
 import {
   Users,
-  TrendingDown,
   ChevronDown,
   ChevronUp,
   Eye,
-  EyeOff,
   AlertTriangle,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
