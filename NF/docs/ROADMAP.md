@@ -1,453 +1,830 @@
-# Neema Foundation Kilifi — Roadmap to a World-Class Platform
+J# Neema Foundation Kilifi — Roadmap to a World-Class Platform
 
-**Date:** 2026-09-10
-**Basis:** [`docs/AUDIT.md`](./AUDIT.md) — every item below traces to a numbered audit finding
-**Horizon:** ~9 months, six phases
+**Date:** 2026-09-15 (revision 2; supersedes the 2026-09-10 draft)
+**Basis:** [`docs/AUDIT.md`](./AUDIT.md) — findings are cited by section number throughout
+**Horizon:** ~12 months, twelve phases (two already complete)
+
+---
+
+## What changed in this revision
+
+The 2026-09-10 roadmap was written from the audit alone. Two phases have since
+shipped, and the priorities behind the remaining ones have been re-decided:
+
+| Then | Now | Why |
+|------|-----|-----|
+| Design system was Phase 4, after payments and stories | **Client-side revamp is Phase 2, next** | Everything the donor sees is built on a visual foundation with three colour systems and no design authority (§7.1). Building payments, stories and Swahili on top of that means restyling them all again later. Fix the foundation once, then build on it. |
+| "Hold the line — admin work limited to what donor features require" | **Admin hardening is Phase 3, feature by feature** | The admin portal is where ~60% of the code lives and it is *not* airtight: maintenance mode does not gate pages or modals, tests cover ~1.4% of files, and `ADMIN-GUIDE.md` describes intended rather than verified behaviour. A portal that silently misbehaves is a liability, not an asset. |
+| Six phases, nine months | **Twelve phases, ~twelve months** | Phases 9–11 are additions that turn a working platform into a defensible, portfolio-grade one: privacy compliance, resilience on 3G, and an engineering showcase. |
+
+Nothing from the original has been dropped. M-Pesa, stories, Swahili, donor
+relationships and operations are all still here, renumbered.
 
 ---
 
 ## The Strategy in One Page
 
-The audit's central finding is that **~60% of the engineering went into the admin portal and ~8% into the donor-facing pages.** The admin tooling is genuinely excellent. The public site — the part that raises money — is a 1MB JavaScript bundle that search engines can't read, WhatsApp can't preview, and that cannot accept a shilling.
+The audit's central finding stands: **the admin portal got the engineering, the
+donor-facing site got 8% of it.** Phases 0–1 stabilised the build and made the
+site findable. The next two phases fix the two halves of the product in turn —
+first the face the donor sees, then the machinery the team runs — so that every
+later feature lands on solid ground.
 
-This roadmap does not propose a rewrite. It proposes **pointing the same capability at the donor.**
+Four principles govern every phase:
 
-Three principles govern every phase:
-
-1. **Stabilise before building.** A broken build and an open spam endpoint make every subsequent change riskier and slower. Phase 0 is non-negotiable and comes first.
-2. **Mobile-first, Kenya-first.** The primary audience is on 3G in Kilifi County, using M-Pesa, sharing on WhatsApp, and often reading Swahili. Every decision is judged against that user, not against a desktop reviewer on fibre.
-3. **Every phase ships something a donor can feel.** No phase is purely internal.
+1. **Foundation before features.** Tokens before pages, gates before rules,
+   tests before "done". No phase builds on a surface the previous phase left
+   inconsistent.
+2. **Mobile-first, Kenya-first.** The primary audience is on 3G in Kilifi
+   County, using M-Pesa, sharing on WhatsApp, often reading Swahili. Every
+   decision is judged against that user.
+3. **Airtight means: specified, tested, documented, walked through.** A feature
+   is not finished when the code compiles. It is finished when its behaviour is
+   written down, covered by tests, described in the admin guide, and verified
+   by a human clicking through it.
+4. **Every phase ships something visible.** No phase is purely internal.
 
 ### Phase map
 
-| Phase | Theme | Duration | Outcome |
-|-------|-------|----------|---------|
-| **0** | Stop the bleeding | 1–2 weeks | Build works, spam endpoint closed, CI enforces both |
-| **1** | Be findable, be fast | 3–4 weeks | Site indexed, links preview correctly, bundle halved |
-| **2** | Accept the gift | 4–6 weeks | M-Pesa STK Push — donors can actually give |
-| **3** | Tell the story | 4–5 weeks | Stories get URLs; transparency reporting |
-| **4** | Design system & Swahili | 4–6 weeks | One brand, two languages, dark mode possible |
-| **5** | Donor relationships | 6–8 weeks | Recurring giving, donor portal, campaigns |
-| **6** | Operational excellence | Ongoing | Staging, backups, coverage, monitoring |
-
-**Total: ~9 months to a platform that stands beside charity: water or GiveDirectly** in donor experience, at a fraction of their budget.
-
----
-
-## Phase 0 — Stop the Bleeding
-
-**Duration:** 1–2 weeks · **Blocking: everything else** · Addresses audit P0 items 1–3
-
-Nothing here is optional and nothing here is glamorous. It exists because the build is currently broken and a public endpoint is currently abusable.
-
-### 0.1 Fix the build (audit §3.1)
-
-18 TypeScript errors block `npm run build`. Work in this order:
-
-1. **Regenerate Supabase types** — resolves ~11 of 18 errors at once. The `never` types in `TourProvider.tsx` and `useMaintenanceStatusFeed.ts` exist because tables added by later migrations aren't in `src/lib/supabase/types.ts`:
-   ```bash
-   npx supabase gen types typescript --project-id sflwsxrihvzpbrcwhknl > src/lib/supabase/types.ts
-   ```
-2. **Fix `vite.config.ts:17`** — `https: true` → `https: {}` for Vite 7's typings.
-3. **Fix `RichTextEditor.tsx:98`** — pass a `SetContentOptions` object instead of `false`, per the TipTap v3 API.
-4. **Investigate the two real bugs** — do not silence these:
-   - `RuleForm.tsx:531` compares against `"preview"`, a value not in the step union. **A preview step in the maintenance rule form is unreachable.** Decide whether preview should exist and either implement it or delete the branch.
-   - `EventDetailPage.tsx:23` reads `.title` off an `Event` type without that property. Determine the correct field name.
-5. **Fix `src/__tests__/setup.tsx`** — add `import type { JSX } from 'react'` and correct the dynamic tag typing.
-
-**Done when:** `npm run build` exits 0.
-
-### 0.2 Close the spam endpoint (audit §4.1) — highest security priority
-
-`send-notification` is public, unthrottled, writes with the service-role key, and interpolates unescaped user input into staff emails. Add, in the edge function:
-
-- **Cloudflare Turnstile** verification (free, privacy-respecting, no puzzle for most users, better than reCAPTCHA for low-bandwidth users). Verify the token server-side before any DB write.
-- **A honeypot field** — a hidden input that real users never fill; reject any request that fills it. Catches most naive bots with zero user friction.
-- **Rate limiting** — max 3 submissions per IP per hour, 20 per day, stored in a small Postgres table or Supabase KV.
-- **An origin allowlist** — replace `Access-Control-Allow-Origin: *` with the production and preview domains.
-- **Field length caps** — reject `name` > 200, `email` > 320, `message`/`motivation` > 5,000 characters. Enforce before insert.
-- **An `escapeHtml()` helper applied to every interpolated value** in every email template and subject line. This closes the phishing-via-staff-inbox vector.
-
-Add matching client-side validation to `ApplicationModal.tsx`, `Contact.tsx` and `Partnership.tsx` — as UX, not as security.
-
-### 0.3 Authenticate the cron endpoints (audit §4.2)
-
-`check-maintenance-schedule` and `maintenance-notify` are publicly invokable and one mutates state with the service-role key. Add a shared secret:
-
-```bash
-supabase secrets set CRON_SECRET="$(openssl rand -hex 32)"
-```
-
-Both functions must reject any request whose `X-Cron-Secret` header doesn't match. Update the `pg_cron` job and the database webhook to send it.
-
-### 0.4 Set up CI (audit §3.4)
-
-The root cause of §0.1 is that nothing checks. Add `.github/workflows/ci.yml` running on every push and PR:
-
-- `npm ci`
-- `npx tsc -b` — **fail the build on error**
-- `npx eslint .` — start with `--max-warnings` set to today's count and ratchet it down; do not block the team on 254 pre-existing errors on day one
-- `npx vitest run`
-- `npx vite build` with a **bundle-size budget** that fails if the entry chunk exceeds its current size — this prevents regression while Phase 1 brings it down
-
-### 0.5 Dependency hygiene (audit §5.3)
-
-- Remove `three` and `@types/three` — zero imports. Update the README, which still claims a Three.js hero.
-- Move `supabase` (CLI) to `devDependencies`.
-- Remove the deprecated `@types/dompurify`.
-- Commit the untracked `docs/` files (audit §12).
-
-**Phase 0 exit criteria:** build green · CI enforcing it · public forms rate-limited, captcha-protected and HTML-escaped · cron endpoints authenticated.
+| Phase | Theme | Duration | Status / outcome |
+|-------|-------|----------|------------------|
+| **0** | Stop the bleeding | 1 week | ✅ **Done 2026-09-10** — build green, CI, spam endpoint hardened, cron endpoints authenticated |
+| **1** | Be findable, be fast | 1 week | ✅ **Done 2026-09-10** — per-route static HTML, sitemap, lazy routes, Cloudinary transforms |
+| **2** | Client-side revamp | 5–7 weeks | One brand, one token system, every public surface redesigned to a world-class bar with `/impeccable` |
+| **3** | Admin hardening — feature by feature | 7–9 weeks | Every admin feature specified, tested, documented; maintenance mode first |
+| **4** | Accept the gift | 4–6 weeks | M-Pesa STK Push + cards — donors can actually give |
+| **5** | Tell the story | 3–4 weeks | Stories get URLs; public impact page; newsletter |
+| **6** | Swahili & accessibility | 3–4 weeks | Two languages, WCAG 2.2 AA verified |
+| **7** | Donor relationships | 6–8 weeks | Recurring giving, donor portal, campaigns |
+| **8** | Operational excellence | Ongoing from Phase 3 | One migration source of truth, staging, backups, monitoring |
+| **9** | Trust, privacy & compliance | 2–3 weeks | Kenya Data Protection Act alignment, CSP/HSTS, consent, retention |
+| **10** | Resilience on 3G | 3–4 weeks | PWA, offline fallbacks, low-data mode, SMS/WhatsApp channels |
+| **11** | Engineering showcase | 2–3 weeks | Storybook, visual regression, Lighthouse CI, public case study, demo environment |
 
 ---
 
-## Phase 1 — Be Findable, Be Fast
+## Phase 0 — Stop the Bleeding ✅
 
-**Duration:** 3–4 weeks · Addresses audit P1 items 5, 7, 8, 11
+**Completed 2026-09-10.** Plan: [`docs/superpowers/plans/2026-09-10-phase-0-stabilisation.md`](./superpowers/plans/2026-09-10-phase-0-stabilisation.md)
 
-The site is currently invisible to search engines and every shared link previews identically. This phase fixes reach and speed together, because on 3G they are the same problem.
+Delivered (commits `5465d45` → `0d62823`):
 
-### 1.1 Prerendering — the decision that unlocks the rest (audit §6.1)
+- 18 TypeScript errors fixed; `npm run build` exits 0. Supabase types regenerated.
+- `send-notification` hardened: Turnstile verification, honeypot, rate limiting,
+  origin allowlist, length caps, `escapeHtml()` on every interpolated value (§4.1).
+- `check-maintenance-schedule` and `maintenance-notify` require `X-Cron-Secret` (§4.2).
+- CI at the repo root (`.github/workflows/ci.yml`): `tsc -b` blocking, ESLint
+  ceiling at 254 (may only go down), Vitest, `vite build` with an entry-chunk budget (§3.4).
+- `three`, `@types/three`, `@types/dompurify` removed; `supabase` CLI moved to devDependencies (§5.3).
 
-Client-rendered SPAs are invisible to Facebook, WhatsApp, X and LinkedIn, which do not execute JavaScript. Google indexes them slowly and unreliably.
-
-> **Superseded (2026-09-10, during Phase 1 implementation).** Measured against the
-> actual code, 22 files reference `window.`, 9 reference `document.`, 5 use
-> `localStorage` and 2 use `IntersectionObserver`. A prerender pass executes every
-> component in Node, so each is a build-time crash needing an individual guard —
-> a multi-week project with real regression risk, not the ~1 week estimated here.
->
-> Phase 1 instead generates **one static HTML document per public route at build
-> time**, substituting only the `<head>` meta block. Crawlers get correct titles,
-> descriptions and images; no React runs in Node. See
-> `docs/superpowers/plans/2026-09-10-phase-1-findable-and-fast.md`.
->
-> Full SSR remains available if the Phase 5 donor portal needs per-request
-> rendering. It is not needed for discoverability.
-
-**Original recommendation: `vite-plugin-ssr` / `vike` prerendering, or migrate to Remix.**
-
-- **Option A — Add prerendering to the existing Vite app** (`vite-plugin-ssg` or `vike`). Lower risk, ~1 week, keeps the entire codebase. Generates static HTML at build time for all public routes, with real per-page `<title>`, `<meta>` and Open Graph tags baked into the served HTML. Dynamic routes (`/programs/:slug`, `/media/albums/:slug`) are enumerated from Supabase at build time. **Recommended — it solves the problem without disturbing 73,000 lines of working code.**
-- **Option B — Migrate to Remix or Next.js.** Better long-term for streaming, server actions and per-request data, but a multi-month migration of the entire routing layer. Not justified by current needs. Revisit only if Phase 5's donor portal demands genuine server-side rendering.
-
-Take Option A. Revisit at Phase 5.
-
-### 1.2 SEO fundamentals (audit §6.2, §6.3)
-
-- **`public/robots.txt`** with a sitemap reference and `Disallow: /admin`.
-- **`public/sitemap.xml`**, generated at build time from Supabase (all programs, albums, event stories, and later all published stories) — not hand-maintained.
-- **Extend `Helmet` to all 14 public routes.** Currently 6 have it. Every page needs a unique title, description, canonical URL and Open Graph image.
-- **Add `<link rel="canonical">` everywhere** — currently absent sitewide.
-- **Per-page Open Graph images.** A program page shared on WhatsApp should show that program's photo and name. This alone will change how every campaign link performs.
-- **Expand JSON-LD** beyond the existing `Organization` block: `NGO` schema with a `Kilifi County, Kenya` address, `Article` for stories, `ImageGallery` for albums (a component already exists).
-
-### 1.3 Code-splitting (audit §5.1)
-
-The entry chunk is 1,055 kB (300 kB gzipped) because all 8 public pages are static imports in `src/App.tsx` while admin routes are correctly lazy.
-
-- Convert all 8 public page imports to `lazyWithRetry(...)` — the helper already exists and is proven.
-- Keep only `Landing` eager (it is the most common entry point).
-- Add `build.rollupOptions.output.manualChunks` splitting `react`/`react-dom`, `framer-motion`, and `@supabase/supabase-js` into stable vendor chunks so deploys stop busting the whole cache.
-- Split `Hero.tsx` (1,389 lines) — it is on the critical path and cannot be partially loaded.
-- Audit Framer Motion usage (129 files). Prefer the `LazyMotion` + `domAnimation` feature bundle over the full package; consider CSS transitions for simple fades.
-
-**Target: entry chunk under 150 kB gzipped — roughly half today's.**
-
-### 1.4 Images (audit §5.2)
-
-The cheapest performance win available.
-
-- Add a `cloudinaryUrl(publicId, opts)` helper injecting `f_auto,q_auto,w_*,dpr_auto` and use it everywhere. **27 hardcoded URLs currently carry no transformations; only 2 use `f_auto`.**
-- Roll out the existing `OptimizedImage` component (currently used in 2 files) across all 59 `<img>` tags.
-- `loading="lazy"` on everything below the fold — currently 8 instances.
-- `width`/`height` on every image to eliminate layout shift.
-- Preload only the LCP hero image.
-
-### 1.5 Real analytics (audit §6.5)
-
-Replace the `GA_MEASUREMENT_ID` placeholder — which currently makes a live request to Google collecting nothing — with a configured property, or drop it for Plausible (lighter, GDPR-friendly, no cookie banner). Then instrument the funnel that matters: homepage → donate page → payment started → payment completed; volunteer application started → step reached → submitted. **You cannot improve conversion you cannot see.**
-
-**Phase 1 exit criteria:** Lighthouse ≥ 90 on mobile for the homepage · every public route has unique metadata and a working WhatsApp preview · sitemap live and submitted · entry chunk < 150 kB gzipped.
+**Still open from the original Phase 0 scope:** the two "real bugs" flagged in
+§3.1 were made to compile, not necessarily resolved. Both are re-examined in
+Phase 3 (RuleForm preview step → §3.1 Maintenance; `EventDetailPage` field → §3.10 Events).
 
 ---
 
-## Phase 2 — Accept the Gift
+## Phase 1 — Be Findable, Be Fast ✅
+
+**Completed 2026-09-10.** Plan: [`docs/superpowers/plans/2026-09-10-phase-1-findable-and-fast.md`](./superpowers/plans/2026-09-10-phase-1-findable-and-fast.md)
+
+Delivered (commits `7bc7cc0` → `cc2ec89`):
+
+- `src/lib/seo/routeMeta.ts` as the single source of truth for every public
+  route's metadata; `<Seo>` component on all 14 public routes (§6.3).
+- `scripts/generate-static-meta.mjs` writes one HTML document per route at build
+  time with the correct `<head>`, so WhatsApp/Facebook/X previews work without SSR
+  (§6.1 — the prerendering recommendation was superseded; rationale recorded in the plan).
+- `public/robots.txt`; `scripts/generate-sitemap.mjs` (dynamic routes when
+  credentials exist) (§6.2).
+- All eight public pages lazy-loaded; vendor chunks split; CI bundle budget lowered (§5.1).
+- `src/lib/cloudinary.ts` helpers (`cloudinaryUrl`, `cloudinarySrcSet`) applied
+  to every hardcoded Cloudinary URL; `OptimizedImage` routed through them (§5.2).
+- Dead GA placeholder removed; analytics decision deferred (§6.5 — see Phase 8.5).
+
+**Carried forward:** `Hero.tsx` (1,389 lines) was not split — it is on the
+critical path and is now handled as part of the Phase 2 redesign, where it will
+be rebuilt rather than refactored. Lighthouse has not yet been formally measured;
+Phase 2 establishes the baseline before touching anything.
+
+---
+
+## Phase 2 — Client-Side Revamp
+
+**Duration:** 5–7 weeks · **Tool:** `/impeccable:impeccable` · Addresses audit §7.1, §7.2, §7.3, §7.4, §9
+
+The public site is functional but not persuasive. It renders in two different
+reds depending on the component, loads a serif font it never uses, and carries a
+1,389-line hero. This phase gives it one visual authority and then rebuilds
+every public surface against a world-class bar — **without changing the brand.**
+
+### The brief (non-negotiable inputs to every surface)
+
+- **Brand colours are fixed.** The maroon scale `#B01C2E` / `#8A1624` /
+  `#D42A3F` / `#6B111C` is the identity. It becomes a proper token scale
+  (`brand-50` … `brand-950`) and every accent, gradient and hover derives from
+  it. Neutrals, success/warning/danger and surface tokens are added; **no new
+  brand hue is introduced without explicit sign-off.**
+- **Copy is factual.** Statistics, programme descriptions and board bios are
+  the Foundation's claims, not ours. Redesign may restructure and tighten copy;
+  it may not invent numbers, testimonials or outcomes.
+- **Mobile is the primary viewport.** Every surface is reviewed at 360px before
+  1440px. Nothing ships that needs a desktop to make sense.
+- **Performance is a constraint, not a phase.** The Phase 1 bundle budget and
+  Cloudinary helpers stay. Lighthouse mobile ≥ 90 is measured before and after
+  each surface; a redesign that drops it does not merge.
+- **Motion respects `prefers-reduced-motion`** — 129 files use Framer Motion today.
+
+### 2.1 Design authority first (week 1)
+
+1. **Measure the baseline.** Lighthouse mobile + desktop for every public route
+   (`npx lighthouse` or PageSpeed Insights); full-page screenshots at 360px and
+   1440px. Save both under `docs/design/baseline/`. This is the "before".
+2. **`/impeccable init`** → `PRODUCT.md`. Capture who the Foundation serves,
+   who the donor is, what the site must make them feel, and the fixed brand.
+3. **`/impeccable document`** → `DESIGN.md` derived from the shipped code. This
+   records the incumbent world honestly, including its inconsistencies, so the
+   redesign has an anti-reference.
+4. **Tokenise.** In `tailwind.config.js`: define the `brand-*` scale, `surface`,
+   `content`, `border`, `success`, `warning`, `danger`; map `fontFamily.sans` →
+   Inter and `fontFamily.serif` → Playfair Display (or drop Playfair — decide
+   during `typeset`); self-host both with `font-display: swap` and preloaded
+   `woff2` subsets. **Codemod all 1,771 arbitrary-hex and `red-*` occurrences
+   to tokens**, one directory per reviewed commit, then delete the `safelist`
+   array. Verify every foreground/background pair against WCAG 2.2 AA as part
+   of the same pass.
+5. **`/impeccable hooks on`** so the design detector runs after every UI edit
+   for the rest of the phase.
+6. **Extract the primitives** into `src/components/ui/`: `Button`, `Input`,
+   `Textarea`, `Select`, `Card`, `Modal`, `Badge`, `Alert`, `Section`,
+   `Container`. Token-driven variants; every public surface below consumes
+   these, nothing else.
+
+**Gate:** zero arbitrary hex in `src/`, zero `red-*` utility classes, tokens
+documented in `DESIGN.md`, CI still green. Only then do surfaces start.
+
+### 2.2 Surfaces, in order
+
+Each surface runs the same loop. Mode is chosen per surface, not per product.
+
+| # | Surface | Files (today) | Mode | Notes |
+|---|---------|---------------|------|-------|
+| 1 | **App shell** — `Navbar`, `Footer`, `NotFound`, `MaintenancePlaceholder`, `Maintenance` page, `MaintenanceBanner` | `src/components/Navbar.tsx`, `Footer.tsx`, `src/pages/NotFound.tsx`, `src/components/maintenance/*` | Operate | Do first: every other surface inherits it. Maintenance surfaces are redesigned here so Phase 3.1 only has to fix behaviour. |
+| 2 | **Landing** | `src/pages/Landing.tsx` + `Hero`, `Mission`, `Problem`, `Programs`, `Impact`, `Stories`, `Events`, `Action`, `TrustBar`, `Contact` | Persuade | `Hero.tsx` is rebuilt from the approved comp, not refactored — the 1,389-line file goes away. Keep the section keys the maintenance registry expects (`hero`, `mission`, …). |
+| 3 | **Donate** | `src/pages/Donate.tsx`, `BankDetails.tsx` | Persuade | Design the amount selector and the "what happens next" panel now so Phase 4 slots STK Push into a finished layout. Paybill/bank details remain the live path until then. |
+| 4 | **Programs** — landing, detail, modal | `ProgramsLandingPage.tsx`, `ProgramDetailPage.tsx` (1,013), `ProgramModal/*` (1,052) | Persuade | Decide whether the modal survives or becomes a route transition; either way the two oversized files are split by responsibility. |
+| 5 | **Volunteer** + `ApplicationModal` | `src/pages/Volunteer.tsx`, `src/components/volunteer/*` | Persuade → Operate (form) | Multi-step form gets proper progress, validation copy, and error states (`harden`). |
+| 6 | **Partner / Sponsorship / Legacy giving** | `Partnership.tsx` (930), `Sponsorship.tsx`, `LegacyGiving.tsx` | Persuade | Three pages with one job; share a layout, differ in content. |
+| 7 | **Board** | `src/pages/Board.tsx` | Read | People-first. Portraits via `OptimizedImage`. |
+| 8 | **Media** — hub, event story, program gallery, album | `MediaPage.tsx`, `src/pages/media/*` | Experience | Let the photography lead; the interface recedes. Lightbox keyboard-accessible. |
+| 9 | **Cross-cutting pass** — forms (`Contact`, `Partnership`, `ApplicationModal`), loading skeletons, empty states, error boundaries | various | Operate | `harden` + `clarify` across all forms at once so copy and error handling are consistent. |
+
+### 2.3 The per-surface loop
+
+1. **`/impeccable shape <surface>`** — plan the UX before code; produce the
+   direction contract. For the Landing and Donate pages, produce a comp
+   (via the `design` canvas or a static comp) and get it approved before building.
+2. **`/impeccable critique <surface>` + `/impeccable audit <surface>`** —
+   scored baseline for hierarchy, cognitive load, a11y, responsive, performance.
+   Saved to `docs/design/reviews/<surface>-before.md`.
+3. **Build** against `DESIGN.md` and the approved direction. Redesign replaces;
+   it does not polish the discarded look. Split oversized files as you go —
+   one component per responsibility, no file over ~300 lines on a public path.
+4. **Refine** with the commands the critique called for: `typeset`, `layout`,
+   `adapt` (360px is mandatory), `animate` (purposeful, reduced-motion aware),
+   `clarify` (copy), `harden` (errors, empty, edge cases).
+5. **`/impeccable polish <surface>`**, then the `impeccable-finish-reviewer`
+   agent against the direction contract. Fix its material findings in one batch.
+6. **Verify:** Lighthouse mobile ≥ 90 for the route; screenshots at 360/1440
+   into `docs/design/after/`; `tsc`, ESLint ceiling, bundle budget green; the
+   maintenance gating tests still pass (section keys unchanged).
+7. **Commit per surface** with before/after screenshots referenced in the message.
+
+### 2.4 Close-out
+
+- `impeccable-documenter` regenerates `DESIGN.md` from the *shipped* result.
+- `docs/DESIGN-MASTER-PLAN.md` is retired into `DESIGN.md` (one design
+  authority, not two).
+- `README.md` screenshots replaced.
+- A short `docs/design/CHANGELOG-phase-2.md`: before/after Lighthouse per
+  route, bundle sizes, the list of files split.
+
+**Phase 2 exit criteria:** zero hardcoded colours · one token system in
+`DESIGN.md` · every public surface rebuilt and reviewed · Lighthouse mobile ≥ 90
+on every public route · no public-path file over ~300 lines · WCAG AA contrast
+verified on all token pairs · before/after screenshots committed.
+
+---
+
+## Phase 3 — Admin Hardening, Feature by Feature
+
+**Duration:** 7–9 weeks · Addresses audit §3.3, §3.2, §4.5, and the maintenance-mode defect
+
+The admin portal has fourteen distinct features and ~1.4% test coverage. It is
+the part of the codebase where the most has been built and the least has been
+verified. This phase goes through it **one feature at a time**, and no feature
+moves to "done" until it passes the airtight bar below.
+
+Not a redesign — Phase 2 already set the visual authority, and the admin
+already has a coherent iOS-inspired system. This is about correctness,
+completeness and documentation, with a single Operate-mode polish pass at the end.
+
+### The airtight bar
+
+A feature is airtight when all seven are true. The checklist lives at the top
+of each feature dossier and is ticked in the PR.
+
+1. **Behaviour spec written** — `docs/features/<feature>.md`: purpose, who can
+   use it (roles), every state, every edge case, every failure mode, and what
+   the user sees for each. Written *before* fixing, from what the feature is
+   *supposed* to do — then the gap between spec and code is the bug list.
+2. **Exploratory session logged** — one person clicks through every path as
+   each role, on desktop and on a phone, and writes down everything that is
+   wrong, surprising or undocumented. Appended to the dossier.
+3. **Fixed with tests** — every bug in the list gets a failing test first, then
+   the fix. New tests live in `src/__tests__/<feature>/`. Component tests use
+   React Testing Library; hooks are tested against a mocked Supabase client;
+   RLS behaviour is tested against a real database (Phase 8.1 provides it).
+4. **Permissions verified** — for each role in `src/admin/types/roles.ts`, a
+   test asserts what that role can and cannot do, at the UI *and* at the RLS
+   layer. `docs/RBAC.md` is updated to match reality.
+5. **All four states handled** — loading, empty, error, success — with copy a
+   non-technical admin understands.
+6. **Documented** — the `docs/ADMIN-GUIDE.md` section is rewritten from the
+   verified behaviour, with screenshots. `CHANGELOG.md` gets an entry.
+7. **Walked through** — a super-admin follows the guide on the staging
+   environment and signs off in the dossier.
+
+### 3.1 Maintenance system — first, because it is known to be broken
+
+**Current state, measured:**
+
+- `MaintenanceGate` is used in exactly one place outside its own directory:
+  the nine sections of `src/pages/Landing.tsx`. **The other thirteen public
+  routes in `src/App.tsx:250-264` are unwrapped.** A `page`-scope rule targeting
+  `donate`, `volunteer`, `media`, `program_detail` or any other registry key has
+  no effect on the page it names. This is the bug the user observed.
+- **Modals never consult maintenance state.** `ProgramModal`, `ApplicationModal`,
+  `EventModal` and `AdminLoginModal` open regardless of any rule — a `full_block`
+  on the `volunteering` feature group still lets someone submit an application.
+- `useMaintenanceCheck` (`src/components/maintenance/useMaintenanceCheck.ts`) is
+  exported and documented but **imported by nothing**.
+- `/maintenance` (`src/pages/Maintenance.tsx`) exists as a full page but
+  **nothing navigates to it** — a `global` `full_block` renders placeholders
+  inside sections rather than the dedicated page.
+- `MaintenanceProvider` resolves rules by `(scope, target_key)` only; there is
+  no route → page-key resolution, so nothing can gate "the current route".
+- The registry (`src/admin/config/maintenanceRegistry.ts`) declares pages,
+  sections and feature groups that no code enforces (`donate.payment_form`,
+  `volunteer.form`, `media_album`, …).
+- The `preview` step in `RuleForm.tsx` compiles now but was flagged as
+  unreachable in §3.1 — verify it is actually reachable end-to-end.
+- Only three test files cover the system, and `maintenance-gating.test.tsx`
+  tests a *copy* of the gate logic (`TestMaintenanceGate`), not the real component.
+
+**Design of the fix:**
+
+- **Route-level gating by construction.** A `MaintenanceRouteGate` component
+  wraps the public `<Routes>` once. It reads `useLocation()`, resolves the
+  current path to a `PAGE_REGISTRY` key (exact match first, then pattern match
+  for `/programs/:slug` → `program_detail`, `/media/events/:slug` → `media_event`,
+  etc.), and applies the page rule: `full_block` → render the `/maintenance`
+  page in place with the rule's message and `estimated_end`; `degraded` →
+  placeholder; `notice` → banner over content. Adding a route to `App.tsx`
+  without adding it to the registry becomes a test failure.
+- **Sections and components stay opt-in** via `MaintenanceGate`, but every
+  section the registry declares for a page must be wrapped — enforced by a test
+  that walks `PAGE_REGISTRY` and asserts each `(page, section)` pair renders a
+  placeholder when a matching rule is active. Today that is true for `landing`
+  only; the other pages get their wrappers.
+- **Modals and forms consult the context.** `ProgramModal`, `ApplicationModal`,
+  `EventModal` and the three public forms call `useMaintenanceCheck` for their
+  feature group (`programs`, `volunteering`, `contact`, `donations`) and their
+  section key. A blocked modal renders the placeholder in its body and disables
+  submission; a blocked form disables its submit button with the rule's message.
+- **Global `full_block`** short-circuits at the route gate and renders
+  `Maintenance.tsx` — for every route — unless the signed-in admin's role is in
+  `allowed_roles`.
+- **Scheduled rules** are verified end-to-end: create a rule starting in two
+  minutes, confirm `check-maintenance-schedule` (with `X-Cron-Secret`) activates
+  it, confirm the public site reflects it within the realtime feed's latency,
+  confirm the status feed and `maintenance-notify` fire.
+- **Registry and code cannot drift.** A test imports `PAGE_REGISTRY`, walks
+  every `route`, and asserts (a) it is present in `App.tsx`'s public routes and
+  (b) it is present in `src/lib/seo/routeMeta.ts`. Two sources of truth about
+  "what pages exist" are reconciled into one.
+- Retire `TestMaintenanceGate`; test the real `MaintenanceGate` and
+  `MaintenanceRouteGate` with a mocked provider.
+
+**Dossier:** `docs/features/maintenance.md`. Guide section:
+`ADMIN-GUIDE.md` › *Maintenance System* rewritten with a "how to verify it took
+effect" subsection.
+
+### 3.2 Authentication & RBAC
+
+`AuthGuard`, `usePermissions`, `AdminLoginModal`, `ForgotPassword`,
+`ResetPassword`, session expiry, `middleware.ts`. Spec every role's reach;
+test RLS parity for every table `docs/RBAC.md` names; verify password-reset
+tokens expire and cannot be replayed; verify the same-password rule; confirm
+`AdminLoginModal` on the public site and `/admin/login` behave identically.
+Dossier: `docs/features/auth-rbac.md`.
+
+### 3.3 Users management
+
+`UsersManagementPage`, `invite-user` edge function. Invite → accept → role
+assignment → deactivation → reactivation, as each role. Verify a deactivated
+user's existing session is terminated, not merely their next login blocked.
+Dossier: `docs/features/users.md`.
+
+### 3.4 Site settings
+
+`SiteSettingsPage`, `useSiteSettings`, sender-email configuration used by
+`send-notification`. Verify every setting actually reaches the code that reads
+it — several are suspected to be write-only. Dossier: `docs/features/site-settings.md`.
+
+### 3.5 Hero content
+
+`HeroPage`, `useHeroContent` — and `useHeroContent.legacy.ts`, which must be
+deleted or justified. Verify slides, ordering, publish/unpublish, and that the
+Phase 2 Hero renders exactly what the admin saved. Dossier: `docs/features/hero.md`.
+
+### 3.6 Programs
+
+`ProgramsPage`, `usePrograms`, `useProgramImageAdmin`. CRUD, slug uniqueness
+(the public route depends on it), image assignment, ordering, publish state,
+and the relationship to media galleries. Dossier: `docs/features/programs.md`.
+
+### 3.7 Stories
+
+`StoriesPage` (725 lines), `useStories`. CRUD, rich text (`RichTextEditor` on
+TipTap v3 — verify the `SetContentOptions` fix from Phase 0 didn't lose
+content on edit), image handling. **Add the `slug` column and editor field
+with collision detection here**, so Phase 5 only has to build the public
+route. Dossier: `docs/features/stories.md`.
+
+### 3.8 Impact metrics
+
+`ImpactPage`, `useImpactMetrics`. Verify the numbers admins enter are the
+numbers the public `Impact` section renders — the hero/donate/partnership
+statistics were hand-edited in July 2026 (`649e5d7`, `2ba3c37`, `75c5612`),
+which means the CMS is not the source of truth for at least three figures.
+Make it so. Dossier: `docs/features/impact.md`.
+
+### 3.9 Partners & Board
+
+`PartnersManagement`, `BoardPage`, `usePartners`, `useBoardMembers`. CRUD,
+ordering, logo/portrait upload via Cloudinary, published state reaching the
+public pages. Dossier: `docs/features/partners-board.md`.
+
+### 3.10 Events
+
+`EventsPage`, `NewEventPage`, `EventDetailPage`, `useEvents`, `EventForm`,
+`EventList`, and the public `EventModal`. Resolve the `EventDetailPage.tsx:23`
+`.title` question from §3.1 properly. Verify past/upcoming filtering, the
+link to media event stories, and modal cancellation. Dossier: `docs/features/events.md`.
+
+### 3.11 Media library
+
+`MediaLibraryPage`, `AlbumDetailPage`, `BulkUploadPage`, `useMediaAlbums`,
+`useCloudinaryUpload`, sync/verification queries. Verify bulk upload against
+failures mid-batch, album ↔ program/event linkage, deletion (Cloudinary asset
+*and* row), and that every image the admin uploads is served through the
+Phase 1 `cloudinaryUrl` helper. Dossier: `docs/features/media.md`.
+
+### 3.12 Bank details
+
+`BankDetailsAdminPage`, `useBankDetailsAdmin`, the `bank-details` edge function
+(ADR-0003). **Confirm the decrypt path at `bank-details/index.ts:176` is
+reachable and correct** — the audit found it unused. Test encrypt → store →
+masked display → reveal → rotate. Verify RLS denies every non-finance role.
+Dossier: `docs/features/bank-details.md`.
+
+### 3.13 Submissions & volunteer applications
+
+`SubmissionsPage`, `VolunteerApplicationsPage`, `send-reply` edge function,
+`replyModal` (already has a test). Verify status transitions, reply delivery,
+that Phase 0's `escapeHtml` is applied on the reply path too, and export.
+Dossier: `docs/features/submissions.md`.
+
+### 3.14 Dashboard, onboarding & tours
+
+`AdminDashboard`, `useDashboardStats`, `OnboardingPage`, `TourProvider`,
+`useOnboardingProgress`, `useOnboardingTracker`. Verify every stat's query,
+that tours reference elements that still exist after Phase 2, and that
+progress persists per user. Dossier: `docs/features/dashboard-onboarding.md`.
+
+### 3.15 Admin polish pass
+
+Once 3.1–3.14 are airtight: `/impeccable critique` and `/impeccable audit` on
+the admin shell and the three busiest pages (dashboard, maintenance, media) in
+**Operate** mode; `harden`, `clarify`, `adapt` (admins do use phones); one
+`polish` pass. No redesign — consistency, scanability, and the details.
+
+### 3.16 Lint to zero in `src/admin/`
+
+Ratchet the ESLint ceiling down as each feature closes. The `: any` and
+`as ReturnType<typeof supabase.from>` casts (§3.2) are eliminated inside the
+feature that owns them. By the end of Phase 3 the admin directory lints clean
+and the CI ceiling reflects only public-side debt.
+
+**Phase 3 exit criteria:** fourteen dossiers, each with all seven checklist
+items ticked · maintenance rules of every scope demonstrably gate what they
+name · `ADMIN-GUIDE.md` rewritten from verified behaviour · `RBAC.md` matches
+RLS · ≥ 70% test coverage under `src/admin/` and `supabase/functions/` · zero
+ESLint errors under `src/admin/`.
+
+---
+
+## Phase 4 — Accept the Gift
 
 **Duration:** 4–6 weeks · **Highest revenue impact in this document** · Addresses audit §9
 
-Today the site displays a paybill number and asks the donor to leave, open another app, copy a number, type an amount, and complete the transaction alone — with no confirmation and no record on either side. Every one of those steps loses people.
+Today the site displays a paybill number and asks the donor to leave, open
+another app, copy a number, type an amount, and complete the transaction alone
+— with no confirmation and no record on either side. Every one of those steps
+loses people.
 
-`src/admin/types/bank.ts` already models `mpesa_paybill`, `mpesa_till`, `paypal` and `stripe`. **The intent was always there. Build the transaction.**
+`src/admin/types/bank.ts` already models `mpesa_paybill`, `mpesa_till`,
+`paypal` and `stripe`. The Phase 2 Donate page already has the layout. **Build
+the transaction.**
 
-### 2.1 M-Pesa STK Push — the single highest-value feature
-
-For a Kenyan NGO this matters more than everything else in this roadmap combined. The donor enters an amount, taps once, approves a prompt on their phone, and it's done.
+### 4.1 M-Pesa STK Push — the single highest-value feature
 
 - Integrate the **Safaricom Daraja API** (Lipa Na M-Pesa Online / STK Push).
-- New edge function `mpesa-initiate` — `verify_jwt = false`, but with **the full Phase 0.2 protections applied from day one**: Turnstile, rate limiting, origin allowlist, amount bounds.
-- New edge function `mpesa-callback` — receives Safaricom's confirmation. Must validate the source, and **must be idempotent**: Safaricom retries, and a double-credited donation is a serious accounting problem.
-- New `donations` table: amount, currency, method, `mpesa_receipt_number`, phone (stored hashed or encrypted — treat as PII), status, donor name/email if given, designated program, timestamps. RLS: no public read.
-- Donation UI on `/donate`: preset amounts (KES 500 / 1,000 / 5,000 / custom), optional program designation, a clear "you'll get a prompt on your phone" explanation, and a live status poll.
-- Handle every failure honestly: timeout, insufficient funds, wrong PIN, user cancellation. Say what happened and offer a retry.
+- New edge function `mpesa-initiate` — `verify_jwt = false`, with the full
+  Phase 0 protections from day one: Turnstile, rate limiting, origin allowlist,
+  amount bounds, `CRON_SECRET`-style shared secret where applicable.
+- New edge function `mpesa-callback` — receives Safaricom's confirmation. Must
+  validate the source, and **must be idempotent**: Safaricom retries, and a
+  double-credited donation is a serious accounting problem.
+- New `donations` table: amount, currency, method, `mpesa_receipt_number`,
+  phone (hashed or encrypted — PII), status, donor name/email if given,
+  designated program, timestamps. RLS: no public read.
+- Donation UI on `/donate`: preset amounts (KES 500 / 1,000 / 5,000 / custom),
+  optional program designation, a clear "you'll get a prompt on your phone"
+  explanation, and a live status poll.
+- Handle every failure honestly: timeout, insufficient funds, wrong PIN, user
+  cancellation. Say what happened and offer a retry.
 
-### 2.2 International card payments
+### 4.2 International card payments
 
-Kenyan donors use M-Pesa; diaspora and institutional donors need cards.
-
-- **Stripe Checkout** (hosted — keeps PCI scope minimal) or **Paystack** (better African coverage, supports both cards and M-Pesa).
-- Same `donations` table, `method: 'stripe' | 'paystack'`.
+- **Stripe Checkout** (hosted — minimal PCI scope) or **Paystack** (better
+  African coverage, cards + M-Pesa). Same `donations` table.
 - Keep PayPal, which the data model already anticipates.
 
-### 2.3 Receipts and acknowledgement
+### 4.3 Receipts and acknowledgement
 
-- Automatic email receipt via Resend on every successful donation — amount, date, transaction reference, the Foundation's registration number.
-- A distinct thank-you page (not a toast) — this is the moment of highest donor goodwill; use it to invite a newsletter signup or a second action.
-- Investigate Kenyan tax-deductibility requirements and include the required statutory language if applicable.
+- Automatic email receipt via Resend on every successful donation — amount,
+  date, transaction reference, the Foundation's registration number.
+- A distinct thank-you page (not a toast) — the moment of highest donor
+  goodwill; use it to invite a newsletter signup or a second action.
+- Investigate Kenyan tax-deductibility requirements and include the required
+  statutory language if applicable.
 
-### 2.4 Admin donations dashboard
+### 4.4 Admin donations feature
 
-Extend the existing admin portal — the patterns are already there and good:
+Built to the Phase 3 airtight bar from day one — dossier
+`docs/features/donations.md` written before the first line of code:
 
-- Donations list with filters (date, method, amount, program, status)
-- Totals: today / this month / this year, by method and by designated program
-- CSV export for the finance team and for auditors
-- Reconciliation view flagging M-Pesa callbacks with no matching initiation
+- Donations list with filters (date, method, amount, program, status).
+- Totals: today / month / year, by method and by designated program.
+- CSV export for the finance team and auditors.
+- Reconciliation view flagging callbacks with no matching initiation.
+- Maintenance registry entries for `donate.payment_form.mpesa` etc. wired to
+  real gates (Phase 3.1 made this possible).
 
-### 2.5 Security requirements for this phase
+### 4.5 Security requirements for this phase
 
-Payment code raises the stakes on §4 of the audit. Non-negotiable here:
-
-- **Test coverage is mandatory** for every payment path — audit §3.3 notes ~1.4% file coverage today. Payment code does not ship untested.
+- **Test coverage is mandatory** for every payment path. Payment code does not ship untested.
 - Callback signature/source validation and idempotency keys.
 - **Never log full phone numbers or transaction payloads.**
 - Server-side amount validation — never trust a client-supplied amount.
-- Add the **CSP and HSTS headers** deferred from audit §4.3 before the first payment goes live.
+- **CSP and HSTS headers** (audit §4.3, deferred in Phase 1) go live before the first payment. Phase 9 formalises them.
 
-**Phase 2 exit criteria:** a donor completes an M-Pesa donation end-to-end in under 60 seconds and receives an emailed receipt · finance can reconcile every transaction · all payment paths covered by tests.
+**Phase 4 exit criteria:** a donor completes an M-Pesa donation end-to-end in
+under 60 seconds and receives an emailed receipt · finance can reconcile every
+transaction · all payment paths covered by tests · donations dossier airtight.
 
 ---
 
-## Phase 3 — Tell the Story
+## Phase 5 — Tell the Story
 
-**Duration:** 4–5 weeks · Addresses audit §6.4 and §9
+**Duration:** 3–4 weeks · Addresses audit §6.4 and §9
 
-The admin portal has a 725-line stories CMS. The public site renders stories **only as a homepage section**, with no route and no permalinks. Every story the team writes is unshareable, unlinkable, invisible to search, and pushed off the homepage by the next one. **This is the largest wasted asset in the application** — real content is being produced into a dead end.
+The admin has a stories CMS. The public site renders stories **only as a
+homepage section**, with no route and no permalinks. Every story the team
+writes is unshareable, unlinkable, invisible to search, and pushed off the
+homepage by the next one. Phase 3.7 added slugs; this phase gives them a home.
 
-### 3.1 Give stories a home
+### 5.1 Give stories a home
 
-- `/stories` — a paginated, filterable index (by program, by date).
-- `/stories/:slug` — a real permalink per story, with `Article` JSON-LD, per-story Open Graph image, author, date, related program, and share buttons that lead with **WhatsApp**.
-- A slug field in the admin story editor with collision detection.
-- Related-stories and a clear donate CTA at the end of every story — the moment after someone finishes an impact story is the best conversion moment on the entire site.
-- Include stories in the Phase 1 sitemap generator.
+- `/stories` — paginated, filterable index (by program, by date).
+- `/stories/:slug` — a real permalink per story, with `Article` JSON-LD,
+  per-story Open Graph image, author, date, related program, and share buttons
+  that lead with **WhatsApp**.
+- Add both to `routeMeta.ts`, the static-meta generator, the sitemap
+  generator, and `PAGE_REGISTRY` (the Phase 3.1 drift test will demand it).
+- Related stories and a donate CTA at the end of every story — the moment after
+  someone finishes an impact story is the best conversion moment on the site.
 
-### 3.2 Impact and transparency
+### 5.2 Impact and transparency
 
-World-class NGOs win trust by showing their books. The `impact_metrics` infrastructure already exists.
-
-- A public `/impact` page: beneficiaries reached, programs running, funds raised and — critically — **allocated**, with a year-over-year view.
+- A public `/impact` page: beneficiaries reached, programs running, funds
+  raised and — critically — **allocated**, with a year-over-year view, fed by
+  the Phase 3.8 metrics and Phase 4 donations data.
 - Downloadable annual reports and audited financials.
-- A "where your money goes" breakdown — the single most requested thing by first-time donors.
-- Programme-level outcome reporting, tied to the existing programs data.
+- A "where your money goes" breakdown.
+- Programme-level outcome reporting.
 
-### 3.3 Newsletter
-
-Six mentions in the codebase, no integration. Wire it up:
+### 5.3 Newsletter
 
 - Capture on the homepage, after donation, and at the end of every story.
-- Integrate Mailchimp, Buttondown, or Resend Audiences.
-- Double opt-in and a working unsubscribe — both legally required and the right thing to do.
+- Integrate Resend Audiences (already a dependency), Buttondown, or Mailchimp.
+- Double opt-in and a working unsubscribe — legally required and right.
 
-**Phase 3 exit criteria:** every story has a shareable URL that previews correctly on WhatsApp · a public impact page with real figures · newsletter capturing and confirming subscribers.
-
----
-
-## Phase 4 — Design System & Swahili
-
-**Duration:** 4–6 weeks · Addresses audit §7.1, §7.2, §6.6
-
-### 4.1 One colour system (audit §7.1)
-
-Today there are three, and two of them are different colours:
-
-| Approach | Occurrences |
-|----------|------------:|
-| Arbitrary hex (`bg-[#B01C2E]`) | 1,067 |
-| Tailwind generic `red-*` (`= #991B1B`) | 704 |
-| The defined `neema-maroon` tokens | **0** |
-
-The site renders in two slightly different reds depending on which component you're looking at.
-
-- Define a full semantic token scale in `tailwind.config.js`: `brand-50` … `brand-950`, plus `surface`, `content`, `border`, `success`, `warning`, `danger`.
-- **Codemod all 1,771 occurrences** to tokens. This is mechanical and scriptable; do it in one reviewed pass per directory, not by hand over months.
-- Delete the `safelist` array — it is a workaround for arbitrary values and becomes unnecessary.
-- Verify every brand colour pair against **WCAG 2.2 AA** while you're in there (audit §7.4 — never formally checked).
-
-**Payoff:** a rebrand or dark mode becomes a token change instead of a 1,800-occurrence find-and-replace across 281 files.
-
-### 4.2 Typography (audit §7.2)
-
-`index.html` loads Inter and Playfair Display. Tailwind maps `font-serif` to **Georgia**. Playfair is downloaded on every page load and never used; the 30 `font-serif` usages render in a font nobody chose.
-
-- Map `fontFamily.sans` → Inter and `fontFamily.serif` → Playfair Display, or drop Playfair and stop paying for the download.
-- Self-host both with `font-display: swap` and preloaded `woff2` subsets — removes two third-party connections from the critical path.
-- Define a type scale rather than ad-hoc sizes.
-
-### 4.3 Component library
-
-- Extract `Button`, `Input`, `Card`, `Modal`, `Badge`, `Alert` into `src/components/ui` with token-driven variants.
-- Break down the oversized files on the critical path (audit §7.3): `Hero.tsx` (1,389), `ProgramModal.tsx` (1,052), `ProgramDetailPage.tsx` (1,013), `Partnership.tsx` (930).
-- Consider Storybook for visual review — optional, valuable if the team grows.
-
-### 4.4 Swahili localisation (audit §6.6)
-
-Zero i18n exists. For an organisation working in Ganze, an English-only site excludes much of the community it serves.
-
-- Add `react-i18next` with `en` and `sw` locales.
-- Extract all UI strings to translation files.
-- Language toggle in the navbar, persisted, with browser-language detection as the default.
-- Make CMS content bilingual: add `_sw` variants to translatable columns; let admins publish in one or both languages and fall back gracefully.
-- `hreflang` tags plus locale-aware URLs so both languages are indexed separately.
-
-**Do this before the codebase grows further** — retrofitting i18n across 281 files gets harder every month.
-
-### 4.5 Accessibility audit
-
-The baseline is decent (143 `aria-label`s, alt text on most images, only 4 clickable `div`s) but has never been formally verified.
-
-- Full WCAG 2.2 AA audit including screen-reader testing.
-- Keyboard navigation and visible focus states throughout.
-- Verify contrast on the new token scale.
-- Honour `prefers-reduced-motion` — relevant given 129 files use Framer Motion.
-
-**Phase 4 exit criteria:** zero hardcoded colours · WCAG 2.2 AA verified · site fully usable in Swahili.
+**Phase 5 exit criteria:** every story has a shareable URL that previews
+correctly on WhatsApp · a public impact page with real figures · newsletter
+capturing and confirming subscribers.
 
 ---
 
-## Phase 5 — Donor Relationships
+## Phase 6 — Swahili & Accessibility
 
-**Duration:** 6–8 weeks · Requires Phase 2
+**Duration:** 3–4 weeks · Addresses audit §6.6, §7.4
 
-One-time donations are transactions. Recurring donors are a budget you can plan against — and the difference between an organisation that survives and one that plans.
+### 6.1 Swahili localisation
 
-### 5.1 Recurring giving
+Zero i18n exists. For an organisation working in Ganze, an English-only site
+excludes much of the community it serves.
 
-- Monthly M-Pesa via Daraja standing orders, and Stripe/Paystack subscriptions for cards.
-- Self-service management: pause, change amount, update payment method, cancel. **Make cancellation easy** — friction here buys nothing and costs trust.
+- `react-i18next` with `en` and `sw` locales; all UI strings extracted.
+- Language toggle in the navbar, persisted, browser-language detection as default.
+- CMS content bilingual: `_sw` variants on translatable columns; admins publish
+  in one or both languages with graceful fallback. Admin editors (Phase 3
+  dossiers) gain the second field.
+- `hreflang` tags and locale-aware URLs; the static-meta and sitemap
+  generators emit both.
+
+### 6.2 Accessibility verification
+
+Phase 2 designed for it; this phase proves it.
+
+- Full WCAG 2.2 AA audit, including screen-reader testing (NVDA + VoiceOver on iOS).
+- Keyboard navigation and visible focus states throughout, including the media lightbox and every modal.
+- `prefers-reduced-motion` honoured everywhere.
+- `axe-core` in the Vitest suite for every public route so it cannot regress.
+
+**Phase 6 exit criteria:** site fully usable in Swahili · WCAG 2.2 AA verified
+and documented · axe passes in CI.
+
+---
+
+## Phase 7 — Donor Relationships
+
+**Duration:** 6–8 weeks · Requires Phase 4
+
+One-time donations are transactions. Recurring donors are a budget you can
+plan against.
+
+### 7.1 Recurring giving
+
+- Monthly M-Pesa via Daraja standing orders; Stripe/Paystack subscriptions for cards.
+- Self-service management: pause, change amount, update method, cancel. **Make cancellation easy.**
 - Dunning: retry failed payments and notify the donor kindly before anything lapses.
-- A distinct monthly-giving programme with a name, a story, and its own page.
+- A named monthly-giving programme with its own page.
 
-### 5.2 Donor portal
+### 7.2 Donor portal
 
-A second authenticated area, reusing the existing auth infrastructure:
+A second authenticated area reusing the existing auth infrastructure (Phase 3.2 verified it):
 
-- Giving history and downloadable receipts
-- Manage recurring gifts
-- Update contact details and communication preferences
-- Personalised impact: "your giving this year funded *X*"
+- Giving history and downloadable receipts.
+- Manage recurring gifts.
+- Contact details and communication preferences.
+- Personalised impact: "your giving this year funded *X*".
 
-### 5.3 Campaigns
+### 7.3 Campaigns
 
-- Campaign pages with a goal, a live thermometer, a deadline, and a story.
-- Peer-to-peer fundraising — supporters raise on the Foundation's behalf. Historically the highest-ROI feature for NGOs of this size.
+- Campaign pages with a goal, live thermometer, deadline, and story.
+- Peer-to-peer fundraising — supporters raise on the Foundation's behalf.
 - Matching-gift periods with live progress.
-- Admin CRUD for campaigns, extending existing content patterns.
+- Admin CRUD for campaigns, built to the airtight bar.
 
-### 5.4 Donor CRM
+### 7.4 Donor CRM
 
 - Segments: first-time, recurring, lapsed, major.
 - Communication history per donor.
 - Lapsed-donor re-engagement triggers.
-- Export to a real CRM if the team outgrows this.
+- Export path to a real CRM if the team outgrows this.
 
-### 5.5 Revisit the framework
+### 7.5 Revisit the framework
 
-This is the point to reassess Option B from §1.1. If the donor portal needs genuine per-request server rendering, a Remix migration may finally be justified. Decide with real requirements — not before.
+If the donor portal needs genuine per-request server rendering, a Remix/Next
+migration may finally be justified. Decide with real requirements — not before.
 
-**Phase 5 exit criteria:** recurring donations processing reliably · donors self-managing without staff involvement · at least one campaign run end-to-end.
+**Phase 7 exit criteria:** recurring donations processing reliably · donors
+self-managing without staff · at least one campaign run end-to-end.
 
 ---
 
-## Phase 6 — Operational Excellence
+## Phase 8 — Operational Excellence
 
-**Ongoing, starting alongside Phase 1** · Addresses audit §8, §3.3, §3.2
+**Ongoing, starting alongside Phase 3** · Addresses audit §8, §3.3, §3.2
 
-### 6.1 Consolidate the database (audit §8.1) — start this early
+### 8.1 Consolidate the database — start at the beginning of Phase 3
 
-Two competing migration directories (37 ad-hoc files in `migrations/`, 4 timestamped in `supabase/migrations/`), plus two loose root schema files. `supabase-schema.sql` declares 12 tables; the app queries at least 19. There is no single source of truth and no defined order of application.
+Two competing migration directories (37 ad-hoc files in `migrations/`, 4
+timestamped in `supabase/migrations/`), plus `supabase-schema.sql` and
+`migration-fix-schema.sql` at the root. There is no single source of truth.
 
-- **Squash to one baseline migration** representing the current production schema, captured with `supabase db dump`.
-- Move everything to `supabase/migrations/` with timestamps. Delete `migrations/`, `supabase-schema.sql` and `migration-fix-schema.sql`.
-- Retire `DATABASE-SETUP-REQUIRED.md` — pasting SQL into a dashboard by hand is not a setup procedure.
-- **Verify:** an empty Postgres database plus `supabase db push` produces a working schema. Until that is true, there is no reliable staging environment and no tested disaster recovery.
-- Regenerate types as part of the migration workflow so audit §3.1 cannot recur.
+- Squash to one baseline migration captured with `supabase db dump`.
+- Everything moves to `supabase/migrations/` with timestamps. Delete
+  `migrations/`, `supabase-schema.sql`, `migration-fix-schema.sql`, `DATABASE-SETUP-REQUIRED.md`.
+- **Verify:** empty Postgres + `supabase db push` produces a working schema. The
+  Phase 3 RLS tests run against exactly this.
+- Type regeneration becomes part of the migration workflow (`npm run db:types`).
 
-### 6.2 Environments (audit §8.2)
+### 8.2 Environments
 
-- A separate staging Supabase project. Schema changes are currently going straight to production.
-- Vercel preview deployments pointed at staging.
-- Seed data for local development.
-- Documented, **tested** backup and restore. Untested backups are not backups.
+- A separate staging Supabase project; Vercel preview deployments point at it.
+- Seed data for local development and for Phase 3 walkthroughs.
+- Documented, **tested** backup and restore.
 
-### 6.3 Test coverage (audit §3.3)
+### 8.3 Test coverage
 
-From ~1.4% of files, in priority order:
+Phase 3 carries the admin side to ≥ 70%. The public side follows:
 
-1. **Payment flows** (Phase 2 — mandatory, blocking)
-2. Public form submission and validation
-3. RBAC and permission enforcement
-4. Bank-details encryption/decryption — note the unused `decrypt` function at `bank-details/index.ts:176`; confirm the path actually works
-5. Admin CRUD
-6. Playwright end-to-end tests for the donation and volunteer journeys
+1. Payment flows (Phase 4 — mandatory).
+2. Public form submission and validation.
+3. Maintenance gating (Phase 3.1).
+4. Playwright end-to-end for the donation and volunteer journeys.
 
-**Target: 60% coverage overall, 90%+ on payment and permission code.**
+**Target: 60% overall, 90%+ on payment and permission code.**
 
-### 6.4 Lint debt (audit §3.2)
+### 8.4 Lint to zero
 
-254 errors. Ratchet the CI threshold down each sprint rather than blocking on a big-bang cleanup. Prioritise the `: any` occurrences (34) and the `as ReturnType<typeof supabase.from>` casts — those hide real type safety gaps at the data layer.
+Phase 3.16 clears `src/admin/`. The public side is cleared during Phase 2's
+surface rebuilds. Ceiling reaches 0 and the CI step becomes `--max-warnings 0`.
 
-### 6.5 Monitoring
+### 8.5 Analytics and monitoring
 
-- Sentry for error tracking, with source maps.
+- Decide Plausible vs GA4 (Plausible recommended: lighter, no cookie banner).
+  Instrument the funnels: homepage → donate → payment started → completed;
+  volunteer started → step → submitted.
+- Sentry with source maps for both the SPA and edge functions.
 - Uptime monitoring with alerting.
 - Real-user Core Web Vitals.
-- Alerts on payment failure rate and on submission-spam spikes.
+- Alerts on payment failure rate and submission-spam spikes.
+
+---
+
+## Phase 9 — Trust, Privacy & Compliance *(added)*
+
+**Duration:** 2–3 weeks · Best placed between Phase 4 and Phase 7
+
+An NGO that takes phone numbers, payment records and volunteer applications
+from Kenyan residents is a data controller under the **Kenya Data Protection
+Act, 2019**. World-class means being able to show, not just say, that this is
+handled properly.
+
+- **Data inventory.** One table in `docs/SECURITY.md`: every personal-data
+  field, where it lives, who can read it, how long it is kept, and why.
+- **ODPC registration** check — determine whether the Foundation must register
+  as a data controller/processor and document the outcome.
+- **Privacy policy and terms** pages, written in plain English and Swahili,
+  linked from every form and from the footer.
+- **Consent that means something.** Explicit checkbox on volunteer and contact
+  forms; newsletter double opt-in (Phase 5.3); no analytics cookies without
+  consent (moot if Plausible is chosen).
+- **Retention and deletion.** A scheduled job that anonymises submissions and
+  applications after a documented period; a documented, tested procedure for a
+  data-subject access or erasure request.
+- **Security headers formalised.** CSP (nonce-based, reporting enabled), HSTS
+  with preload, `Permissions-Policy`, `Referrer-Policy` in `vercel.json`, with a
+  test that fails if any is removed.
+- **Audit-log review.** The maintenance and admin audit logs are made
+  tamper-evident (append-only RLS) and their retention documented.
+- **`SECURITY.md`** rewritten as a real disclosure policy with a contact address
+  and response commitment.
+
+**Exit criteria:** data inventory complete · policies live in both languages ·
+headers enforced by test · a DSAR can be fulfilled by following a written procedure.
+
+---
+
+## Phase 10 — Resilience on 3G *(added)*
+
+**Duration:** 3–4 weeks · After Phase 4
+
+Principle 2 says Kenya-first. Phases 1 and 2 made the site fast on a good
+connection. This phase makes it *usable* on a bad one, and reachable by people
+who are not on the web at all.
+
+- **Progressive Web App.** Service worker via `vite-plugin-pwa`: app shell and
+  fonts cached; last-fetched programs, stories and impact figures available
+  offline; an honest offline page instead of the browser error.
+- **Low-data mode.** Respect `Save-Data` / `navigator.connection.effectiveType`:
+  serve lower Cloudinary widths, skip autoplaying carousels, defer non-critical
+  imagery. Surfaced as a toggle in the footer too.
+- **Donation without connectivity.** When STK Push cannot be initiated, the
+  Donate page falls back to clear paybill instructions and a
+  `tel:*334#`-style USSD shortcut, and offers to SMS the details to the donor.
+- **SMS and WhatsApp channels.** Africa's Talking (SMS) and the WhatsApp
+  Business API for donation receipts and campaign updates — email is not the
+  primary channel for this audience. Opt-in, and gated by the Phase 9 consent work.
+- **Graceful degradation tests.** Playwright runs the donation and volunteer
+  journeys under a throttled 3G profile in CI; budgets on time-to-interactive.
+
+**Exit criteria:** homepage and donate page load and work offline after one
+visit · receipts deliverable by SMS/WhatsApp · Playwright 3G profile green.
+
+---
+
+## Phase 11 — Engineering Showcase *(added)*
+
+**Duration:** 2–3 weeks · Can run alongside Phase 7
+
+The platform should be as impressive to an engineer reading the repository as
+it is to a donor using the site. This phase makes the quality visible and
+keeps it that way.
+
+- **Storybook** for `src/components/ui/` and every public section, published
+  to a Vercel preview on each PR. Design decisions from `DESIGN.md` are
+  visible as stories, not prose.
+- **Visual regression.** Chromatic or Playwright screenshot diffs on the
+  Storybook stories and the fourteen public routes at 360/1440. The Phase 2
+  redesign becomes protected against drift.
+- **Lighthouse CI** on every PR with per-route budgets (mobile ≥ 90), replacing
+  the manual measurement from Phase 2.
+- **Release process.** Conventional commits enforced by a commit hook;
+  `CHANGELOG.md` generated from them; semver tags; GitHub Releases.
+  `CHANGELOG.md` today notes there are no tags — fix that.
+- **Renovate** for dependency updates, with CI as the gate.
+- **Architecture as code.** `docs/ARCHITECTURE.md` gains C4-style diagrams
+  (Mermaid) generated from the real route and edge-function inventory; ADRs
+  0005+ recorded for every decision this roadmap made (static meta over SSR,
+  tokens-first, route-level maintenance gating, Plausible, PWA).
+- **Demo environment.** A seeded staging deployment with an obvious "demo"
+  banner and a read-only admin login so the admin portal can be shown without
+  exposing real data.
+- **Public case study.** `docs/CASE-STUDY.md` — the before/after story with the
+  Phase 2 screenshots, the Lighthouse numbers, the coverage graph, and the
+  donation funnel — written for a portfolio reader, linked from the README.
+- **Contributor experience.** `CONTRIBUTING.md`, a one-command local setup
+  (`npm run setup` → env pull, db reset, seed), and a `.devcontainer`.
+
+**Exit criteria:** Storybook and Lighthouse CI on every PR · visual regression
+guarding all public routes · tagged releases · demo environment live · case
+study published.
 
 ---
 
 ## Sequencing at a Glance
 
 ```
-Month 1     ██ Phase 0 — Stabilise
-Month 1-2   ████ Phase 1 — SEO + Performance
-Month 2-4   ██████ Phase 2 — M-Pesa Donations        ← revenue starts here
-Month 4-5   █████ Phase 3 — Stories + Transparency
-Month 5-7   ██████ Phase 4 — Design System + Swahili
-Month 7-9   ████████ Phase 5 — Recurring + Campaigns
-Month 1-9   ═══════════════ Phase 6 — Operations (continuous)
+Month 0     ██ Phase 0 — Stabilise                              ✅ done
+Month 0     ██ Phase 1 — SEO + Performance                      ✅ done
+Month 1-2   ██████ Phase 2 — Client-side revamp                 ← next
+Month 3-4   ████████ Phase 3 — Admin hardening
+Month 3-12  ═══════════════════════ Phase 8 — Operations (continuous, starts with 3.1)
+Month 5-6   ██████ Phase 4 — M-Pesa donations                   ← revenue starts here
+Month 6     ███ Phase 9 — Privacy & compliance
+Month 7     ████ Phase 5 — Stories + transparency
+Month 8     ████ Phase 6 — Swahili + a11y
+Month 8-9   ████ Phase 10 — Resilience on 3G
+Month 9-11  ████████ Phase 7 — Recurring + campaigns
+Month 10-11 ███ Phase 11 — Engineering showcase
 ```
 
-**Parallelism:** Phase 6.1 (database consolidation) should begin during Phase 1 — it unblocks reliable type generation and staging, which every later phase depends on. Phases 3 and 4 can overlap if capacity allows; Phase 2 should not be run in parallel with anything, because payment code deserves undivided attention.
+**Parallelism:** Phase 8.1 (database consolidation) starts on day one of Phase
+3 — the RLS tests need it. Phases 5, 6 and 10 can overlap if capacity allows.
+Phase 4 should not run in parallel with anything; payment code deserves
+undivided attention. Phase 11 can start as soon as Phase 3 finishes, since
+Storybook and visual regression protect Phase 2's work.
+
+**Plans:** each phase gets its own implementation plan under
+`docs/superpowers/plans/` before execution, written from this document with the
+`superpowers:writing-plans` skill. Phase 3 gets one plan per feature dossier.
 
 ---
 
 ## Success Metrics
 
-Track from the start of Phase 1; without Phase 1.5's analytics none of this is measurable.
-
-| Metric | Today | Target (9 months) |
-|--------|-------|-------------------|
-| Lighthouse mobile performance | Unmeasured; 300 kB gzip entry | ≥ 90 |
-| Entry bundle (gzipped) | 300 kB | < 150 kB |
-| Organic search traffic | ~0 (not indexed) | Baseline + growth |
-| Online donations | **0 — not possible** | Primary channel |
-| Recurring donors | 0 | Establish a base |
-| Donation conversion (donate page → completed) | N/A | ≥ 8% |
-| Volunteer application completion | Unmeasured | ≥ 60% |
-| Build passing | ❌ | ✅ always |
-| Test coverage (files) | ~1.4% | 60% overall, 90% payments |
-| WCAG 2.2 AA | Unverified | Verified |
-| Languages | 1 | 2 (EN + SW) |
+| Metric | 2026-09-10 | 2026-09-15 | Target (12 months) |
+|--------|-----------:|-----------:|-------------------:|
+| Build passing | ❌ | ✅ | ✅ always, with Lighthouse CI |
+| Entry chunk (gzipped) | 300 kB | ~167 kB (580 kB raw, CI budget 600 kB) | < 150 kB, budget lowered to match |
+| Lighthouse mobile performance | unmeasured | unmeasured (baseline in 2.1) | ≥ 90 every public route, enforced |
+| Hardcoded colour occurrences | 1,771 | 1,771 | 0 |
+| Public routes gated by maintenance rules | 1 of 14 (sections only) | 1 of 14 | 14 of 14 + modals + forms |
+| Admin features with an airtight dossier | 0 of 14 | 0 of 14 | 14 of 14 (+ donations, campaigns) |
+| Test coverage (files) | ~1.4% | ~1.4% | 60% overall, 90% payments/permissions |
+| ESLint errors | 254 | 254 (capped) | 0 |
+| Organic search traffic | ~0 (not indexed) | indexable | baseline + growth |
+| Online donations | 0 — not possible | 0 | primary channel |
+| Recurring donors | 0 | 0 | established base |
+| Donation conversion (donate page → completed) | n/a | n/a | ≥ 8% |
+| WCAG 2.2 AA | unverified | unverified | verified, axe in CI |
+| Languages | 1 | 1 | 2 (EN + SW) |
+| Works offline after first visit | no | no | yes (home, donate, programs) |
 
 ---
 
@@ -455,19 +832,23 @@ Track from the start of Phase 1; without Phase 1.5's analytics none of this is m
 
 | Risk | Mitigation |
 |------|-----------|
-| **M-Pesa integration is harder than expected** — Daraja documentation is uneven and sandbox behaviour differs from production | Budget the full 6 weeks. Build the sandbox integration first. Find someone who has shipped Daraja before. |
-| **Prerendering breaks existing pages** — 73k lines assume a browser | Option A is incremental and route-by-route. Test each public route. Keep the SPA fallback. |
-| **The colour codemod introduces visual regressions** across 1,771 sites | Do it per-directory with visual review. Consider Storybook or Percy snapshots first. |
-| **Scope creep on the admin portal** — it is the most enjoyable part of the codebase to work on, and the reason the public site fell behind | Hold the line. Admin work in Phases 2–5 is limited to what the donor-facing features require. |
+| **The redesign drifts from the brand** — "world-class" read as "different" | The brief in §Phase 2 is explicit: maroon scale fixed, no new hue without sign-off, copy factual. `DESIGN.md` is the contract; the finish reviewer checks against it. |
+| **The colour codemod introduces visual regressions** across 1,771 sites | Per-directory commits with screenshot review; baseline screenshots captured first (2.1 step 1). Phase 11's visual regression would have been ideal earlier — if capacity allows, pull Playwright screenshot diffs forward into 2.1. |
+| **Phase 3 becomes an open-ended rabbit hole** — the admin is the most enjoyable part of the codebase | Timebox each feature to one week; the airtight checklist is the definition of done, not "it feels finished". A feature that overruns gets its dossier's open items listed and moves on; the list is revisited at the end of the phase. |
+| **Maintenance gating rewrite breaks the working Landing gates** | The existing `maintenance-gating` tests are kept green throughout and extended before the rewrite; section keys are preserved by the Phase 2 rebuild. |
+| **M-Pesa integration is harder than expected** | Budget the full 6 weeks. Sandbox first. Find someone who has shipped Daraja before. |
 | **Payment bugs cost real money and real trust** | Mandatory test coverage, idempotent callbacks, staged rollout, daily reconciliation from day one. |
-| **Team capacity** — this is 9 months of focused work | Phases are independently valuable. Stopping after Phase 2 still leaves the Foundation dramatically better off than today. |
+| **Compliance work is deferred as "not a feature"** | Phase 9 is scheduled before recurring giving and before SMS/WhatsApp — the two features that most increase the volume of personal data held. |
+| **Team capacity** — this is a year of focused work | Phases are independently valuable. Stopping after Phase 4 still leaves the Foundation with a professional site, a verified admin, and working donations. |
 
 ---
 
 ## If You Only Do One Thing
 
-**Phase 0, then Phase 2.**
+**Phase 2, then Phase 3.1, then Phase 4.**
 
-Fix the build and close the spam endpoint, then make it possible for someone to give money on their phone in under a minute.
+Make the site look like the organisation deserves. Make maintenance mode
+actually gate what it says it gates. Then make it possible for someone to give
+money on their phone in under a minute.
 
-Everything else in this document is amplification. That is the thing itself.
+Everything else in this document is amplification. Those three are the thing itself.
