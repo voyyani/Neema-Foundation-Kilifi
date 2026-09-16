@@ -66,7 +66,7 @@ function SortableImage({ url, index, onRemove }: SortableImageProps) {
       />
       
       {/* Overlay with actions */}
-      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100">
         {/* Drag handle */}
         <button
           type="button"

@@ -94,7 +94,7 @@ function SortableOpportunity({
       <button
         type="button"
         onClick={onRemove}
-        className="opacity-0 group-hover:opacity-100 text-danger-500 hover:text-danger-600 transition-opacity"
+        className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100 text-danger-500 hover:text-danger-600 transition-opacity"
       >
         <X className="w-5 h-5" />
       </button>

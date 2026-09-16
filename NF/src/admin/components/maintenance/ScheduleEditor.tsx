@@ -312,7 +312,7 @@ export default function ScheduleEditor({
                         setShowRecurrence(false);
                         update({ recurrence: null });
                       }}
-                      className="p-1 hover:bg-gray-100 rounded transition-colors"
+                      className="touch-target p-1 hover:bg-gray-100 rounded transition-colors"
                     >
                       <X className="h-4 w-4 text-gray-400" />
                     </button>

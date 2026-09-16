@@ -209,7 +209,7 @@ function SectionRow({
     >
       <span className={`w-2 h-2 rounded-full flex-shrink-0 ${style.dot}`} />
       <span className="text-xs text-gray-700 truncate flex-1">{label}</span>
-      <span className={`text-[10px] font-medium ${style.text} opacity-0 group-hover:opacity-100 transition-opacity`}>
+      <span className={`text-[10px] font-medium ${style.text} opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity`}>
         {style.label}
       </span>
     </motion.button>

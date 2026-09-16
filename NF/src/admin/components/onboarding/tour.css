@@ -5,7 +5,7 @@
  * design system. Imported by TourProvider.tsx alongside driver.js/dist/driver.css.
  *
  * Overrides:
- *  - Accent colour → #B01C2E (Neema red)
+ *  - Accent colour → var(--c-brand) (Neema red)
  *  - Border radius → 16px (iOS-style rounded cards)
  *  - Typography → Inter / system font stack
  *  - Buttons → Touch-friendly 44px targets
@@ -95,7 +95,7 @@
 
 .driver-popover.nf-tour-popover .driver-popover-next-btn,
 .driver-popover.nf-tour-popover .driver-popover-close-btn-text {
-  background: linear-gradient(135deg, #B01C2E, #8A1624);
+  background: linear-gradient(135deg, var(--c-brand), var(--c-brand-dark));
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -112,7 +112,7 @@
 
 .driver-popover.nf-tour-popover .driver-popover-next-btn:hover,
 .driver-popover.nf-tour-popover .driver-popover-close-btn-text:hover {
-  background: linear-gradient(135deg, #9A1826, #741320);
+  background: linear-gradient(135deg, var(--c-brand), var(--c-brand-dark));
   box-shadow: 0 4px 12px rgba(176, 28, 46, 0.35);
   transform: translateY(-0.5px);
 }
@@ -145,7 +145,7 @@
 /* ─── Stage (highlight area) ─────────────────────────────────────────────── */
 
 .driver-active-element {
-  outline: 2px solid #B01C2E !important;
+  outline: 2px solid var(--c-brand) !important;
   outline-offset: 4px;
   border-radius: 12px;
 }

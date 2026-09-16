@@ -127,7 +127,7 @@ function SortableRow({
           <button
             type="button"
             className="p-1 cursor-grab active:cursor-grabbing text-gray-300
-                       hover:text-gray-500 transition-colors opacity-0 group-hover:opacity-100"
+                       hover:text-gray-500 transition-colors opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100"
             title="Drag to reorder"
             {...attributes}
             {...listeners}

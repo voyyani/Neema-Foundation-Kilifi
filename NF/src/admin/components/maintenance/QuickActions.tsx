@@ -239,7 +239,7 @@ function TemplateList({
               {template.scope} · {template.target_key} · Used {template.usage_count}x
             </p>
           </div>
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity">
             <button
               onClick={() => onApply(template)}
               disabled={isApplying}
@@ -250,7 +250,7 @@ function TemplateList({
             </button>
             <button
               onClick={() => onDelete(template.id)}
-              className="p-1 hover:bg-danger-50 rounded transition-colors"
+              className="touch-target p-1 hover:bg-danger-50 rounded transition-colors"
               title="Delete template"
             >
               <X className="h-3 w-3 text-gray-400 hover:text-danger-500" />

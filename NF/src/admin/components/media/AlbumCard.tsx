@@ -139,7 +139,7 @@ export default function AlbumCard({ album, onRefetch }: AlbumCardProps) {
             onClick={handleTogglePublish}
             disabled={isTogglingPublish}
             title={album.is_published ? 'Unpublish' : 'Publish'}
-            className="p-1.5 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors disabled:opacity-50"
+            className="touch-target p-1.5 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors disabled:opacity-50"
           >
             {album.is_published ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>

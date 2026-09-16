@@ -94,11 +94,11 @@ export default function ImageItem({ item, albumId, onUpdate, onDelete }: ImageIt
       </div>
 
       {/* Hover overlay — quick actions */}
-      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-start justify-between p-2">
+      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100 [@media(hover:none)]:bg-gradient-to-b [@media(hover:none)]:from-black/50 [@media(hover:none)]:to-transparent transition-opacity flex items-start justify-between p-2">
         <button
           onClick={handleToggleFeatured}
           title={item.is_featured ? 'Remove featured' : 'Mark as featured'}
-          className={`p-1.5 rounded-lg transition-colors ${
+          className={`touch-target p-1.5 rounded-lg transition-colors ${
             item.is_featured ? 'bg-yellow-400 text-white' : 'bg-white/80 text-gray-700 hover:bg-yellow-400 hover:text-white'
           }`}
         >
@@ -109,7 +109,7 @@ export default function ImageItem({ item, albumId, onUpdate, onDelete }: ImageIt
           <button
             onClick={handleSetCover}
             title="Set as album cover"
-            className="p-1.5 rounded-lg bg-white/80 text-gray-700 hover:bg-brand-600 hover:text-white transition-colors"
+            className="touch-target p-1.5 rounded-lg bg-white/80 text-gray-700 hover:bg-brand-600 hover:text-white transition-colors"
           >
             <ImageIcon className="h-3.5 w-3.5" />
           </button>
@@ -168,10 +168,10 @@ export default function ImageItem({ item, albumId, onUpdate, onDelete }: ImageIt
               className="w-full text-xs px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-brand-600 focus:border-transparent outline-none"
             />
             <div className="flex gap-1 justify-end">
-              <button onClick={() => setIsEditing(false)} className="p-1 rounded text-gray-400 hover:text-gray-600">
+              <button onClick={() => setIsEditing(false)} className="touch-target p-1 rounded text-gray-400 hover:text-gray-600">
                 <X className="h-3.5 w-3.5" />
               </button>
-              <button onClick={saveInline} className="p-1 rounded text-brand-600 hover:text-brand-700">
+              <button onClick={saveInline} className="touch-target p-1 rounded text-brand-600 hover:text-brand-700">
                 <Check className="h-3.5 w-3.5" />
               </button>
             </div>

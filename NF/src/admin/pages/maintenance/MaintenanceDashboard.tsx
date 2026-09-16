@@ -961,7 +961,7 @@ function MaintenanceDashboardContent() {
                 </div>
                 <button
                   onClick={() => setShowAuditLog(false)}
-                  className="p-1.5 hover:bg-gray-100 rounded-lg"
+                  className="touch-target p-1.5 hover:bg-gray-100 rounded-lg"
                 >
                   <X className="h-4 w-4 text-gray-400" />
                 </button>

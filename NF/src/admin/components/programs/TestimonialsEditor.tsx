@@ -106,7 +106,7 @@ function SortableTestimonialCard({
               <p className="text-sm text-gray-500">{testimonial.role}</p>
             )}
           </div>
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity">
             <button
               type="button"
               onClick={onEdit}

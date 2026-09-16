@@ -333,7 +333,7 @@ function DayDetailPanel({
         </div>
         <button
           onClick={onClose}
-          className="p-1.5 hover:bg-gray-200 rounded-lg transition-colors"
+          className="touch-target p-1.5 hover:bg-gray-200 rounded-lg transition-colors"
         >
           <X className="h-4 w-4 text-gray-400" />
         </button>
@@ -558,7 +558,7 @@ export default function MaintenanceCalendar({
           <div className="flex items-center gap-2">
             <button
               onClick={navigatePrev}
-              className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+              className="touch-target p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <ChevronLeft className="h-4 w-4 text-gray-500" />
             </button>
@@ -570,7 +570,7 @@ export default function MaintenanceCalendar({
             </button>
             <button
               onClick={navigateNext}
-              className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+              className="touch-target p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <ChevronRight className="h-4 w-4 text-gray-500" />
             </button>

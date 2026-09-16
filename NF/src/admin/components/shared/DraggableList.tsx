@@ -54,7 +54,7 @@ function SortableItem({ id, children, disabled }: SortableItemProps) {
         {!disabled && (
           <button
             type="button"
-            className="flex-shrink-0 p-2 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 transition-colors opacity-0 group-hover:opacity-100"
+            className="flex-shrink-0 p-2 cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 transition-colors opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100"
             {...attributes}
             {...listeners}
           >
