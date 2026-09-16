@@ -65,6 +65,11 @@ interface BankDetailsFormProps {
   /** Called on every render to keep a live preview in sync. */
   onPreviewChange?: (data: Partial<BankDetailFormData>) => void;
   isLoading?: boolean;
+  /**
+   * Decrypts one sensitive field of `existing` after re-authentication.
+   * Omitted for roles that may not reveal; the Reveal button then stays off.
+   */
+  onReveal?: (field: 'account_number' | 'swift_code' | 'iban') => Promise<string | null>;
 }
 
 // ---------------------------------------------------------------------------
@@ -161,6 +166,7 @@ export function BankDetailsForm({
   onCancel,
   onPreviewChange,
   isLoading = false,
+  onReveal,
 }: BankDetailsFormProps) {
   const isEditing = !!existing;
 
@@ -319,6 +325,7 @@ export function BankDetailsForm({
               mode="masked"
               label="Account Number"
               maskedValue={existing.account_number_mask}
+              onReveal={onReveal ? () => onReveal('account_number') : undefined}
             />
           ) : (
             <Controller
@@ -347,6 +354,7 @@ export function BankDetailsForm({
                 mode="masked"
                 label="SWIFT / BIC Code"
                 maskedValue={existing.swift_code_mask}
+              onReveal={onReveal ? () => onReveal('swift_code') : undefined}
               />
             ) : (
               <Controller
@@ -374,6 +382,7 @@ export function BankDetailsForm({
                 mode="masked"
                 label="IBAN"
                 maskedValue={existing.iban_mask}
+              onReveal={onReveal ? () => onReveal('iban') : undefined}
               />
             ) : (
               <Controller

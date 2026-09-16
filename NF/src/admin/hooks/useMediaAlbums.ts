@@ -315,7 +315,7 @@ export async function updateMediaItem(
 export async function deleteMediaItem(itemId: string, albumId: string): Promise<void> {
   // Guard: prevent deletion of synced items (managed by program_images)
   const { data: item } = await itemsTable()
-    .select('source_table')
+    .select('source_table, cloudinary_id')
     .eq('id', itemId)
     .single();
 
@@ -327,6 +327,39 @@ export async function deleteMediaItem(itemId: string, albumId: string): Promise<
   const { error } = await itemsTable().delete().eq('id', itemId);
   if (error) throw error;
   await syncPhotoCount(albumId);
+
+  // The row is gone; now the asset. Best effort — an orphan in Cloudinary
+  // costs storage, a dangling row would break the gallery, so the order is
+  // row first, asset second, and a failed destroy is reported not fatal.
+  if (item?.cloudinary_id) {
+    await destroyCloudinaryAsset(item.cloudinary_id, 'image');
+  }
+}
+
+/**
+ * Remove an asset from Cloudinary through the `cloudinary-destroy` edge
+ * function (the API secret never reaches the browser). Returns false and
+ * warns when the asset could not be removed; callers have already deleted
+ * the row and should not roll back.
+ */
+export async function destroyCloudinaryAsset(publicId: string, resourceType: 'image' | 'video' = 'image'): Promise<boolean> {
+  try {
+    const { data, error } = await supabase.functions.invoke('cloudinary-destroy', {
+      body: { public_id: publicId, resource_type: resourceType },
+    });
+    if (error || !(data as { ok?: boolean } | null)?.ok) {
+      const message = (data as { error?: string } | null)?.error ?? error?.message ?? 'unknown error';
+      console.warn('[media] Cloudinary asset not removed:', publicId, message);
+      toast.warning('Image removed from the site, but not from Cloudinary', {
+        description: `${message}. It can be deleted in the Cloudinary console.`,
+      });
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.warn('[media] cloudinary-destroy failed:', err);
+    return false;
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

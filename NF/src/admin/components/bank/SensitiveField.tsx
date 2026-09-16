@@ -46,6 +46,11 @@ interface SensitiveFieldMaskedModeProps {
   label: string;
   /** Masked value from the server, e.g. "****1234" */
   maskedValue?: string;
+  /**
+   * Fetches the plaintext after re-authentication (the audited
+   * `/bank-details/:id/reveal` call). Without it the field cannot reveal.
+   */
+  onReveal?: () => Promise<string | null>;
   /** Called when the admin successfully re-authenticates. */
   onRevealSuccess?: (plaintext: string) => void;
   /** Called whenever a reveal attempt is made (success or fail). Used for audit. */
@@ -291,11 +296,13 @@ function SensitiveInput({
 function MaskedDisplay({
   label,
   maskedValue,
+  onReveal,
   onRevealSuccess,
   onRevealAttempt,
   disabled,
 }: SensitiveFieldMaskedModeProps) {
   const [revealed, setRevealed]     = useState(false);
+  const [revealing, setRevealing]   = useState(false);
   const [plaintext, setPlaintext]   = useState('');
   const [reAuthOpen, setReAuthOpen] = useState(false);
   const [copied, setCopied]         = useState(false);
@@ -315,16 +322,22 @@ function MaskedDisplay({
     setReAuthOpen(true);
   };
 
-  const handleReAuthSuccess = useCallback(() => {
+  const handleReAuthSuccess = useCallback(async () => {
     setReAuthOpen(false);
+    if (!onReveal) {
+      onRevealAttempt?.(false);
+      return;
+    }
+    setRevealing(true);
+    const value = await onReveal();
+    setRevealing(false);
+    if (value === null) {
+      onRevealAttempt?.(false);
+      return;
+    }
     setRevealed(true);
-    onRevealAttempt?.(true);
-
-    // In a real scenario the plaintext would come from an explicit /decrypt
-    // Edge Function call made after auth success. For now we surface the
-    // masked value and note that full decryption requires additional Phase 3 wiring.
-    const value = maskedValue ?? '';
     setPlaintext(value);
+    onRevealAttempt?.(true);
     onRevealSuccess?.(value);
 
     // Auto-hide after 60 s
@@ -332,7 +345,7 @@ function MaskedDisplay({
       setRevealed(false);
       setPlaintext('');
     }, 60_000);
-  }, [maskedValue, onRevealAttempt, onRevealSuccess]);
+  }, [onReveal, onRevealAttempt, onRevealSuccess]);
 
   const handleReAuthClose = () => {
     setReAuthOpen(false);
@@ -380,14 +393,15 @@ function MaskedDisplay({
             <button
               type="button"
               onClick={handleRevealClick}
-              disabled={disabled || !maskedValue}
+              disabled={disabled || !maskedValue || !onReveal || revealing}
+              title={onReveal ? undefined : 'Only an owner or super-admin can reveal full details'}
               className="px-3 py-2 text-xs font-medium rounded-lg border border-amber-300
                          text-amber-700 bg-amber-50 hover:bg-amber-100 transition-colors
                          disabled:opacity-50 disabled:cursor-not-allowed
                          inline-flex items-center gap-1.5"
             >
-              <Eye className="w-3.5 h-3.5" />
-              Reveal
+              {revealing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Eye className="w-3.5 h-3.5" />}
+              {revealing ? 'Revealing…' : 'Reveal'}
             </button>
           ) : (
             <div className="flex gap-1.5">

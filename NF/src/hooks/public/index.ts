@@ -91,3 +91,6 @@ export type {
 
 export { usePublicBoardMembers } from './usePublicBoardMembers';
 export type { PublicBoardMember } from './usePublicBoardMembers';
+
+export { usePublicFigures } from './usePublicFigures';
+export type { PublicFigure, PublicFigures, FigureSource } from './usePublicFigures';

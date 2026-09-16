@@ -76,8 +76,10 @@ function StatCard({ label, value, icon, colour, loading }: StatCardProps) {
 // ---------------------------------------------------------------------------
 
 function BankDetailsContent() {
-  const { can } = usePermissions();
+  const { can, is } = usePermissions();
   const hook = useBankDetailsAdmin();
+  // Only owner / super_admin may decrypt; the edge function enforces the same.
+  const canReveal = is(['super_admin', 'owner']);
   const { track } = useOnboardingTracker();
 
   // Track on-mount view for breadcrumb 12.1
@@ -262,6 +264,14 @@ function BankDetailsContent() {
         isSaving={hook.saving}
         onClose={closeModal}
         onSubmit={handleSubmit}
+        onReveal={
+          canReveal && modal.editing
+            ? async (field) => {
+                const r = await hook.reveal(modal.editing!.id);
+                return r ? r[field] : null;
+              }
+            : undefined
+        }
       />
     </div>
   );

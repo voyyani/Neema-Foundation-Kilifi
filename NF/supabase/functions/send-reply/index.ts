@@ -133,6 +133,8 @@ interface SendEmailOpts {
   subject: string;
   html: string;
   replyTo?: string;
+  /** Display name for the From header; the address comes from EMAIL_FROM */
+  fromName?: string | null;
 }
 
 interface SendEmailResult {
@@ -148,7 +150,10 @@ async function sendEmail(opts: SendEmailOpts): Promise<SendEmailResult> {
     return { success: false, error: 'Email service not configured' };
   }
 
-  const from = Deno.env.get('EMAIL_FROM') ?? 'Neema Foundation <onboarding@resend.dev>';
+  const configuredFrom = Deno.env.get('EMAIL_FROM') ?? 'Neema Foundation <onboarding@resend.dev>';
+  // Swap only the display name; keep the verified address.
+  const address = configuredFrom.match(/<([^>]+)>/)?.[1] ?? configuredFrom;
+  const from = opts.fromName ? `${opts.fromName.replace(/[<>"]/g, '')} <${address}>` : configuredFrom;
 
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -723,6 +728,20 @@ serve(async (req: Request) => {
       });
     }
 
+    // ── 5b. Reply defaults from Site Settings ───────────────────────────
+    // `reply_from_name` is the display name donors see; the address stays
+    // EMAIL_FROM (Resend requires a verified sender). `reply_auto_status_change`
+    // decides whether a reply moves the submission to 'responded'.
+
+    const { data: replySettings } = await serviceClient
+      .from('site_settings')
+      .select('reply_from_name, reply_auto_status_change')
+      .eq('id', 'main')
+      .maybeSingle();
+
+    const fromName = (replySettings?.reply_from_name as string | null)?.trim() || null;
+    const autoStatusChange = (replySettings?.reply_auto_status_change as boolean | null) ?? true;
+
     // ── 6. Send via Resend ─────────────────────────────────────────────
 
     const emailResult = await sendEmail({
@@ -730,6 +749,7 @@ serve(async (req: Request) => {
       subject: finalSubject,
       html: emailHtml,
       replyTo: callerProfile.email, // Replies go to the admin's real email
+      fromName,
     });
 
     if (!emailResult.success) {
@@ -765,11 +785,13 @@ serve(async (req: Request) => {
       console.error('[send-reply] Failed to save reply record:', insertError.message);
     }
 
-    // ── 8. Auto-update status to 'responded' ──────────────────────────
+    // ── 8. Auto-update status to 'responded' (Site Settings toggle) ────
 
     const now = new Date().toISOString();
 
-    if (payload.type === 'submission') {
+    if (!autoStatusChange) {
+      // Office chose to move submissions by hand.
+    } else if (payload.type === 'submission') {
       const { error: statusError } = await serviceClient
         .from('submissions')
         .update({ status: 'responded', responded_at: now, updated_at: now })

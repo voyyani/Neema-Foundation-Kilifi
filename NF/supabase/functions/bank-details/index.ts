@@ -376,6 +376,57 @@ async function handleGet(ctx: RequestContext, id: string): Promise<Response> {
   return json({ data: stripEncrypted(data as BankDetailRow) });
 }
 
+// ── REVEAL ────────────────────────────────────────────────────────────────────
+// The only path that decrypts. Owner / super_admin only, every call audited
+// as `view_sensitive`, and the plaintext is returned once — never stored on
+// the client beyond the admin's screen.
+
+const REVEAL_ROLES: UserRole[] = ['super_admin', 'owner'];
+
+async function handleReveal(ctx: RequestContext, id: string): Promise<Response> {
+  if (!REVEAL_ROLES.includes(ctx.actor.role)) {
+    return forbidden(`Role '${ctx.actor.role}' may not reveal full account details.`);
+  }
+
+  const { data, error } = await ctx.svc
+    .from('bank_details')
+    .select('id, label, account_number_enc, swift_code_enc, iban_enc')
+    .eq('id', id)
+    .single();
+
+  if (error?.code === 'PGRST116') return notFound(`Bank detail '${id}' not found.`);
+  if (error) return json({ error: error.message }, 500);
+
+  const row = data as Pick<BankDetailRow, 'id' | 'label' | 'account_number_enc' | 'swift_code_enc' | 'iban_enc'>;
+
+  const safeDecrypt = async (enc: string | null): Promise<string | null> => {
+    if (!enc) return null;
+    try { return await decrypt(enc); } catch { return null; }
+  };
+
+  const revealed = {
+    id:             row.id,
+    label:          row.label,
+    account_number: await safeDecrypt(row.account_number_enc),
+    swift_code:     await safeDecrypt(row.swift_code_enc),
+    iban:           await safeDecrypt(row.iban_enc),
+  };
+
+  const stored = (['account_number', 'swift_code', 'iban'] as const).filter((k) => Boolean(row[`${k}_enc`]));
+  const undecryptable = stored.filter((k) => revealed[k] === null);
+
+  await writeAudit(ctx, row.id, 'view_sensitive', {
+    fields: { before: null, after: stored.filter((k) => revealed[k] !== null) },
+  });
+
+  return json({
+    data: revealed,
+    ...(undecryptable.length > 0 && {
+      warning: `Could not decrypt: ${undecryptable.join(', ')}. The encryption key may have been rotated since these were saved.`,
+    }),
+  });
+}
+
 // ── CREATE ────────────────────────────────────────────────────────────────────
 
 async function handleCreate(ctx: RequestContext, body: CreateBody): Promise<Response> {
@@ -664,6 +715,11 @@ serve(async (req: Request) => {
       const body = await req.json().catch(() => null);
       if (!body) return badRequest('Request body must be valid JSON.');
       return await handleReorder(ctx, body as ReorderItem[]);
+    }
+
+    // GET /bank-details/:id/reveal   (owner / super_admin, audited)
+    if (method === 'GET' && parts.length === 2 && parts[1] === 'reveal') {
+      return await handleReveal(ctx, parts[0]);
     }
 
     // PATCH /bank-details/:id/toggle

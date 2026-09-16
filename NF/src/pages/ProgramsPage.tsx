@@ -10,7 +10,7 @@ import clsx from 'clsx';
 import Seo from '../lib/seo/Seo';
 import { getRouteMeta } from '../lib/seo/routeMeta';
 import { MaintenanceGate } from '../components/maintenance';
-import { usePublicPrograms } from '../hooks/public';
+import { usePublicFigures, usePublicPrograms } from '../hooks/public';
 import { Alert, Button, Container, Section, Tally } from '../components/ui';
 import ProgramPlate from '../components/programs/ProgramPlate';
 import { CATEGORY_LABEL } from '../components/programs/labels';
@@ -28,7 +28,7 @@ const ProgramsPage: React.FC = () => {
     return c;
   }, [programs]);
   const shown = category === 'all' ? programs : programs.filter((p) => p.category === category);
-  const beneficiaries = programs.reduce((s, p) => s + (p.beneficiary_count || 0), 0);
+  const figures = usePublicFigures();
   const [lead, ...rest] = shown;
 
   return (
@@ -46,8 +46,8 @@ const ProgramsPage: React.FC = () => {
               </div>
               <div className="md:col-span-5 md:self-end">
                 <dl className="grid grid-cols-2 gap-6 border-t border-border-rule pt-5">
-                  <div><dt className="sr-only">Programmes</dt><dd><Tally size="md" value={programs.length || 4} unit="programmes" period="running now" subject="health · education · missions · resilience" /></dd></div>
-                  <div><dt className="sr-only">People reached</dt><dd><Tally size="md" value={beneficiaries > 0 ? `${beneficiaries.toLocaleString('en-KE')}+` : '5,000+'} unit="people reached" period="since 2020" subject="Ganze Sub-county" /></dd></div>
+                  <div><dt className="sr-only">Programmes</dt><dd><Tally size="md" value={figures.programmes.value} unit={figures.programmes.number === 1 ? 'programme' : 'programmes'} period="running now" subject="health · education · missions · resilience" /></dd></div>
+                  <div><dt className="sr-only">People reached</dt><dd><Tally size="md" value={figures.peopleReached.value} unit="people reached" period="since 2020" subject="Ganze Sub-county" /></dd></div>
                 </dl>
               </div>
             </div>

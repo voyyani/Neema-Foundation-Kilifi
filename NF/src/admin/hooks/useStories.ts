@@ -114,9 +114,23 @@ export function useStories() {
       if (input.author_photo_url !== undefined) update.author_photo = input.author_photo_url || null;
       if (input.image_url !== undefined)       update.cover_image  = input.image_url    || null;
 
-      // Slug: prefer explicit value, fall back to auto-generating from title
+      // Slug: prefer explicit value, fall back to auto-generating from title.
+      // Then make sure no *other* story owns it — the public route
+      // /stories/:slug (Phase 5) depends on uniqueness, and a raw unique
+      // violation is not something an editor can act on.
       if (input.slug !== undefined || input.title !== undefined) {
-        update.slug = input.slug?.trim() || slugify(input.title || (update.title as string) || '');
+        const baseSlug = input.slug?.trim() || slugify(input.title || (update.title as string) || '');
+        let slug = baseSlug;
+        for (let attempt = 1; attempt < 50; attempt++) {
+          const { data: clash } = await storiesTable()
+            .select('id')
+            .eq('slug', slug)
+            .neq('id', id)
+            .maybeSingle();
+          if (!clash) break;
+          slug = `${baseSlug}-${attempt}`;
+        }
+        update.slug = slug;
       }
 
       // Status → is_published + published_at + status (text column used by RLS)

@@ -111,8 +111,21 @@ export interface UseBankDetailsAdminReturn {
    * Applies an optimistic update instantly; rolls back on error.
    */
   reorder: (ordered: BankDetailReorderPayload[]) => Promise<boolean>;
+  /**
+   * Decrypt one record's sensitive fields (owner / super_admin). Every call
+   * is audited server-side as `view_sensitive`. Returns null on refusal.
+   */
+  reveal: (id: string) => Promise<RevealedBankDetail | null>;
   /** Clear the stored error message. */
   clearError: () => void;
+}
+
+export interface RevealedBankDetail {
+  id: string;
+  label: string;
+  account_number: string | null;
+  swift_code: string | null;
+  iban: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -449,6 +462,23 @@ export function useBankDetailsAdmin(): UseBankDetailsAdminReturn {
     [callEdge, records, refetch],
   );
 
+  /** Decrypt one record's sensitive fields. Owner / super_admin only. */
+  const reveal = useCallback(
+    async (id: string): Promise<RevealedBankDetail | null> => {
+      try {
+        const res = await callEdge<{ data: RevealedBankDetail; warning?: string }>('GET', `/${id}/reveal`);
+        if (res.warning) toast.warning('Some fields could not be decrypted', { description: res.warning });
+        void fetchAudit();
+        return res.data;
+      } catch (err) {
+        const message = (err as Error).message ?? 'Could not reveal this record';
+        toast.error('Reveal refused', { description: message });
+        return null;
+      }
+    },
+    [callEdge, fetchAudit],
+  );
+
   // ─── Derived state ───────────────────────────────────────────────────────
 
   const saving = savingState.type !== 'idle';
@@ -472,6 +502,7 @@ export function useBankDetailsAdmin(): UseBankDetailsAdminReturn {
     remove,
     toggle,
     reorder,
+    reveal,
     clearError,
   };
 }

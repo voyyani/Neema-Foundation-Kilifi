@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useSiteSettings } from '../../hooks/useSiteSettings';
-import { HexColorPicker } from 'react-colorful';
 import { Save, Loader2, Mail } from 'lucide-react';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import { useOnboardingTracker } from '../../hooks/useOnboardingTracker';
@@ -11,17 +10,12 @@ export default function SiteSettingsPage() {
   const { settings, isLoading, updateSettings } = useSiteSettings();
   const { track } = useOnboardingTracker();
   const [isSaving, setIsSaving] = useState(false);
-  const [showPrimaryPicker, setShowPrimaryPicker] = useState(false);
-  const [showSecondaryPicker, setShowSecondaryPicker] = useState(false);
 
   const [formData, setFormData] = useState({
-    brand_name: settings?.brand_name || '',
     tagline: settings?.tagline || '',
     mission: settings?.mission || '',
     vision: settings?.vision || '',
     values: settings?.values || [],
-    primary_color: settings?.primary_color || '#B01C2E',
-    secondary_color: settings?.secondary_color || '#111827',
     social_facebook: settings?.social_facebook || '',
     social_facebook_enabled: settings?.social_facebook_enabled ?? true,
     social_instagram: settings?.social_instagram || '',
@@ -44,13 +38,10 @@ export default function SiteSettingsPage() {
   useEffect(() => {
     if (settings) {
       setFormData({
-        brand_name: settings.brand_name,
         tagline: settings.tagline || '',
         mission: settings.mission || '',
         vision: settings.vision || '',
         values: settings.values || [],
-        primary_color: settings.primary_color,
-        secondary_color: settings.secondary_color,
         social_facebook: settings.social_facebook || '',
         social_facebook_enabled: settings.social_facebook_enabled ?? true,
         social_instagram: settings.social_instagram || '',
@@ -126,16 +117,11 @@ export default function SiteSettingsPage() {
           
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Brand Name
-              </label>
-              <input
-                type="text"
-                value={formData.brand_name}
-                onChange={(e) => setFormData({ ...formData, brand_name: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-600 focus:border-transparent"
-                placeholder="Neema Foundation"
-              />
+              <label className="block text-sm font-medium text-gray-700 mb-1">Brand name</label>
+              <p className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-700">Neema Foundation Kilifi</p>
+              <p className="mt-1 text-xs text-gray-500">
+                The name and the maroon brand colours are fixed in the site's design system, not here. Ask the developer to change them.
+              </p>
             </div>
 
             <div>
@@ -204,51 +190,6 @@ export default function SiteSettingsPage() {
                 >
                   + Add Value
                 </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Colors */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Brand Colors</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Primary Color</label>
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setShowPrimaryPicker(!showPrimaryPicker)}
-                  className="w-full h-12 rounded-lg border-2 border-gray-300"
-                  style={{ backgroundColor: formData.primary_color }}
-                />
-                <span className="block text-center mt-1 text-sm text-gray-600">{formData.primary_color}</span>
-                {showPrimaryPicker && (
-                  <div className="absolute z-10 mt-2">
-                    <div className="fixed inset-0" onClick={() => setShowPrimaryPicker(false)} />
-                    <HexColorPicker color={formData.primary_color} onChange={(color) => setFormData({ ...formData, primary_color: color })} />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Secondary Color</label>
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setShowSecondaryPicker(!showSecondaryPicker)}
-                  className="w-full h-12 rounded-lg border-2 border-gray-300"
-                  style={{ backgroundColor: formData.secondary_color }}
-                />
-                <span className="block text-center mt-1 text-sm text-gray-600">{formData.secondary_color}</span>
-                {showSecondaryPicker && (
-                  <div className="absolute z-10 mt-2">
-                    <div className="fixed inset-0" onClick={() => setShowSecondaryPicker(false)} />
-                    <HexColorPicker color={formData.secondary_color} onChange={(color) => setFormData({ ...formData, secondary_color: color })} />
-                  </div>
-                )}
               </div>
             </div>
           </div>

@@ -86,6 +86,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         throw error;
       }
 
+      if ((data as UserProfile).is_active === false) {
+        await endDeactivatedSession();
+        return;
+      }
       setProfile(data as UserProfile);
     } catch (err) {
       console.error('[Auth] Error fetching profile:', err);
@@ -96,6 +100,46 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setProfile(null);
     }
   };
+
+  /**
+   * A deactivated account loses its session now, not at the next login.
+   * Called when the profile arrives inactive, and by the realtime watch
+   * below when an admin flips is_active while this user is signed in.
+   */
+  const endDeactivatedSession = async () => {
+    setProfile(null);
+    setUser(null);
+    setSession(null);
+    toast.error('Your account has been deactivated', {
+      description: 'Ask a super-admin if you believe this is a mistake.',
+      duration: 8000,
+    });
+    try { await supabase.auth.signOut(); } catch { /* already gone */ }
+    clearSupabaseStorage();
+  };
+
+  // Watch this user's own profile row: deactivation or a role change made by
+  // another admin takes effect within the realtime feed's latency.
+  useEffect(() => {
+    if (!user?.id) return;
+    const channel = supabase
+      .channel(`own-profile-${user.id}`)
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` },
+        (payload) => {
+          const next = payload.new as Partial<UserProfile>;
+          if (next.is_active === false) {
+            void endDeactivatedSession();
+            return;
+          }
+          setProfile((prev) => (prev ? { ...prev, ...next } as UserProfile : prev));
+        },
+      )
+      .subscribe();
+    return () => { void supabase.removeChannel(channel); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   // Initialize auth state
   useEffect(() => {

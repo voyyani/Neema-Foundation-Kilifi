@@ -5,18 +5,17 @@
  * carries the Foundation's standing figures instead of an empty void.
  */
 import React from 'react';
-import { usePublicImpactMetrics, usePublicPrograms } from '../../hooks/public';
+import { usePublicFigures, usePublicImpactMetrics } from '../../hooks/public';
 import { Button, Container, Section, SectionHeading, Tally } from '../ui';
 
 const Impact: React.FC = () => {
   const { data: metrics = [], isLoading, error } = usePublicImpactMetrics();
-  const { data: programs = [] } = usePublicPrograms();
+  const figures = usePublicFigures();
   const shown = metrics.filter((m) => m.is_active !== false).slice(0, 6);
-  const beneficiaries = programs.reduce((s, p) => s + (p.beneficiary_count || 0), 0);
   const standing = [
-    { value: '650+', unit: 'children fed', period: 'every school day', subject: 'Ahoho Mission' },
-    { value: beneficiaries > 0 ? `${beneficiaries.toLocaleString('en-KE')}+` : '5,000+', unit: 'people reached', period: 'since 2020', subject: 'across the programmes' },
-    { value: programs.length || 4, unit: 'programmes', period: 'running now', subject: 'health · education · missions · resilience' },
+    { value: figures.childrenFed.value, unit: 'children fed', period: 'every school day', subject: 'Ahoho Mission' },
+    { value: figures.peopleReached.value, unit: 'people reached', period: 'since 2020', subject: 'across the programmes' },
+    { value: figures.programmes.value, unit: figures.programmes.number === 1 ? 'programme' : 'programmes', period: 'running now', subject: 'health · education · missions · resilience' },
   ];
 
   return (

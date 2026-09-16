@@ -11,7 +11,7 @@ import { useDropzone } from 'react-dropzone';
 import { Upload, CheckCircle2, AlertCircle, Loader2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCloudinaryUpload } from '../../hooks/useCloudinaryUpload';
-import { bulkAddItems } from '../../hooks/useMediaAlbums';
+import { bulkAddItems, destroyCloudinaryAsset } from '../../hooks/useMediaAlbums';
 import type { CloudinaryResult } from '../../hooks/useMediaAlbums';
 import type { MediaItem } from '../../types/media';
 import { toast } from 'sonner';
@@ -33,6 +33,10 @@ export default function UploadWidget({ albumId, existingCount, onUploadComplete 
   const { uploadImage, isUploading } = useCloudinaryUpload();
   const [queue, setQueue] = useState<FileState[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  // Uploaded to Cloudinary but not yet rows in the album: the state a
+  // mid-batch DB failure leaves behind. Kept so the office can retry the
+  // save without re-uploading, or discard and have the assets removed.
+  const [unsaved, setUnsaved] = useState<CloudinaryResult[]>([]);
 
   const onDrop = useCallback((accepted: File[]) => {
     const newFiles: FileState[] = accepted.map(file => ({
@@ -102,17 +106,48 @@ export default function UploadWidget({ albumId, existingCount, onUploadComplete 
     }
 
     if (results.length > 0) {
-      try {
-        const newItems = await bulkAddItems(albumId, results, existingCount);
-        onUploadComplete(newItems);
-        // Clear done items from queue
-        setQueue(prev => prev.filter(f => f.status !== 'done'));
-      } catch (err) {
-        toast.error('Failed to save photos: ' + (err as Error).message);
-      }
+      await saveResults(results);
     }
 
     setIsSaving(false);
+  }
+
+  /** Write uploaded assets into the album; on failure keep them for retry. */
+  async function saveResults(results: CloudinaryResult[]) {
+    try {
+      const newItems = await bulkAddItems(albumId, results, existingCount);
+      onUploadComplete(newItems);
+      setUnsaved([]);
+      // Clear done items from queue
+      setQueue(prev => prev.filter(f => f.status !== 'done'));
+    } catch (err) {
+      setUnsaved(results);
+      toast.error(`${results.length} photo${results.length === 1 ? '' : 's'} uploaded but not saved to the album`, {
+        description: (err as Error).message,
+        action: { label: 'Retry save', onClick: () => void retrySave(results) },
+        duration: 10000,
+      });
+    }
+  }
+
+  async function retrySave(results: CloudinaryResult[]) {
+    setIsSaving(true);
+    await saveResults(results);
+    setIsSaving(false);
+  }
+
+  /** Give up on the unsaved uploads and remove them from Cloudinary. */
+  async function discardUnsaved() {
+    const toRemove = unsaved;
+    setUnsaved([]);
+    setQueue(prev => prev.filter(f => f.status !== 'done'));
+    await Promise.all(toRemove.map(r => destroyCloudinaryAsset(r.publicId, 'image')));
+    toast.info(`${toRemove.length} unsaved upload${toRemove.length === 1 ? '' : 's'} discarded`);
+  }
+
+  /** Put failed files back in the queue for another attempt. */
+  function retryFailed() {
+    setQueue(prev => prev.map(f => (f.status === 'error' ? { ...f, status: 'pending', error: undefined } : f)));
   }
 
   const pendingCount = queue.filter(f => f.status === 'pending').length;
@@ -200,6 +235,45 @@ export default function UploadWidget({ albumId, existingCount, onUploadComplete 
               ))}
             </AnimatePresence>
           </div>
+
+          {/* Recovery: uploads that never became album rows */}
+          {unsaved.length > 0 && (
+            <div className="flex flex-col gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between">
+              <p>
+                <AlertCircle className="mr-1.5 inline h-4 w-4 align-text-bottom" aria-hidden="true" />
+                {unsaved.length} photo{unsaved.length !== 1 ? 's' : ''} uploaded but not yet in the album.
+              </p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => void retrySave(unsaved)}
+                  disabled={isSaving}
+                  className="rounded-md bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-700 disabled:opacity-50"
+                >
+                  {isSaving ? 'Saving…' : 'Retry save'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void discardUnsaved()}
+                  disabled={isSaving}
+                  className="rounded-md border border-amber-300 px-3 py-1.5 text-xs font-semibold text-amber-900 hover:bg-amber-100 disabled:opacity-50"
+                >
+                  Discard
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Failed uploads can go again */}
+          {errorCount > 0 && pendingCount === 0 && !isUploading && (
+            <button
+              type="button"
+              onClick={retryFailed}
+              className="w-full rounded-lg border border-gray-300 py-2.5 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              Retry {errorCount} failed upload{errorCount !== 1 ? 's' : ''}
+            </button>
+          )}
 
           {/* Upload button */}
           {pendingCount > 0 && (

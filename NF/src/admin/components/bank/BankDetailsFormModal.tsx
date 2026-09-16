@@ -25,6 +25,8 @@ interface BankDetailsFormModalProps {
   isSaving: boolean;
   onClose: () => void;
   onSubmit: (data: BankDetailFormData) => Promise<void>;
+  /** Passed through to the form's encrypted fields. */
+  onReveal?: (field: 'account_number' | 'swift_code' | 'iban') => Promise<string | null>;
 }
 
 // ---------------------------------------------------------------------------
@@ -37,6 +39,7 @@ export function BankDetailsFormModal({
   isSaving,
   onClose,
   onSubmit,
+  onReveal,
 }: BankDetailsFormModalProps) {
   const [preview, setPreview] = useState<Partial<BankDetailFormData>>(
     existing ?? {},
@@ -108,6 +111,7 @@ export function BankDetailsFormModal({
                   {/* Form column */}
                   <div className="flex-1 px-6 py-6 overflow-y-auto">
                     <BankDetailsForm
+                      onReveal={onReveal}
                       existing={existing}
                       onSubmit={onSubmit}
                       onCancel={onClose}

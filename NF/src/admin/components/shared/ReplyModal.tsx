@@ -37,6 +37,7 @@ import {
   type ReplyTemplate,
   type TemplatePlaceholders,
 } from '../../config/replyTemplates';
+import { useSiteSettings } from '../../hooks/useSiteSettings';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -210,6 +211,9 @@ export default function ReplyModal({
   adminEmail,
   replyCount,
 }: ReplyModalProps) {
+  const { settings } = useSiteSettings();
+  // Site settings › Reply defaults. Written by admins for months, read by nothing until now.
+  const signoff = (settings?.reply_default_signoff ?? '').trim();
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
@@ -281,21 +285,23 @@ export default function ReplyModal({
   useEffect(() => {
     if (isOpen && submission) {
       setSubject(submission.prefillSubject || generateSubject(submission.subject));
-      setMessage(submission.prefillMessage || `Hi ${getFirstName(submission.name)},\n\n`);
+      const greeting = `Hi ${getFirstName(submission.name)},\n\n`;
+      setMessage(submission.prefillMessage || (signoff ? `${greeting}\n\n${signoff},` : greeting));
       setSending(false);
       setQuoteExpanded(false);
       setSelectedTemplate(submission.prefillTemplateKey || '');
       setTemplateMenuOpen(false);
-      // Focus textarea after mount
+      // Focus textarea after mount, caret after the greeting (before the sign-off)
       setTimeout(() => {
         const el = textareaRef.current;
         if (el) {
           el.focus();
-          el.setSelectionRange(el.value.length, el.value.length);
+          const at = submission.prefillMessage ? el.value.length : greeting.length;
+          el.setSelectionRange(at, at);
         }
       }, 100);
     }
-  }, [isOpen, submission]);
+  }, [isOpen, submission, signoff]);
 
   // Keyboard shortcut: Ctrl+Enter / Cmd+Enter to send
   const handleKeyDown = useCallback(
