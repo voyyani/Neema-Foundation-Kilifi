@@ -1,7 +1,7 @@
 # Admin Guide
 
 **Status:** Live
-**Last updated:** 2026-08-29
+**Last updated:** 2026-09-16
 
 A no-code manual for staff using the Neema Foundation admin CMS at
 `/admin`. For *who* can do what, see [RBAC.md](RBAC.md) — this doc covers
@@ -11,14 +11,20 @@ A no-code manual for staff using the Neema Foundation admin CMS at
 
 ## Signing in
 
-`/admin/login`. Forgotten passwords go through `/admin/forgot-password` →
-emailed reset link → `/admin/reset-password`. New accounts are created by a
-`super_admin` (or `owner`) from **Users**, not via public sign-up — there is
-no self-registration path into the admin CMS.
+`/admin/login` — reachable from the public site's footer and menu ("Staff sign
+in"). Five wrong passwords pause the form for fifteen minutes on that device.
+"Remember my email" keeps only the address. Forgotten passwords go through
+`/admin/forgot-password` → emailed link (works once, for an hour, in the
+browser that requested it) → `/admin/reset-password`, which shows the four
+password rules live and refuses the password you already had. If the link
+has expired you are told so and offered a new one.
+
+New accounts are created by a `super_admin` (or `owner`) from **Users** — there
+is no self-registration. **Deactivating a user signs them out immediately**,
+not at their next login.
 
 First time in any role, a guided tour launches automatically (skip or replay
-it anytime from the help button) — it walks the sidebar, stats bar, quick
-actions, and every panel relevant to your role in order.
+it anytime from the help button).
 
 ## Dashboard
 
@@ -63,6 +69,14 @@ Everything that isn't an event or a user, grouped under **Content**:
 **Who:** `super_admin`, `owner` (full); `content_manager` (full, content
 only — no Events/Users/Bank Details); everyone else, none.
 
+### Site settings › Reply defaults
+
+**Default sign-off** is prefilled in every reply; **From name** is what
+recipients see as the sender (the address is fixed); **Move to responded
+automatically** decides whether sending a reply changes a submission's status.
+Brand name and colours are fixed in the design system and are no longer
+editable here.
+
 ## Users
 
 `/admin/users` — create accounts, deactivate them, and change roles.
@@ -84,6 +98,14 @@ as the actual asset host — this table only stores metadata and URLs.
 
 **Who:** any authenticated role can upload; deletion of others' uploads is
 admin-and-above only (`useCloudinaryUpload`/`media` RLS).
+
+### Media › if an upload goes wrong
+
+A file that fails uploads again with **Retry failed uploads**. If photos reach
+Cloudinary but cannot be saved into the album, a banner offers **Retry save**
+or **Discard** (which also removes them from Cloudinary). Deleting a photo
+removes it from Cloudinary too; if that part fails you are told and can delete
+it in the Cloudinary console.
 
 ## Bank Details
 
@@ -110,43 +132,52 @@ Full technical model: [ADR-0003](adr/0003-encrypt-bank-details-via-edge-function
 **Who:** `super_admin`, `owner`, `admin` (view/edit/manage);
 `super_admin`/`owner` only for permanent delete.
 
+**Reveal.** Owners and super-admins can reveal a stored account number, SWIFT
+or IBAN from the edit form after re-entering their password. Every reveal is
+written to the audit log as `view_sensitive`; the value hides again after 60 s
+and the clipboard clears after 30 s. Other roles see the button disabled.
+
+**What donors see.** The public site shows only the masked form (`****1234`)
+for bank transfers. Until the Foundation decides whether receiving-account
+numbers may be published in full, put transfer instructions donors can act
+on in the method's **Instructions** field.
+
 ## Maintenance System
 
-`/admin/maintenance` — the most sophisticated tool in the CMS. Lets staff put
-any part of the *public* site into a degraded/notice/blocked state without a
-deploy, at four levels of precision:
+`/admin/maintenance` lets staff take any part of the *public* site out of
+service without a deploy, in their own words, at five levels of precision:
 
-| Scope | Example | Effect |
+| Scope | Example target | Effect on the public site |
 |---|---|---|
-| `global` | "Site Under Maintenance" | Blocks the entire public site |
-| `page` | `/donate` | Blocks or degrades one page |
-| `section` | Landing page's hero | Blocks or degrades one section of one page |
-| `component` | The M-Pesa option inside the Donate payment form | Blocks or degrades one specific widget |
-| `feature_group` | "Donations" (spans `/donate`, `/bank-details`, `/legacy-giving`, `/sponsorship`, plus the landing-page CTA and every program page's donate button) | Blocks or degrades a cross-cutting concern in one action |
+| `global` | — | Every route shows the maintenance page (except `/maintenance` itself) |
+| `page` | `donate` | That page is replaced (`full_block`), degraded, or gets a banner (`notice`) |
+| `section` | `landing:hero` | That section of that page is replaced or degraded |
+| `component` | `donate:payment_form:mpesa` | One widget inside a section |
+| `feature_group` | `donations` | Every page and section the group lists, in one rule |
 
-Three severities, least to most disruptive: `notice` (a banner, page still
-usable), `degraded` (a placeholder replaces the affected part, rest of the
-page works), `full_block` (nothing renders). If two rules could apply to the
-same spot, the **more specific one wins** — component beats section beats
-page beats feature group — and a `global` + `full_block` rule always
-overrides everything else regardless of what else is active (this priority
-logic is unit-tested — see
-[`rule-evaluation.test.ts`](../src/__tests__/maintenance/rule-evaluation.test.ts)).
+Three severities: `notice` (a banner under the header; forms stay open),
+`degraded` (a ruled placeholder replaces the part; the rest works),
+`full_block` (the chalkboard maintenance page with your message, countdown
+and live status updates). The most specific rule wins; a `global full_block`
+overrides everything. Roles listed in **Allowed roles** see the real content
+while signed in — use it to check a page during a block.
 
-Six **Quick Presets** exist for the most common scenarios (full-site
-maintenance, donation system down, media refresh, pause volunteer
-applications, hero update, programs update) — one click instead of
-configuring scope/severity/message by hand.
+**Forms consult maintenance.** Pausing `contact`, `volunteering` or a form's
+section disables that form's submit button and shows your title and message
+above it.
 
-Before activating a rule, the dashboard shows an **estimated affected-users
-percentage**, computed from per-page traffic-weight estimates (not live
-analytics — see `PAGE_REGISTRY` in `maintenanceRegistry.ts` for the assumed
-weights) — useful for judging blast radius before you block something.
-A **Site Map view** shows every page's current status (online / notice /
-degraded / blocked) at a glance, and **Maintenance History** keeps a
-permanent record of past windows for post-mortems.
+**How to verify it took effect.** Open the target page in a private window
+(no admin session). Section keys are `page:section` exactly as the picker
+shows them. Rules reach the public site within ~30 s (realtime is faster);
+the `/maintenance` page lists everything currently active. If a page still
+renders, check that the route is in the registry (`PAGE_REGISTRY`) — pages
+that are not registered cannot be targeted.
 
-**Who:** `super_admin`, `owner`, `admin` (`manage_site_maintenance`).
+Six **Quick Presets** cover the common cases. Before activating, the
+dashboard estimates affected visitors from per-page traffic weights (not live
+analytics). **Site Map** shows every page's state; **History** keeps the record.
+
+**Who:** `super_admin`, `owner`, `admin`.
 
 ## Onboarding
 

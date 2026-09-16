@@ -1,7 +1,7 @@
 # Role-Based Access Control
 
 **Status:** Live
-**Last updated:** 2026-08-29
+**Last updated:** 2026-09-16
 
 Referenced from [PRD.md](PRD.md). Related: [ADR-0004](adr/0004-role-based-access-control-via-profiles-and-rls.md) for why this shape was chosen, [DATABASE.md](DATABASE.md#identity--access) for the underlying table.
 
@@ -67,10 +67,13 @@ unauthorized action if the others are bypassed:
    [DATABASE.md](DATABASE.md). This is what actually protects the data; a
    request that skips the frontend entirely (e.g. `curl` with a stolen JWT)
    is still bound by RLS.
-2. **Edge Function role gates (bank details only).** `bank-details/index.ts`
-   hard-codes `ALLOWED_ROLES = ['super_admin','owner','admin']` for all
-   read/write routes and a narrower `DELETE_ROLES = ['super_admin','owner']`
-   for hard deletes — checked server-side before any encryption/DB call.
+2. **Edge Function role gates.** `bank-details/index.ts` hard-codes
+   `ALLOWED_ROLES = ['super_admin','owner','admin']` for read/write,
+   `DELETE_ROLES = ['super_admin','owner']` for hard deletes and
+   `REVEAL_ROLES = ['super_admin','owner']` for `GET /:id/reveal` (audited as
+   `view_sensitive`). `cloudinary-destroy` allows the five content roles
+   (`MEDIA_ROLES`). `send-reply` and `invite-user` keep their own lists. Every
+   function also refuses `is_active = false` profiles.
 3. **UI gating (`usePermissions()`).** `src/admin/hooks/usePermissions.ts`
    wraps the same `roles.ts` tables for component-level `can()`/`is()`/
    `isAdmin()` checks — this decides what renders, not what's allowed. A
@@ -101,7 +104,17 @@ server-side (so a client can't just skip the check) and writes to
 `role_change_audit` (`old_role`, `new_role`, `changed_by`, `reason`) and
 `user_activity_log` in the same transaction.
 
-## 5. Known inconsistency
+## 5. Deactivation and live sessions (Phase 3.3)
+
+The client ends a session the moment `profiles.is_active` becomes false: on
+profile load and through a realtime subscription to the user's own row
+(`AuthProvider.tsx`). Role changes propagate the same way. **Gap:** only
+`is_admin()` and `is_bank_admin()` check `is_active` at the RLS layer; the
+inline `role IN (...)` policies elsewhere do not, so a still-valid JWT is
+accepted by those tables until it expires. Phase 8.1 rewrites every policy to
+use the helpers.
+
+## 6. Known inconsistency
 
 `supabase-schema.sql` (repo root) still defines `profiles.role` with a
 **four**-value constraint (`super_admin, admin, editor, viewer`) — no

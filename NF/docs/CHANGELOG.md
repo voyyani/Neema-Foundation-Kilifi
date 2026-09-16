@@ -1,7 +1,7 @@
 # Changelog
 
 **Status:** Live
-**Last updated:** 2026-08-29
+**Last updated:** 2026-09-16
 
 Compiled from git history (`git log`) into [Keep a Changelog](https://keepachangelog.com)
 categories. No git tags exist in this repo, so entries are grouped by date
@@ -13,6 +13,51 @@ summarized from context rather than itemized — going forward, keep using the
 history (it's what made every other entry in this file reconstructable).
 
 ---
+
+## 2026-09-16 — Phase 3: admin hardening
+
+### Fixed
+- Public "Staff sign in" opened a modal that threw (`useAuth` outside the
+  admin bundle); it now links to `/admin/login`. Modal deleted.
+- Maintenance rules never reached the page they named: `MaintenanceRouteGate`
+  gates every public route by `PAGE_REGISTRY`; `MaintenanceGate` composes
+  `page:section` keys the way the admin writes them (bare keys never matched);
+  page/global notices no longer repeat inside every section.
+- Bank-details `decrypt()` was unreachable and "Reveal" showed the mask again:
+  audited `GET /bank-details/:id/reveal` wired end to end.
+- Deactivated users kept working until they signed out: sessions end on
+  profile load and via realtime.
+- `ProgramsPage` called `useMemo` after an early return.
+- Donate: the monthly-giving button overflowed at 768 px; "details on the left"
+  copy; programmes filter row shown when the list was empty.
+
+### Added
+- `/admin/login`, `/admin/forgot-password`, `/admin/reset-password` rebuilt on
+  the public design tokens (`AuthThreshold`), with rate limiting, remembered
+  email, expired-link detection and live password rules.
+- Public forms consult maintenance (`useMaintenanceFormGate`).
+- `usePublicFigures`: one resolver for people reached / children fed /
+  programme count (CMS metric → programme sums → standing claim).
+- `cloudinary-destroy` edge function; media deletes remove the asset; bulk
+  upload retry / recover / discard.
+- Site settings reply defaults now read by `ReplyModal` and `send-reply`.
+- Stories: slug collision resolved on update.
+- `docs/features/*` — fourteen feature dossiers on the airtight bar.
+
+### Changed
+- `useHeroContent.legacy.ts`, `AdminLoginModal.tsx`, `admin/config/theme.ts`
+  deleted (no consumers).
+- Site settings editor no longer offers brand name / colours (write-only).
+- ESLint errors 187 → 0 across `src`; providers export only components;
+  untyped Supabase tables funnel through one `untypedTable()` hatch.
+- Admin: 44 px touch targets on icon buttons; hover-only controls visible on
+  touch; tour.css brand hex → CSS variables.
+
+### Not done (by decision or blocked)
+- No tests written (user decision). Staging walkthroughs need credentials.
+- Public masking of bank account numbers is a product decision (see
+  `docs/features/bank-details.md`).
+- RLS `is_active` gap in inline policies → Phase 8.1.
 
 ## 2026-07-08 – 2026-07-14
 

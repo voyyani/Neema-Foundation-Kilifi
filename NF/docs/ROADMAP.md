@@ -51,7 +51,7 @@ Four principles govern every phase:
 | **0** | Stop the bleeding | 1 week | ✅ **Done 2026-09-10** — build green, CI, spam endpoint hardened, cron endpoints authenticated |
 | **1** | Be findable, be fast | 1 week | ✅ **Done 2026-09-10** — per-route static HTML, sitemap, lazy routes, Cloudinary transforms |
 | **2** | Client-side revamp | 5–7 weeks | ✅ **Done 2026-09-16** — one token system, primitives, every public surface rebuilt in one world; Lighthouse ≥ 90 to be confirmed on PSI |
-| **3** | Admin hardening — feature by feature | 7–9 weeks | Every admin feature specified, tested, documented; maintenance mode first |
+| **3** | Admin hardening — feature by feature | 7–9 weeks | ✅ **Code complete 2026-09-16** — maintenance gating works at every scope, sign-in fixed, reveal/deactivation/media/figures hardened, lint 0, 14 dossiers. Tests + staging walkthrough deferred |
 | **4** | Accept the gift | 4–6 weeks | M-Pesa STK Push + cards — donors can actually give |
 | **5** | Tell the story | 3–4 weeks | Stories get URLs; public impact page; newsletter |
 | **6** | Swahili & accessibility | 3–4 weeks | Two languages, WCAG 2.2 AA verified |
@@ -152,8 +152,8 @@ Delivered (branch `worktree-phase-2-client-revamp`):
   Vercel preview; if a route is under 90 there, fix it before merge.
 - Real-data screenshots once `npm run env:pull` has a logged-in Supabase CLI;
   the committed after-shots show the designed empty/fallback states.
-- A public read policy on `board_members` (active rows) for the new hook.
-- Raw hex in `src/admin/*` (theme.ts, tour.css, a few components) → Phase 3.15.
+- A public read policy on `board_members` (active rows) for the new hook. *(Present in `supabase-schema.sql`; confirm applied on the live project.)*
+- Raw hex in `src/admin/*` → **closed in 3.15** (theme.ts deleted, tour.css on CSS variables; remaining hex is email HTML and tour copy).
 - `MediaLightbox.tsx` is 404 lines after splitting (from 651).
 
 ---
@@ -268,7 +268,30 @@ verified on all token pairs · before/after screenshots committed.
 
 ---
 
-## Phase 3 — Admin Hardening, Feature by Feature
+## Phase 3 — Admin Hardening, Feature by Feature ✅ (code complete; tests and staging walkthrough deferred)
+
+**Delivered 2026-09-16** on branch `worktree-phase-3-world-class`. Record:
+[`docs/CHANGELOG.md`](./CHANGELOG.md) › 2026-09-16 · dossiers:
+[`docs/features/`](./features/README.md).
+
+What is true now: every scope of maintenance rule demonstrably gates what it
+names (route gate + composed keys + form gates, verified with simulated
+rules); the public "Staff sign in" works and the three auth pages are on the
+design system; deactivation ends live sessions; bank-details reveal is real
+and audited; media deletes reach Cloudinary and bulk upload recovers from
+mid-batch failure; the CMS is the source of the headline figures; write-only
+settings are gone and the reply defaults are read; **ESLint is at zero
+errors across `src/`**; fourteen dossiers exist with the airtight checklist
+ticked where it could be.
+
+**Deliberately not done:** airtight items 3 (tests — user decision, Phase 3
+shipped without them) and 7 (staging walkthrough — no credentials on the
+build machine). ≥ 70 % coverage is therefore *not* met. Two decisions are
+raised for the Foundation: public display of full bank account numbers
+(`features/bank-details.md`) and the RLS `is_active` gap (Phase 8.1).
+
+<details>
+<summary>Original Phase 3 plan (kept for reference)</summary>
 
 **Duration:** 7–9 weeks · Addresses audit §3.3, §3.2, §4.5, and the maintenance-mode defect
 
@@ -484,6 +507,8 @@ items ticked · maintenance rules of every scope demonstrably gate what they
 name · `ADMIN-GUIDE.md` rewritten from verified behaviour · `RBAC.md` matches
 RLS · ≥ 70% test coverage under `src/admin/` and `supabase/functions/` · zero
 ESLint errors under `src/admin/`.
+
+</details>
 
 ---
 
