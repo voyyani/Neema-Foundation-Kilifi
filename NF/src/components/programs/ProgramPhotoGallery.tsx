@@ -89,7 +89,7 @@ const ProgramPhotoGallery: React.FC<ProgramPhotoGalleryProps> = ({
     <>
       {/* Photo count header */}
       <div className="flex items-center gap-2 mb-5">
-        <Images className="w-4 h-4 text-[#B01C2E]" />
+        <Images className="w-4 h-4 text-brand-600" />
         <span className="text-sm font-semibold text-gray-600">
           {sortedImages.length} {sortedImages.length === 1 ? 'photo' : 'photos'}
           {programName && ` from ${programName}`}

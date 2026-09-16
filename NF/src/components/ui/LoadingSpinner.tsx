@@ -1,41 +1,36 @@
-// LoadingSpinner.tsx
 import React from 'react';
-import { motion } from 'framer-motion';
+import clsx from 'clsx';
 
+/**
+ * LoadingSpinner — the route-level Suspense fallback and inline loader.
+ * CSS only: it is on the critical path for every lazy route.
+ */
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';
-  text?: string;
+  text?: string | null;
+  /** Fill the viewport height so the footer does not jump up */
+  fullPage?: boolean;
+  className?: string;
 }
 
-const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
-  size = 'md', 
-  text = 'Loading programs...' 
-}) => {
-  const sizeClasses = {
-    sm: 'w-6 h-6',
-    md: 'w-12 h-12',
-    lg: 'w-16 h-16'
-  };
-
-  return (
-    <div className="flex flex-col items-center justify-center py-16">
-      <motion.div
-        className={`${sizeClasses[size]} border-4 border-red-200 border-t-red-600 rounded-full`}
-        animate={{ rotate: 360 }}
-        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-      />
-      {text && (
-        <motion.p
-          className="mt-4 text-gray-600 font-medium"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          {text}
-        </motion.p>
-      )}
-    </div>
-  );
+const sizeClasses = {
+  sm: 'h-5 w-5 border-2',
+  md: 'h-9 w-9 border-[3px]',
+  lg: 'h-12 w-12 border-4',
 };
+
+const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size = 'md', text = 'Loading…', fullPage = false, className }) => (
+  <div
+    role="status"
+    aria-live="polite"
+    className={clsx('flex flex-col items-center justify-center gap-4 py-16 text-content-3', fullPage && 'min-h-[calc(100dvh-64px)]', className)}
+  >
+    <span
+      aria-hidden="true"
+      className={clsx('animate-spin rounded-full border-border-rule border-t-brand-600', sizeClasses[size])}
+    />
+    {text ? <p className="text-sm font-medium">{text}</p> : <span className="sr-only">Loading</span>}
+  </div>
+);
 
 export default LoadingSpinner;

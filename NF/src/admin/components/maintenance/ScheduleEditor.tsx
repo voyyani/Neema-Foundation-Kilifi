@@ -117,7 +117,7 @@ export default function ScheduleEditor({
           onClick={() => update({ mode: 'immediate' })}
           className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg border transition-all ${
             value.mode === 'immediate'
-              ? 'bg-[#B01C2E] text-white border-[#B01C2E] shadow-sm'
+              ? 'bg-brand-600 text-white border-brand-600 shadow-sm'
               : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
           }`}
         >
@@ -129,7 +129,7 @@ export default function ScheduleEditor({
           onClick={() => update({ mode: 'scheduled' })}
           className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg border transition-all ${
             value.mode === 'scheduled'
-              ? 'bg-[#B01C2E] text-white border-[#B01C2E] shadow-sm'
+              ? 'bg-brand-600 text-white border-brand-600 shadow-sm'
               : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
           }`}
         >
@@ -175,7 +175,7 @@ export default function ScheduleEditor({
                 value={value.startsAt}
                 onChange={(e) => update({ startsAt: e.target.value })}
                 className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm
-                           focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                           focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
               />
             </div>
             <div>
@@ -189,7 +189,7 @@ export default function ScheduleEditor({
                 onChange={(e) => update({ endsAt: e.target.value })}
                 min={value.startsAt || undefined}
                 className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm
-                           focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                           focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
               />
             </div>
           </div>
@@ -233,7 +233,7 @@ export default function ScheduleEditor({
               value={value.timezone}
               onChange={(e) => update({ timezone: e.target.value })}
               className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white
-                         focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                         focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
             >
               {TIMEZONES.map((tz) => (
                 <option key={tz.value} value={tz.value}>
@@ -287,7 +287,7 @@ export default function ScheduleEditor({
                   setShowRecurrence(true);
                   updateRecurrence({});
                 }}
-                className="inline-flex items-center gap-2 text-sm text-[#B01C2E] hover:text-[#8A1624]
+                className="inline-flex items-center gap-2 text-sm text-brand-600 hover:text-brand-700
                            font-medium transition-colors"
               >
                 <Plus className="h-4 w-4" />
@@ -332,7 +332,7 @@ export default function ScheduleEditor({
                           })
                         }
                         className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white
-                                   focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                                   focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
                       >
                         <option value="daily">Daily</option>
                         <option value="weekly">Weekly</option>
@@ -350,7 +350,7 @@ export default function ScheduleEditor({
                           value={value.recurrence?.day ?? 'sunday'}
                           onChange={(e) => updateRecurrence({ day: e.target.value })}
                           className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white
-                                     focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                                     focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
                         >
                           {DAYS_OF_WEEK.map((day) => (
                             <option key={day.value} value={day.value}>
@@ -376,7 +376,7 @@ export default function ScheduleEditor({
                             updateRecurrence({ day_of_month: Number(e.target.value) })
                           }
                           className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm
-                                     focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                                     focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
                         />
                       </div>
                     )}
@@ -391,7 +391,7 @@ export default function ScheduleEditor({
                         value={value.recurrence?.start_time ?? '02:00'}
                         onChange={(e) => updateRecurrence({ start_time: e.target.value })}
                         className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm
-                                   focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                                   focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
                       />
                     </div>
 
@@ -410,7 +410,7 @@ export default function ScheduleEditor({
                           updateRecurrence({ duration_hours: Number(e.target.value) })
                         }
                         className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm
-                                   focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                                   focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
                       />
                     </div>
                   </div>

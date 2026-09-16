@@ -51,7 +51,7 @@ export default function MediaLibraryPage() {
         <button
           data-tour="album-create-btn"
           onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#B01C2E] text-white text-sm font-medium rounded-lg hover:bg-[#8A1624] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-colors"
         >
           <Plus className="h-4 w-4" />
           New Album
@@ -68,7 +68,7 @@ export default function MediaLibraryPage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search albums…"
-            className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent outline-none"
+            className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-600 focus:border-transparent outline-none"
           />
         </div>
 
@@ -80,7 +80,7 @@ export default function MediaLibraryPage() {
               onClick={() => setFilters(prev => ({ ...prev, album_type: tf.value }))}
               className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                 filters.album_type === tf.value
-                  ? 'bg-[#B01C2E] text-white'
+                  ? 'bg-brand-600 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -99,7 +99,7 @@ export default function MediaLibraryPage() {
               is_published: v === 'all' ? undefined : v === 'true',
             }));
           }}
-          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#B01C2E] focus:border-transparent outline-none"
+          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-600 focus:border-transparent outline-none"
         >
           <option value="all">All statuses</option>
           <option value="true">Published</option>
@@ -110,10 +110,10 @@ export default function MediaLibraryPage() {
       {/* Content */}
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-[#B01C2E]" />
+          <Loader2 className="h-8 w-8 animate-spin text-brand-600" />
         </div>
       ) : error ? (
-        <div className="text-center py-20 text-red-600">
+        <div className="text-center py-20 text-danger-600">
           <p className="font-medium">Failed to load albums</p>
           <p className="text-sm">{error.message}</p>
           <button onClick={refetch} className="mt-3 text-sm underline">Retry</button>
@@ -125,7 +125,7 @@ export default function MediaLibraryPage() {
           <p className="text-sm mt-1">Create your first album to start building the media library.</p>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="mt-4 px-4 py-2 bg-[#B01C2E] text-white text-sm font-medium rounded-lg hover:bg-[#8A1624] transition-colors"
+            className="mt-4 px-4 py-2 bg-brand-600 text-white text-sm font-medium rounded-lg hover:bg-brand-700 transition-colors"
           >
             Create Album
           </button>

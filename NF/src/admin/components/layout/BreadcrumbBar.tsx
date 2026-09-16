@@ -238,7 +238,7 @@ export default function BreadcrumbBar() {
         {/* Home / Dashboard link */}
         <Link
           to="/admin/dashboard"
-          className="inline-flex items-center gap-1 rounded-md px-1.5 py-1 hover:bg-gray-100 hover:text-[#B01C2E] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2E]/40 breadcrumb-link"
+          className="inline-flex items-center gap-1 rounded-md px-1.5 py-1 hover:bg-gray-100 hover:text-brand-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600/40 breadcrumb-link"
           aria-label="Dashboard"
           tabIndex={0}
         >
@@ -254,7 +254,7 @@ export default function BreadcrumbBar() {
                 <button
                   type="button"
                   onClick={() => setIsExpanded(true)}
-                  className="inline-flex items-center rounded-md px-1 py-0.5 text-gray-400 hover:bg-gray-100 hover:text-[#B01C2E] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2E]/40"
+                  className="inline-flex items-center rounded-md px-1 py-0.5 text-gray-400 hover:bg-gray-100 hover:text-brand-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600/40"
                   aria-label={`Show ${crumbs.length - 3} hidden breadcrumbs`}
                   title={`${crumbs.length - 3} more…`}
                 >
@@ -278,7 +278,7 @@ export default function BreadcrumbBar() {
               /* Ancestor link — clickable */
               <Link
                 to={crumb.path}
-                className="rounded-md px-1.5 py-1 hover:bg-gray-100 hover:text-[#B01C2E] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2E]/40 breadcrumb-link max-w-[200px] truncate"
+                className="rounded-md px-1.5 py-1 hover:bg-gray-100 hover:text-brand-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600/40 breadcrumb-link max-w-[200px] truncate"
                 tabIndex={0}
                 title={crumb.label}
               >
@@ -302,7 +302,7 @@ export default function BreadcrumbBar() {
         <button
           type="button"
           onClick={() => navigate(parentPath)}
-          className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-[#B01C2E] active:bg-gray-200 transition-colors tap-scale touch-target focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2E]/40"
+          className="inline-flex items-center gap-1 rounded-lg px-2 py-1.5 text-gray-500 hover:bg-gray-100 hover:text-brand-600 active:bg-gray-200 transition-colors tap-scale touch-target focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600/40"
           aria-label="Go back"
         >
           <ArrowLeftIcon className="w-4 h-4" />

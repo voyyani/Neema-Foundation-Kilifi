@@ -130,8 +130,8 @@ function BankDetailsContent() {
       {/* ── Page header ─────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#B01C2E]/10 flex items-center justify-center flex-shrink-0">
-            <Building2 className="h-5 w-5 text-[#B01C2E]" />
+          <div className="w-10 h-10 rounded-xl bg-brand-600/10 flex items-center justify-center flex-shrink-0">
+            <Building2 className="h-5 w-5 text-brand-600" />
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900 leading-tight">
@@ -149,9 +149,9 @@ function BankDetailsContent() {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={openCreate}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#B01C2E] hover:bg-[#8A1624]
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-700
                        text-white text-sm font-medium rounded-lg shadow-sm transition-colors
-                       focus:outline-none focus:ring-2 focus:ring-[#B01C2E] focus:ring-offset-2
+                       focus:outline-none focus:ring-2 focus:ring-brand-600 focus:ring-offset-2
                        whitespace-nowrap"
           >
             <Plus className="h-4 w-4" />
@@ -167,13 +167,13 @@ function BankDetailsContent() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl"
+            className="flex items-start gap-3 p-4 bg-danger-50 border border-danger-200 rounded-xl"
           >
-            <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-red-700 flex-1">{hook.error}</p>
+            <AlertTriangle className="h-5 w-5 text-danger-500 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-danger-700 flex-1">{hook.error}</p>
             <button
               onClick={hook.clearError}
-              className="text-red-400 hover:text-red-600 flex-shrink-0 transition-colors"
+              className="text-danger-400 hover:text-danger-600 flex-shrink-0 transition-colors"
               aria-label="Dismiss error"
             >
               <X className="h-4 w-4" />

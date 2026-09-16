@@ -60,9 +60,9 @@ const STATUS_TYPE_CONFIG: Record<
   error: {
     label: 'Error',
     icon: <XCircle className="h-4 w-4" />,
-    color: 'text-red-700',
-    bgColor: 'bg-red-50',
-    borderColor: 'border-red-200',
+    color: 'text-danger-700',
+    bgColor: 'bg-danger-50',
+    borderColor: 'border-danger-200',
   },
 };
 
@@ -223,7 +223,7 @@ const StatusUpdateForm: React.FC<StatusUpdateFormProps> = ({
         ? 'from-blue-500 to-blue-400'
         : progressPct >= 25
           ? 'from-amber-500 to-amber-400'
-          : 'from-red-500 to-red-400';
+          : 'from-danger-500 to-danger-400';
 
   const isValid = title.trim().length > 0 && title.length <= TITLE_MAX;
 
@@ -266,7 +266,7 @@ const StatusUpdateForm: React.FC<StatusUpdateFormProps> = ({
                 border transition-all duration-150 hover:shadow-sm
                 ${
                   title === preset.title
-                    ? 'bg-[#B01C2E] text-white border-[#B01C2E] shadow-sm'
+                    ? 'bg-brand-600 text-white border-brand-600 shadow-sm'
                     : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                 }
               `}
@@ -282,11 +282,11 @@ const StatusUpdateForm: React.FC<StatusUpdateFormProps> = ({
       <div>
         <div className="flex items-center justify-between mb-1.5">
           <label htmlFor="status-title" className="block text-sm font-medium text-gray-700">
-            Title <span className="text-red-500">*</span>
+            Title <span className="text-danger-500">*</span>
           </label>
           <span
             className={`text-xs tabular-nums ${
-              title.length > TITLE_MAX ? 'text-red-500 font-medium' : 'text-gray-400'
+              title.length > TITLE_MAX ? 'text-danger-500 font-medium' : 'text-gray-400'
             }`}
           >
             {title.length}/{TITLE_MAX}
@@ -302,9 +302,9 @@ const StatusUpdateForm: React.FC<StatusUpdateFormProps> = ({
           maxLength={TITLE_MAX + 10}
           className={`
             w-full px-3 py-2.5 text-sm border rounded-lg bg-white
-            focus:outline-none focus:ring-2 focus:ring-[#B01C2E]/20 focus:border-[#B01C2E]
+            focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600
             placeholder:text-gray-400 transition-colors
-            ${title.length > TITLE_MAX ? 'border-red-300' : 'border-gray-200'}
+            ${title.length > TITLE_MAX ? 'border-danger-300' : 'border-gray-200'}
           `}
         />
       </div>
@@ -317,7 +317,7 @@ const StatusUpdateForm: React.FC<StatusUpdateFormProps> = ({
           </label>
           <span
             className={`text-xs tabular-nums ${
-              body.length > BODY_MAX ? 'text-red-500 font-medium' : 'text-gray-400'
+              body.length > BODY_MAX ? 'text-danger-500 font-medium' : 'text-gray-400'
             }`}
           >
             {body.length}/{BODY_MAX}
@@ -332,9 +332,9 @@ const StatusUpdateForm: React.FC<StatusUpdateFormProps> = ({
           maxLength={BODY_MAX + 10}
           className={`
             w-full px-3 py-2.5 text-sm border rounded-lg bg-white resize-none
-            focus:outline-none focus:ring-2 focus:ring-[#B01C2E]/20 focus:border-[#B01C2E]
+            focus:outline-none focus:ring-2 focus:ring-brand-600/20 focus:border-brand-600
             placeholder:text-gray-400 transition-colors
-            ${body.length > BODY_MAX ? 'border-red-300' : 'border-gray-200'}
+            ${body.length > BODY_MAX ? 'border-danger-300' : 'border-gray-200'}
           `}
         />
       </div>
@@ -359,18 +359,18 @@ const StatusUpdateForm: React.FC<StatusUpdateFormProps> = ({
             value={progressPct}
             onChange={(e) => setProgressPct(Number(e.target.value))}
             className="w-full h-2 rounded-full appearance-none cursor-pointer
-                       bg-gray-200 accent-[#B01C2E]
+                       bg-gray-200 accent-brand-600
                        [&::-webkit-slider-thumb]:appearance-none
                        [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5
                        [&::-webkit-slider-thumb]:rounded-full
-                       [&::-webkit-slider-thumb]:bg-[#B01C2E]
+                       [&::-webkit-slider-thumb]:bg-brand-600
                        [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white
                        [&::-webkit-slider-thumb]:shadow-md
                        [&::-webkit-slider-thumb]:transition-transform
                        [&::-webkit-slider-thumb]:hover:scale-110
                        [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5
                        [&::-moz-range-thumb]:rounded-full
-                       [&::-moz-range-thumb]:bg-[#B01C2E]
+                       [&::-moz-range-thumb]:bg-brand-600
                        [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white
                        [&::-moz-range-thumb]:shadow-md"
           />
@@ -390,7 +390,7 @@ const StatusUpdateForm: React.FC<StatusUpdateFormProps> = ({
               type="button"
               onClick={() => setProgressPct(v)}
               className={`text-[10px] font-medium tabular-nums transition-colors ${
-                progressPct === v ? 'text-[#B01C2E] font-bold' : 'text-gray-400 hover:text-gray-600'
+                progressPct === v ? 'text-brand-600 font-bold' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
               {v}%
@@ -496,9 +496,9 @@ const StatusUpdateForm: React.FC<StatusUpdateFormProps> = ({
         <button
           type="submit"
           disabled={!isValid || createUpdate.isPending}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#B01C2E] hover:bg-[#8A1624]
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-600 hover:bg-brand-700
                      text-white text-sm font-semibold rounded-lg shadow-sm transition-all
-                     disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#B01C2E]"
+                     disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-brand-600"
         >
           {createUpdate.isPending ? (
             <>

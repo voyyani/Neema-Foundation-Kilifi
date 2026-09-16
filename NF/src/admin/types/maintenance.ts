@@ -318,11 +318,11 @@ export const SEVERITY_CONFIG: Record<MaintenanceSeverity, {
   full_block: {
     label: 'Full Block',
     description: 'Completely replace with maintenance page',
-    color: 'bg-red-50 text-red-700 border border-red-200',
-    bgColor: 'bg-red-50',
-    borderColor: 'border-red-200',
+    color: 'bg-danger-50 text-danger-700 border border-danger-200',
+    bgColor: 'bg-danger-50',
+    borderColor: 'border-danger-200',
     icon: '🔴',
-    dotColor: 'bg-red-500',
+    dotColor: 'bg-danger-500',
   },
   degraded: {
     label: 'Degraded',

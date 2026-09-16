@@ -110,7 +110,7 @@ function SortableTestimonialCard({
             <button
               type="button"
               onClick={onEdit}
-              className="p-1.5 text-[#B01C2E] hover:bg-blue-50 rounded-lg"
+              className="p-1.5 text-brand-600 hover:bg-blue-50 rounded-lg"
               title="Edit"
             >
               <Edit2 className="w-4 h-4" />
@@ -118,7 +118,7 @@ function SortableTestimonialCard({
             <button
               type="button"
               onClick={onRemove}
-              className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg"
+              className="p-1.5 text-danger-600 hover:bg-danger-50 rounded-lg"
               title="Remove"
             >
               <X className="w-4 h-4" />
@@ -194,7 +194,7 @@ function TestimonialForm({
                 <button
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, image: '' }))}
-                  className="absolute -top-1 -right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                  className="absolute -top-1 -right-1 p-1 bg-danger-500 text-white rounded-full hover:bg-danger-600"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -226,7 +226,7 @@ function TestimonialForm({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-gray-700 mb-1">
-                Name <span className="text-red-500">*</span>
+                Name <span className="text-danger-500">*</span>
               </label>
               <input
                 type="text"
@@ -234,7 +234,7 @@ function TestimonialForm({
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="e.g., Jane Mwangi"
                 required
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"
               />
             </div>
             <div>
@@ -246,14 +246,14 @@ function TestimonialForm({
                 value={formData.role || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value }))}
                 placeholder="e.g., Beneficiary, Parent"
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"
               />
             </div>
           </div>
 
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
-              Quote <span className="text-red-500">*</span>
+              Quote <span className="text-danger-500">*</span>
             </label>
             <textarea
               value={formData.quote}
@@ -261,7 +261,7 @@ function TestimonialForm({
               placeholder="Their story or testimonial..."
               rows={3}
               required
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] resize-none"
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600 resize-none"
             />
           </div>
         </div>
@@ -277,7 +277,7 @@ function TestimonialForm({
           value={formData.image || ''}
           onChange={(e) => setFormData(prev => ({ ...prev, image: e.target.value }))}
           placeholder="https://example.com/photo.jpg"
-          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"
         />
       </div>
 
@@ -293,7 +293,7 @@ function TestimonialForm({
         <button
           type="submit"
           disabled={!formData.name || !formData.quote}
-          className="px-4 py-2 text-sm bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-4 py-2 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isNew ? 'Add Testimonial' : 'Save Changes'}
         </button>

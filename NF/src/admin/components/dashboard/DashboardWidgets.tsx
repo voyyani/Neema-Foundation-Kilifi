@@ -99,7 +99,7 @@ export function StatCard({
 }) {
   const { track } = useOnboardingTracker();
   const accentMap: Record<string, { bg: string; text: string }> = {
-    neema: { bg: 'bg-[#B01C2E]/10', text: 'text-[#B01C2E]' },
+    neema: { bg: 'bg-brand-600/10', text: 'text-brand-600' },
     blue: { bg: 'bg-blue-50', text: 'text-blue-600' },
     green: { bg: 'bg-emerald-50', text: 'text-emerald-600' },
     purple: { bg: 'bg-purple-50', text: 'text-purple-600' },
@@ -128,7 +128,7 @@ export function StatCard({
             </dl>
           </div>
           {href && (
-            <ArrowUpRight className="h-4 w-4 text-gray-300 group-hover:text-[#B01C2E] transition-colors flex-shrink-0" />
+            <ArrowUpRight className="h-4 w-4 text-gray-300 group-hover:text-brand-600 transition-colors flex-shrink-0" />
           )}
         </div>
         {subValue && !loading && (
@@ -174,7 +174,7 @@ export function SectionCard({
         {action && (
           <Link
             to={action.href}
-            className="text-xs sm:text-sm font-medium text-[#B01C2E] hover:text-[#8A1624] transition-colors flex items-center gap-1"
+            className="text-xs sm:text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors flex items-center gap-1"
           >
             {action.label}
             <ChevronRight className="h-3.5 w-3.5" />
@@ -218,12 +218,12 @@ export function QuickActionGrid({ actions }: { actions: QuickAction[] }) {
           to={action.href}
           onClick={() => track('dashboard.quick_action_used')}
           data-tour={action.tourId}
-          className="tap-scale relative group bg-gray-50 p-4 rounded-xl border-2 border-gray-100 hover:border-[#B01C2E] hover:bg-red-50 active:bg-red-100 transition-all text-left min-h-[60px]"
+          className="tap-scale relative group bg-gray-50 p-4 rounded-xl border-2 border-gray-100 hover:border-brand-600 hover:bg-danger-50 active:bg-danger-100 transition-all text-left min-h-[60px]"
         >
           <div className="flex items-start space-x-3">
             <div className={`${action.color} p-2 rounded-lg text-white flex-shrink-0`}>{action.icon}</div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-900 group-hover:text-[#B01C2E]">{action.name}</p>
+              <p className="text-sm font-semibold text-gray-900 group-hover:text-brand-600">{action.name}</p>
               <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{action.description}</p>
             </div>
           </div>
@@ -241,7 +241,7 @@ const ICON_MAP: Record<string, { icon: LucideIcon; color: string }> = {
   event:       { icon: Calendar,  color: 'bg-blue-500' },
   program:     { icon: BookOpen,  color: 'bg-green-500' },
   story:       { icon: FileText,  color: 'bg-purple-500' },
-  user:        { icon: Users,     color: 'bg-red-500' },
+  user:        { icon: Users,     color: 'bg-danger-500' },
   content:     { icon: Edit,      color: 'bg-orange-500' },
   settings:    { icon: Settings,  color: 'bg-gray-500' },
   maintenance: { icon: Wrench,    color: 'bg-yellow-500' },
@@ -297,7 +297,7 @@ export function ActivityTimeline({
                       to={activity.href}
                       className="flex-1 hover:bg-gray-50 -m-1 p-1 rounded-lg transition-colors"
                     >
-                      <p className="text-sm text-gray-900 hover:text-[#B01C2E]">
+                      <p className="text-sm text-gray-900 hover:text-brand-600">
                         <span className="font-medium">{activity.action}</span>
                         {': '}
                         <span className="text-gray-600">{activity.item}</span>
@@ -343,7 +343,7 @@ export function UpcomingEventsTimeline({
         <p className="text-gray-500 text-sm">No upcoming events</p>
         <Link
           to="/admin/events/new"
-          className="text-xs text-[#B01C2E] hover:underline mt-1 inline-block"
+          className="text-xs text-brand-600 hover:underline mt-1 inline-block"
         >
           Create one now
         </Link>
@@ -356,7 +356,7 @@ export function UpcomingEventsTimeline({
       {events.map((evt) => {
         const days = daysUntil(evt.start_date);
         const urgencyColor =
-          days <= 3 ? 'border-l-red-500 bg-red-50/40' : days <= 7 ? 'border-l-amber-400 bg-amber-50/30' : 'border-l-blue-400';
+          days <= 3 ? 'border-l-danger-500 bg-danger-50/40' : days <= 7 ? 'border-l-amber-400 bg-amber-50/30' : 'border-l-blue-400';
 
         return (
           <Link
@@ -366,7 +366,7 @@ export function UpcomingEventsTimeline({
           >
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-gray-900 group-hover:text-[#B01C2E] truncate">
+                <p className="text-sm font-semibold text-gray-900 group-hover:text-brand-600 truncate">
                   {evt.name}
                 </p>
                 <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
@@ -385,7 +385,7 @@ export function UpcomingEventsTimeline({
               <span
                 className={`flex-shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full ${
                   days <= 3
-                    ? 'bg-red-100 text-red-700'
+                    ? 'bg-danger-100 text-danger-700'
                     : days <= 7
                       ? 'bg-amber-100 text-amber-700'
                       : 'bg-blue-100 text-blue-700'
@@ -538,7 +538,7 @@ export function SystemHealthCard({
   const statusStyles = {
     ok: 'bg-green-50 text-green-700',
     warn: 'bg-amber-50 text-amber-700',
-    alert: 'bg-red-50 text-red-700',
+    alert: 'bg-danger-50 text-danger-700',
   };
 
   const statusIcons = {
@@ -571,7 +571,7 @@ export function SystemHealthCard({
 // =============================================================================
 
 const ROLE_COLORS: Record<string, string> = {
-  super_admin: 'bg-red-500',
+  super_admin: 'bg-danger-500',
   owner: 'bg-purple-500',
   admin: 'bg-blue-500',
   events_manager: 'bg-green-500',
@@ -671,14 +671,14 @@ export function WelcomeHeader({
   subtitle?: string;
 }) {
   return (
-    <div className="bg-gradient-to-r from-[#B01C2E] to-[#8A1624] rounded-2xl shadow-lg p-5 sm:p-6 text-white">
+    <div className="bg-gradient-to-r from-brand-600 to-brand-700 rounded-2xl shadow-lg p-5 sm:p-6 text-white">
       <h1 className="text-2xl sm:text-3xl font-bold mb-1 tracking-tight">Welcome back, {name}!</h1>
-      <p className="text-red-100 text-sm sm:text-base">
+      <p className="text-danger-100 text-sm sm:text-base">
         You're signed in as <span className="font-semibold">{roleName}</span>
         {subtitle && (
           <>
             {' — '}
-            <span className="text-red-200">{subtitle}</span>
+            <span className="text-danger-200">{subtitle}</span>
           </>
         )}
       </p>
@@ -692,9 +692,9 @@ export function WelcomeHeader({
 
 export function ErrorBanner({ message }: { message: string }) {
   return (
-    <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-3">
-      <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
-      <p className="text-red-800 text-sm">{message}</p>
+    <div className="bg-danger-50 border border-danger-200 rounded-2xl p-4 flex items-center gap-3">
+      <AlertCircle className="h-5 w-5 text-danger-600 flex-shrink-0" />
+      <p className="text-danger-800 text-sm">{message}</p>
     </div>
   );
 }
@@ -724,7 +724,7 @@ export function DashboardEmpty({
       {actionLabel && actionHref && (
         <Link
           to={actionHref}
-          className="inline-flex items-center gap-1.5 mt-3 text-sm font-medium text-[#B01C2E] hover:text-[#8A1624] transition-colors"
+          className="inline-flex items-center gap-1.5 mt-3 text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors"
         >
           {actionLabel}
           <ArrowUpRight className="h-3.5 w-3.5" />

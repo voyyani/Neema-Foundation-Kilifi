@@ -50,11 +50,11 @@ const SEVERITY_CARDS: {
     previewIcon: ShieldOff,
     previewLabel: 'Content Replaced',
     previewDescription: 'Visitors see a full maintenance page with countdown and status updates. Original content is hidden.',
-    ring: 'ring-red-500/20',
-    activeBg: 'bg-red-50',
-    activeBorder: 'border-red-300',
-    iconBg: 'bg-red-100',
-    iconColor: 'text-red-600',
+    ring: 'ring-danger-500/20',
+    activeBg: 'bg-danger-50',
+    activeBorder: 'border-danger-300',
+    iconBg: 'bg-danger-100',
+    iconColor: 'text-danger-600',
   },
   {
     value: 'degraded',
@@ -121,7 +121,7 @@ export default function SeveritySelector({
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="absolute top-3 right-3 w-5 h-5 rounded-full bg-[#B01C2E] flex items-center justify-center"
+                  className="absolute top-3 right-3 w-5 h-5 rounded-full bg-brand-600 flex items-center justify-center"
                 >
                   <Check className="h-3 w-3 text-white" />
                 </motion.div>
@@ -169,7 +169,7 @@ export default function SeveritySelector({
                     className={`h-1 rounded-full flex-1 transition-colors ${
                       card.value === 'full_block'
                         ? level <= 3
-                          ? isActive ? 'bg-red-400' : 'bg-gray-300'
+                          ? isActive ? 'bg-danger-400' : 'bg-gray-300'
                           : 'bg-gray-200'
                         : card.value === 'degraded'
                           ? level <= 2

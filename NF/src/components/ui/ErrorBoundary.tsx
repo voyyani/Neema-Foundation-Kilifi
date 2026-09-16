@@ -39,8 +39,8 @@ class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="min-h-[400px] flex items-center justify-center p-8">
           <div className="text-center max-w-md">
-            <div className="bg-red-50 border border-red-200 rounded-2xl p-8">
-              <AlertTriangle className="h-12 w-12 text-red-600 mx-auto mb-4" />
+            <div className="bg-brand-50 border border-brand-200 rounded-2xl p-8">
+              <AlertTriangle className="h-12 w-12 text-brand-600 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 Something went wrong
               </h3>
@@ -60,7 +60,7 @@ class ErrorBoundary extends Component<Props, State> {
               )}
               <button
                 onClick={this.handleRetry}
-                className="inline-flex items-center gap-2 bg-red-800 text-white px-6 py-3 rounded-xl hover:bg-red-700 transition-colors font-semibold"
+                className="inline-flex items-center gap-2 bg-brand-800 text-white px-6 py-3 rounded-xl hover:bg-brand-700 transition-colors font-semibold"
               >
                 <RefreshCw className="h-4 w-4" />
                 Try Again

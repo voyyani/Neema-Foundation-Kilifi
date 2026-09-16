@@ -122,8 +122,8 @@ export default function ConversationTimeline({
               {/* Continuing line from above */}
               <div className="w-0.5 h-4 bg-gray-200" />
               {/* Reply dot */}
-              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#B01C2E]/10 ring-4 ring-white z-10 shrink-0">
-                <Reply className="h-3 w-3 text-[#B01C2E]" />
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-600/10 ring-4 ring-white z-10 shrink-0">
+                <Reply className="h-3 w-3 text-brand-600" />
               </div>
               {/* Line continues below if not last */}
               {!isLast && <div className="w-0.5 flex-1 bg-gray-200" />}
@@ -142,7 +142,7 @@ export default function ConversationTimeline({
             <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <span className="font-medium text-[#B01C2E]">{reply.sent_by_name}</span>
+                  <span className="font-medium text-brand-600">{reply.sent_by_name}</span>
                   <span className="text-gray-400">→</span>
                   <span>{reply.recipient_email}</span>
                 </div>

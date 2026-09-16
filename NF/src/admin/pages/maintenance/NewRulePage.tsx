@@ -91,8 +91,8 @@ function NewRulePageContent() {
           <ArrowLeft className="h-5 w-5 text-gray-500" />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#B01C2E]/10 flex items-center justify-center">
-            <Plus className="h-5 w-5 text-[#B01C2E]" />
+          <div className="w-10 h-10 rounded-xl bg-brand-600/10 flex items-center justify-center">
+            <Plus className="h-5 w-5 text-brand-600" />
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900">Create Maintenance Rule</h1>

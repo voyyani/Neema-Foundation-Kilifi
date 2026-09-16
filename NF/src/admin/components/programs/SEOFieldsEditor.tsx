@@ -89,8 +89,8 @@ export default function SEOFieldsEditor({
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#B01C2E]/10 rounded-lg flex items-center justify-center">
-            <Search className="w-5 h-5 text-[#B01C2E]" />
+          <div className="w-10 h-10 bg-brand-600/10 rounded-lg flex items-center justify-center">
+            <Search className="w-5 h-5 text-brand-600" />
           </div>
           <div>
             <h4 className="font-medium text-gray-900">SEO & Social Sharing</h4>
@@ -121,7 +121,7 @@ export default function SEOFieldsEditor({
             <button
               type="button"
               onClick={useDefaults}
-              className="text-sm text-[#B01C2E] hover:text-blue-700 flex items-center gap-1"
+              className="text-sm text-brand-600 hover:text-blue-700 flex items-center gap-1"
             >
               Auto-generate from program details
             </button>
@@ -135,7 +135,7 @@ export default function SEOFieldsEditor({
               </label>
               <span className={`text-xs ${
                 titleStatus === 'good' ? 'text-green-600' :
-                titleStatus === 'short' ? 'text-amber-600' : 'text-red-600'
+                titleStatus === 'short' ? 'text-amber-600' : 'text-danger-600'
               }`}>
                 {titleLength}/{TITLE_MAX} characters
               </span>
@@ -149,7 +149,7 @@ export default function SEOFieldsEditor({
                 value={metaTitle || ''}
                 onChange={(e) => onMetaTitleChange(e.target.value)}
                 placeholder={`${programName} | Neema Foundation`}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"
               />
             </div>
             <p className="text-xs text-gray-500 mt-1">
@@ -165,7 +165,7 @@ export default function SEOFieldsEditor({
               </label>
               <span className={`text-xs ${
                 descStatus === 'good' ? 'text-green-600' :
-                descStatus === 'short' ? 'text-amber-600' : 'text-red-600'
+                descStatus === 'short' ? 'text-amber-600' : 'text-danger-600'
               }`}>
                 {descLength}/{DESC_MAX} characters
               </span>
@@ -175,7 +175,7 @@ export default function SEOFieldsEditor({
               onChange={(e) => onMetaDescriptionChange(e.target.value)}
               placeholder={programSummary || 'Brief description of this program for search engines...'}
               rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] resize-none"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600 resize-none"
             />
             <p className="text-xs text-gray-500 mt-1">
               Ideal length: {DESC_MIN}-{DESC_MAX} characters. This appears below the title in search results.
@@ -198,7 +198,7 @@ export default function SEOFieldsEditor({
                 <button
                   type="button"
                   onClick={() => onSocialImageChange('')}
-                  className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                  className="absolute top-2 right-2 p-1.5 bg-danger-500 text-white rounded-lg hover:bg-danger-600"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -235,7 +235,7 @@ export default function SEOFieldsEditor({
                 value={socialImage || ''}
                 onChange={(e) => onSocialImageChange(e.target.value)}
                 placeholder="Or paste image URL..."
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"
               />
             </div>
             <p className="text-xs text-gray-500 mt-1">

@@ -63,7 +63,7 @@ export default function AlbumDetailPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 className="h-8 w-8 animate-spin text-[#B01C2E]" />
+        <Loader2 className="h-8 w-8 animate-spin text-brand-600" />
       </div>
     );
   }
@@ -71,8 +71,8 @@ export default function AlbumDetailPage() {
   if (error || !album) {
     return (
       <div className="text-center py-20">
-        <p className="text-red-600 font-medium">Album not found</p>
-        <Link to="/admin/media" className="text-sm text-[#B01C2E] underline mt-2 inline-block">
+        <p className="text-danger-600 font-medium">Album not found</p>
+        <Link to="/admin/media" className="text-sm text-brand-600 underline mt-2 inline-block">
           ← Back to Media Library
         </Link>
       </div>
@@ -141,7 +141,7 @@ export default function AlbumDetailPage() {
             <button
               onClick={() => setEditMode(prev => !prev)}
               className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                editMode ? 'bg-[#B01C2E] text-white' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+                editMode ? 'bg-brand-600 text-white' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
               }`}
             >
               {editMode ? <Check className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}

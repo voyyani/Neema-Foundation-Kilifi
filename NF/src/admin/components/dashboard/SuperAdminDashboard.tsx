@@ -158,7 +158,7 @@ export default function SuperAdminDashboard({
             description: 'User accounts & roles',
             href: '/admin/users',
             icon: <Users className="h-5 w-5" />,
-            color: 'bg-red-500',
+            color: 'bg-danger-500',
             permission: 'view_users' as const,
             tourId: 'quick-action-manage-users',
           },
@@ -287,7 +287,7 @@ export default function SuperAdminDashboard({
               <h2 className="text-base sm:text-lg font-semibold text-gray-900">Submissions</h2>
               <a
                 href="/admin/content/submissions"
-                className="text-xs sm:text-sm font-medium text-[#B01C2E] hover:text-[#8A1624] transition-colors"
+                className="text-xs sm:text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors"
               >
                 View all →
               </a>
@@ -315,7 +315,7 @@ export default function SuperAdminDashboard({
               <div className="px-4 sm:px-5 pb-4">
                 <a
                   href="/admin/content/submissions"
-                  className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 transition-colors"
+                  className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-danger-50 text-danger-700 hover:bg-danger-100 transition-colors"
                 >
                   <span className="text-sm font-medium">
                     {data.submissions.awaitingReply} submission{data.submissions.awaitingReply === 1 ? '' : 's'} awaiting reply

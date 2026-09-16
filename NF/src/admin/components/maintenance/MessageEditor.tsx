@@ -73,7 +73,7 @@ export default function MessageEditor({
       <div>
         <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
           <Type className="h-4 w-4 text-gray-400" />
-          Rule Title <span className="text-red-500">*</span>
+          Rule Title <span className="text-danger-500">*</span>
         </label>
         <div className="relative">
           <input
@@ -83,14 +83,14 @@ export default function MessageEditor({
             placeholder="e.g., Payment System Upgrade"
             maxLength={100}
             className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm
-                       focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none transition-shadow"
+                       focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none transition-shadow"
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-gray-400">
             {title.length}/100
           </span>
         </div>
         {!title.trim() && (
-          <p className="flex items-center gap-1 text-xs text-red-500 mt-1">
+          <p className="flex items-center gap-1 text-xs text-danger-500 mt-1">
             <AlertCircle className="h-3 w-3" />
             Title is required
           </p>
@@ -110,7 +110,7 @@ export default function MessageEditor({
           maxLength={500}
           placeholder="This section is temporarily unavailable while we make improvements. We'll be back soon!"
           className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm
-                     focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none transition-shadow resize-none"
+                     focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none transition-shadow resize-none"
         />
         <div className="flex items-center justify-between mt-1">
           <p className="text-[11px] text-gray-400">
@@ -134,7 +134,7 @@ export default function MessageEditor({
               type="checkbox"
               checked={displayConfig.show_countdown ?? false}
               onChange={(e) => updateConfig({ show_countdown: e.target.checked })}
-              className="h-4 w-4 rounded border-gray-300 text-[#B01C2E] focus:ring-[#B01C2E]"
+              className="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-600"
             />
             <div>
               <div className="flex items-center gap-1.5">
@@ -153,7 +153,7 @@ export default function MessageEditor({
               type="checkbox"
               checked={displayConfig.show_progress ?? false}
               onChange={(e) => updateConfig({ show_progress: e.target.checked })}
-              className="h-4 w-4 rounded border-gray-300 text-[#B01C2E] focus:ring-[#B01C2E]"
+              className="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-600"
             />
             <div>
               <div className="flex items-center gap-1.5">
@@ -181,7 +181,7 @@ export default function MessageEditor({
                 onClick={() => updateConfig({ theme })}
                 className={`px-3 py-2 text-xs font-medium rounded-lg border transition-all ${
                   displayConfig.theme === theme
-                    ? 'bg-[#B01C2E] text-white border-[#B01C2E]'
+                    ? 'bg-brand-600 text-white border-brand-600'
                     : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
                 }`}
               >
@@ -211,7 +211,7 @@ export default function MessageEditor({
               }
               placeholder="e.g., Volunteer Instead"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm
-                         focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                         focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
             />
           </div>
           <div>
@@ -231,7 +231,7 @@ export default function MessageEditor({
               }
               placeholder="e.g., /volunteer"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm
-                         focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                         focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
             />
           </div>
         </div>
@@ -248,7 +248,7 @@ export default function MessageEditor({
             onChange={(e) => updateConfig({ redirect_to: e.target.value || undefined })}
             placeholder="e.g., /volunteer"
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm
-                       focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                       focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
           />
         </div>
       </div>
@@ -289,7 +289,7 @@ export default function MessageEditor({
                     max={100}
                     value={50}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm
-                               focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                               focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
                     disabled
                     title="Priority is set on the main form"
                   />
@@ -315,7 +315,7 @@ export default function MessageEditor({
                     }
                     placeholder="4"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm
-                               focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                               focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
                   />
                 </div>
 
@@ -332,7 +332,7 @@ export default function MessageEditor({
                     rows={2}
                     placeholder="e.g., Payment provider migration from Stripe v2 to v3"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm
-                               focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none resize-none"
+                               focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none resize-none"
                   />
                   <p className="text-[10px] text-gray-400 mt-0.5">
                     Internal only — not shown to visitors
@@ -352,7 +352,7 @@ export default function MessageEditor({
                     }
                     placeholder="NF-234"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm
-                               focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                               focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
                   />
                 </div>
 
@@ -375,7 +375,7 @@ export default function MessageEditor({
                     }
                     placeholder="payment, migration, urgent"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm
-                               focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                               focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
                   />
                 </div>
 
@@ -397,7 +397,7 @@ export default function MessageEditor({
                     }
                     placeholder="mpesa, stripe, bank-transfers"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm
-                               focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                               focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
                   />
                 </div>
               </div>

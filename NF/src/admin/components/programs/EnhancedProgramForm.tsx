@@ -258,7 +258,7 @@ export default function EnhancedProgramForm({
               className={`
                 relative px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors
                 ${activeSection === section.id
-                  ? 'text-[#B01C2E]'
+                  ? 'text-brand-600'
                   : 'text-gray-500 hover:text-gray-700'
                 }
               `}
@@ -267,7 +267,7 @@ export default function EnhancedProgramForm({
                 <span className={`
                   w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold
                   ${activeSection === section.id
-                    ? 'bg-[#B01C2E] text-white'
+                    ? 'bg-brand-600 text-white'
                     : 'bg-gray-200 text-gray-600'
                   }
                 `}>
@@ -276,7 +276,7 @@ export default function EnhancedProgramForm({
                 {section.label}
               </span>
               {activeSection === section.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#B01C2E]" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-600" />
               )}
             </button>
           ))}
@@ -286,8 +286,8 @@ export default function EnhancedProgramForm({
         <div className="flex-1 overflow-y-auto p-6">
           {/* ── inline error banner ── */}
           {submitError && (
-            <div className="mb-4 flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-              <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500" />
+            <div className="mb-4 flex items-start gap-3 rounded-lg border border-danger-200 bg-danger-50 px-4 py-3 text-sm text-danger-800">
+              <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-danger-500" />
               <div>
                 <p className="font-semibold">Save failed</p>
                 <p className="mt-0.5 whitespace-pre-wrap">{submitError}</p>
@@ -295,7 +295,7 @@ export default function EnhancedProgramForm({
               <button
                 type="button"
                 onClick={() => setSubmitError(null)}
-                className="ml-auto flex-shrink-0 text-red-400 hover:text-red-600"
+                className="ml-auto flex-shrink-0 text-danger-400 hover:text-danger-600"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -309,7 +309,7 @@ export default function EnhancedProgramForm({
                 {/* Program Name */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Program Name <span className="text-red-500">*</span>
+                    Program Name <span className="text-danger-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -318,14 +318,14 @@ export default function EnhancedProgramForm({
                       setFormData(prev => ({ ...prev, name: e.target.value }));
                       if (errors.name) setErrors(prev => ({ ...prev, name: '' }));
                     }}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] text-lg ${
-                      errors.name ? 'border-red-300' : 'border-gray-300'
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600 text-lg ${
+                      errors.name ? 'border-danger-300' : 'border-gray-300'
                     }`}
                     placeholder="e.g., Community Health Outreach"
                     autoFocus
                   />
                   {errors.name && (
-                    <p className="text-sm text-red-500 mt-1 flex items-center gap-1">
+                    <p className="text-sm text-danger-500 mt-1 flex items-center gap-1">
                       <AlertCircle className="w-4 h-4" />
                       {errors.name}
                     </p>
@@ -343,7 +343,7 @@ export default function EnhancedProgramForm({
                       type="text"
                       value={formData.slug}
                       onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value }))}
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"
                       placeholder="auto-generated-from-name"
                     />
                   </div>
@@ -355,7 +355,7 @@ export default function EnhancedProgramForm({
                 {/* Category */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Category <span className="text-red-500">*</span>
+                    Category <span className="text-danger-500">*</span>
                   </label>
                   <div className="flex flex-wrap gap-2">
                     {(['health', 'education', 'empowerment', 'community', 'other'] as ProgramCategory[]).map((cat) => (
@@ -365,7 +365,7 @@ export default function EnhancedProgramForm({
                         onClick={() => setFormData(prev => ({ ...prev, category: cat }))}
                         className={`px-4 py-2 rounded-lg text-sm font-medium border capitalize transition-colors ${
                           formData.category === cat
-                            ? 'bg-[#B01C2E] text-white border-blue-600'
+                            ? 'bg-brand-600 text-white border-blue-600'
                             : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
                         }`}
                       >
@@ -390,7 +390,7 @@ export default function EnhancedProgramForm({
                     onChange={(e) => setFormData(prev => ({ ...prev, summary: e.target.value }))}
                     maxLength={500}
                     rows={3}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] resize-none"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600 resize-none"
                     placeholder="Brief description shown on program cards (up to 500 characters)"
                   />
                   <p className="text-xs text-gray-500 mt-1 text-right">
@@ -405,7 +405,7 @@ export default function EnhancedProgramForm({
                       type="checkbox"
                       checked={formData.is_active}
                       onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.checked }))}
-                      className="w-5 h-5 text-[#B01C2E] rounded focus:ring-2 focus:ring-[#B01C2E]"
+                      className="w-5 h-5 text-brand-600 rounded focus:ring-2 focus:ring-brand-600"
                     />
                     <div>
                       <div className="font-medium text-gray-900">Active</div>
@@ -438,7 +438,7 @@ export default function EnhancedProgramForm({
                         type="date"
                         value={formData.start_date?.split('T')[0] || ''}
                         onChange={(e) => setFormData(prev => ({ ...prev, start_date: e.target.value || undefined }))}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"
                       />
                     </div>
                     <div>
@@ -447,7 +447,7 @@ export default function EnhancedProgramForm({
                         type="date"
                         value={formData.end_date?.split('T')[0] || ''}
                         onChange={(e) => setFormData(prev => ({ ...prev, end_date: e.target.value || undefined }))}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"
                       />
                     </div>
                   </div>
@@ -481,7 +481,7 @@ export default function EnhancedProgramForm({
                     value={formData.impact_statement || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, impact_statement: e.target.value }))}
                     rows={2}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E] resize-none"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600 resize-none"
                     placeholder="e.g., 'Transforming lives through healthcare access in rural Kilifi'"
                   />
                 </div>
@@ -499,7 +499,7 @@ export default function EnhancedProgramForm({
                         value={formData.beneficiary_who || ''}
                         onChange={(e) => setFormData(prev => ({ ...prev, beneficiary_who: e.target.value }))}
                         placeholder="e.g., School children"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"
                       />
                     </div>
                     <div>
@@ -509,7 +509,7 @@ export default function EnhancedProgramForm({
                         value={formData.beneficiary_where || ''}
                         onChange={(e) => setFormData(prev => ({ ...prev, beneficiary_where: e.target.value }))}
                         placeholder="e.g., Kilifi County"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"
                       />
                     </div>
                     <div>
@@ -519,7 +519,7 @@ export default function EnhancedProgramForm({
                         value={formData.beneficiary_count || ''}
                         onChange={(e) => setFormData(prev => ({ ...prev, beneficiary_count: e.target.value ? parseInt(e.target.value) : undefined }))}
                         placeholder="e.g., 5000"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"
                       />
                     </div>
                   </div>
@@ -537,12 +537,12 @@ export default function EnhancedProgramForm({
                       onChange={(e) => setNewObjective(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addObjective())}
                       placeholder="Add an objective..."
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"
                     />
                     <button
                       type="button"
                       onClick={addObjective}
-                      className="px-4 py-2 bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624]"
+                      className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700"
                     >
                       Add
                     </button>
@@ -556,7 +556,7 @@ export default function EnhancedProgramForm({
                           <button
                             type="button"
                             onClick={() => removeObjective(index)}
-                            className="text-red-600 hover:text-red-700 p-1"
+                            className="text-danger-600 hover:text-danger-700 p-1"
                           >
                             <X className="w-4 h-4" />
                           </button>
@@ -578,12 +578,12 @@ export default function EnhancedProgramForm({
                       onChange={(e) => setNewActivity(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addActivity())}
                       placeholder="Add an activity..."
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"
                     />
                     <button
                       type="button"
                       onClick={addActivity}
-                      className="px-4 py-2 bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624]"
+                      className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700"
                     >
                       Add
                     </button>
@@ -592,12 +592,12 @@ export default function EnhancedProgramForm({
                     <ul className="space-y-2">
                       {formData.activities.map((activity, index) => (
                         <li key={index} className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                          <span className="text-[#B01C2E]">•</span>
+                          <span className="text-brand-600">•</span>
                           <span className="flex-1">{activity}</span>
                           <button
                             type="button"
                             onClick={() => removeActivity(index)}
-                            className="text-red-600 hover:text-red-700 p-1"
+                            className="text-danger-600 hover:text-danger-700 p-1"
                           >
                             <X className="w-4 h-4" />
                           </button>
@@ -619,12 +619,12 @@ export default function EnhancedProgramForm({
                       onChange={(e) => setNewPartner(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addPartner())}
                       placeholder="Add a partner organization..."
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"
                     />
                     <button
                       type="button"
                       onClick={addPartner}
-                      className="px-4 py-2 bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624]"
+                      className="px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700"
                     >
                       Add
                     </button>
@@ -634,13 +634,13 @@ export default function EnhancedProgramForm({
                       {formData.partners.map((partner, index) => (
                         <span
                           key={index}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#B01C2E]/10 text-blue-800 rounded-full text-sm"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-brand-600/10 text-blue-800 rounded-full text-sm"
                         >
                           {partner}
                           <button
                             type="button"
                             onClick={() => removePartner(index)}
-                            className="hover:text-[#B01C2E]"
+                            className="hover:text-brand-600"
                           >
                             <X className="w-4 h-4" />
                           </button>
@@ -663,7 +663,7 @@ export default function EnhancedProgramForm({
                         value={formData.cta_label || ''}
                         onChange={(e) => setFormData(prev => ({ ...prev, cta_label: e.target.value }))}
                         placeholder="e.g., Support This Program"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"
                       />
                     </div>
                     <div>
@@ -673,7 +673,7 @@ export default function EnhancedProgramForm({
                         value={formData.cta_href || ''}
                         onChange={(e) => setFormData(prev => ({ ...prev, cta_href: e.target.value }))}
                         placeholder="/donate"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600"
                       />
                     </div>
                   </div>
@@ -844,7 +844,7 @@ export default function EnhancedProgramForm({
                 <button
                   type="button"
                   onClick={goToNext}
-                  className="flex items-center gap-1 px-3 sm:px-4 py-2 bg-[#B01C2E] text-white rounded-lg hover:bg-[#8A1624] transition-colors text-sm font-semibold"
+                  className="flex items-center gap-1 px-3 sm:px-4 py-2 bg-brand-600 text-white rounded-lg hover:bg-brand-700 transition-colors text-sm font-semibold"
                 >
                   <span>Next</span>
                   <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 shrink-0" />

@@ -1,60 +1,34 @@
-// pages/Landing.tsx
+// pages/Landing.tsx — the public home page, section by section.
+// Section keys match PAGE_REGISTRY (src/admin/config/maintenanceRegistry.ts).
 import React from 'react';
 import Seo from '../lib/seo/Seo';
 import { getRouteMeta } from '../lib/seo/routeMeta';
-import Hero from '../components/Hero';
-import TrustBar from '../components/TrustBar';
-import Mission from '../components/Mission';
-import Programs from '../components/Programs';
-import Impact from '../components/Impact';
-import Stories from '../components/Stories';
-import Action from '../components/Action';
-import Events from '../components/Events';
-import Contact from '../components/Contact';
 import { MaintenanceGate } from '../components/maintenance';
+import Hero from '../components/landing/Hero';
+import TrustBar from '../components/landing/TrustBar';
+import Mission from '../components/landing/Mission';
+import Need from '../components/landing/Need';
+import FeaturedPrograms from '../components/landing/FeaturedPrograms';
+import Impact from '../components/landing/Impact';
+import Stories from '../components/landing/Stories';
+import GetInvolved from '../components/landing/GetInvolved';
+import Events from '../components/landing/Events';
+import Contact from '../components/landing/Contact';
 
-const Landing: React.FC = () => {
-  return (
-    <div className="min-h-screen bg-white">
-      <Seo meta={getRouteMeta('/')!} />
-      {/* Dark fullscreen hero */}
-      <MaintenanceGate page="landing" section="hero">
-        <Hero />
-      </MaintenanceGate>
-      {/* Partners & trust indicators — gray-50 */}
-      <MaintenanceGate page="landing" section="trust_bar">
-        <TrustBar />
-      </MaintenanceGate>
-      {/* Who we are — white */}
-      <MaintenanceGate page="landing" section="mission">
-        <Mission />
-      </MaintenanceGate>
-      {/* Featured program — gray-50 */}
-      <MaintenanceGate page="landing" section="programs">
-        <Programs featuredOnly={true} />
-      </MaintenanceGate>
-      {/* Impact numbers — white */}
-      <MaintenanceGate page="landing" section="impact">
-        <Impact />
-      </MaintenanceGate>
-      {/* Community voices — white */}
-      <MaintenanceGate page="landing" section="stories">
-        <Stories />
-      </MaintenanceGate>
-      {/* Get involved — gray-950 dark band */}
-      <MaintenanceGate page="landing" section="action">
-        <Action />
-      </MaintenanceGate>
-      {/* Events — gray-50 */}
-      <MaintenanceGate page="landing" section="events">
-        <Events />
-      </MaintenanceGate>
-      {/* Contact — white */}
-      <MaintenanceGate page="landing" section="contact">
-        <Contact />
-      </MaintenanceGate>
-    </div>
-  );
-};
+const Landing: React.FC = () => (
+  <>
+    <Seo meta={getRouteMeta('/')!} />
+    <MaintenanceGate page="landing" section="hero"><Hero /></MaintenanceGate>
+    <MaintenanceGate page="landing" section="trust_bar"><TrustBar /></MaintenanceGate>
+    <MaintenanceGate page="landing" section="mission"><Mission /></MaintenanceGate>
+    <MaintenanceGate page="landing" section="problem"><Need /></MaintenanceGate>
+    <MaintenanceGate page="landing" section="programs"><FeaturedPrograms /></MaintenanceGate>
+    <MaintenanceGate page="landing" section="impact"><Impact /></MaintenanceGate>
+    <MaintenanceGate page="landing" section="stories"><Stories /></MaintenanceGate>
+    <MaintenanceGate page="landing" section="action"><GetInvolved /></MaintenanceGate>
+    <MaintenanceGate page="landing" section="events"><Events /></MaintenanceGate>
+    <MaintenanceGate page="landing" section="contact"><Contact /></MaintenanceGate>
+  </>
+);
 
 export default Landing;

@@ -50,7 +50,7 @@ Four principles govern every phase:
 |-------|-------|----------|------------------|
 | **0** | Stop the bleeding | 1 week | ✅ **Done 2026-09-10** — build green, CI, spam endpoint hardened, cron endpoints authenticated |
 | **1** | Be findable, be fast | 1 week | ✅ **Done 2026-09-10** — per-route static HTML, sitemap, lazy routes, Cloudinary transforms |
-| **2** | Client-side revamp | 5–7 weeks | One brand, one token system, every public surface redesigned to a world-class bar with `/impeccable` |
+| **2** | Client-side revamp | 5–7 weeks | ✅ **Done 2026-09-16** — one token system, primitives, every public surface rebuilt in one world; Lighthouse ≥ 90 to be confirmed on PSI |
 | **3** | Admin hardening — feature by feature | 7–9 weeks | Every admin feature specified, tested, documented; maintenance mode first |
 | **4** | Accept the gift | 4–6 weeks | M-Pesa STK Push + cards — donors can actually give |
 | **5** | Tell the story | 3–4 weeks | Stories get URLs; public impact page; newsletter |
@@ -108,7 +108,58 @@ Phase 2 establishes the baseline before touching anything.
 
 ---
 
-## Phase 2 — Client-Side Revamp
+## Phase 2 — Client-Side Revamp ✅
+
+**Completed 2026-09-16.** Record: [`docs/design/CHANGELOG-phase-2.md`](./design/CHANGELOG-phase-2.md) · design authority: [`DESIGN.md`](../DESIGN.md) · product truth: [`PRODUCT.md`](../PRODUCT.md)
+
+Delivered (branch `worktree-phase-2-client-revamp`):
+
+- **One world.** The public site is a Kenyan school exercise book: ruled paper,
+  one red margin rail every element registers against, chalkboard bands for
+  figures and the ask, Archivo condensed caps + Inter, photographs as captioned
+  plates, the teacher's tick as the only ornament. Direction contract in
+  `index.html` (seed `dbfc66cd`). Brand maroon unchanged, now `brand-50…950`.
+- **Tokens and primitives.** `tailwind.config.js` is the single colour/type
+  authority (`brand`, `surface`, `content`, `border`, `success`, `warning`,
+  `danger`); 31 foreground/background pairs verified WCAG 2.2 AA by
+  `scripts/design/contrast.mjs`; fonts self-hosted and preloaded; `safelist`
+  deleted; **0 arbitrary hex classes and 0 `red-*` utilities in `src/`**
+  (codemod: `scripts/design/codemod-tokens.mjs`). `src/components/ui/` holds
+  `Button`, `Field`/`Input`/`Textarea`/`Select`, `Section`/`Container`/`SectionHeading`,
+  `Card`, `Badge`, `Alert`, `Modal`, `Figure`, `Tally`, `Reveal`/`Tick`.
+- **Every public surface rebuilt:** app shell (nav, menu, footer, 404,
+  maintenance placeholder/banner/page — the fake countdown is gone), landing
+  (the 1,389-line Hero is gone), donate + bank details (amount selector feeds
+  the copyable Paybill/bank instructions today, STK Push slots in later), programmes
+  index + detail (modal → route; 2,065 lines of modal/landing retired), volunteer
+  + five-step application, partner / sponsorship / legacy on one shared layout,
+  board (now reads the admin-managed `board_members` table), media hub / album /
+  event / programme galleries on one `PhotoGrid`. All maintenance section keys kept.
+- **Performance work that is measurable:** public entry chunk 580 kB → 317 kB
+  (171 → 99 kB gzip); framer-motion, zod, react-hook-form, dompurify and the
+  admin auth provider off the public critical path; route-level CLS fixed;
+  accessibility 96–100 on every audited route.
+- Finish-reviewed by the Impeccable reviewer (disposition *fix* → eight
+  material findings addressed and re-scored). `DESIGN.md` written from the
+  shipped result; `docs/DESIGN-MASTER-PLAN.md` retired into it.
+
+**Carry-forward (must close before Phase 2 is called merged):**
+
+- **Lighthouse mobile ≥ 90 is not yet confirmed.** Local runs (before 27–36,
+  after 20–41) were made on a machine Lighthouse rates `benchmarkIndex` 189
+  with 4× throttling and no Supabase credentials, so they measure the
+  environment, not the site. Re-measure on PageSpeed Insights against the
+  Vercel preview; if a route is under 90 there, fix it before merge.
+- Real-data screenshots once `npm run env:pull` has a logged-in Supabase CLI;
+  the committed after-shots show the designed empty/fallback states.
+- A public read policy on `board_members` (active rows) for the new hook.
+- Raw hex in `src/admin/*` (theme.ts, tour.css, a few components) → Phase 3.15.
+- `MediaLightbox.tsx` is 404 lines after splitting (from 651).
+
+---
+
+<details>
+<summary>Original Phase 2 plan (kept for reference)</summary>
 
 **Duration:** 5–7 weeks · **Tool:** `/impeccable:impeccable` · Addresses audit §7.1, §7.2, §7.3, §7.4, §9
 
@@ -212,6 +263,8 @@ Each surface runs the same loop. Mode is chosen per surface, not per product.
 `DESIGN.md` · every public surface rebuilt and reviewed · Lighthouse mobile ≥ 90
 on every public route · no public-path file over ~300 lines · WCAG AA contrast
 verified on all token pairs · before/after screenshots committed.
+
+</details>
 
 ---
 
@@ -808,23 +861,23 @@ Storybook and visual regression protect Phase 2's work.
 
 ## Success Metrics
 
-| Metric | 2026-09-10 | 2026-09-15 | Target (12 months) |
-|--------|-----------:|-----------:|-------------------:|
-| Build passing | ❌ | ✅ | ✅ always, with Lighthouse CI |
-| Entry chunk (gzipped) | 300 kB | ~167 kB (580 kB raw, CI budget 600 kB) | < 150 kB, budget lowered to match |
-| Lighthouse mobile performance | unmeasured | unmeasured (baseline in 2.1) | ≥ 90 every public route, enforced |
-| Hardcoded colour occurrences | 1,771 | 1,771 | 0 |
-| Public routes gated by maintenance rules | 1 of 14 (sections only) | 1 of 14 | 14 of 14 + modals + forms |
-| Admin features with an airtight dossier | 0 of 14 | 0 of 14 | 14 of 14 (+ donations, campaigns) |
-| Test coverage (files) | ~1.4% | ~1.4% | 60% overall, 90% payments/permissions |
-| ESLint errors | 254 | 254 (capped) | 0 |
-| Organic search traffic | ~0 (not indexed) | indexable | baseline + growth |
-| Online donations | 0 — not possible | 0 | primary channel |
-| Recurring donors | 0 | 0 | established base |
-| Donation conversion (donate page → completed) | n/a | n/a | ≥ 8% |
-| WCAG 2.2 AA | unverified | unverified | verified, axe in CI |
-| Languages | 1 | 1 | 2 (EN + SW) |
-| Works offline after first visit | no | no | yes (home, donate, programs) |
+| Metric | 2026-09-10 | 2026-09-15 | 2026-09-16 | Target (12 months) |
+|--------|-----------:|-----------:|-----------:|-------------------:|
+| Build passing | ❌ | ✅ | ✅ | ✅ always, with Lighthouse CI |
+| Entry chunk (gzipped) | 300 kB | ~167 kB (580 kB raw, CI budget 600 kB) | **99 kB** (317 kB raw) | < 150 kB, budget lowered to match |
+| Lighthouse mobile performance | unmeasured | unmeasured (baseline in 2.1) | local 20–41 (slow-device environment; PSI pending) · a11y 96–100 | ≥ 90 every public route, enforced |
+| Hardcoded colour occurrences | 1,771 | 1,771 | **0** in classes (admin raw hex → 3.15) | 0 |
+| Public routes gated by maintenance rules | 1 of 14 (sections only) | 1 of 14 | 13 of 14 wrapped by section (behaviour fix still 3.1) | 14 of 14 + modals + forms |
+| Admin features with an airtight dossier | 0 of 14 | 0 of 14 | 0 of 14 | 14 of 14 (+ donations, campaigns) |
+| Test coverage (files) | ~1.4% | ~1.4% | ~1.4% | 60% overall, 90% payments/permissions |
+| ESLint errors | 254 | 254 (capped) | 166 (0 on public paths) | 0 |
+| Organic search traffic | ~0 (not indexed) | indexable | indexable | baseline + growth |
+| Online donations | 0 — not possible | 0 | 0 | primary channel |
+| Recurring donors | 0 | 0 | 0 | established base |
+| Donation conversion (donate page → completed) | n/a | n/a | n/a | ≥ 8% |
+| WCAG 2.2 AA | unverified | unverified | token pairs verified; full audit in 6.2 | verified, axe in CI |
+| Languages | 1 | 1 | 1 | 2 (EN + SW) |
+| Works offline after first visit | no | no | no | yes (home, donate, programs) |
 
 ---
 

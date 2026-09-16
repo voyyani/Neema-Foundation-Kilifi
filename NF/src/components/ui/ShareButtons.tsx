@@ -2,7 +2,7 @@
 // Social media sharing component with multiple platforms
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Share2, Link2, Check, X, MessageCircle } from 'lucide-react';
+import { Share2, Link2, Check, X } from 'lucide-react';
 
 interface ShareButtonsProps {
   url: string;
@@ -113,8 +113,8 @@ export function ShareButtons({
       await navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
+    } catch {
+      setCopied(false);
     }
   };
 
@@ -122,7 +122,7 @@ export function ShareButtons({
     if (navigator.share) {
       try {
         await navigator.share({ title, text: description, url });
-      } catch (err) {
+      } catch {
         // User cancelled or share failed
       }
     } else {
@@ -233,7 +233,7 @@ export function ShareButtons({
                   }}
                   className="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors w-full"
                 >
-                  <div className={`p-2 rounded-full ${copied ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'}`}>
+                  <div className={`p-2 rounded-full ${copied ? 'bg-success-50 text-success-700' : 'bg-surface-paper-2 text-content-2'}`}>
                     {copied ? <Check className="h-5 w-5" /> : <Link2 className="h-5 w-5" />}
                   </div>
                   <span className="text-sm text-gray-700">

@@ -155,7 +155,7 @@ architecture doc that only describes the happy path isn't trustworthy.
   `ConfirmDialog.tsx`) use Tailwind's default `red-800`/`red-600` palette
   instead, while others (`Hero.tsx`) hardcode raw hex (`#B01C2E`) rather than
   either token system. Three different ways to say the same brand color.
-  Detailed in [DESIGN-MASTER-PLAN.md](DESIGN-MASTER-PLAN.md).
+  Detailed in [DESIGN.md](../DESIGN.md) (Phase 2 replaced the design master plan with the shipped design system).
 - **`src/index.css` still carries the unmodified Vite starter template**
   (dark `#242424` background, `#646cff` link color) alongside the real
   iOS-inspired admin design system added later. None of the starter rules are

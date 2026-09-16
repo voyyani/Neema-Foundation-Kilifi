@@ -335,7 +335,7 @@ export default function SubmissionsPage() {
             placeholder="Search by name, email, or subject…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B01C2E]/30 focus:border-[#B01C2E]"
+            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-600/30 focus:border-brand-600"
           />
         </div>
       </div>
@@ -346,9 +346,9 @@ export default function SubmissionsPage() {
           <Loader2 className="h-6 w-6 text-gray-400 animate-spin" />
         </div>
       ) : error ? (
-        <div className="rounded-xl bg-red-50 border border-red-200 p-6 text-center">
-          <p className="text-sm text-red-700">Failed to load submissions. The table may not exist yet.</p>
-          <p className="text-xs text-red-500 mt-1">Run the migration to create the submissions table.</p>
+        <div className="rounded-xl bg-danger-50 border border-danger-200 p-6 text-center">
+          <p className="text-sm text-danger-700">Failed to load submissions. The table may not exist yet.</p>
+          <p className="text-xs text-danger-500 mt-1">Run the migration to create the submissions table.</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="rounded-xl border border-gray-100 bg-white p-12 text-center">
@@ -395,7 +395,7 @@ export default function SubmissionsPage() {
                   </div>
                   <div className="shrink-0 flex items-center gap-3">
                     {replyCountMap[s.id] > 0 && (
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-[#B01C2E]/10 text-[#B01C2E]">
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-brand-600/10 text-brand-600">
                         <MessageSquareReply className="h-3 w-3" />
                         {replyCountMap[s.id]} {replyCountMap[s.id] === 1 ? 'reply' : 'replies'}
                       </span>
@@ -511,7 +511,7 @@ export default function SubmissionsPage() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => openReply(s)}
-                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#B01C2E] rounded-lg hover:bg-[#9A1827] transition-colors shadow-sm"
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors shadow-sm"
                       >
                         <Reply className="h-4 w-4" />
                         Reply to {s.name.split(/\s+/)[0]}
@@ -538,7 +538,7 @@ export default function SubmissionsPage() {
                         }}
                         rows={2}
                         placeholder="Add internal notes…"
-                        className="w-full text-sm border border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-[#B01C2E]/30 focus:border-[#B01C2E] resize-none"
+                        className="w-full text-sm border border-gray-200 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-brand-600/30 focus:border-brand-600 resize-none"
                       />
                     </div>
                   </div>

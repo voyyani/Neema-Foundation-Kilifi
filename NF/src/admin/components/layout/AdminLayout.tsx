@@ -13,7 +13,7 @@ function PageLoader() {
         {/* iOS-style activity spinner */}
         <div className="relative h-10 w-10">
           <div className="absolute inset-0 rounded-full border-2 border-gray-200" />
-          <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-[#B01C2E]" />
+          <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-brand-600" />
         </div>
         <p className="text-sm text-gray-500 font-medium tracking-wide">Loading…</p>
       </div>

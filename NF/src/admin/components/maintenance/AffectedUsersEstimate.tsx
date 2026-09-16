@@ -98,7 +98,7 @@ function PageImpactBar({
   const pct = maxWeight > 0 ? (weight / maxWeight) * 100 : 0;
   const color =
     severity === 'full_block'
-      ? 'bg-red-500'
+      ? 'bg-danger-500'
       : severity === 'degraded'
         ? 'bg-amber-500'
         : 'bg-blue-400';
@@ -189,9 +189,9 @@ export default function AffectedUsersEstimate({
             </div>
 
             {impact.percentage >= 50 && (
-              <div className="flex items-start gap-2 mt-3 p-2 bg-red-50 rounded-lg">
-                <AlertTriangle className="h-3.5 w-3.5 text-red-500 mt-0.5 flex-shrink-0" />
-                <p className="text-[10px] text-red-700 leading-relaxed">
+              <div className="flex items-start gap-2 mt-3 p-2 bg-danger-50 rounded-lg">
+                <AlertTriangle className="h-3.5 w-3.5 text-danger-500 mt-0.5 flex-shrink-0" />
+                <p className="text-[10px] text-danger-700 leading-relaxed">
                   High impact: More than half of your visitors are affected by active maintenance.
                 </p>
               </div>

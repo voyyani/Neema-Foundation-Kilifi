@@ -374,8 +374,8 @@ export default function ReplyModal({
               {/* Header */}
               <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-[#B01C2E]/10 flex items-center justify-center">
-                    <Mail className="h-4 w-4 text-[#B01C2E]" />
+                  <div className="w-8 h-8 rounded-full bg-brand-600/10 flex items-center justify-center">
+                    <Mail className="h-4 w-4 text-brand-600" />
                   </div>
                   <div>
                     <h2 className="text-base font-semibold text-gray-900">
@@ -457,12 +457,12 @@ export default function ReplyModal({
                       type="button"
                       onClick={() => setTemplateMenuOpen(!templateMenuOpen)}
                       disabled={sending}
-                      className="w-full flex items-center justify-between text-sm border border-gray-200 rounded-lg px-3 py-2 hover:border-[#B01C2E]/30 focus:outline-none focus:ring-2 focus:ring-[#B01C2E]/30 focus:border-[#B01C2E] disabled:opacity-50 transition-colors bg-white"
+                      className="w-full flex items-center justify-between text-sm border border-gray-200 rounded-lg px-3 py-2 hover:border-brand-600/30 focus:outline-none focus:ring-2 focus:ring-brand-600/30 focus:border-brand-600 disabled:opacity-50 transition-colors bg-white"
                     >
                       <span className="flex items-center gap-2">
                         {selectedTemplate ? (
                           <>
-                            <FileText className="h-3.5 w-3.5 text-[#B01C2E]" />
+                            <FileText className="h-3.5 w-3.5 text-brand-600" />
                             <span className="text-gray-700">
                               {availableTemplates.find((t) => t.key === selectedTemplate)?.name}
                             </span>
@@ -518,9 +518,9 @@ export default function ReplyModal({
                                     key={template.key}
                                     type="button"
                                     onClick={() => applyTemplate(template)}
-                                    className={`w-full text-left px-3 py-2 hover:bg-[#B01C2E]/5 transition-colors ${
+                                    className={`w-full text-left px-3 py-2 hover:bg-brand-600/5 transition-colors ${
                                       selectedTemplate === template.key
-                                        ? 'bg-[#B01C2E]/5 border-l-2 border-[#B01C2E]'
+                                        ? 'bg-brand-600/5 border-l-2 border-brand-600'
                                         : ''
                                     }`}
                                   >
@@ -553,7 +553,7 @@ export default function ReplyModal({
                     onChange={(e) => setSubject(e.target.value)}
                     disabled={sending}
                     maxLength={MAX_SUBJECT_LENGTH}
-                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#B01C2E]/30 focus:border-[#B01C2E] disabled:opacity-50"
+                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-600/30 focus:border-brand-600 disabled:opacity-50"
                   />
                 </div>
 
@@ -568,7 +568,7 @@ export default function ReplyModal({
                         messageBody.length < MIN_MESSAGE_LENGTH
                           ? 'text-amber-500'
                           : messageBody.length > MAX_MESSAGE_LENGTH * 0.9
-                            ? 'text-red-500'
+                            ? 'text-danger-500'
                             : 'text-gray-400'
                       }`}
                     >
@@ -584,7 +584,7 @@ export default function ReplyModal({
                     rows={8}
                     maxLength={MAX_MESSAGE_LENGTH}
                     placeholder={`Hi ${recipientFirst},\n\nType your reply here…`}
-                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#B01C2E]/30 focus:border-[#B01C2E] resize-y min-h-[120px] disabled:opacity-50"
+                    className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-600/30 focus:border-brand-600 resize-y min-h-[120px] disabled:opacity-50"
                   />
                   {messageBody.length > 0 && messageBody.length < MIN_MESSAGE_LENGTH && (
                     <p className="text-[10px] text-amber-500 mt-1">
@@ -657,7 +657,7 @@ export default function ReplyModal({
                     <button
                       onClick={handleSend}
                       disabled={!canSend}
-                      className="inline-flex items-center gap-2 px-4 py-1.5 text-sm font-medium text-white bg-[#B01C2E] rounded-lg hover:bg-[#9A1827] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="inline-flex items-center gap-2 px-4 py-1.5 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {sending ? (
                         <>

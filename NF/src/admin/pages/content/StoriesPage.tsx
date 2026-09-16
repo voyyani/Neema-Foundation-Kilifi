@@ -98,7 +98,7 @@ function StoryCard({
                 </span>
               )}
 
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#B01C2E]/10 text-blue-800">
+              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-brand-600/10 text-blue-800">
                 {CATEGORY_OPTIONS.find(cat => cat.value === story.category)?.label || story.category}
               </span>
             </div>
@@ -181,7 +181,7 @@ function StoryCard({
 
           <button
             onClick={onDelete}
-            className="inline-flex items-center justify-center p-2 text-sm font-medium text-red-700 bg-white border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+            className="inline-flex items-center justify-center p-2 text-sm font-medium text-danger-700 bg-white border border-danger-200 rounded-lg hover:bg-danger-50 transition-colors"
           >
             <Trash2 className="h-4 w-4" />
           </button>
@@ -328,11 +328,11 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
                   value={formData.title}
                   onChange={(e) => handleTitleChange(e.target.value)}
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                    formErrors.title ? 'border-red-400 bg-red-50' : 'border-gray-300'
+                    formErrors.title ? 'border-danger-400 bg-danger-50' : 'border-gray-300'
                   }`}
                 />
                 {formErrors.title && (
-                  <p className="mt-1 text-xs text-red-600">{formErrors.title}</p>
+                  <p className="mt-1 text-xs text-danger-600">{formErrors.title}</p>
                 )}
               </div>
 
@@ -399,11 +399,11 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
                   }}
                   rows={3}
                   className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                    formErrors.excerpt ? 'border-red-400 bg-red-50' : 'border-gray-300'
+                    formErrors.excerpt ? 'border-danger-400 bg-danger-50' : 'border-gray-300'
                   }`}
                 />
                 {formErrors.excerpt ? (
-                  <p className="mt-1 text-xs text-red-600">{formErrors.excerpt}</p>
+                  <p className="mt-1 text-xs text-danger-600">{formErrors.excerpt}</p>
                 ) : (
                   <p className="mt-1 text-xs text-gray-500">Brief summary (2-3 sentences)</p>
                 )}
@@ -489,7 +489,7 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Content *
               </label>
-              <div className={formErrors.content ? 'ring-2 ring-red-400 rounded-lg' : ''}>
+              <div className={formErrors.content ? 'ring-2 ring-danger-400 rounded-lg' : ''}>
                 <RichTextEditor
                   content={formData.content || ''}
                   onChange={(content: string) => {
@@ -499,14 +499,14 @@ function StoryModal({ story, isOpen, onClose, onSave }: StoryModalProps) {
                 />
               </div>
               {formErrors.content && (
-                <p className="mt-1 text-xs text-red-600">{formErrors.content}</p>
+                <p className="mt-1 text-xs text-danger-600">{formErrors.content}</p>
               )}
             </div>
 
             {/* Actions */}
             {/* Submit Error */}
             {submitError && (
-              <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+              <div className="rounded-lg bg-danger-50 border border-danger-200 px-4 py-3 text-sm text-danger-700">
                 <strong className="font-semibold">Save failed:</strong> {submitError}
               </div>
             )}
@@ -597,7 +597,7 @@ export default function StoriesPage() {
   if (error) {
     return (
       <div className="p-6">
-        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+        <div className="bg-danger-50 border border-danger-200 text-danger-800 px-4 py-3 rounded-lg">
           <p className="font-semibold">Error loading stories</p>
           <p className="text-sm">{error.message}</p>
         </div>

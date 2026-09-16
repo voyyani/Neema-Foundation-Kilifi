@@ -26,8 +26,8 @@ export default function ConfirmDialog({
 }: ConfirmDialogProps) {
   const variantStyles = {
     danger: {
-      icon: 'bg-red-100 text-red-600',
-      button: 'bg-red-600 hover:bg-red-700',
+      icon: 'bg-danger-100 text-danger-600',
+      button: 'bg-danger-600 hover:bg-danger-700',
     },
     warning: {
       icon: 'bg-yellow-100 text-yellow-600',

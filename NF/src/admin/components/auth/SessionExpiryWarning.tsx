@@ -73,7 +73,7 @@ export default function SessionExpiryWarning({
                   </h3>
                   <button
                     onClick={onClose}
-                    className="ml-4 inline-flex rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-red-800 focus:ring-offset-2"
+                    className="ml-4 inline-flex rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-danger-800 focus:ring-offset-2"
                   >
                     <span className="sr-only">Close</span>
                     <X className="h-5 w-5" />
@@ -90,7 +90,7 @@ export default function SessionExpiryWarning({
                   <button
                     onClick={handleExtend}
                     disabled={extending}
-                    className="inline-flex items-center gap-2 rounded-lg bg-red-800 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-800 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="inline-flex items-center gap-2 rounded-lg bg-danger-800 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-danger-900 focus:outline-none focus:ring-2 focus:ring-danger-800 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     {extending ? (
                       <>
@@ -106,7 +106,7 @@ export default function SessionExpiryWarning({
                   </button>
                   <button
                     onClick={onClose}
-                    className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-800 focus:ring-offset-2 transition-colors"
+                    className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-danger-800 focus:ring-offset-2 transition-colors"
                   >
                     Dismiss
                   </button>
@@ -117,7 +117,7 @@ export default function SessionExpiryWarning({
           {/* Progress bar */}
           <div className="h-1 bg-gray-100">
             <motion.div
-              className="h-full bg-gradient-to-r from-amber-500 to-red-500"
+              className="h-full bg-gradient-to-r from-amber-500 to-danger-500"
               initial={{ width: '100%' }}
               animate={{ width: '0%' }}
               transition={{ 

@@ -21,8 +21,8 @@ export default function EventStatusBadge({ status }: EventStatusBadgeProps) {
     },
     cancelled: {
       label: 'Cancelled',
-      color: 'bg-red-100 text-red-700',
-      dot: 'bg-red-500',
+      color: 'bg-danger-100 text-danger-700',
+      dot: 'bg-danger-500',
     },
     completed: {
       label: 'Completed',

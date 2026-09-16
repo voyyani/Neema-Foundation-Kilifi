@@ -69,7 +69,7 @@ const VIEW_CONFIG: Record<TimelineView, { label: string; hours: number; tickInte
 };
 
 const SEVERITY_COLORS: Record<string, { bg: string; border: string; text: string; fill: string }> = {
-  full_block: { bg: 'bg-red-100', border: 'border-red-300', text: 'text-red-800', fill: '#EF4444' },
+  full_block: { bg: 'bg-danger-100', border: 'border-danger-300', text: 'text-danger-800', fill: '#EF4444' },
   degraded: { bg: 'bg-amber-100', border: 'border-amber-300', text: 'text-amber-800', fill: '#F59E0B' },
   notice: { bg: 'bg-blue-100', border: 'border-blue-300', text: 'text-blue-800', fill: '#3B82F6' },
 };
@@ -276,12 +276,12 @@ function NowIndicator({ position }: { position: number }) {
       <div className="relative h-full">
         {/* Triangle marker */}
         <div className="absolute -top-0.5 -translate-x-1/2">
-          <div className="w-0 h-0 border-l-[5px] border-r-[5px] border-t-[6px] border-l-transparent border-r-transparent border-t-red-500" />
+          <div className="w-0 h-0 border-l-[5px] border-r-[5px] border-t-[6px] border-l-transparent border-r-transparent border-t-danger-500" />
         </div>
         {/* Vertical line */}
-        <div className="absolute top-1 bottom-0 left-1/2 -translate-x-1/2 w-px bg-red-500" />
+        <div className="absolute top-1 bottom-0 left-1/2 -translate-x-1/2 w-px bg-danger-500" />
         {/* Label */}
-        <div className="absolute top-1.5 -translate-x-1/2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded whitespace-nowrap">
+        <div className="absolute top-1.5 -translate-x-1/2 bg-danger-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded whitespace-nowrap">
           NOW
         </div>
       </div>
@@ -554,7 +554,7 @@ export default function ScheduleTimeline({
               {/* Now line extending into swimlanes */}
               {nowPosition !== null && (
                 <div
-                  className="absolute top-0 bottom-0 w-px bg-red-200 z-10"
+                  className="absolute top-0 bottom-0 w-px bg-danger-200 z-10"
                   style={{ left: `${nowPosition}%` }}
                 />
               )}
@@ -588,7 +588,7 @@ export default function ScheduleTimeline({
                             ${colors.bg} ${colors.border}
                             ${event.status === 'past' ? 'opacity-50' : ''}
                             ${event.status === 'active' ? 'ring-2 ring-green-400 ring-offset-1' : ''}
-                            ${isSelected ? 'ring-2 ring-[#B01C2E] ring-offset-1' : ''}
+                            ${isSelected ? 'ring-2 ring-brand-600 ring-offset-1' : ''}
                           `}
                         >
                           {/* Progress fill for active events */}
@@ -631,7 +631,7 @@ export default function ScheduleTimeline({
       {events.length > 0 && (
         <div className="px-5 py-3 border-t border-gray-100 flex flex-wrap items-center gap-4 text-xs text-gray-500">
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded-sm bg-red-100 border border-red-300" />
+            <div className="w-3 h-3 rounded-sm bg-danger-100 border border-danger-300" />
             Full Block
           </div>
           <div className="flex items-center gap-1.5">
@@ -651,8 +651,8 @@ export default function ScheduleTimeline({
             Recurring
           </div>
           <div className="flex items-center gap-1">
-            <div className="w-3 h-px bg-red-500" />
-            <span className="text-red-500 font-medium">NOW</span>
+            <div className="w-3 h-px bg-danger-500" />
+            <span className="text-danger-500 font-medium">NOW</span>
           </div>
         </div>
       )}

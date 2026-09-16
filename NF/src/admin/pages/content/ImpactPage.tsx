@@ -122,7 +122,7 @@ function MetricCard({
         </button>
         <button
           onClick={onDelete}
-          className="inline-flex items-center justify-center p-2 text-sm font-medium text-red-700 bg-white border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+          className="inline-flex items-center justify-center p-2 text-sm font-medium text-danger-700 bg-white border border-danger-200 rounded-lg hover:bg-danger-50 transition-colors"
         >
           <Trash2 className="h-4 w-4" />
         </button>
@@ -221,7 +221,7 @@ function MetricModal({ metric, isOpen, onClose, onSave }: MetricModalProps) {
           {/* Form */}
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             {/* Preview */}
-            <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-lg p-6 border border-indigo-100">
+            <div className="bg-gradient-to-br from-danger-50 to-danger-100 rounded-lg p-6 border border-indigo-100">
               <div className="flex items-start gap-4">
                 <div className="p-3 rounded-lg bg-white shadow-sm">
                   <IconComponent className="h-8 w-8 text-indigo-600" />
@@ -446,7 +446,7 @@ export default function ImpactPage() {
   if (error) {
     return (
       <div className="p-6">
-        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+        <div className="bg-danger-50 border border-danger-200 text-danger-800 px-4 py-3 rounded-lg">
           <p className="font-semibold">Error loading impact metrics</p>
           <p className="text-sm">{error.message}</p>
         </div>

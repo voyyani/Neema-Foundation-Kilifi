@@ -53,7 +53,7 @@ export function RichContent({ content, format = 'html', className = '' }: RichCo
   
   return (
     <div 
-      className={`prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-red-700 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700 ${className}`}
+      className={`prose-nf ${className}`}
       dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
     />
   );

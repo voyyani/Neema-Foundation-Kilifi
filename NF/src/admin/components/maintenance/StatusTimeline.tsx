@@ -68,12 +68,12 @@ const STATUS_COLORS: Record<StatusType, {
     progressBar: 'from-amber-500 to-amber-400',
   },
   error: {
-    dot: 'bg-red-500',
-    bg: 'bg-red-50',
-    border: 'border-red-200',
-    text: 'text-red-700',
-    line: 'bg-red-200',
-    progressBar: 'from-red-500 to-red-400',
+    dot: 'bg-danger-500',
+    bg: 'bg-danger-50',
+    border: 'border-danger-200',
+    text: 'text-danger-700',
+    line: 'bg-danger-200',
+    progressBar: 'from-danger-500 to-danger-400',
   },
 };
 
@@ -310,7 +310,7 @@ const StatusTimeline: React.FC<StatusTimelineProps> = ({
         <div className="text-center mt-2">
           <button
             onClick={() => setShowAll(!showAll)}
-            className="text-xs font-medium text-[#B01C2E] hover:text-[#8A1624] transition-colors"
+            className="text-xs font-medium text-brand-600 hover:text-brand-700 transition-colors"
           >
             {showAll
               ? `Show less`

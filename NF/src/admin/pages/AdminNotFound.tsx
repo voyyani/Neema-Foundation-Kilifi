@@ -16,8 +16,8 @@ export default function AdminNotFound() {
   return (
     <div className="flex flex-col items-center justify-center py-20 px-4 text-center max-w-lg mx-auto">
       {/* Icon */}
-      <div className="flex items-center justify-center h-16 w-16 rounded-2xl bg-red-50 mb-6">
-        <AlertTriangle className="h-8 w-8 text-[#B01C2E]" />
+      <div className="flex items-center justify-center h-16 w-16 rounded-2xl bg-danger-50 mb-6">
+        <AlertTriangle className="h-8 w-8 text-brand-600" />
       </div>
 
       {/* Heading */}
@@ -33,7 +33,7 @@ export default function AdminNotFound() {
       <div className="flex flex-col sm:flex-row items-center gap-3">
         <Link
           to="/admin/dashboard"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#B01C2E] text-white text-sm font-semibold hover:bg-[#9A1826] transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B01C2E]/40 touch-target"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 transition-colors shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600/40 touch-target"
         >
           <Home className="h-4 w-4" />
           Go to Dashboard

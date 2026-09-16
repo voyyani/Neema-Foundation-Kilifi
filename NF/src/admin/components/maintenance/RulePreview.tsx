@@ -109,7 +109,7 @@ export default function RulePreview({
         {/* Browser chrome mockup */}
         <div className="bg-gray-200 px-3 py-2 flex items-center gap-2 border-b border-gray-300">
           <div className="flex gap-1">
-            <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+            <div className="w-2.5 h-2.5 rounded-full bg-danger-400" />
             <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
             <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
           </div>
@@ -188,7 +188,7 @@ function FullBlockPreview({
     <div
       className={`rounded-lg overflow-hidden ${
         theme === 'branded'
-          ? 'bg-gradient-to-b from-[#B01C2E]/10 via-white to-gray-50'
+          ? 'bg-gradient-to-b from-brand-600/10 via-white to-gray-50'
           : theme === 'animated'
             ? 'bg-gradient-to-br from-purple-50 via-white to-blue-50'
             : 'bg-white'
@@ -198,12 +198,12 @@ function FullBlockPreview({
         {/* Icon */}
         <div
           className={`mx-auto rounded-2xl flex items-center justify-center mb-4 ${
-            theme === 'branded' ? 'bg-[#B01C2E]/10' : 'bg-gray-100'
+            theme === 'branded' ? 'bg-brand-600/10' : 'bg-gray-100'
           } ${viewMode === 'mobile' ? 'w-12 h-12' : 'w-16 h-16'}`}
         >
           <Wrench
             className={`${
-              theme === 'branded' ? 'text-[#B01C2E]' : 'text-gray-400'
+              theme === 'branded' ? 'text-brand-600' : 'text-gray-400'
             } ${viewMode === 'mobile' ? 'h-6 w-6' : 'h-8 w-8'}`}
           />
         </div>
@@ -250,7 +250,7 @@ function FullBlockPreview({
                 animate={{ width: '60%' }}
                 transition={{ duration: 1.5, ease: 'easeOut' }}
                 className={`h-full rounded-full ${
-                  theme === 'branded' ? 'bg-[#B01C2E]' : 'bg-blue-500'
+                  theme === 'branded' ? 'bg-brand-600' : 'bg-blue-500'
                 }`}
               />
             </div>
@@ -263,7 +263,7 @@ function FullBlockPreview({
             type="button"
             className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
               theme === 'branded'
-                ? 'bg-[#B01C2E] text-white hover:bg-[#8A1624]'
+                ? 'bg-brand-600 text-white hover:bg-brand-700'
                 : 'bg-gray-900 text-white hover:bg-gray-800'
             }`}
           >

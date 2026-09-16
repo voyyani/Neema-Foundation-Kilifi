@@ -228,7 +228,7 @@ export default function RuleForm({
                     className={`flex items-center gap-2 px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium
                                 transition-all w-full justify-center sm:justify-start ${
                       isActive
-                        ? 'bg-[#B01C2E] text-white shadow-sm'
+                        ? 'bg-brand-600 text-white shadow-sm'
                         : isCompleted
                           ? 'bg-green-50 text-green-700 hover:bg-green-100'
                           : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
@@ -342,7 +342,7 @@ export default function RuleForm({
                       value={estimatedEnd}
                       onChange={(e) => setEstimatedEnd(e.target.value)}
                       className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm
-                                 focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                                 focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
                     />
                     <p className="text-[11px] text-gray-400 mt-1">
                       Used for the countdown timer if "Show Countdown" is enabled
@@ -371,7 +371,7 @@ export default function RuleForm({
                         max={100}
                         value={priority}
                         onChange={(e) => setPriority(Number(e.target.value))}
-                        className="flex-1 accent-[#B01C2E]"
+                        className="flex-1 accent-brand-600"
                       />
                       <input
                         type="number"
@@ -380,7 +380,7 @@ export default function RuleForm({
                         value={priority}
                         onChange={(e) => setPriority(Math.min(100, Math.max(0, Number(e.target.value))))}
                         className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm text-center
-                                   focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                                   focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
                       />
                     </div>
                     <p className="text-[11px] text-gray-400 mt-1">
@@ -413,7 +413,7 @@ export default function RuleForm({
                                 setAllowedRoles(allowedRoles.filter((r) => r !== role.value));
                               }
                             }}
-                            className="h-4 w-4 rounded border-gray-300 text-[#B01C2E] focus:ring-[#B01C2E]"
+                            className="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-600"
                           />
                           <div>
                             <span className="text-sm font-medium text-gray-700">{role.label}</span>
@@ -550,7 +550,7 @@ export default function RuleForm({
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleSubmit(true)}
                 disabled={!isFormValid || isSubmitting}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#B01C2E] hover:bg-[#8A1624]
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-600 hover:bg-brand-700
                            text-white text-sm font-medium rounded-lg shadow-sm transition-colors
                            disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -566,7 +566,7 @@ export default function RuleForm({
             <button
               type="button"
               onClick={goNext}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#B01C2E] hover:bg-[#8A1624]
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-600 hover:bg-brand-700
                          text-white text-sm font-medium rounded-lg shadow-sm transition-colors"
             >
               Next

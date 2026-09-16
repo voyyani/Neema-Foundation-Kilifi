@@ -135,7 +135,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
      * admin-scroll: momentum scrolling so long nav lists feel silky on iOS.
      * safe-bottom: respect home-indicator on iPhone X+.
      */
-    <div className="flex grow flex-col gap-y-5 overflow-y-auto admin-scroll bg-gradient-to-b from-[#B01C2E] to-[#8A1624] px-6 pb-4 safe-bottom">
+    <div className="flex grow flex-col gap-y-5 overflow-y-auto admin-scroll bg-gradient-to-b from-brand-600 to-brand-700 px-6 pb-4 safe-bottom">
       {/* Logo */}
       <div className="flex h-16 shrink-0 items-center">
         <div className="flex items-center space-x-3">
@@ -146,7 +146,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
           />
           <div className="text-white">
             <p className="text-sm font-semibold">Neema Foundation</p>
-            <p className="text-xs text-red-200">Admin Portal</p>
+            <p className="text-xs text-danger-200">Admin Portal</p>
           </div>
         </div>
       </div>
@@ -171,7 +171,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
                       className={clsx(
                         isActive
                           ? 'bg-white/20 text-white shadow-sm sidebar-active-item'
-                          : 'text-red-100 hover:text-white hover:bg-white/10',
+                          : 'text-danger-100 hover:text-white hover:bg-white/10',
                         /* Mobile: larger tap target + press scale feedback */
                         'tap-scale group flex gap-x-3 rounded-xl p-3 text-sm leading-6 font-semibold transition-colors',
                         /* Ensures 44 px touch target height (Apple HIG) */
@@ -180,7 +180,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
                     >
                       <item.icon
                         className={clsx(
-                          isActive ? 'text-white' : 'text-red-200 group-hover:text-white',
+                          isActive ? 'text-white' : 'text-danger-200 group-hover:text-white',
                           'h-6 w-6 shrink-0'
                         )}
                       />
@@ -207,7 +207,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
                   <p className="text-sm font-medium text-white">
                     {profile?.full_name || 'Admin'}
                   </p>
-                  <p className="text-xs font-medium text-red-200 capitalize">
+                  <p className="text-xs font-medium text-danger-200 capitalize">
                     {profile?.role?.replace('_', ' ')}
                   </p>
                 </div>

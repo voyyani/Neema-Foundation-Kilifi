@@ -59,14 +59,14 @@ const ACTION_CONFIG: Record<string, {
   },
   activated: {
     label: 'Activated',
-    color: 'text-red-700 bg-red-50',
-    dotColor: 'bg-red-500',
+    color: 'text-danger-700 bg-danger-50',
+    dotColor: 'bg-danger-500',
     icon: <Zap className="h-3.5 w-3.5" />,
   },
   activate: {
     label: 'Activated',
-    color: 'text-red-700 bg-red-50',
-    dotColor: 'bg-red-500',
+    color: 'text-danger-700 bg-danger-50',
+    dotColor: 'bg-danger-500',
     icon: <Zap className="h-3.5 w-3.5" />,
   },
   deactivated: {
@@ -278,7 +278,7 @@ function MonthlyTrendChart({
             <div key={d.month} className="flex-1 flex flex-col items-center gap-1.5">
               <span className="text-[10px] font-medium text-gray-700 tabular-nums">{d.count}</span>
               <motion.div
-                className="w-full bg-[#B01C2E]/80 rounded-t-md min-h-[4px]"
+                className="w-full bg-brand-600/80 rounded-t-md min-h-[4px]"
                 initial={{ height: 0 }}
                 animate={{ height: `${Math.max(pct, 4)}%` }}
                 transition={{ duration: 0.5, delay: 0.1 }}
@@ -419,8 +419,8 @@ function MaintenanceHistoryContent() {
         >
           <ArrowLeft className="h-5 w-5 text-gray-500" />
         </button>
-        <div className="w-10 h-10 rounded-xl bg-[#B01C2E]/10 flex items-center justify-center flex-shrink-0">
-          <History className="h-5 w-5 text-[#B01C2E]" />
+        <div className="w-10 h-10 rounded-xl bg-brand-600/10 flex items-center justify-center flex-shrink-0">
+          <History className="h-5 w-5 text-brand-600" />
         </div>
         <div>
           <h1 className="text-xl font-bold text-gray-900">Maintenance History & Analytics</h1>
@@ -436,7 +436,7 @@ function MaintenanceHistoryContent() {
           label="Total Incidents"
           value={analytics.totalIncidents}
           icon={<AlertTriangle className="h-5 w-5 text-white" />}
-          color="bg-red-500"
+          color="bg-danger-500"
           description={`${analytics.ongoingIncidents} ongoing`}
         />
         <AnalyticsCard
@@ -485,7 +485,7 @@ function MaintenanceHistoryContent() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search…"
                   className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg text-xs
-                             focus:ring-2 focus:ring-[#B01C2E] focus:border-[#B01C2E] outline-none"
+                             focus:ring-2 focus:ring-brand-600 focus:border-brand-600 outline-none"
                 />
               </div>
 
@@ -494,7 +494,7 @@ function MaintenanceHistoryContent() {
                 className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg border
                             transition-colors ${
                   showFilters
-                    ? 'bg-[#B01C2E]/5 border-[#B01C2E]/30 text-[#B01C2E]'
+                    ? 'bg-brand-600/5 border-brand-600/30 text-brand-600'
                     : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
                 }`}
               >
@@ -519,7 +519,7 @@ function MaintenanceHistoryContent() {
                     onClick={() => setActionFilter('all')}
                     className={`px-2.5 py-1 text-[10px] font-medium rounded-full border transition-colors ${
                       actionFilter === 'all'
-                        ? 'bg-[#B01C2E] text-white border-[#B01C2E]'
+                        ? 'bg-brand-600 text-white border-brand-600'
                         : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
                     }`}
                   >
@@ -533,7 +533,7 @@ function MaintenanceHistoryContent() {
                         onClick={() => setActionFilter(actionFilter === action ? 'all' : action)}
                         className={`px-2.5 py-1 text-[10px] font-medium rounded-full border transition-colors ${
                           actionFilter === action
-                            ? 'bg-[#B01C2E] text-white border-[#B01C2E]'
+                            ? 'bg-brand-600 text-white border-brand-600'
                             : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
                         }`}
                       >

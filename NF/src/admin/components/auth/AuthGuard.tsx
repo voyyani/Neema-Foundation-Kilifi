@@ -75,7 +75,7 @@ export default function AuthGuard({ children, allowedRoles }: AuthGuardProps) {
           <div className="flex gap-3 justify-center">
             <button
               onClick={() => window.location.reload()}
-              className="px-4 py-2 text-sm font-medium rounded-md text-white bg-[#B01C2E] hover:bg-[#8A1624]"
+              className="px-4 py-2 text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700"
             >
               Retry
             </button>
@@ -96,9 +96,9 @@ export default function AuthGuard({ children, allowedRoles }: AuthGuardProps) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-8 text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-danger-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
-              className="w-8 h-8 text-red-600"
+              className="w-8 h-8 text-danger-600"
               fill="none"
               strokeLinecap="round"
               strokeLinejoin="round"

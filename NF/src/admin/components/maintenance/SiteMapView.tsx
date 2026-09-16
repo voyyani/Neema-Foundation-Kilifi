@@ -105,10 +105,10 @@ const STATUS_STYLES: Record<string, {
     label: 'Degraded',
   },
   blocked: {
-    bg: 'bg-red-50',
-    border: 'border-red-200',
-    dot: 'bg-red-500',
-    text: 'text-red-700',
+    bg: 'bg-danger-50',
+    border: 'border-danger-200',
+    dot: 'bg-danger-500',
+    text: 'text-danger-700',
     label: 'Blocked',
   },
   notice: {
@@ -139,7 +139,7 @@ function HealthScoreRing({ score }: { score: number }) {
   const circumference = 2 * Math.PI * 36;
   const progress = (score / 100) * circumference;
   const color =
-    score >= 90 ? 'text-emerald-500' : score >= 70 ? 'text-amber-500' : 'text-red-500';
+    score >= 90 ? 'text-emerald-500' : score >= 70 ? 'text-amber-500' : 'text-danger-500';
   const strokeColor =
     score >= 90 ? '#10b981' : score >= 70 ? '#f59e0b' : '#ef4444';
 
@@ -399,7 +399,7 @@ function FeatureGroupPanel({
                     <div
                       className={`h-full rounded-full transition-all ${
                         coverage.percentage >= 100
-                          ? 'bg-red-500'
+                          ? 'bg-danger-500'
                           : coverage.percentage >= 50
                             ? 'bg-amber-500'
                             : 'bg-blue-500'
@@ -497,12 +497,12 @@ export default function SiteMapView({
               <p className="text-sm text-gray-500 mt-0.5">
                 {onlineCount} of {PAGE_REGISTRY.length} pages online
                 {issueCount > 0 && (
-                  <span className="text-red-600 font-medium"> · {issueCount} with issues</span>
+                  <span className="text-danger-600 font-medium"> · {issueCount} with issues</span>
                 )}
               </p>
               <div className="flex items-center gap-3 mt-2">
                 {health.blocked > 0 && (
-                  <span className="inline-flex items-center gap-1 text-xs text-red-600">
+                  <span className="inline-flex items-center gap-1 text-xs text-danger-600">
                     <ZapOff className="h-3 w-3" /> {health.blocked}% blocked
                   </span>
                 )}
@@ -674,7 +674,7 @@ function CompactRow({
       </div>
       <span className="text-xs text-gray-400">{sectionCount} sections</span>
       {issueCount > 0 && (
-        <span className="text-xs text-red-600 font-medium">{issueCount} issues</span>
+        <span className="text-xs text-danger-600 font-medium">{issueCount} issues</span>
       )}
       <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${style.text} ${style.bg}`}>
         {style.label}

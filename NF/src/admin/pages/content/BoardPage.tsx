@@ -141,7 +141,7 @@ function MemberCard({
 
           <button
             onClick={onDelete}
-            className="inline-flex items-center justify-center p-2 text-sm font-medium text-red-700 bg-white border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+            className="inline-flex items-center justify-center p-2 text-sm font-medium text-danger-700 bg-white border border-danger-200 rounded-lg hover:bg-danger-50 transition-colors"
           >
             <Trash2 className="h-4 w-4" />
           </button>
@@ -421,7 +421,7 @@ export default function BoardPage() {
   if (error) {
     return (
       <div className="p-6">
-        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+        <div className="bg-danger-50 border border-danger-200 text-danger-800 px-4 py-3 rounded-lg">
           <p className="font-semibold">Error loading board members</p>
           <p className="text-sm">{error.message}</p>
         </div>
