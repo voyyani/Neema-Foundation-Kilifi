@@ -1,8 +1,7 @@
 /**
  * /media — the photographs. Experience mode: the interface recedes; the
  * newest featured album leads at full column width, the rest follow as
- * plates. Filter by kind. Section keys: hero · albums · events_grid ·
- * program_galleries.
+ * plates. Filter by kind. Section keys: hero · albums.
  */
 import React, { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';

@@ -1,31 +1,57 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Lock, ArrowLeft, Mail, CheckCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { toast } from 'sonner';
 import { useAuth } from '../hooks/useAuth';
 import { formatAuthError } from '../lib/authErrors';
+import { useRateLimit } from '../hooks/useRateLimit';
+import { Alert, Button, Field, Input } from '../../components/ui';
+import AuthThreshold from '../components/auth/AuthThreshold';
+
+/**
+ * /admin/forgot-password — asks Supabase to email a recovery link that
+ * lands on /admin/reset-password.
+ *
+ * Supabase does not reveal whether the address exists, and neither do we:
+ * the "sent" state reads the same either way. Three requests per fifteen
+ * minutes per device keeps the mailbox from being used to spam someone.
+ */
+
+const schema = z.object({
+  email: z.string().email('Enter the email address on your staff account'),
+});
+type FormData = z.infer<typeof schema>;
 
 export default function ForgotPassword() {
-  const [email, setEmail] = useState('');
-  const [sent, setSent] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const { resetPassword } = useAuth();
-  const navigate = useNavigate();
+  const [sent, setSent] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const { checkRateLimit, recordAttempt, isLocked, lockoutTimeRemaining } =
+    useRateLimit('forgot-password', 3, 15 * 60 * 1000);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: { email: '' },
+  });
+
+  const onSubmit = async ({ email }: FormData) => {
+    try {
+      checkRateLimit();
+    } catch (error) {
+      toast.error('Too many requests', { description: (error as Error).message });
+      return;
+    }
     setIsLoading(true);
-
     try {
       await resetPassword(email);
-      setSent(true);
-      toast.success('Password reset email sent!');
+      recordAttempt(false); // every send counts toward the window, success or not
+      setSent(email);
     } catch (error) {
-      const authError = formatAuthError(error);
-      toast.error(authError.title, {
-        description: authError.message,
-      });
+      recordAttempt(false);
+      const info = formatAuthError(error);
+      toast.error(info.title, { description: info.message });
     } finally {
       setIsLoading(false);
     }
@@ -33,146 +59,68 @@ export default function ForgotPassword() {
 
   if (sent) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-danger-50 via-white to-danger-50 px-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full"
-        >
-          <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: 'spring' }}
-              className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-6"
-            >
-              <CheckCircle className="h-8 w-8 text-green-600" />
-            </motion.div>
-
-            <h1 className="text-2xl font-bold text-gray-900 mb-3">
-              Check Your Email
-            </h1>
-            
-            <p className="text-gray-600 mb-6">
-              We've sent password reset instructions to{' '}
-              <span className="font-semibold text-gray-900">{email}</span>
-            </p>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-              <p className="text-sm text-blue-800">
-                <strong>Didn't receive the email?</strong> Check your spam folder or wait a few minutes and try again.
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              <button
-                onClick={() => navigate('/')}
-                className="w-full bg-danger-800 text-white py-3 px-4 rounded-lg hover:bg-danger-900 font-semibold transition-colors"
-              >
-                Return to Home
-              </button>
-              
-              <button
-                onClick={() => {
-                  setSent(false);
-                  setEmail('');
-                }}
-                className="w-full text-gray-600 hover:text-gray-900 py-2 font-medium transition-colors"
-              >
-                Try Different Email
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      </div>
+      <AuthThreshold
+        title="Check your email"
+        lede={
+          <>
+            If <span className="font-semibold text-content">{sent}</span> belongs to a staff account, a
+            link to choose a new password is on its way. It works once and expires after an hour.
+          </>
+        }
+        back={{ to: '/admin/login', label: 'Back to sign in' }}
+      >
+        <Alert status="info" className="mt-6" title="Nothing arrived?">
+          Check the spam folder, make sure the address is the one your super-admin invited, then request
+          another link.
+        </Alert>
+        <Button variant="secondary" className="mt-6" onClick={() => setSent(null)}>
+          Send another link
+        </Button>
+      </AuthThreshold>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-danger-50 via-white to-danger-50 px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full"
-      >
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', delay: 0.1 }}
-              className="inline-flex items-center justify-center w-16 h-16 bg-danger-100 rounded-full mb-4"
-            >
-              <Lock className="h-8 w-8 text-danger-800" />
-            </motion.div>
-            
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Forgot Password?
-            </h1>
-            
-            <p className="text-gray-600">
-              No worries! Enter your email and we'll send you reset instructions.
-            </p>
-          </div>
+    <AuthThreshold
+      title="Forgot your password?"
+      lede="Enter the email on your staff account and we will send a link to choose a new one."
+      back={{ to: '/admin/login', label: 'Back to sign in' }}
+    >
+      {isLocked && (
+        <Alert status="warning" title="Requests paused" className="mt-6">
+          Too many reset requests from this device. Try again in {lockoutTimeRemaining ?? 'a few minutes'}.
+        </Alert>
+      )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-danger-800 focus:border-transparent transition-all"
-                />
-              </div>
-            </div>
+      <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <Field label="Email address" required error={errors.email?.message}>
+          {({ id, describedBy, invalid }) => (
+            <Input
+              id={id}
+              type="email"
+              inputMode="email"
+              autoComplete="username"
+              autoCapitalize="none"
+              spellCheck={false}
+              placeholder="you@neemafoundation.org"
+              aria-describedby={describedBy}
+              invalid={invalid}
+              disabled={isLoading || isLocked}
+              {...register('email')}
+            />
+          )}
+        </Field>
+        <Button type="submit" size="lg" block loading={isLoading} disabled={isLoading || isLocked}>
+          {isLoading ? 'Sending…' : 'Email me a reset link'}
+        </Button>
+      </form>
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-danger-800 text-white py-3 px-4 rounded-lg hover:bg-danger-900 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {isLoading ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
-                  Sending...
-                </>
-              ) : (
-                'Send Reset Link'
-              )}
-            </button>
-          </form>
-
-          {/* Back Link */}
-          <div className="mt-6 text-center">
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium transition-colors"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back to Home
-            </Link>
-          </div>
-        </div>
-
-        {/* Help Text */}
-        <p className="text-center text-sm text-gray-600 mt-6">
-          Need help?{' '}
-          <a href="mailto:support@neemafoundation.org" className="text-danger-800 hover:text-danger-900 font-medium">
-            Contact Support
-          </a>
-        </p>
-      </motion.div>
-    </div>
+      <p className="mt-8 text-sm text-content-3">
+        Remembered it?{' '}
+        <Link to="/admin/login" className="font-semibold text-brand-700 underline-offset-4 hover:underline">
+          Sign in
+        </Link>
+      </p>
+    </AuthThreshold>
   );
 }
-

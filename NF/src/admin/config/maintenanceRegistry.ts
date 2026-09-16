@@ -39,6 +39,7 @@ export const PAGE_REGISTRY: PageRegistryEntry[] = [
       { key: 'stories', label: 'Stories', component_name: 'Stories' },
       { key: 'events', label: 'Events', component_name: 'Events' },
       { key: 'action', label: 'Call to Action', component_name: 'Action' },
+      { key: 'contact', label: 'Write to Us (contact form)', component_name: 'Contact' },
       { key: 'trust_bar', label: 'Trust Bar', component_name: 'TrustBar' },
     ],
   },
@@ -164,8 +165,8 @@ export const PAGE_REGISTRY: PageRegistryEntry[] = [
       { key: 'description', label: 'Description', component_name: 'ProgramDescription' },
       { key: 'impact', label: 'Impact Section', component_name: 'ProgramImpact' },
       { key: 'testimonials', label: 'Testimonials', component_name: 'ProgramTestimonials' },
-      { key: 'donate_cta', label: 'Donate CTA', component_name: 'ProgramDonateCTA' },
-      { key: 'volunteer_cta', label: 'Volunteer CTA', component_name: 'ProgramVolunteerCTA' },
+      { key: 'events', label: 'Programme Events', component_name: 'DetailEvents' },
+      { key: 'donate_cta', label: 'Give / Volunteer CTA', component_name: 'DetailCTA' },
     ],
   },
   {
@@ -175,10 +176,8 @@ export const PAGE_REGISTRY: PageRegistryEntry[] = [
     icon: 'Camera',
     trafficWeight: 5,
     sections: [
-      { key: 'hero', label: 'Hero Banner', component_name: 'MediaHero' },
-      { key: 'events_grid', label: 'Events Grid', component_name: 'EventsGrid' },
-      { key: 'albums', label: 'Albums', component_name: 'AlbumsGrid' },
-      { key: 'program_galleries', label: 'Program Galleries', component_name: 'ProgramGalleries' },
+      { key: 'hero', label: 'Header and filters', component_name: 'MediaHero' },
+      { key: 'albums', label: 'Album grid (events, programmes, albums)', component_name: 'AlbumPlate' },
     ],
   },
   {
@@ -188,9 +187,9 @@ export const PAGE_REGISTRY: PageRegistryEntry[] = [
     icon: 'Calendar',
     trafficWeight: 2,
     sections: [
-      { key: 'hero', label: 'Hero Banner', component_name: 'EventHero' },
-      { key: 'gallery', label: 'Photo Gallery', component_name: 'EventGallery' },
-      { key: 'description', label: 'Description', component_name: 'EventDescription' },
+      { key: 'hero', label: 'Event header', component_name: 'GalleryHeader' },
+      { key: 'gallery', label: 'Photo Grid', component_name: 'PhotoGrid' },
+      { key: 'related', label: 'More albums', component_name: 'AlbumPlate' },
     ],
   },
   {
@@ -200,8 +199,8 @@ export const PAGE_REGISTRY: PageRegistryEntry[] = [
     icon: 'Image',
     trafficWeight: 2,
     sections: [
-      { key: 'hero', label: 'Album Header', component_name: 'AlbumHero' },
-      { key: 'gallery', label: 'Photo Grid', component_name: 'AlbumGallery' },
+      { key: 'hero', label: 'Album Header', component_name: 'GalleryHeader' },
+      { key: 'gallery', label: 'Photo Grid', component_name: 'PhotoGrid' },
     ],
   },
   {
@@ -211,8 +210,8 @@ export const PAGE_REGISTRY: PageRegistryEntry[] = [
     icon: 'Images',
     trafficWeight: 2,
     sections: [
-      { key: 'hero', label: 'Gallery Header', component_name: 'ProgramGalleryHero' },
-      { key: 'gallery', label: 'Photo Grid', component_name: 'ProgramPhotoGrid' },
+      { key: 'hero', label: 'Gallery Header', component_name: 'GalleryHeader' },
+      { key: 'gallery', label: 'Album grid', component_name: 'AlbumPlate' },
     ],
   },
 ];
@@ -254,7 +253,7 @@ export const FEATURE_GROUPS: FeatureGroupEntry[] = [
     label: 'Volunteering',
     description: 'Volunteer application and related CTAs',
     icon: 'Users',
-    targets: ['volunteer', 'program_detail:volunteer_cta'],
+    targets: ['volunteer', 'program_detail:donate_cta'],
   },
   {
     key: 'programs',
@@ -268,7 +267,7 @@ export const FEATURE_GROUPS: FeatureGroupEntry[] = [
     label: 'Contact & Inquiries',
     description: 'Contact forms and inquiry submissions',
     icon: 'Mail',
-    targets: ['landing:action'],
+    targets: ['landing:contact', 'partnership:form', 'legacy_giving:form', 'sponsorship:form'],
   },
 ];
 

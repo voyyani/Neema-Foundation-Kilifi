@@ -7,6 +7,8 @@
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase/client';
 import { Alert, Button, Field, Input, Select, Textarea, Tick } from '../ui';
+import { useMaintenanceFormGate } from '../maintenance/useMaintenanceFormGate';
+import MaintenanceFormNotice from '../maintenance/MaintenanceFormNotice';
 
 export interface InquiryFormProps {
   /** Options for the "kind" select: [value, label] */
@@ -20,17 +22,22 @@ export interface InquiryFormProps {
   thanks?: string;
   contactEmail?: string | null;
   tone?: 'paper' | 'board';
+  /** Feature group the form belongs to (FEATURE_GROUPS key) */
+  feature?: string;
+  /** Composed section key, e.g. 'partnership:form' */
+  section?: string;
 }
 
 type F = { name: string; email: string; organization: string; kind: string; message: string };
 
 const InquiryForm: React.FC<InquiryFormProps> = ({
   kinds, defaultKind, kindLabel = 'What kind of partnership?', organisation = true, submitLabel = 'Send enquiry',
-  thanks = 'The office will reply with the next steps.', contactEmail, tone = 'paper',
+  thanks = 'The office will reply with the next steps.', contactEmail, tone = 'paper', feature = 'contact', section,
 }) => {
   const [f, setF] = useState<F>({ name: '', email: '', organization: '', kind: defaultKind ?? kinds[0]?.[0] ?? '', message: '' });
   const [errors, setErrors] = useState<Partial<Record<keyof F, string>>>({});
   const [honeypot, setHoneypot] = useState('');
+  const gate = useMaintenanceFormGate({ feature, section });
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'failed'>('idle');
   const set = (k: keyof F) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setF((p) => ({ ...p, [k]: e.target.value }));
@@ -38,6 +45,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
   };
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (gate.blocked) return;
     const er: Partial<Record<keyof F, string>> = {};
     if (!f.name.trim()) er.name = 'Please tell us your name.';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)) er.email = 'Enter an email address we can reply to.';
@@ -69,6 +77,7 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
 
   return (
     <form onSubmit={submit} noValidate className="space-y-6">
+      <MaintenanceFormNotice rule={gate.rule} tone={tone} />
       <div className="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
         <label htmlFor="inq-website">Website</label>
         <input id="inq-website" tabIndex={-1} autoComplete="off" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} />
@@ -83,7 +92,9 @@ const InquiryForm: React.FC<InquiryFormProps> = ({
       {status === 'failed' && (
         <Alert status="danger" title="The enquiry did not send." tone={tone}>Check your connection and try again{contactEmail ? `, or email ${contactEmail} directly` : ''}.</Alert>
       )}
-      <Button type="submit" size="lg" tone={tone} loading={status === 'sending'}>{status === 'sending' ? 'Sending…' : submitLabel}</Button>
+      <Button type="submit" size="lg" tone={tone} loading={status === 'sending'} disabled={gate.blocked}>
+        {gate.blocked ? 'Enquiries are paused' : status === 'sending' ? 'Sending…' : submitLabel}
+      </Button>
     </form>
   );
 };

@@ -55,6 +55,8 @@ const ProgramsPage: React.FC = () => {
         </Section>
       </MaintenanceGate>
 
+      {/* The filter only earns its row once there is something to filter. */}
+      {(isLoading || programs.length > 0) && (
       <MaintenanceGate page="programs" section="categories">
         <Section ground="paper" pad="sm" className="border-b border-border">
           <Container>
@@ -86,6 +88,7 @@ const ProgramsPage: React.FC = () => {
           </Container>
         </Section>
       </MaintenanceGate>
+      )}
 
       <MaintenanceGate page="programs" section="grid">
         <Section ground="paper" pad="md" aria-live="polite">

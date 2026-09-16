@@ -67,7 +67,7 @@ const LegacyGiving: React.FC = () => {
                 </p>
               </div>
               <div className="md:col-span-6 md:col-start-7">
-                <InquiryForm kinds={[['legacy', 'A gift in my will'], ['legacy-trust', 'A charitable trust'], ['legacy-insurance', 'A life insurance gift']]} kindLabel="What are you considering?" organisation={false} submitLabel="Send" contactEmail={site?.contact_email} thanks="The office will reply with the details your adviser needs." />
+                <InquiryForm feature="donations" section="legacy_giving:form" kinds={[['legacy', 'A gift in my will'], ['legacy-trust', 'A charitable trust'], ['legacy-insurance', 'A life insurance gift']]} kindLabel="What are you considering?" organisation={false} submitLabel="Send" contactEmail={site?.contact_email} thanks="The office will reply with the details your adviser needs." />
               </div>
             </div>
           </Container>

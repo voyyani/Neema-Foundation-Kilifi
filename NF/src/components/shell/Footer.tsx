@@ -123,11 +123,16 @@ const Footer: React.FC = () => {
 
         <div className="mt-rule-2 flex flex-col gap-2 border-t border-border-chalk pt-6 text-xs text-content-chalk-3 sm:flex-row sm:items-center sm:justify-between">
           <p>© {YEAR} Neema Foundation Kilifi · Registered community-based organisation, Kilifi County</p>
-          <p>
+          <p className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <Link to="/admin/login" className="text-content-chalk-2 underline-offset-4 hover:text-content-chalk hover:underline">
+              Staff sign in
+            </Link>
+            <span>
             Site by{' '}
             <a href="https://voyani.tech" target="_blank" rel="noopener noreferrer" className="text-content-chalk-2 underline-offset-4 hover:text-content-chalk hover:underline">
               Voyani
             </a>
+            </span>
           </p>
         </div>
       </Container>

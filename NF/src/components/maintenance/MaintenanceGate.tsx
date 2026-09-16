@@ -9,10 +9,12 @@
  *     <Hero />
  *   </MaintenanceGate>
  *
- *   <MaintenanceGate page="donate">
- *     <Donate />
+ *   <MaintenanceGate page="donate" section="payment_form" component="mpesa">
+ *     <MpesaDetails />
  *   </MaintenanceGate>
  *
+ * Whole pages are gated once by <MaintenanceRouteGate>; this component is
+ * for the sections and components the registry declares inside a page.
  * The placeholder is loaded on demand: on a site with no active rule the
  * public bundle never carries it.
  */
@@ -53,11 +55,15 @@ const MaintenanceGate: React.FC<MaintenanceGateProps> = ({
 }) => {
   const ctx = useMaintenanceContext();
 
-  // Most specific scope first
+  // Most specific scope first. Keys are composed the way the admin writes
+  // them (`getTargetKeysForScope`): `page`, `page:section`,
+  // `page:section:component`. A bare section key never matches a rule.
   const checks: { scope: MaintenanceScope; key: string }[] = [];
-  if (component) checks.push({ scope: 'component', key: component });
-  if (section) checks.push({ scope: 'section', key: section });
-  if (page) checks.push({ scope: 'page', key: page });
+  if (page && section && component) checks.push({ scope: 'component', key: `${page}:${section}:${component}` });
+  if (page && section) checks.push({ scope: 'section', key: `${page}:${section}` });
+  // A page-scope check only when this gate *is* the page; inside a page the
+  // route gate has already applied the page rule.
+  if (page && !section) checks.push({ scope: 'page', key: page });
   if (feature) checks.push({ scope: 'feature_group', key: feature });
 
   // While loading, render children normally to avoid a flash
@@ -78,12 +84,18 @@ const MaintenanceGate: React.FC<MaintenanceGateProps> = ({
   for (const { scope, key } of checks) {
     const rule = ctx.getRule(scope, key);
     if (!rule || bypassed(rule)) continue;
+    // getRule falls back to any global rule; a global notice/degraded is a
+    // site-wide banner, not a reason to replace this section.
+    if (rule.scope === 'global') continue;
 
     if (rule.severity === 'full_block' || rule.severity === 'degraded') {
       if (fallback !== undefined) return <>{fallback}</>;
       return <Placeholder rule={rule} minHeight={minHeight} className={className} />;
     }
-    if (rule.severity === 'notice') {
+    // Notices aimed at a whole page, a feature group or the site are shown
+    // once, in MaintenanceBanner. Only a notice written for this exact
+    // section or component is drawn in the margin here.
+    if (rule.severity === 'notice' && rule.scope === scope) {
       return (
         <Placeholder rule={rule} className={className}>
           {children}

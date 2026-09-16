@@ -1,5 +1,5 @@
-import React, { Suspense, useEffect, useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import clsx from 'clsx';
 import { Button } from '../ui';
@@ -11,15 +11,15 @@ import MobileMenu from './MobileMenu';
  * brand written as a name (not a badge), three primary destinations, the
  * Give action in the pen's maroon. On phones: logo, Give, menu.
  *
- * The admin login modal is loaded only when opened so its form libraries
- * stay out of the public bundle.
+ * Staff sign-in is a page (`/admin/login`), not a modal: the admin auth
+ * provider lives in the admin bundle only, so nothing on the public routes
+ * may call `useAuth`. The legacy `#admin` hash still lands on that page.
  */
-const AdminLoginModal = React.lazy(() => import('../AdminLoginModal'));
 
 const Navbar: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [adminOpen, setAdminOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => { setMenuOpen(false); }, [location.pathname]);
@@ -32,8 +32,8 @@ const Navbar: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (location.hash === '#admin') setAdminOpen(true);
-  }, [location.hash]);
+    if (location.hash === '#admin') navigate('/admin/login', { replace: true });
+  }, [location.hash, navigate]);
 
   return (
     <>
@@ -123,14 +123,9 @@ const Navbar: React.FC = () => {
         </div>
       </div>
 
-      {adminOpen && (
-        <Suspense fallback={null}>
-          <AdminLoginModal isOpen={adminOpen} onClose={() => setAdminOpen(false)} />
-        </Suspense>
-      )}
       </header>
 
-      <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} onAdmin={() => { setMenuOpen(false); setAdminOpen(true); }} />
+      <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
     </>
   );
 };

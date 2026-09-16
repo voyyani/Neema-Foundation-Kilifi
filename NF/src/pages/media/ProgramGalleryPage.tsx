@@ -9,6 +9,7 @@ import { usePublicProgram } from '../../hooks/public/usePublicPrograms';
 import { usePublicProgramMediaAlbumsBySlug } from '../../hooks/public/usePublicProgramMediaAlbums';
 import { buildCloudinaryUrl } from '../../hooks/public/usePublicMedia';
 import { Button, Container, LoadingSpinner, Section } from '../../components/ui';
+import { MaintenanceGate } from '../../components/maintenance';
 import GalleryHeader from '../../components/media/GalleryHeader';
 import AlbumPlate from '../../components/media/AlbumPlate';
 import { GalleryNotFound } from './AlbumPage';
@@ -29,6 +30,7 @@ const ProgramGalleryPage: React.FC = () => {
   return (
     <>
       <Seo path={path} title={`${program.name} · Photographs · Neema Foundation Kilifi`} description={`Photographs from ${program.name}: ${visible.length} album${visible.length === 1 ? '' : 's'}.`} ogImage={lead?.cover_image ? buildCloudinaryUrl(lead.cover_image, 'og') : undefined} />
+      <MaintenanceGate page="media_program" section="hero">
       <GalleryHeader
         id="gallery-title"
         back={{ to: `/programs/${program.slug}`, label: program.name }}
@@ -37,6 +39,8 @@ const ProgramGalleryPage: React.FC = () => {
         facts={[`${visible.length} album${visible.length === 1 ? '' : 's'}`, photos ? `${photos} photographs` : null, program.beneficiary_where]}
         actions={<Button to={`/programs/${program.slug}`} variant="secondary" size="sm">About the programme</Button>}
       />
+      </MaintenanceGate>
+      <MaintenanceGate page="media_program" section="gallery">
       <Section ground="paper" pad="lg" aria-label="Albums">
         <Container>
           {albumsLoading && (
@@ -59,6 +63,7 @@ const ProgramGalleryPage: React.FC = () => {
           )}
         </Container>
       </Section>
+      </MaintenanceGate>
     </>
   );
 };

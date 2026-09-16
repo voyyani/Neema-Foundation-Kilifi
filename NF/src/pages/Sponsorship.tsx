@@ -76,7 +76,7 @@ const Sponsorship: React.FC = () => {
                 {site?.contact_email && <p className="text-sm text-content-3">Or email <a href={`mailto:${site.contact_email}`} className="font-semibold text-brand-700 underline-offset-4 hover:underline">{site.contact_email}</a>.</p>}
               </div>
               <div className="md:col-span-6 md:col-start-7">
-                <InquiryForm kinds={KINDS} defaultKind={defaultKind} kindLabel="What would you like to sponsor?" organisation={false} submitLabel="Send" contactEmail={site?.contact_email} thanks="The office will reply with how to set up your sponsorship." />
+                <InquiryForm feature="donations" section="sponsorship:form" kinds={KINDS} defaultKind={defaultKind} kindLabel="What would you like to sponsor?" organisation={false} submitLabel="Send" contactEmail={site?.contact_email} thanks="The office will reply with how to set up your sponsorship." />
               </div>
             </div>
           </Container>

@@ -8,7 +8,7 @@ import Footer from './components/shell/Footer';
 import Landing from './pages/Landing';
 
 import { Analytics } from '@vercel/analytics/react';
-import { MaintenanceProvider, MaintenanceBanner, MaintenanceErrorBoundary } from './components/maintenance';
+import { MaintenanceProvider, MaintenanceBanner, MaintenanceErrorBoundary, MaintenanceRouteGate } from './components/maintenance';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 import { queryClient } from './admin/config/queryClient';
 import { lazyWithRetry } from './lib/lazyWithRetry';
@@ -245,6 +245,7 @@ const App: React.FC = () => {
                         <MaintenanceBanner />
                         <main id="main" className="flex flex-1 flex-col" tabIndex={-1}>
                           <Suspense fallback={<LoadingSpinner fullPage />}>
+                          <MaintenanceRouteGate>
                           <Routes>
                             <Route path="/" element={<Landing />} />
                             <Route path="/donate" element={<Donate />} />
@@ -263,6 +264,7 @@ const App: React.FC = () => {
                             <Route path="/maintenance" element={<Maintenance />} />
                             <Route path="*" element={<NotFound />} />
                           </Routes>
+                          </MaintenanceRouteGate>
                           </Suspense>
                         </main>
                         <Footer />

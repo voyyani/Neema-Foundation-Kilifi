@@ -1,234 +1,192 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Lock, Eye, EyeOff, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { toast } from 'sonner';
+import { Check, Eye, EyeOff } from 'lucide-react';
+import clsx from 'clsx';
 import { formatAuthError } from '../lib/authErrors';
 import { supabaseAdmin } from '../../lib/supabase/client';
+import { Alert, Button, Field, Input } from '../../components/ui';
+import AuthThreshold from '../components/auth/AuthThreshold';
+
+/**
+ * /admin/reset-password — where the recovery link lands.
+ *
+ * Supabase exchanges the link for a short-lived recovery session before this
+ * page mounts (App.tsx captures PASSWORD_RECOVERY). If no session exists the
+ * link was used, expired, or opened in a different browser, and the only
+ * honest thing to show is a way to request a new one. Supabase enforces
+ * one-time use and the same-password rule server-side; we surface both.
+ */
+
+const RULES = [
+  { label: 'At least 8 characters', test: (p: string) => p.length >= 8 },
+  { label: 'A number', test: (p: string) => /\d/.test(p) },
+  { label: 'An upper-case letter', test: (p: string) => /[A-Z]/.test(p) },
+  { label: 'A lower-case letter', test: (p: string) => /[a-z]/.test(p) },
+];
+
+const schema = z
+  .object({
+    password: z.string().refine((p) => RULES.every((r) => r.test(p)), 'Meet every requirement listed below'),
+    confirm: z.string(),
+  })
+  .refine((d) => d.password === d.confirm, { path: ['confirm'], message: 'The two passwords do not match' });
+type FormData = z.infer<typeof schema>;
+
+type LinkState = 'checking' | 'valid' | 'invalid';
 
 export default function ResetPassword() {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const isMounted = useRef(true);
   const navigate = useNavigate();
+  const [linkState, setLinkState] = useState<LinkState>('checking');
+  const [show, setShow] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [done, setDone] = useState(false);
 
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: { password: '', confirm: '' },
+    mode: 'onBlur',
+  });
+  const password = watch('password');
+
+  // A recovery session must exist for updateUser to succeed.
   useEffect(() => {
-    isMounted.current = true;
-    return () => { isMounted.current = false; };
+    let cancelled = false;
+    supabaseAdmin.auth.getSession().then(({ data }) => {
+      if (!cancelled) setLinkState(data.session ? 'valid' : 'invalid');
+    });
+    // The exchange can still be in flight on a slow link; listen briefly.
+    const { data: { subscription } } = supabaseAdmin.auth.onAuthStateChange((event, session) => {
+      if (session && (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN')) setLinkState('valid');
+    });
+    const timer = window.setTimeout(() => {
+      if (!cancelled) setLinkState((s) => (s === 'checking' ? 'invalid' : s));
+    }, 4000);
+    return () => { cancelled = true; subscription.unsubscribe(); window.clearTimeout(timer); };
   }, []);
 
-  // Password strength validation
-  const passwordRequirements = [
-    { label: 'At least 8 characters', met: password.length >= 8 },
-    { label: 'Contains a number', met: /\d/.test(password) },
-    { label: 'Contains uppercase letter', met: /[A-Z]/.test(password) },
-    { label: 'Contains lowercase letter', met: /[a-z]/.test(password) },
-  ];
-
-  const allRequirementsMet = passwordRequirements.every(req => req.met);
-  const passwordsMatch = password === confirmPassword && password.length > 0;
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!allRequirementsMet) {
-      toast.error('Password Requirements', {
-        description: 'Please meet all password requirements.',
-      });
-      return;
-    }
-
-    if (!passwordsMatch) {
-      toast.error('Passwords Do Not Match', {
-        description: 'Please make sure both passwords are identical.',
-      });
-      return;
-    }
-
+  const onSubmit = async ({ password }: FormData) => {
     setIsLoading(true);
-
     try {
-      const { error: updateError } = await supabaseAdmin.auth.updateUser({
-        password,
-      });
-
-      if (updateError) throw updateError;
-
-      if (isMounted.current) {
-        toast.success('Password Updated!', {
-          description: 'Your password has been successfully updated.',
-        });
-        setTimeout(() => {
-          navigate('/admin/dashboard', { replace: true });
-        }, 1000);
-      }
+      const { error } = await supabaseAdmin.auth.updateUser({ password });
+      if (error) throw error;
+      setDone(true);
+      toast.success('Password updated');
+      window.setTimeout(() => navigate('/admin/dashboard', { replace: true }), 1200);
     } catch (error) {
-      const authError = formatAuthError(error);
-      if (isMounted.current) {
-        toast.error(authError.title, {
-          description: authError.message,
-        });
-      }
-    } finally {
-      if (isMounted.current) {
-        setIsLoading(false);
-      }
+      const info = formatAuthError(error);
+      toast.error(info.title, { description: info.message });
+      setIsLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-danger-50 via-white to-danger-50 px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full"
+  if (linkState === 'invalid') {
+    return (
+      <AuthThreshold
+        title="This link has expired"
+        lede="Reset links work once and for one hour, in the browser that requested them. Ask for a new one and open it on this device."
+        back={{ to: '/admin/login', label: 'Back to sign in' }}
       >
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: 'spring', delay: 0.1 }}
-              className="inline-flex items-center justify-center w-16 h-16 bg-danger-100 rounded-full mb-4"
-            >
-              <Lock className="h-8 w-8 text-danger-800" />
-            </motion.div>
-            
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Set New Password
-            </h1>
-            
-            <p className="text-gray-600">
-              Choose a strong password to secure your account
-            </p>
-          </div>
+        <Button to="/admin/forgot-password" size="lg" className="mt-8">
+          Request a new link
+        </Button>
+      </AuthThreshold>
+    );
+  }
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* New Password */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                New Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter new password"
-                  required
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-danger-800 focus:border-transparent transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                </button>
-              </div>
-            </div>
+  if (done) {
+    return (
+      <AuthThreshold
+        title="Password updated"
+        lede="You are signed in. Taking you to the dashboard."
+        back={{ to: '/admin/dashboard', label: 'Go to the dashboard now' }}
+      >
+        <span className="sr-only" role="status">Password updated. Redirecting to the dashboard.</span>
+      </AuthThreshold>
+    );
+  }
 
-            {/* Password Requirements */}
-            {password && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="space-y-2"
+  const busy = isLoading || linkState === 'checking';
+
+  return (
+    <AuthThreshold
+      title="Choose a new password"
+      lede="It must be different from the one you had before."
+      back={{ to: '/admin/login', label: 'Back to sign in' }}
+    >
+      {linkState === 'checking' && (
+        <Alert status="info" className="mt-6">Checking your reset link…</Alert>
+      )}
+
+      <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <Field label="New password" required error={errors.password?.message}>
+          {({ id, describedBy, invalid }) => (
+            <div className="relative">
+              <Input
+                id={id}
+                type={show ? 'text' : 'password'}
+                autoComplete="new-password"
+                aria-describedby={[describedBy, 'password-rules'].filter(Boolean).join(' ')}
+                invalid={invalid}
+                disabled={busy}
+                className="pr-11"
+                {...register('password')}
+              />
+              <button
+                type="button"
+                onClick={() => setShow((v) => !v)}
+                className="touch-target absolute right-0 top-1/2 -translate-y-1/2 rounded text-content-3 hover:text-content focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand-600/35"
+                aria-label={show ? 'Hide password' : 'Show password'}
+                aria-pressed={show}
+                disabled={busy}
               >
-                {passwordRequirements.map((req, index) => (
-                  <div key={index} className="flex items-center gap-2 text-sm">
-                    {req.met ? (
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                    ) : (
-                      <XCircle className="h-4 w-4 text-gray-300" />
-                    )}
-                    <span className={req.met ? 'text-green-600' : 'text-gray-500'}>
-                      {req.label}
-                    </span>
-                  </div>
-                ))}
-              </motion.div>
-            )}
-
-            {/* Confirm Password */}
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                Confirm Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm new password"
-                  required
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-danger-800 focus:border-transparent transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                </button>
-              </div>
-              
-              {/* Password Match Indicator */}
-              {confirmPassword && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex items-center gap-2 mt-2 text-sm"
-                >
-                  {passwordsMatch ? (
-                    <>
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                      <span className="text-green-600">Passwords match</span>
-                    </>
-                  ) : (
-                    <>
-                      <AlertCircle className="h-4 w-4 text-amber-600" />
-                      <span className="text-amber-600">Passwords do not match</span>
-                    </>
-                  )}
-                </motion.div>
-              )}
+                {show ? <EyeOff className="h-5 w-5" aria-hidden="true" /> : <Eye className="h-5 w-5" aria-hidden="true" />}
+              </button>
             </div>
+          )}
+        </Field>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading || !allRequirementsMet || !passwordsMatch}
-              className="w-full bg-danger-800 text-white py-3 px-4 rounded-lg hover:bg-danger-900 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {isLoading ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
-                  Updating Password...
-                </>
-              ) : (
-                'Update Password'
-              )}
-            </button>
-          </form>
+        <ul id="password-rules" className="grid grid-cols-1 gap-x-6 gap-y-1.5 text-sm sm:grid-cols-2" aria-label="Password requirements">
+          {RULES.map((r) => {
+            const met = r.test(password);
+            return (
+              <li key={r.label} className={clsx('flex items-center gap-2 transition-colors', met ? 'text-success-700' : 'text-content-3')}>
+                <span
+                  className={clsx(
+                    'inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-colors',
+                    met ? 'border-success-600 bg-success-600 text-white' : 'border-border-strong',
+                  )}
+                  aria-hidden="true"
+                >
+                  {met && <Check className="h-3 w-3" strokeWidth={3} />}
+                </span>
+                {r.label}
+              </li>
+            );
+          })}
+        </ul>
 
-          {/* Security Note */}
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-800">
-              <strong>Security Tip:</strong> Use a unique password that you don't use on any other sites.
-            </p>
-          </div>
-        </div>
-      </motion.div>
-    </div>
+        <Field label="Confirm new password" required error={errors.confirm?.message}>
+          {({ id, describedBy, invalid }) => (
+            <Input
+              id={id}
+              type={show ? 'text' : 'password'}
+              autoComplete="new-password"
+              aria-describedby={describedBy}
+              invalid={invalid}
+              disabled={busy}
+              {...register('confirm')}
+            />
+          )}
+        </Field>
+
+        <Button type="submit" size="lg" block loading={isLoading} disabled={busy}>
+          {isLoading ? 'Saving…' : 'Save new password'}
+        </Button>
+      </form>
+    </AuthThreshold>
   );
 }

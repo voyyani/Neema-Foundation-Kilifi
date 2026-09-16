@@ -88,7 +88,7 @@ const Donate: React.FC = () => {
                 <h2 id="next-title" className="font-display uppercase text-display-sm text-content">What happens next</h2>
                 <ol className="mt-4 divide-y divide-border-rule border-y border-border-rule">
                   {[
-                    hasMpesa ? 'Send the gift by M-Pesa or bank transfer using the details on the left.' : 'Send the gift using the details on the left.',
+                    hasMpesa ? 'Send the gift by M-Pesa or bank transfer, using the details under “Ways to give”.' : 'Send the gift using the details under “Ways to give”.',
                     'You will get the usual confirmation from M-Pesa or your bank.',
                     `If you would like an acknowledgement, forward the confirmation to ${site?.contact_email ?? 'the office'} with your name.`,
                     'Your gift goes into the programmes, and the next figures are posted on the home page.',
@@ -108,15 +108,15 @@ const Donate: React.FC = () => {
       <MaintenanceGate page="donate" section="recurring_options">
         <Section ground="board" pad="lg" aria-labelledby="monthly-title">
           <Container>
-            <div className="grid gap-rule md:grid-cols-12 md:gap-x-10">
-              <div className="md:col-span-7">
+            <div className="grid gap-rule lg:grid-cols-12 lg:gap-x-10">
+              <div className="lg:col-span-7">
                 <SectionHeading id="monthly-title" tone="board" title="Give every month" lede="A standing gift is what keeps the porridge pot on every school day. Set it up once with your bank or M-Pesa and it runs on its own." />
                 <p className="text-sm leading-6 text-content-chalk-2">
                   In M-Pesa: <span className="text-content-chalk">Lipa na M-Pesa → Pay Bill → Frequent payments</span> lets you save the Paybill and account for next month. In a banking app, set up a standing order to the account above.
                 </p>
               </div>
-              <div className="md:col-span-5 md:self-center">
-                <Button to="/sponsorship" tone="board" variant="chalk" size="lg" trailingIcon={<ArrowRight className="h-5 w-5" aria-hidden="true" />}>
+              <div className="lg:col-span-5 lg:self-center">
+                <Button to="/sponsorship" tone="board" variant="chalk" size="lg" className="max-w-full" trailingIcon={<ArrowRight className="h-5 w-5" aria-hidden="true" />}>
                   Sponsor a child or a programme
                 </Button>
               </div>

@@ -1,7 +1,7 @@
 /**
  * /programs/:slug — one programme, page by page.
  * Section keys (PAGE_REGISTRY program_detail): hero · description · impact ·
- * gallery · testimonials · donate_cta · volunteer_cta.
+ * gallery · testimonials · events · donate_cta.
  */
 import React from 'react';
 import { useParams } from 'react-router-dom';
@@ -62,7 +62,9 @@ const ProgramDetailPage: React.FC = () => {
       <MaintenanceGate page="program_detail" section="testimonials">
         <DetailTestimonials program={program} />
       </MaintenanceGate>
-      <DetailEvents program={program} />
+      <MaintenanceGate page="program_detail" section="events">
+        <DetailEvents program={program} />
+      </MaintenanceGate>
       <MaintenanceGate page="program_detail" section="donate_cta">
         <DetailCTA program={program} />
       </MaintenanceGate>

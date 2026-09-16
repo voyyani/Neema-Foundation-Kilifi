@@ -13,10 +13,9 @@ import { INVOLVE_LINKS, PRIMARY_LINKS } from './navLinks';
 interface MobileMenuProps {
   open: boolean;
   onClose: () => void;
-  onAdmin: () => void;
 }
 
-const MobileMenu: React.FC<MobileMenuProps> = ({ open, onClose, onAdmin }) => {
+const MobileMenu: React.FC<MobileMenuProps> = ({ open, onClose }) => {
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Escape closes; lock body scroll while open.
@@ -95,15 +94,15 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ open, onClose, onAdmin }) => {
           <Button to="/donate" size="lg" block onClick={onClose} tabIndex={open ? 0 : -1}>
             Give to the Foundation
           </Button>
-          <button
-            type="button"
-            onClick={onAdmin}
+          <Link
+            to="/admin/login"
+            onClick={onClose}
             tabIndex={open ? 0 : -1}
-            className="mt-3 inline-flex items-center gap-1.5 rounded px-1 text-xs font-medium text-content-4 hover:text-content-2 focus-visible:ring-[3px] focus-visible:ring-brand-600/35 focus-visible:outline-none"
+            className="mt-3 inline-flex min-h-[44px] items-center gap-1.5 rounded px-1 text-sm font-medium text-content-3 hover:text-content focus-visible:ring-[3px] focus-visible:ring-brand-600/35 focus-visible:outline-none"
           >
-            <Shield className="h-3.5 w-3.5" aria-hidden="true" />
+            <Shield className="h-4 w-4" aria-hidden="true" />
             Staff sign in
-          </button>
+          </Link>
         </div>
       </div>
     </div>

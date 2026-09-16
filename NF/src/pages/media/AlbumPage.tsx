@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 import Seo from '../../lib/seo/Seo';
 import { usePublicAlbumItemsInfinite, usePublicAlbumMeta, buildCloudinaryUrl } from '../../hooks/public/usePublicMedia';
 import { Button, Container, LoadingSpinner, Section } from '../../components/ui';
+import { MaintenanceGate } from '../../components/maintenance';
 import GalleryHeader from '../../components/media/GalleryHeader';
 import PhotoGrid from '../../components/media/PhotoGrid';
 import ImageGalleryJsonLd from '../../components/media/ImageGalleryJsonLd';
@@ -54,6 +55,7 @@ const AlbumPage: React.FC = () => {
         <ImageGalleryJsonLd name={album.title} description={album.description} url={canonicalUrl(path)} datePublished={album.taken_at}
           images={items.map((i) => ({ url: i.url, caption: i.caption, alt: i.alt, width: i.width, height: i.height, dateCreated: i.taken_at, cloudinaryId: i.cloudinary_id }))} />
       )}
+      <MaintenanceGate page="media_album" section="hero">
       <GalleryHeader
         id="album-title"
         title={album.title}
@@ -61,6 +63,8 @@ const AlbumPage: React.FC = () => {
         facts={[TYPE_LABEL[album.album_type], album.program?.name ?? album.event?.name, when, `${album.photo_count} photograph${album.photo_count === 1 ? '' : 's'}`]}
         actions={album.program?.slug ? <Button to={`/programs/${album.program.slug}`} variant="secondary" size="sm">About {album.program.name}</Button> : album.event?.slug ? <Button to={`/media/events/${album.event.slug}`} variant="secondary" size="sm">The event</Button> : undefined}
       />
+      </MaintenanceGate>
+      <MaintenanceGate page="media_album" section="gallery">
       <Section ground="paper" pad="md" aria-label="Album photographs">
         <Container>
           <PhotoGrid items={items} isLoading={itemsLoading} skeleton={12} />
@@ -69,6 +73,7 @@ const AlbumPage: React.FC = () => {
           {!hasNextPage && items.length > 0 && <p className="mt-rule border-t border-border-rule pt-4 text-sm text-content-3">All {items.length} photographs shown.</p>}
         </Container>
       </Section>
+      </MaintenanceGate>
     </>
   );
 };

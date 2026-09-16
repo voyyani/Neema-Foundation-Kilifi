@@ -10,6 +10,11 @@ export type { MaintenanceContextValue, MaintenanceInfo } from './MaintenanceProv
 
 // Gate wrapper
 export { default as MaintenanceGate } from './MaintenanceGate';
+export { default as MaintenanceRouteGate } from './MaintenanceRouteGate';
+export { resolvePageKey, resolveRouteRule, REGISTRY_ROUTES } from './resolvePageKey';
+export { useMaintenanceFormGate } from './useMaintenanceFormGate';
+export type { FormGateOptions, FormGateResult } from './useMaintenanceFormGate';
+export { default as MaintenanceFormNotice } from './MaintenanceFormNotice';
 export type { MaintenanceGateProps } from './MaintenanceGate';
 
 // Placeholder UI

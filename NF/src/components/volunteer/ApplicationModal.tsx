@@ -9,6 +9,8 @@ import clsx from 'clsx';
 import { supabase } from '../../lib/supabase/client';
 import { Alert, Button, Field, Input, Modal, Select, Textarea, Tick } from '../ui';
 import { AVAILABILITY, ROLES } from './data';
+import { useMaintenanceFormGate } from '../maintenance/useMaintenanceFormGate';
+import MaintenanceFormNotice from '../maintenance/MaintenanceFormNotice';
 
 interface FormState {
   name: string; email: string; phone: string; location: string;
@@ -38,6 +40,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ open, onClose, pres
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const [honeypot, setHoneypot] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'failed'>('idle');
+  const gate = useMaintenanceFormGate({ feature: 'volunteering', section: 'volunteer:form' });
 
   const set = (k: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -55,6 +58,8 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ open, onClose, pres
   const back = () => { setErrors({}); setStep((s) => Math.max(0, s - 1)); };
 
   const submit = async () => {
+
+    if (gate.blocked) return;
     setStatus('sending');
     try {
       const { error } = await supabase.functions.invoke('send-notification', {
@@ -76,6 +81,8 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ open, onClose, pres
 
   const footer = status === 'sent' ? (
     <Button onClick={close}>Done</Button>
+  ) : gate.blocked ? (
+    <Button variant="secondary" onClick={close}>Close</Button>
   ) : (
     <>
       {step > 0 && <Button variant="secondary" onClick={back}>Back</Button>}
@@ -87,7 +94,9 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ open, onClose, pres
 
   return (
     <Modal open={open} onClose={close} title="Apply to volunteer" description={status === 'sent' ? undefined : `${step + 1} of ${STEPS.length} · ${STEPS[step]}`} size="lg" footer={footer}>
-      {status === 'sent' ? (
+      {gate.blocked && status !== 'sent' ? (
+        <MaintenanceFormNotice rule={gate.rule} />
+      ) : status === 'sent' ? (
         <div role="status" className="flex flex-col gap-3 py-2">
           <Tick className="h-8 w-8" />
           <p className="font-display uppercase text-display-sm text-content">Application received</p>
@@ -95,6 +104,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ open, onClose, pres
         </div>
       ) : (
         <form onSubmit={(e) => { e.preventDefault(); if (step < STEPS.length - 1) next(); else submit(); }} noValidate className="space-y-6">
+          <MaintenanceFormNotice rule={gate.rule} />
           {/* progress line */}
           <ol className="flex gap-1.5" aria-label="Progress">
             {STEPS.map((s, i) => (

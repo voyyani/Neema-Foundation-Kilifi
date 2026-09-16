@@ -8,6 +8,8 @@ import { Mail, MapPin, Phone } from 'lucide-react';
 import { usePublicSiteSettings } from '../../hooks/public';
 import { supabase } from '../../lib/supabase/client';
 import { Alert, Button, Container, Field, Input, Section, SectionHeading, Select, Textarea, Tick } from '../ui';
+import { useMaintenanceFormGate } from '../maintenance/useMaintenanceFormGate';
+import MaintenanceFormNotice from '../maintenance/MaintenanceFormNotice';
 
 const SUBJECTS = [
   ['volunteer', 'Volunteering'],
@@ -34,6 +36,7 @@ const Contact: React.FC = () => {
   const [form, setForm] = useState<FormState>({ name: '', email: '', subject: '', message: '' });
   const [errors, setErrors] = useState<Errors>({});
   const [honeypot, setHoneypot] = useState('');
+  const gate = useMaintenanceFormGate({ feature: 'contact', section: 'landing:contact' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'failed'>('idle');
 
   const set = (k: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -43,6 +46,8 @@ const Contact: React.FC = () => {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (gate.blocked) return;
     const errs = validate(form);
     setErrors(errs);
     if (Object.keys(errs).length) return;
@@ -91,7 +96,8 @@ const Contact: React.FC = () => {
                 <p className="max-w-measure text-content-2">Thank you, {form.name.split(' ')[0]}. The office will reply to {form.email}.</p>
               </div>
             ) : (
-              <form onSubmit={submit} noValidate className="space-y-6">
+              <form onSubmit={submit} noValidate className="space-y-6" aria-describedby={gate.rule ? 'contact-maintenance' : undefined}>
+                <div id="contact-maintenance"><MaintenanceFormNotice rule={gate.rule} /></div>
                 {/* honeypot: hidden from people, filled by bots */}
                 <div className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
                   <label htmlFor="website">Website</label>
@@ -121,8 +127,8 @@ const Contact: React.FC = () => {
                     Check your connection and try again, or email {s?.contact_email ?? 'the office'} directly.
                   </Alert>
                 )}
-                <Button type="submit" size="lg" loading={status === 'sending'}>
-                  {status === 'sending' ? 'Sending…' : 'Send message'}
+                <Button type="submit" size="lg" loading={status === 'sending'} disabled={gate.blocked}>
+                  {gate.blocked ? 'Messages are paused' : status === 'sending' ? 'Sending…' : 'Send message'}
                 </Button>
               </form>
             )}

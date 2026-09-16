@@ -1,9 +1,14 @@
 /**
- * MaintenanceBanner — site-wide strip under the header for global notice and
- * degraded rules (full_block is handled by MaintenanceGate). Each notice can
- * be dismissed for the session.
+ * MaintenanceBanner — the strip under the header for rules that inform
+ * rather than replace: global notice/degraded rules, and notice-level rules
+ * aimed at the current page or a feature group that includes it
+ * (full_block and page-level degraded are handled by MaintenanceRouteGate).
+ * Each notice can be dismissed for the session.
  */
 import React, { useCallback, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { FEATURE_GROUPS } from '../../admin/config/maintenanceRegistry';
+import { resolvePageKey } from './resolvePageKey';
 import { AlertTriangle, Clock, Info, X } from 'lucide-react';
 import clsx from 'clsx';
 import { useMaintenanceContext } from './MaintenanceProvider';
@@ -56,6 +61,7 @@ const BannerRow: React.FC<{ rule: ActiveMaintenanceRule; onDismiss: (id: string)
 
 const MaintenanceBanner: React.FC = () => {
   const { rules, isLoading } = useMaintenanceContext();
+  const { pathname } = useLocation();
   const [dismissed, setDismissed] = useState<Set<string>>(readDismissed);
 
   const handleDismiss = useCallback((id: string) => {
@@ -67,7 +73,18 @@ const MaintenanceBanner: React.FC = () => {
   }, []);
 
   if (isLoading) return null;
-  const bannerRules = rules.filter((r) => r.scope === 'global' && r.severity !== 'full_block' && !dismissed.has(r.id));
+  const pageKey = resolvePageKey(pathname);
+  const groupsForPage = pageKey
+    ? FEATURE_GROUPS.filter((fg) => fg.targets.includes(pageKey)).map((fg) => fg.key)
+    : [];
+  const bannerRules = rules.filter((r) => {
+    if (dismissed.has(r.id)) return false;
+    if (r.scope === 'global') return r.severity !== 'full_block';
+    if (r.severity !== 'notice') return false;
+    if (r.scope === 'page') return r.target_key === pageKey;
+    if (r.scope === 'feature_group') return groupsForPage.includes(r.target_key);
+    return false;
+  });
   if (bannerRules.length === 0) return null;
 
   return (

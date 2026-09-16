@@ -8,6 +8,7 @@ import Seo from '../../lib/seo/Seo';
 import { canonicalUrl } from '../../lib/seo/routeMeta';
 import { usePublicEventAlbum, usePublicEventData, useRelatedAlbums, buildCloudinaryUrl } from '../../hooks/public/usePublicMedia';
 import { Button, Container, LoadingSpinner, Section, SectionHeading } from '../../components/ui';
+import { MaintenanceGate } from '../../components/maintenance';
 import GalleryHeader from '../../components/media/GalleryHeader';
 import PhotoGrid from '../../components/media/PhotoGrid';
 import AlbumPlate from '../../components/media/AlbumPlate';
@@ -38,6 +39,7 @@ const EventStoryPage: React.FC = () => {
         <ImageGalleryJsonLd name={title} description={description} url={canonicalUrl(path)} datePublished={date}
           images={items.map((i) => ({ url: i.url, caption: i.caption, alt: i.alt, width: i.width, height: i.height, dateCreated: i.taken_at, cloudinaryId: i.cloudinary_id }))} />
       )}
+      <MaintenanceGate page="media_event" section="hero">
       <GalleryHeader
         id="event-title"
         title={title}
@@ -45,11 +47,14 @@ const EventStoryPage: React.FC = () => {
         facts={[when, event?.venue_name, event?.program?.name ?? album?.program?.name, items.length ? `${items.length} photograph${items.length === 1 ? '' : 's'}` : null]}
         actions={(event?.program?.slug ?? album?.program?.slug) ? <Button to={`/programs/${event?.program?.slug ?? album?.program?.slug}`} variant="secondary" size="sm">About the programme</Button> : undefined}
       />
+      </MaintenanceGate>
+      <MaintenanceGate page="media_event" section="gallery">
       <Section ground="paper" pad="md" aria-label="Event photographs">
         <Container>
           <PhotoGrid items={items} emptyText="Photographs from this event have not been published yet." />
         </Container>
       </Section>
+      </MaintenanceGate>
       {(event?.partners?.length ?? 0) > 0 && (
         <Section ground="paper-2" pad="sm">
           <Container>
@@ -58,6 +63,7 @@ const EventStoryPage: React.FC = () => {
         </Section>
       )}
       {related.length > 0 && (
+        <MaintenanceGate page="media_event" section="related">
         <Section ground="ruled-faint" pad="lg" aria-labelledby="more-title">
           <Container>
             <SectionHeading id="more-title" title="More albums" />
@@ -66,6 +72,7 @@ const EventStoryPage: React.FC = () => {
             </ul>
           </Container>
         </Section>
+        </MaintenanceGate>
       )}
       <Section ground="board" pad="md">
         <Container>
