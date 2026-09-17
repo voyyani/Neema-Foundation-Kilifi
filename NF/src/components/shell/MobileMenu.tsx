@@ -46,7 +46,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ open, onClose }) => {
       <div
         ref={panelRef}
         className={clsx(
-          'paper-ruled-faint absolute inset-y-0 left-0 flex w-full flex-col overflow-y-auto overscroll-contain shadow-sheet-lg transition-transform duration-300 ease-out lg:max-w-md',
+          'paper-ruled-faint absolute inset-y-0 left-0 flex w-full flex-col overflow-y-auto overscroll-contain shadow-sheet-lg transition-transform duration-300 ease-out lg:w-[calc(var(--rail)+var(--rail-gap)+24rem+var(--gutter))] lg:max-w-full',
           open ? 'translate-x-0' : '-translate-x-full',
         )}
         style={{ paddingLeft: 'calc(var(--rail) + var(--rail-gap))', paddingRight: 'var(--gutter)' }}
