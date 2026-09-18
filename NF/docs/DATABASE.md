@@ -13,7 +13,7 @@ Three sources define the schema, applied in this order on a fresh project:
 
 1. **`supabase-schema.sql`** (repo root) — the original 12-table foundation:
    `profiles`, `programs`, `events`, `impact_metrics`, `stories`,
-   `board_members`, `site_settings`, `hero_content`, `trust_bar_items`,
+   `board_members`, `site_settings`, `hero_content`,
    `submissions`, `media`, `audit_log`. Run manually via the Supabase
    dashboard SQL editor (see `DATABASE-SETUP-REQUIRED.md`).
    **Its `profiles.role` constraint is stale** — superseded by #2.
@@ -87,7 +87,6 @@ repeated per-table here.
 | `stories` | Testimonials/news/impact stories — `category`, `is_featured`, `is_published`, `display_order`. |
 | `board_members` | Team/board profiles — name, title, bio, photo, social. |
 | `hero_content` | Homepage hero carousel slides. |
-| `trust_bar_items` | Partner-logo trust bar entries. |
 | `impact_metrics` | Homepage impact counters — `value`, `unit`, `year`, optional `program_id`. |
 | `partners` | Partner organizations shown on the public site. |
 | `site_settings` | Singleton (`id = 'main'`) — brand name, tagline, mission/vision/values, social links, primary/secondary color. |

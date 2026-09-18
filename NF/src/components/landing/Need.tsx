@@ -7,12 +7,11 @@ import React from 'react';
 import { Container, Section, SectionHeading } from '../ui';
 
 const NEEDS = [
-  { title: 'Child hunger and food insecurity', response: 'The Ahoho Mission serves daily porridge to 650+ children so they can learn and grow.' },
-  { title: 'Limited access to healthcare', response: 'Mobile medical missions, community health education and work with local dispensaries.' },
-  { title: 'Widows without support', response: 'Economic empowerment, farming cooperatives and social support networks.' },
+  { title: 'Low attendance in schools', response: 'The Ahoho Mission serves daily porridge to 650+ children so they can learn and grow.' },
+  { title: 'Widows without support', response: 'Economic empowerment, farming cooperatives and social and religious support networks.' },
   { title: 'Barriers to education', response: 'School feeding, learning materials, book clubs and mentorship.' },
-  { title: 'Water scarcity and sanitation', response: 'Water points, rainwater harvesting and sanitation education.' },
-  { title: 'Youth without work or hope', response: 'Vocational training, sport through the NF Cup, and mentorship.' },
+  { title: 'Water scarcity and sanitation', response: 'Rainwater harvesting and sanitation education.' },
+  { title: 'Youth without opportunities', response: 'Sport through the NF Cup, and mentorship.' },
 ];
 
 const Need: React.FC = () => (
@@ -21,7 +20,7 @@ const Need: React.FC = () => (
       <SectionHeading
         id="need-title"
         title="The need in Ganze"
-        lede="Ganze Sub-county faces recurrent drought, long distances to clinics and schools, and few jobs. These are the six challenges the programmes answer, and how."
+        lede="Ganze Sub-county faces recurrent drought, low attendance in schools, and few jobs. These are the challenges the programmes answer, and how."
       />
       <ol className="grid gap-x-10 md:grid-cols-2">
         {NEEDS.map((n, i) => (

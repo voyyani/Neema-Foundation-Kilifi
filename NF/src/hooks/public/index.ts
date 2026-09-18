@@ -27,10 +27,7 @@ export type { PublicStory } from './usePublicStories';
 export { usePublicSiteSettings } from './usePublicSiteSettings';
 export type { PublicSiteSettings } from './usePublicSiteSettings';
 
-export { 
-  usePublicPartners, 
-  usePublicFeaturedPartners 
-} from './usePublicPartners';
+export { usePublicPartners } from './usePublicPartners';
 export type { PublicPartner } from './usePublicPartners';
 
 export { 

@@ -28,7 +28,7 @@ A modern, performant website for Neema Foundation Kilifi that drives donations, 
 - Framer Motion animations for entrances, counters, and interactions
 - Interactive Programs section with program detail subcomponents
 - Impact metrics with animated counters
-- Stories, Events teasers, and Trust Bar
+- Stories and Events teasers
 - Donation pathways + Bank details page with copy/print support (MVP)
 - Volunteer and Partnership pages (forms + email integration, planned)
 - Fully responsive, mobile-first design
@@ -106,7 +106,6 @@ NF/
 │  ├─ components/
 │  │  ├─ Navbar.tsx
 │  │  ├─ Hero.tsx
-│  │  ├─ TrustBar.tsx
 │  │  ├─ Impact.tsx
 │  │  ├─ Programs.tsx
 │  │  ├─ Stories.tsx

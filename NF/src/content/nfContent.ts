@@ -11,9 +11,6 @@ export type NFContent = {
     subtitle?: string;
     cta?: { label?: string; href?: string };
   };
-  trustBar?: {
-    items?: Array<{ label?: string; value?: string }>;
-  };
   impact?: {
     headline?: string;
     metrics?: Array<{ label?: string; value?: number }>;

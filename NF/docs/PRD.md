@@ -123,7 +123,6 @@ The platform consists of:
 - Get Involved / Action CTA section
 - Contact form with client-side validation
 - Footer with quick links, social icons, address, donation CTA
-- Partner Trust Bar with logos of featured partners
 
 #### Programmes (`/programs`, `/programs/<slug>`)
 - All active programmes listed with card layout

@@ -297,7 +297,7 @@ const trail7: BreadcrumbTrail = {
   roles: ['content_manager', 'owner', 'super_admin'],
   breadcrumbs: [
     { id: '7.1', trail: 7, title: 'Manage board members', description: 'View, edit, create, and toggle board member profiles.', route: '/admin/content/board', level: 'intermediate', estimatedMinutes: 10 },
-    { id: '7.2', trail: 7, title: 'Manage partners', description: 'Add partner logos and info for the homepage Trust Bar.', route: '/admin/content/partners', level: 'intermediate', estimatedMinutes: 10 },
+    { id: '7.2', trail: 7, title: 'Manage partners', description: 'Add partner logos and information for the partnership page.', route: '/admin/content/partners', level: 'intermediate', estimatedMinutes: 10 },
   ],
 };
 

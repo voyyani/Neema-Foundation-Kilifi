@@ -1,7 +1,7 @@
 /**
- * Mission — who we are, in the Foundation's own words (site settings), and
+ * Mission — who we are, in the Foundation's own words, and
  * the four things a child in the programmes gets to do: eat, study, play,
- * thrive. Written as a numbered list on the page, not as icon cards.
+ * thrive.
  */
 import React from 'react';
 import { usePublicSiteSettings } from '../../hooks/public';
@@ -17,8 +17,8 @@ const PILLARS = [
 const Mission: React.FC = () => {
   const { data: s } = usePublicSiteSettings();
   const vision = s?.vision || 'A transformed, healthy and self-empowered Christ-loving community within Ganze Sub-county.';
-  const mission = s?.mission || "Bringing God's transformative love to Kilifi County through compassionate healthcare, quality education, and sustainable community empowerment programmes.";
-  const values = s?.values?.length ? s.values : ['Christian faith', 'Compassion', 'Integrity', 'Value humanity', 'Committed to excellence'];
+  const mission = s?.mission || "Bringing God's transformative love to Kilifi County through compassionate, quality education, and sustainable community empowerment programmes.";
+  const values = s?.values?.length ? s.values : ['Christian faith', 'Compassion', 'Integrity', 'Value humanity'];
 
   return (
     <Section ground="paper" pad="lg" aria-labelledby="mission-title">

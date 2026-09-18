@@ -5,7 +5,6 @@ import Seo from '../lib/seo/Seo';
 import { getRouteMeta } from '../lib/seo/routeMeta';
 import { MaintenanceGate } from '../components/maintenance';
 import Hero from '../components/landing/Hero';
-import TrustBar from '../components/landing/TrustBar';
 import Mission from '../components/landing/Mission';
 import Need from '../components/landing/Need';
 import FeaturedPrograms from '../components/landing/FeaturedPrograms';
@@ -19,7 +18,6 @@ const Landing: React.FC = () => (
   <>
     <Seo meta={getRouteMeta('/')!} />
     <MaintenanceGate page="landing" section="hero"><Hero /></MaintenanceGate>
-    <MaintenanceGate page="landing" section="trust_bar"><TrustBar /></MaintenanceGate>
     <MaintenanceGate page="landing" section="mission"><Mission /></MaintenanceGate>
     <MaintenanceGate page="landing" section="problem"><Need /></MaintenanceGate>
     <MaintenanceGate page="landing" section="programs"><FeaturedPrograms /></MaintenanceGate>

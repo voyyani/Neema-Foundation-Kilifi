@@ -627,9 +627,9 @@ const contentManagerTour: RoleTour = {
     // ── T7 Step 3: Partners list ──────────────────────────────────────────
     {
       target: '[data-tour="content-partners-card"]',
-      title: '③ Partners — Trust Bar Logos',
+      title: '③ Partners — Partner Logos',
       content:
-        'The <strong>Partners</strong> card opens the partners manager. Partner logos appear in the homepage <em>Trust Bar</em> — a horizontal strip of logos that signals credibility to visitors. Each partner has a name, logo image (via Cloudinary), optional website URL, and display order.',
+        'The <strong>Partners</strong> card opens the partners manager. Each partner has a name, logo image (via Cloudinary), optional website URL, and display order.',
       route: '/admin/content',
       placement: 'bottom',
       trailNumber: 7,
@@ -639,9 +639,9 @@ const contentManagerTour: RoleTour = {
     // ── T7 Step 4: Partners — trust bar impact ────────────────────────────
     {
       target: '[data-tour="nav-content"]',
-      title: '④ The Trust Bar — Why Partners Matter',
+      title: '④ Partners — Why They Matter',
       content:
-        'The Trust Bar auto-scrolls through all active partner logos on the homepage. It signals institutional credibility — donors and volunteers trust organisations with recognisable partners. Keep this list current: add new partners promptly and deactivate ones whose partnerships have ended.',
+        'The partners page shows the organisations working with the Foundation. It signals institutional credibility — donors and volunteers trust organisations with recognisable partners. Keep this list current: add new partners promptly and deactivate ones whose partnerships have ended.',
       route: '/admin/content/partners',
       placement: 'right',
       trailNumber: 7,

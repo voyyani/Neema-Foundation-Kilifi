@@ -55,7 +55,7 @@ Everything that isn't an event or a user, grouped under **Content**:
   is checked; `is_featured` controls homepage placement.
 - **Impact** — the homepage's animated impact counters.
 - **Board** — board/team member profiles.
-- **Partners** — logos shown in the public Trust Bar.
+- **Partners** — partner information shown on the partnership page.
 - **Site Settings** — brand name, tagline, mission/vision/values, social
   links, and a primary/secondary color picker.
   ⚠️ **The color picker does not currently affect the live site** — see

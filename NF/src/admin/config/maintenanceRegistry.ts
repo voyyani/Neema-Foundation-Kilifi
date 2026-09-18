@@ -40,7 +40,6 @@ export const PAGE_REGISTRY: PageRegistryEntry[] = [
       { key: 'events', label: 'Events', component_name: 'Events' },
       { key: 'action', label: 'Call to Action', component_name: 'Action' },
       { key: 'contact', label: 'Write to Us (contact form)', component_name: 'Contact' },
-      { key: 'trust_bar', label: 'Trust Bar', component_name: 'TrustBar' },
     ],
   },
   {

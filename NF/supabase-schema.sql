@@ -427,57 +427,7 @@ CREATE POLICY "Admins can delete hero content" ON public.hero_content
   );
 
 -- ============================================================================
--- 9. TRUST BAR ITEMS (no dependencies)
--- ============================================================================
-CREATE TABLE public.trust_bar_items (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  label TEXT NOT NULL,
-  value TEXT NOT NULL,
-  icon TEXT,
-  display_order INTEGER DEFAULT 0,
-  is_active BOOLEAN DEFAULT TRUE,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Enable RLS
-ALTER TABLE public.trust_bar_items ENABLE ROW LEVEL SECURITY;
-
--- Policies: Public can read active items
-CREATE POLICY "Public can view active trust items" ON public.trust_bar_items
-  FOR SELECT USING (is_active = true);
-
--- Policies: Authenticated can view all items
-CREATE POLICY "Authenticated can view all trust items" ON public.trust_bar_items
-  FOR SELECT USING (auth.role() = 'authenticated');
-
--- Policies: Editors can manage items
-CREATE POLICY "Editors can insert trust items" ON public.trust_bar_items
-  FOR INSERT WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role IN ('super_admin', 'admin', 'editor')
-    )
-  );
-
-CREATE POLICY "Editors can update trust items" ON public.trust_bar_items
-  FOR UPDATE USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role IN ('super_admin', 'admin', 'editor')
-    )
-  );
-
-CREATE POLICY "Admins can delete trust items" ON public.trust_bar_items
-  FOR DELETE USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE id = auth.uid() AND role IN ('super_admin', 'admin')
-    )
-  );
-
--- ============================================================================
--- 10. SUBMISSIONS (no dependencies)
+-- 9. SUBMISSIONS (no dependencies)
 -- ============================================================================
 CREATE TABLE public.submissions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -653,9 +603,6 @@ CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.site_settings
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.hero_content
-  FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
-
-CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.trust_bar_items
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 CREATE TRIGGER set_updated_at BEFORE UPDATE ON public.submissions

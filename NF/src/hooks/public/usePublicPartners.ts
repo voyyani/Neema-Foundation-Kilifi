@@ -35,27 +35,3 @@ export function usePublicPartners() {
     refetchOnWindowFocus: false,
   });
 }
-
-// Fetch only featured active partners
-export function usePublicFeaturedPartners() {
-  return useQuery({
-    queryKey: ['public', 'partners', 'featured'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('partners')
-        .select('id, name, logo_url, type, description, website_url, display_order')
-        .eq('is_active', true)
-        .eq('is_featured', true)
-        .order('display_order', { ascending: true });
-
-      if (error) {
-        console.error('Error fetching featured partners:', error);
-        throw error;
-      }
-      return (data as PublicPartner[]) || [];
-    },
-    staleTime: 10 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-    refetchOnWindowFocus: false,
-  });
-}

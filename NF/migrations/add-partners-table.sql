@@ -1,6 +1,6 @@
 -- Migration: Add Partners Table
 -- Date: 2026-02-03
--- Description: Create partners table for managing organizational partners displayed in TrustBar
+-- Description: Create partners table for managing organizational partners
 
 -- Create partners table
 CREATE TABLE IF NOT EXISTS public.partners (
@@ -39,7 +39,7 @@ CREATE POLICY "Authenticated users can manage partners"
     FOR ALL
     USING (auth.role() = 'authenticated');
 
--- Insert seed data from current TrustBar
+-- Insert initial partner data
 INSERT INTO public.partners (name, logo_url, type, description, is_featured, is_active, display_order)
 VALUES 
     ('Dzarino CBO', 
@@ -72,5 +72,5 @@ VALUES
      4);
 
 COMMENT ON TABLE public.partners IS 'Organizational partners displayed on public site';
-COMMENT ON COLUMN public.partners.is_featured IS 'Featured partners appear prominently in TrustBar';
+COMMENT ON COLUMN public.partners.is_featured IS 'Featured partners appear prominently in partner listings';
 COMMENT ON COLUMN public.partners.display_order IS 'Order in which partners are displayed (lower numbers first)';

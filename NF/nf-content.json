@@ -40,26 +40,6 @@
       }
     ]
   },
-  "trustBar": {
-    "items": [
-      {
-        "label": "Years Active",
-        "value": "2020–Present"
-      },
-      {
-        "label": "Beneficiaries",
-        "value": "650+ pupils (porridge program)"
-      },
-      {
-        "label": "Programs",
-        "value": "TBD (consolidating program list)"
-      },
-      {
-        "label": "Counties Served",
-        "value": "Kilifi (Ganze Sub-county)"
-      }
-    ]
-  },
   "impact": {
     "headline": "Our Impact",
     "metrics": [
