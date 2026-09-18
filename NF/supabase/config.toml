@@ -30,3 +30,7 @@ verify_jwt = false
 [functions.maintenance-notify]
 # Called by database webhook on maintenance_status_updates INSERT — no JWT needed
 verify_jwt = false
+
+[functions.cloudinary-destroy]
+# Admin-only asset removal — JWT verified, role-checked inside the function
+verify_jwt = true
